@@ -70,10 +70,11 @@ python hunterx.py -u http://target.com --dry-run --visual cli
 
 ### Docker Deployment
 
-Build and run the verified production image.
+Build and run the verified production image. For detailed production usage, see [Docker Guide](README.docker.md).
+
 ```bash
-docker build -t hunterx .
-docker run --rm -v $(pwd)/reports:/data hunterx -u http://target.com --profile internal -o /data
+docker pull nullc0d3/hunterx:latest
+docker run --rm -v $(pwd)/reports:/data nullc0d3/hunterx -u http://target.com -o /data
 ```
 
 ---
