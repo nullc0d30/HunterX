@@ -26,7 +26,7 @@ BANNER = """
  | | | |_   _ _ __ | |_ ___ _ __  \ \/ /
  | |_| | | | | '_ \| __/ _ \ '__|  \  / 
  |  _  | |_| | | | | ||  __/ |     /  \ 
- |_| |_|\__,_|_| |_|\__\___|_|    /_/\_\
+ |_| |_|\__,_|_| |_|\__\___|_|    /_/\_\\
 [/bold red]
 [cyan]The AI-Assisted Vulnerability Hunter v3.0 by [bold yellow]NullC0d3[/bold yellow][/cyan]
 [green]Production Edition[/green]
@@ -80,6 +80,7 @@ def main():
     parser.add_argument("--passive-only", action="store_true", help="Run Stage 0 Passive Intel only")
     parser.add_argument("--visual", choices=["cli", "web", "off"], default="cli", help="Visualization mode (Default: cli)")
     parser.add_argument("--evidence-level", choices=["low", "medium", "high"], default="medium", help="Detail of reports")
+    parser.add_argument("--min-confidence", type=float, default=0.0, help="Minimum confidence threshold (0.0 - 1.0) for reporting findings")
     
     args = parser.parse_args()
     
@@ -118,6 +119,17 @@ def main():
             reporter = Reporter(args.output_dir)
             reporter.save_json(engine.results)
             
+            # Helper for clean header name if passive intel exists
+            intel_data = getattr(engine, 'passive_intel', {}).analyze(engine.baseline) if hasattr(engine, 'baseline') and engine.baseline else {}
+            
+            # Generate Professional Report Pack
+            reporter.generate_final_report(
+                engine.results, 
+                engine.inferred_chains, 
+                args.url,
+                intel_data
+            )
+            
             # Print Summary
             reporter.print_summary(engine.results)
             
@@ -125,7 +137,7 @@ def main():
             if engine.inferred_chains:
                 console.print("\n[bold red]Potential Attack Chains:[/bold red]")
                 for chain in engine.inferred_chains:
-                    console.print(f"- [yellow]{chain['chain']}[/yellow] ({chain['likelihood']}): {chain['reason']}")
+                    console.print(f"- [yellow]{chain['chain']}[/yellow] ({chain.get('likelihood', 0.0)}): {chain['reason']}")
             
         else:
             if not args.dry_run:
