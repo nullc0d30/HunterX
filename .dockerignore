@@ -1,3 +1,10 @@
+# Version Control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
 __pycache__
 *.pyc
 *.pyo
@@ -7,15 +14,29 @@ env/
 venv/
 .env
 .venv
-.git
-.gitignore
+
+# IDE / Editors
 .vscode
 .idea
+*.swp
+*.swo
+
+# Project Output
 reports/*
+logs/*
 !reports/.gitkeep
-logs/
-*.log
-.DS_Store
+
+# Docs & Tests
+tests/
+examples/
+docs/
 task.md
 implementation_plan.md
 walkthrough.md
+DOCKER_HUB.md
+README.docker.md
+PRODUCT.md
+
+# System
+.DS_Store
+Thumbs.db
