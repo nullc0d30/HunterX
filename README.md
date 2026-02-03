@@ -73,7 +73,7 @@ python hunterx.py -u http://target.com --dry-run --visual cli
 Build and run the verified production image. For detailed production usage, see [Docker Guide](README.docker.md).
 
 ```bash
-docker pull nullc0d3/hunterx:latest
+docker pull nullc0d30/hunterx:latest
 docker run --rm -v $(pwd)/reports:/data nullc0d3/hunterx -u http://target.com -o /data
 ```
 
