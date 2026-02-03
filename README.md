@@ -73,8 +73,7 @@ python hunterx.py -u http://target.com --dry-run --visual cli
 Build and run the verified production image. For detailed production usage, see [Docker Guide](README.docker.md).
 
 ```bash
-![Docker Pulls](https://img.shields.io/docker/pulls/nullc0d30/hunterx)
-![Docker Image Size](https://img.shields.io/docker/image-size/nullc0d30/hunterx/latest)
+Docker Pull nullc0d30/hunterx:stable
 docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:stable -u http://target.com -o /data
 ```
 
