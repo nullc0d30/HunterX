@@ -10,6 +10,8 @@ HunterX is a production-grade orchestration framework designed for professional 
 Traditional vulnerability scanners rely on volume—flooding targets with thousands of requests to find low-hanging fruit. This approach triggers WAFs, alerts SOCs, and risks destabilizing services.
 
 HunterX takes a different approach. It functions as a **reasoning companion**, not a brute-force engine. It observes, hypothesizes, probes, and verifies. By treating payloads as data and orchestration as logic, HunterX achieves high-confidence verification with a fraction of the traffic, making it suitable for long-running, sensitive engagements where detection is not an option.
+
+
 ![Alt text](https://github.com/nullc0d30/HunterX/blob/main/Screenshot%202026-02-03%20032706.png)
 
 
