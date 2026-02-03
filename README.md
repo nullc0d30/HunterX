@@ -74,7 +74,7 @@ Build and run the verified production image. For detailed production usage, see 
 
 ```bash
 docker pull nullc0d30/hunterx:latest
-docker run --rm -v $(pwd)/reports:/data nullc0d3/hunterx -u http://target.com -o /data
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx -u http://target.com -o /data
 ```
 
 ---
