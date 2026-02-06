@@ -3,6 +3,8 @@
 
 HunterX is a production-grade orchestration framework designed for professional Red Teams. Developed by **NullC0d3**, it acts as a reasoning engine and precision instrument, replacing noise with decision support. It is engineered to verify vulnerabilities with extreme operational safety, explainability, and stealth.
 
+**DON'T FORGET TO STAR IT AND FORK IT**
+
 ---
 
 ## Why HunterX?
