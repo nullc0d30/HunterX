@@ -1,0 +1,59 @@
+HunterX — AI-Assisted Vulnerability Hunter
+Copyright (c) 2026 Ahmed Awad (NullC0d3)
+Licensed under the Apache License, Version 2.0 (the "License").
+
+This product includes software developed by third parties:
+
+---
+requests
+   License: Apache 2.0
+   Copyright (c) 2019 Kenneth Reitz
+   Homepage: https://requests.readthedocs.io/
+
+rich
+   License: MIT
+   Copyright (c) 2019 Will McGugan
+   Homepage: https://rich.readthedocs.io/
+
+dataclasses-json
+   License: MIT
+   Copyright (c) 2020 Charles Li
+   Homepage: https://github.com/lidatong/dataclasses-json
+
+PyYAML
+   License: MIT
+   Copyright (c) 2017-2021 Ingy döt Net
+   Homepage: https://pyyaml.org/
+
+jsonschema
+   License: MIT
+   Copyright (c) 2012 Julian Berman
+   Homepage: https://github.com/python-jsonschema/jsonschema
+
+websocket-client
+   License: Apache 2.0
+   Copyright (c) 2011-2022 Hiroki Ohtani(liris)
+   Homepage: https://github.com/websocket-client/websocket-client
+
+beautifulsoup4
+   License: MIT
+   Copyright (c) 2004-2024 Leonard Richardson
+   Homepage: https://www.crummy.com/software/BeautifulSoup/
+
+lxml
+   License: BSD-3-Clause
+   Copyright (c) 2004 Infrae. All rights reserved.
+   Homepage: https://lxml.de/
+
+---
+Optional dependencies:
+fastapi, uvicorn (MIT), ollama (MIT), scikit-learn (BSD-3), numpy (BSD-3)
+
+---
+This product includes payload data sourced from public security research
+repositories, including PayloadsAllTheThings and similar community projects,
+used in accordance with their respective licenses.
+
+---
+For the full Apache 2.0 License text, see the LICENSE file
+accompanying this distribution.

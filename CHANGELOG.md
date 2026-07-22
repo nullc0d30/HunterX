@@ -1,6 +1,6 @@
 ---
 Copyright (c) 2026 Ahmed Awad (NullC0d3)
-All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
 ---
 
 # Changelog
@@ -9,6 +9,32 @@ All notable changes to HunterX are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [4.0.1] — 2026-07-22
+
+### Changed
+
+- **License**: Proprietary → Apache 2.0 (full open-source)
+- **Version**: v4.0 → v4.0.1 (SemVer consistency)
+- **Docker image**: 700MB → 271MB via multi-stage build
+
+### Fixed
+
+- `pyproject.toml` pinned `requests==2.31.0` → `2.33.0` (3 CVEs fixed, synced with `requirements.txt`)
+- `DOCKER_HUB.md` image name: `nullc0d3/hunterx` → `nullc0d30/hunterx`
+- `README.md` test count: 41 → 76
+- Config env override unpacking for nested paths (`ai.enabled`, `oob.collaborator_url`)
+- Diff tests now use real `Fingerprint` dataclass objects instead of partial mocks
+
+### Added
+
+- **NOTICE** file with third-party dependency attributions
+- **DCO** (Developer Certificate of Origin) requirement for all contributions
+- `README.md` badges (CI, license, Python, Docker)
+- Architecture diagram in README
+- Star History chart
 
 ---
 

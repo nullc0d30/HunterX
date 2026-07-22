@@ -1,5 +1,4 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
-# All Rights Reserved.
 #
 # HunterX — AI-Assisted Vulnerability Hunter
 
@@ -20,15 +19,15 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 FROM python:3.11-slim AS runtime
 
 LABEL maintainer="NullC0d3"
-LABEL description="HunterX v4.0 — AI-Assisted Vulnerability Hunter"
-LABEL version="4.0"
+LABEL description="HunterX v4.0.1 — AI-Assisted Vulnerability Hunter"
+LABEL version="4.0.1"
 LABEL org.opencontainers.image.authors="Ahmed Awad (NullC0d3)"
 LABEL org.opencontainers.image.vendor="NullC0d3"
-LABEL org.opencontainers.image.licenses="Proprietary"
-LABEL org.opencontainers.image.description="HunterX v4.0 — AI-Assisted Vulnerability Hunter. Authorized security assessments only."
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+LABEL org.opencontainers.image.description="HunterX v4.0.1 — AI-Assisted Vulnerability Hunter. Authorized security assessments only."
 LABEL org.opencontainers.image.source="https://github.com/nullc0d30/HunterX"
 LABEL org.opencontainers.image.title="HunterX"
-LABEL org.opencontainers.image.version="4.0"
+LABEL org.opencontainers.image.version="4.0.1"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

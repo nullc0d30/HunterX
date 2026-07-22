@@ -1,11 +1,11 @@
 ---
 Copyright (c) 2026 Ahmed Awad (NullC0d3)
-All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
 ---
 
 # Docker Hub Metadata
 
-**Image Name**: `nullc0d3/hunterx`
+**Image Name**: `nullc0d30/hunterx`
 
 ## Short Description
 Safe, reasoning-based Red Team orchestration framework. Non-destructive vulnerability verification.
@@ -25,12 +25,12 @@ This tool is engineered for:
 
 ### Basic Scan
 ```bash
-docker run --rm -v $(pwd)/reports:/data nullc0d3/hunterx -u https://target.com -o /data
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx -u https://target.com -o /data
 ```
 
 ### Advanced Profile (Bug Bounty)
 ```bash
-docker run --rm -v $(pwd)/reports:/data nullc0d3/hunterx -u https://target.com --profile bounty --auto -o /data
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx -u https://target.com --profile bounty --auto -o /data
 ```
 
 ## Volumes

@@ -4,12 +4,13 @@
 **Date:** 2026-07-22
 **Author:** Ahmed Awad (NullC0d3)
 **Repository:** https://github.com/nullc0d30/HunterX
+**License:** Apache 2.0
 
 ---
 
 ## Executive Summary
 
-HunterX has been transformed from a standalone security tool into a world-class open-source project. The repository now follows GitHub and open-source best practices, making it welcoming to contributors, easy to maintain, and ready for community collaboration.
+HunterX has been transformed from a standalone security tool into a world-class open-source project (Apache 2.0). The repository now follows GitHub and open-source best practices, making it welcoming to contributors, easy to maintain, and ready for community collaboration.
 
 ---
 
@@ -118,7 +119,7 @@ HunterX has been transformed from a standalone security tool into a world-class 
 | **Security policy** | ★★★★★ | Full disclosure with SLA |
 | **Roadmap** | ★★★★★ | Versioned timeline with community goals |
 | **Documentation** | ★★★★☆ | Good; could add API docs |
-| **Testing** | ★★★★☆ | 41 tests; could increase coverage |
+| **Testing** | ★★★★☆ | 76 tests; could increase coverage |
 | **Coding standards** | ★★★★★ | Ruff + type hints enforced |
 | **Release process** | ★★★★★ | Detailed release checklist |
 | **Community engagement** | ★★★★☆ | Foundation laid; needs active growth |
@@ -178,7 +179,7 @@ Based on `DISCUSSION_GUIDELINES.md`, create these categories in the repository S
 
 ## Conclusion
 
-HunterX now has all the foundational infrastructure of a mature open-source project. The repository is:
+HunterX now has all the foundational infrastructure of a mature open-source project (Apache 2.0). The repository is:
 
 - **Welcoming** — Clear contribution paths, Code of Conduct, support channels
 - **Professional** — Industry-standard templates, labels, and conventions

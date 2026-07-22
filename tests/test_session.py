@@ -1,5 +1,5 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
-# All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
 # HunterX — AI-Assisted Vulnerability Hunter
 import os
@@ -21,11 +21,10 @@ def test_session_init():
 
 def test_session_rotate_ua():
     s = StealthSession()
-    old_ua = s.session.headers.get("User-Agent")
     s._rotate_ua()
-    new_ua = s.session.headers.get("User-Agent")
-    assert isinstance(new_ua, str)
-    assert len(new_ua) > 10
+    ua = s.session.headers.get("User-Agent")
+    assert isinstance(ua, str)
+    assert len(ua) > 10
 
 
 def test_session_captcha_detection():

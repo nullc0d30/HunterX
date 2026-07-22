@@ -18,9 +18,9 @@
 | README updates | 6 new sections appended |
 | Docker updates | 9 OCI labels added + copyright header |
 | Metadata updates | pyproject.toml, hunterx.yaml |
-| License file | Created (Proprietary) |
+| License file | Apache 2.0 |
 | Lint status | 0 errors |
-| Test status | 41/41 passed |
+| Test status | 76/76 passed |
 
 ---
 
@@ -41,14 +41,14 @@
 All `.py` files received the standard header:
 ```
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
-# All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
 # HunterX — AI-Assisted Vulnerability Hunter
 ```
 
 This includes all core modules, API modules, plugins, tests, `__init__.py` files, and the CLI entry point. Empty `__init__.py` files were populated with the header.
 
-### Non-Python files (6 files)
+### Non-Python files
 
 | File | Format |
 |------|--------|
@@ -157,20 +157,19 @@ All functions draw from the constants `AUTHOR`, `COPYRIGHT`, `LICENSE_NAME`, `RE
 
 ## License
 
-File `LICENSE` created (Proprietary License) with:
+File `LICENSE` replaced with **Apache License 2.0**:
 - Full copyright notice
-- Permitted use cases (authorized security assessments, research, education)
-- Prohibited actions (redistribution, illegal use, notice removal)
+- Permitted use: any, subject to license terms
+- Required: retain copyright notices, include copy of license
 - Disclaimer of warranty
 - Liability limitation
-- Compliance requirement
 
 ---
 
 ## Code Quality
 
 - **Ruff lint**: 0 errors (42 pre-existing issues fixed)
-- **Pytest**: 41/41 passed
+- **Pytest**: 76/76 passed
 - **No functionality changed**: All modifications are legal/attribution-only
 - **No exploit logic modified**: Payload generation, detection, and verification unchanged
 - **DRY**: All legal strings centralized in `core/legal.py`

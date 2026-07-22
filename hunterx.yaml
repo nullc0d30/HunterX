@@ -1,5 +1,5 @@
-# HunterX v4.0 Configuration File
-# Copyright (c) 2026 Ahmed Awad (NullC0d3) — All Rights Reserved.
+# HunterX v4.0.1 Configuration File
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # All values can be overridden by CLI flags or HX_* environment variables.
 
 profile: bounty

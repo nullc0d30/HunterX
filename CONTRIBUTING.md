@@ -1,13 +1,13 @@
 ---
 Copyright (c) 2026 Ahmed Awad (NullC0d3)
-All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
 ---
 
 # Contributing to HunterX
 
 **Welcome!** Thank you for your interest in contributing to HunterX — the AI-Assisted Vulnerability Hunter.
 
-HunterX is an open-source, reasoning-driven Red Team orchestration framework. We believe that security tools should be safe, explainable, and community-owned. Whether you are a security researcher, Python developer, documentarian, or enthusiast, your contributions are valued.
+HunterX is a community-driven, reasoning-driven Red Team orchestration framework licensed under **Apache 2.0**. We believe that security tools should be safe, explainable, and community-owned. Whether you are a security researcher, Python developer, documentarian, or enthusiast, your contributions are valued.
 
 ---
 
@@ -40,7 +40,7 @@ HunterX aims to become the industry standard for **safe, reasoning-based vulnera
 - Empowers **Red Teams** with context-aware intelligence
 - Leverages **AI/ML** for smarter, faster analysis
 - Builds a **community-driven** payload and plugin ecosystem
-- Remains **free and open** for defensive security research
+- Remains **free and open-source** (Apache 2.0) for defensive security research
 
 ---
 
@@ -241,13 +241,30 @@ We practice **responsible disclosure** and will acknowledge reports within 72 ho
 
 ---
 
+## Developer Certificate of Origin (DCO)
+
+All contributors must certify that they have the right to submit their contributions under the Apache 2.0 license. This is done by adding a `Signed-off-by` line to each commit:
+
+```
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+By signing off, you certify that:
+- The contribution was created in whole or in part by you and you have the right to submit it under the Apache 2.0 license
+- The contribution is based on previous work that, to the best of your knowledge, is covered under an appropriate open-source license
+- The contribution was provided to you by someone else who certified the above
+- You have not and will not maintain any patent claims against anyone regarding this contribution
+
+To sign off automatically, use `git commit -s`.
+
 ## Review Process
 
 1. **Automated checks** — CI runs lint + tests automatically
-2. **Code review** — At least one maintainer reviews
-3. **Feedback** — We aim to provide initial feedback within 3 business days
-4. **Approval** — Two approvals required for significant changes
-5. **Merge** — Squash merge preferred for clean history
+2. **DCO check** — All commits must include `Signed-off-by` line
+3. **Code review** — At least one maintainer reviews
+4. **Feedback** — We aim to provide initial feedback within 3 business days
+5. **Approval** — Two approvals required for significant changes
+6. **Merge** — Squash merge preferred for clean history
 
 ---
 
@@ -270,3 +287,7 @@ We practice **responsible disclosure** and will acknowledge reports within 72 ho
 ---
 
 *Thank you for contributing to HunterX! Together, we build safer security tools.*
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
