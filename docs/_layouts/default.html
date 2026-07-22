@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
+
+  <!-- SEO keywords -->
+  <meta name="keywords" content="vulnerability scanner, penetration testing, red team, bug bounty, cybersecurity, security assessment, AI vulnerability hunter, web security, ethical hacking, vulnerability assessment, security testing, Python security tool, open source security, Apache 2.0">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
+  <meta property="og:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta property="og:site_name" content="{{ site.title | escape }}">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
+  <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
+  <meta name="twitter:image" content="{{ '/assets/images/hunterx-social.png' | absolute_url }}">
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "HunterX",
+    "description": "{{ site.description | escape }}",
+    "applicationCategory": "SecurityApplication",
+    "operatingSystem": "Linux, macOS, Windows",
+    "author": {
+      "@type": "Person",
+      "name": "Ahmed Awad (NullC0d3)",
+      "url": "https://github.com/nullc0d30"
+    },
+    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "url": "https://github.com/nullc0d30/HunterX",
+    "version": "4.0.1",
+    "programmingLanguage": "Python",
+    "softwareHelp": "{{ '/quickstart' | absolute_url }}",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+
+  {% if site.google_analytics %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site.google_analytics }}');
+  </script>
+  {% endif %}
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="project-name">{{ site.title }}</h1>
+    <h2 class="project-tagline">{{ site.tagline }}</h2>
+    <a href="https://github.com/nullc0d30/HunterX" class="btn">GitHub Repository</a>
+    <a href="{{ '/quickstart' | relative_url }}" class="btn">Quickstart Guide</a>
+    <a href="{{ '/features' | relative_url }}" class="btn">Features</a>
+    <a href="{{ '/api' | relative_url }}" class="btn">API Reference</a>
+    <a href="{{ '/docker' | relative_url }}" class="btn">Docker Guide</a>
+  </header>
+
+  <main id="content" class="main-content" role="main">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <span class="site-footer-owner">
+      <a href="https://github.com/nullc0d30/HunterX">HunterX</a> is maintained by
+      <a href="https://github.com/nullc0d30">Ahmed Awad (NullC0d3)</a>.
+    </span>
+    <span class="site-footer-credits">
+      Apache 2.0 Licensed &middot;
+      <a href="https://github.com/nullc0d30/HunterX">GitHub</a> &middot;
+      <a href="https://hub.docker.com/r/nullc0d30/hunterx">Docker Hub</a>
+    </span>
+  </footer>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# HunterX v4.0.1
+# HunterX — AI-Assisted Vulnerability Scanner &amp; Red Team Framework
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?branch=main&label=CI&logo=github)](https://github.com/nullc0d30/HunterX/actions)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
@@ -8,10 +8,11 @@
 [![Ruff](https://img.shields.io/badge/lint-ruff-brightgreen)](https://github.com/astral-sh/ruff)
 [![Last Commit](https://img.shields.io/github/last-commit/nullc0d30/HunterX)](https://github.com/nullc0d30/HunterX/commits/main)
 [![Stars](https://img.shields.io/github/stars/nullc0d30/HunterX?style=social)](https://github.com/nullc0d30/HunterX/stargazers)
+[![GitHub Pages](https://img.shields.io/badge/docs-github.io-blue?logo=github)](https://nullc0d30.github.io/HunterX)
 
-**The AI-Assisted Vulnerability Hunter — Automated Decision Support for Offensive Operations**
+**HunterX is an open-source, AI-assisted vulnerability assessment and penetration testing framework for professional Red Teams, bug bounty hunters, and security researchers.** It combines a 4-stage reasoning pipeline — passive intel, probe, confirm, verify — with 200+ detection signatures, REST API orchestration, WebSocket and GraphQL protocol testing, OOB blind detection, time-based injection analysis, WAF evasion, and a decorator-based plugin system.
 
-HunterX is a production-grade Red Team orchestration framework by **Ahmed Awad (NullC0d3)**. It acts as a reasoning engine that observes, hypothesizes, probes, and verifies vulnerabilities using a strictly gated 4-stage pipeline with extreme operational safety, explainability, and stealth.
+Built by **Ahmed Awad (NullC0d3)** and licensed under **Apache 2.0**, HunterX transforms vulnerability scanning from brute-force signature matching into an intelligent, context-aware reasoning process that observes, hypothesizes, probes, and verifies with extreme operational safety and stealth.
 
 ---
 
@@ -349,7 +350,7 @@ See the full [ROADMAP.md](ROADMAP.md) for details.
 
 | Resource | Purpose | Link |
 |----------|---------|------|
-| Documentation | Installation, usage, configuration | [README.md](README.md) |
+| Documentation Site | Full docs, API reference, quickstart | [GitHub Pages](https://nullc0d30.github.io/HunterX) |
 | Contributing Guide | How to contribute | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Security Policy | Vulnerability disclosure | [SECURITY.md](SECURITY.md) |
 | Discussions | Questions, ideas, community help | [GitHub Discussions](https://github.com/nullc0d30/HunterX/discussions) |

@@ -1,0 +1,16 @@
+This file is a placeholder. Create a 1200x630px social preview image
+for the HunterX GitHub repository using tools like Canva or Figma.
+Recommended design: HunterX logo + tagline on dark background.
+
+To generate:
+1. Design a 1200x630 PNG with:
+   - Background: Dark gradient (#0d1117 → #161b22)
+   - Logo: "HunterX" in bold white, monospace
+   - Subtitle: "AI-Assisted Vulnerability Hunter"
+   - Badge: "Apache 2.0"
+   - Author: "NullC0d3"
+2. Save as docs/assets/images/hunterx-social.png
+3. Git add and commit
+
+This image is used for Open Graph / Twitter Card previews
+when the GitHub Pages site or repository URL is shared.
