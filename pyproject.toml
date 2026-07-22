@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "hunterx"
+version = "4.0"
+description = "The AI-Assisted Vulnerability Hunter — Automated Decision Support for Offensive Operations"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Proprietary"}
+authors = [
+    {name = "NullC0d3"}
+]
+keywords = ["security", "red-team", "vulnerability", "penetration-testing"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Security",
+]
+
+dependencies = [
+    "requests==2.31.0",
+    "rich==13.7.1",
+    "dataclasses-json==0.6.7",
+    "pyyaml==6.0.2",
+    "jsonschema==4.23.0",
+    "websocket-client==1.8.0",
+    "beautifulsoup4==4.12.3",
+    "lxml==5.3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/nullc0d30/HunterX"
+Repository = "https://github.com/nullc0d30/HunterX"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = ["E501"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hunterx*", "core*", "api*", "plugins*"]

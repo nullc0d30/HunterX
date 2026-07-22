@@ -15,3 +15,7 @@ venv/
 .DS_Store
 Thumbs.db
 Screenshot*.png
+*.egg-info/
+dist/
+build/
+.pytest_cache/
