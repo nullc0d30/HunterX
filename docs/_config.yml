@@ -23,11 +23,8 @@ plugins:
   - jekyll-feed
   - jekyll-redirect-from
 
-# Theme
-theme: jekyll-theme-cayman
-
 # Build
-markdown: GFM
+markdown: kramdown
 highlighter: rouge
 permalink: pretty
 
