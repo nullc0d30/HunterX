@@ -8,6 +8,7 @@ description: >-
   GraphQL, OOB detection, time-based injection, WAF evasion, and plugin system.
   Licensed under Apache 2.0.
 url: "https://nullc0d30.github.io/HunterX"
+baseurl: "/HunterX"
 repository: nullc0d30/HunterX
 author:
   name: Ahmed Awad (NullC0d3)
@@ -20,7 +21,8 @@ google_analytics:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
-  - jekyll-readme-index
+  - jekyll-feed
+  - jekyll-redirect-from
 
 # Theme
 theme: jekyll-theme-cayman
@@ -28,6 +30,16 @@ theme: jekyll-theme-cayman
 # Build
 markdown: GFM
 highlighter: rouge
+permalink: pretty
+
+# Collections
+collections:
+  tutorials:
+    output: true
+    permalink: /tutorials/:title/
+  posts:
+    output: true
+    permalink: /blog/:year/:month/:day/:title/
 
 # Defaults
 defaults:
@@ -36,10 +48,28 @@ defaults:
     values:
       layout: default
       author: Ahmed Awad (NullC0d3)
-  - scope:
-      path: "**/*.md"
-    values:
       image: /assets/images/hunterx-social.png
+  - scope:
+      path: "_posts"
+    values:
+      layout: default
+      author: Ahmed Awad (NullC0d3)
+  - scope:
+      path: "tutorials"
+    values:
+      layout: default
+  - scope:
+      path: "comparisons"
+    values:
+      layout: default
+  - scope:
+      path: "releases"
+    values:
+      layout: default
+
+# Include
+include:
+  - _redirects
 
 # Exclude
 exclude:
@@ -47,3 +77,9 @@ exclude:
   - LICENSE
   - NOTICE
   - vendor
+  - Gemfile
+  - Gemfile.lock
+
+# Feed
+feed:
+  path: /blog/feed.xml

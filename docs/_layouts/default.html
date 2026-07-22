@@ -3,29 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+  <title>{% if page.title %}{{ page.title | escape }} — HunterX{% else %}{{ site.title | escape }}{% endif %}</title>
   <meta name="description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
 
   <!-- SEO keywords -->
-  <meta name="keywords" content="vulnerability scanner, penetration testing, red team, bug bounty, cybersecurity, security assessment, AI vulnerability hunter, web security, ethical hacking, vulnerability assessment, security testing, Python security tool, open source security, Apache 2.0">
+  <meta name="keywords" content="vulnerability scanner, penetration testing, red team, bug bounty, cybersecurity, security assessment, AI vulnerability hunter, web security, ethical hacking, vulnerability assessment, security testing, Python security tool, open source security, Apache 2.0, {{ page.tags | default: '' | join: ', ' }}">
+
+  <!-- Search Engine Verification -->
+  <meta name="google-site-verification" content="{{ site.google_site_verification | default: '' }}">
+  <meta name="msvalidate.01" content="{{ site.bing_site_verification | default: '' }}">
+  <meta name="yandex-verification" content="{{ site.yandex_site_verification | default: '' }}">
 
   <!-- Open Graph -->
   <meta property="og:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta property="og:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta property="og:image" content="{{ '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
   <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:locale" content="en_US">
+  <meta property="og:updated_time" content="{{ page.date | date_to_xmlschema | default: site.time | date_to_xmlschema }}">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
-  <meta name="twitter:image" content="{{ '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta name="twitter:site" content="@nullc0d30">
+  <meta name="twitter:creator" content="@nullc0d30">
 
-  <!-- Structured Data (JSON-LD) -->
+  <!-- Canonical -->
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ '/blog/feed.xml' | absolute_url }}">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/favicon/favicon-16x16.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/favicon/favicon-32x32.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="48x48" href="{{ '/assets/favicon/favicon-48x48.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/favicon/apple-touch-icon.png' | relative_url }}">
+  <link rel="manifest" href="{{ '/assets/favicon/site.webmanifest' | relative_url }}">
+  <link rel="mask-icon" href="{{ '/assets/favicon/safari-pinned-tab.svg' | relative_url }}" color="#155799">
+  <meta name="msapplication-TileColor" content="#155799">
+  <meta name="msapplication-config" content="{{ '/assets/favicon/browserconfig.xml' | relative_url }}">
+  <meta name="theme-color" content="#155799">
+
+  <!-- Preload -->
+  <link rel="preload" href="{{ '/assets/css/style.css' | relative_url }}" as="style">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+
+  <!-- JSON-LD: WebSite + SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "HunterX",
+    "url": "{{ site.url }}",
+    "description": "{{ site.description | escape }}",
+    "author": {
+      "@type": "Person",
+      "name": "Ahmed Awad (NullC0d3)",
+      "url": "https://github.com/nullc0d30",
+      "sameAs": [
+        "https://github.com/nullc0d30"
+      ]
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ '/?q={search_term_string}' | absolute_url }}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD: SoftwareApplication (site-wide) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -44,6 +101,8 @@
     "version": "4.0.1",
     "programmingLanguage": "Python",
     "softwareHelp": "{{ '/quickstart' | absolute_url }}",
+    "downloadUrl": "https://github.com/nullc0d30/HunterX",
+    "releaseNotes": "{{ '/changelog' | absolute_url }}",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -52,18 +111,9 @@
   }
   </script>
 
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <!-- JSON-LD: BreadcrumbList (page-specific, rendered in-body below) -->
 
-  {% if site.google_analytics %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ site.google_analytics }}');
-  </script>
-  {% endif %}
+  <!-- JSON-LD: FAQPage (only on FAQ page, handled in-content) -->
 </head>
 <body>
   <header class="page-header">
@@ -74,22 +124,116 @@
     <a href="{{ '/features' | relative_url }}" class="btn">Features</a>
     <a href="{{ '/api' | relative_url }}" class="btn">API Reference</a>
     <a href="{{ '/docker' | relative_url }}" class="btn">Docker Guide</a>
+    <a href="{{ '/blog' | relative_url }}" class="btn">Blog</a>
   </header>
+
+  <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+    <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="{{ '/' | relative_url }}"><span itemprop="name">Home</span></a>
+        <meta itemprop="position" content="1">
+      </li>
+      {% assign crumbs = page.url | split: '/' %}
+      {% assign crumb_total = crumbs | size %}
+      {% for crumb in crumbs offset:1 %}
+        {% if forloop.last %}
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">{{ page.title | default: crumb | replace:'-',' ' | capitalize }}</span>
+            <meta itemprop="position" content="{{ forloop.index | plus: 1 }}">
+          </li>
+        {% else %}
+          {% assign crumb_path = crumbs | slice: 0, forloop.index | plus: 1 | join: '/' | append: '/' %}
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ crumb_path | relative_url }}"><span itemprop="name">{{ crumb | replace:'-',' ' | capitalize }}</span></a>
+            <meta itemprop="position" content="{{ forloop.index | plus: 1 }}">
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+
+  {% if page.url == '/' %}
+  <!-- Search Bar (Homepage) -->
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="Search documentation..." aria-label="Search">
+    <div id="search-results"></div>
+  </div>
+  {% endif %}
 
   <main id="content" class="main-content" role="main">
     {{ content }}
   </main>
 
+  <!-- JSON-LD: BreadcrumbList script -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "{{ '/' | absolute_url }}"
+      }
+      {% assign crumbs = page.url | split: '/' %}
+      {% assign crumb_total = crumbs | size %}
+      {% for crumb in crumbs offset:1 %}
+        {% if forloop.last %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ forloop.index | plus: 1 }},
+          "name": "{{ page.title | default: crumb | replace:'-',' ' | capitalize | escape }}",
+          "item": "{{ page.url | absolute_url }}"
+        }
+        {% else %}
+        {% assign crumb_path = crumbs | slice: 0, forloop.index | plus: 1 | join: '/' | append: '/' %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ forloop.index | plus: 1 }},
+          "name": "{{ crumb | replace:'-',' ' | capitalize | escape }}",
+          "item": "{{ crumb_path | absolute_url }}"
+        }
+        {% endif %}
+      {% endfor %}
+    ]
+  }
+  </script>
+
+  <!-- Client-side search (Lunr.js) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4/dist/css/splide.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+  <script src="{{ '/assets/js/search.js' | relative_url }}"></script>
+
   <footer class="site-footer">
-    <span class="site-footer-owner">
-      <a href="https://github.com/nullc0d30/HunterX">HunterX</a> is maintained by
-      <a href="https://github.com/nullc0d30">Ahmed Awad (NullC0d3)</a>.
-    </span>
-    <span class="site-footer-credits">
-      Apache 2.0 Licensed &middot;
-      <a href="https://github.com/nullc0d30/HunterX">GitHub</a> &middot;
-      <a href="https://hub.docker.com/r/nullc0d30/hunterx">Docker Hub</a>
-    </span>
+    <div class="site-footer-links">
+      <span class="site-footer-owner">
+        <a href="https://github.com/nullc0d30/HunterX">HunterX</a> is maintained by
+        <a href="https://github.com/nullc0d30">Ahmed Awad (NullC0d3)</a>.
+      </span>
+      <span class="site-footer-credits">
+        <a href="https://github.com/nullc0d30/HunterX">GitHub</a> &middot;
+        <a href="https://hub.docker.com/r/nullc0d30/hunterx">Docker Hub</a> &middot;
+        <a href="{{ '/blog' | relative_url }}">Blog</a> &middot;
+        <a href="{{ '/faq' | relative_url }}">FAQ</a> &middot;
+        <a href="{{ '/about-author' | relative_url }}">About</a> &middot;
+        <a href="{{ '/changelog' | relative_url }}">Changelog</a> &middot;
+        <a href="{{ '/blog/feed.xml' | relative_url }}">RSS</a>
+        <br>
+        Apache 2.0 Licensed &middot;
+        Copyright &copy; 2026 Ahmed Awad (NullC0d3)
+      </span>
+    </div>
   </footer>
+
+  {% if site.google_analytics %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site.google_analytics }}');
+  </script>
+  {% endif %}
 </body>
 </html>
