@@ -1,9 +1,12 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import json
-import random
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 try:
-    from websocket import create_connection, WebSocket
+    from websocket import create_connection
     HAS_WS = True
 except ImportError:
     HAS_WS = False

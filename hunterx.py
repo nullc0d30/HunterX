@@ -1,5 +1,7 @@
-# SPDX-License-Identifier: Proprietary
-# Copyright NullC0d3 — HunterX v4.0
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import argparse
 import os
 import sys
@@ -11,9 +13,9 @@ from core.engine import Engine
 from core.report import Reporter
 from core.utils import logger, console
 from core.classifier import PayloadClassifier
-from core.sarif_reporter import SARIFReporter
+from core.legal import get_copyright_text
 
-BANNER = """
+BANNER = f"""
 [bold red]
   _   _             _             __  __
  | | | |_   _ _ __ | |_ ___ _ __  \ \/ /
@@ -22,11 +24,13 @@ BANNER = """
  |_| |_|\__,_|_| |_|\__\___|_|    /_/\_\\
 [/bold red]
 [cyan]HunterX v4.0 — AI-Assisted Vulnerability Hunter by [bold yellow]NullC0d3[/bold yellow][/cyan]
+[green]{get_copyright_text()}[/green]
 [green]Production Edition — API | Auth | OOB | AI/ML | Plugins[/green]
 """
 
 
-def load_payloads(payload_dir: str, target_categories: Optional[List[str]] = None):
+def classify_payload_files(payload_dir: str, target_categories: Optional[List[str]] = None):
+    """Scan payload directory and return (filename, path, category) for matching files."""
     classifier = PayloadClassifier()
     if not os.path.exists(payload_dir):
         logger.error(f"Payload directory not found: {payload_dir}")
@@ -40,15 +44,36 @@ def load_payloads(payload_dir: str, target_categories: Optional[List[str]] = Non
         if target_categories:
             if not any(c.lower() in [tc.lower() for tc in target_categories] for c in file_cats):
                 continue
-        with open(path, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                p_cat = file_cats[0]
-                yield {"payload": line, "category": p_cat, "source_file": filename}
+        yield filename, path, file_cats[0]
 
-    logger.info(f"Streamed payloads from {payload_dir}")
+
+def load_payloads(payload_dir: str, target_categories: Optional[List[str]] = None):
+    """Lazily stream payloads from matching files. Only opens files whose category matches."""
+    if not os.path.exists(payload_dir):
+        logger.error(f"Payload directory not found: {payload_dir}")
+        return
+
+    matched_files = list(classify_payload_files(payload_dir, target_categories))
+    if not matched_files:
+        logger.warning(f"No payload files matched categories: {target_categories or 'all'}")
+        return
+
+    for filename, path, category in matched_files:
+        file_size = os.path.getsize(path)
+        if file_size > 50 * 1024 * 1024:
+            logger.warning(f"Skipping oversized payload file: {filename} ({file_size // 1024 // 1024}MB)")
+            continue
+        try:
+            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    yield {"payload": line, "category": category, "source_file": filename}
+        except Exception as e:
+            logger.debug(f"Failed to read payload file {filename}: {e}")
+
+    logger.info(f"Streamed payloads from {payload_dir} ({len(matched_files)} files)")
 
 
 def main():
@@ -206,12 +231,12 @@ Examples:
         config.verify_ssl = False
 
     target_cats = args.category.split(",") if args.category else None
-    all_payloads = list(load_payloads(args.payload_dir, target_cats))
-
     plugin_dir_list = [d.strip() for d in args.plugin_dirs.split(",") if d.strip()]
 
     for target_url in targets:
         console.print(f"\n[bold]Scanning:[/bold] {target_url}")
+
+        all_payloads = list(load_payloads(args.payload_dir, target_cats))
 
         if not all_payloads and not args.passive_only:
             logger.warning(f"No payloads for {target_url}, skipping.")

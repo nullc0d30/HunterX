@@ -1,9 +1,12 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import threading
 import uuid
-from datetime import datetime
 from typing import Dict, Optional, List
 
-from api.models import ScanJob, ScanStatus
+from api.models import ScanJob
 
 
 class JobQueue:

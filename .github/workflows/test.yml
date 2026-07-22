@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
+
 name: Test
 
 on:
@@ -7,11 +12,11 @@ on:
     branches: [main, master]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +33,18 @@ jobs:
           pip install pytest ruff
 
       - name: Lint with ruff
-        run: ruff check core/ hunterx.py --ignore=E501
+        run: ruff check core/ hunterx.py api/ plugins/ tests/ --ignore=E501
 
       - name: Test with pytest
         run: python -m pytest tests/ -v
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t hunterx:test .
+
+      - name: Smoke test
+        run: docker run --rm hunterx:test --help

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Dict, Optional

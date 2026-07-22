@@ -1,6 +1,11 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import json
 from datetime import datetime, timezone
 from typing import List, Dict
+from .legal import get_copyright_text, REPOSITORY_URL
 
 
 class SARIFReporter:
@@ -11,6 +16,7 @@ class SARIFReporter:
         self.tool_version = tool_version
 
     def generate(self, results: List[Dict], target: str) -> dict:
+        copyright_notice = get_copyright_text()
         sarif_runs = []
         rules = {}
         rule_index = 0
@@ -54,7 +60,7 @@ class SARIFReporter:
                 "driver": {
                     "name": self.tool_name,
                     "version": self.tool_version,
-                    "informationUri": "https://github.com/nullc0d30/HunterX",
+                    "informationUri": REPOSITORY_URL,
                     "rules": list(rules.values()),
                 }
             },
@@ -63,6 +69,9 @@ class SARIFReporter:
                 "executionSuccessful": True,
                 "startTimeUtc": datetime.now(timezone.utc).isoformat(),
             }],
+            "properties": {
+                "copyright": copyright_notice,
+            },
         })
 
         return {

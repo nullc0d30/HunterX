@@ -1,5 +1,7 @@
-# SPDX-License-Identifier: Proprietary
-# Copyright NullC0d3 — HunterX v3.1
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import re
 from typing import List
 

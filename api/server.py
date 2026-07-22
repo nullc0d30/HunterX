@@ -1,21 +1,22 @@
-import json
-import os
-import threading
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import time
-from typing import Optional
 
 try:
     from fastapi import FastAPI, HTTPException, BackgroundTasks
-    from fastapi.responses import JSONResponse
     from pydantic import BaseModel
     HAS_FASTAPI = True
 except ImportError:
     HAS_FASTAPI = False
 
-from api.job_queue import queue, ScanStatus
+from api.job_queue import queue
+from api.models import ScanStatus
 from core.engine import Engine
 from core.report import Reporter
 from core.utils import logger
+from core.legal import get_json_metadata
 
 app = None
 
@@ -63,7 +64,6 @@ if HAS_FASTAPI:
 
     @app.post("/scan", response_model=ScanResponse)
     async def start_scan(req: ScanRequest, bg: BackgroundTasks):
-        from core.classifier import PayloadClassifier
         import hunterx
 
         target_cats = None
@@ -110,7 +110,18 @@ if HAS_FASTAPI:
 
     @app.get("/health")
     async def health():
-        return {"status": "ok", "version": "4.0"}
+        meta = get_json_metadata()
+        return {
+            "status": "ok",
+            "version": "4.0",
+            "copyright": meta["_metadata"]["copyright"],
+            "license": meta["_metadata"]["license"],
+            "author": meta["_metadata"]["author"],
+        }
+
+    @app.get("/info")
+    async def info():
+        return get_json_metadata()
 
     @app.get("/jobs")
     async def list_jobs():

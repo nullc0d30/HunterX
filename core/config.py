@@ -1,5 +1,8 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import os
-import json
 from dataclasses import field, dataclass
 from typing import List, Dict, Optional
 
@@ -92,15 +95,17 @@ class Config:
         for env_var, path in env_map.items():
             val = os.environ.get(env_var)
             if val is not None:
-                *parents, key = path
+                # path is either (attr, converter) or (parent, attr, converter)
+                if len(path) == 2:
+                    attr_name, converter = path
+                    parents = ()
+                else:
+                    *parents, attr_name, converter = path
                 target = self
                 for parent in parents:
                     target = getattr(target, parent)
-                converter = key
-                key = parents[-1] if parents else converter
-                converter = path[-1] if callable(path[-1]) else str
                 try:
-                    setattr(target, key, converter(val))
+                    setattr(target, attr_name, converter(val))
                 except (ValueError, TypeError):
                     pass
 

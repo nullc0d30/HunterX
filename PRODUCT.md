@@ -1,3 +1,8 @@
+---
+Copyright (c) 2026 Ahmed Awad (NullC0d3)
+All Rights Reserved.
+---
+
 # HunterX Product Identity
 
 ## Overview

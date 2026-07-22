@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
+
 [build-system]
 requires = ["setuptools>=68.0"]
 build-backend = "setuptools.backends._legacy:_Backend"
@@ -10,7 +15,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Proprietary"}
 authors = [
-    {name = "NullC0d3"}
+    {name = "NullC0d3", email = "https://github.com/nullc0d30"},
+]
+maintainers = [
+    {name = "Ahmed Awad (NullC0d3)"},
 ]
 keywords = ["security", "red-team", "vulnerability", "penetration-testing"]
 classifiers = [
@@ -21,6 +29,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.11",
     "Topic :: Security",
+    "Topic :: Security :: Penetration Testing",
 ]
 
 dependencies = [
@@ -37,6 +46,13 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/nullc0d30/HunterX"
 Repository = "https://github.com/nullc0d30/HunterX"
+Documentation = "https://github.com/nullc0d30/HunterX"
+
+[tool.setuptools]
+license-files = ["LICENSE"]
+
+[tool.setuptools.package-data]
+hunterx = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

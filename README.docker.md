@@ -1,3 +1,8 @@
+---
+Copyright (c) 2026 Ahmed Awad (NullC0d3)
+All Rights Reserved.
+---
+
 # HunterX Docker Guide
 
 This guide details how to run **HunterX** as a secure, isolated container.

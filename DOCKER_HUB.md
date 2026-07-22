@@ -1,3 +1,8 @@
+---
+Copyright (c) 2026 Ahmed Awad (NullC0d3)
+All Rights Reserved.
+---
+
 # Docker Hub Metadata
 
 **Image Name**: `nullc0d3/hunterx`

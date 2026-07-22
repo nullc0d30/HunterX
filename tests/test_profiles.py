@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -15,7 +19,7 @@ def test_get_profile_internal():
     assert p.min_delay == 0.1
     assert p.max_delay == 0.5
     assert p.hard_cap_total_requests == 1000
-    assert p.abort_on_waf == False
+    assert not p.abort_on_waf
 
 def test_get_profile_bounty():
     p = get_profile("bounty")
@@ -23,7 +27,7 @@ def test_get_profile_bounty():
     assert p.min_delay == 1.0
     assert p.max_delay == 3.0
     assert p.hard_cap_total_requests == 500
-    assert p.abort_on_waf == True
+    assert p.abort_on_waf
 
 def test_get_profile_gov():
     p = get_profile("gov")

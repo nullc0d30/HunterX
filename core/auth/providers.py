@@ -1,7 +1,11 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import json
 import os
 from dataclasses import dataclass, field
-from typing import Dict, Optional
+from typing import Dict
 
 import requests
 

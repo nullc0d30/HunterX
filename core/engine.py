@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import concurrent.futures
 import threading
 import urllib.parse
@@ -263,7 +267,6 @@ class Engine:
         if self.options.get("time_based", True) and self.active_categories:
             logger.info(">>> Running time-based detection")
             parsed = urllib.parse.urlparse(self.target_url)
-            base_query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
 
             for cat in self.active_categories:
                 timed_results = self.time_detector.scan(cat, self.target_url, self.session)

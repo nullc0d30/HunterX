@@ -1,10 +1,14 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 # SPDX-License-Identifier: Proprietary
-# Copyright NullC0d3 — HunterX v3.1
 import json
 import os
 import zipfile
 from datetime import datetime
 from typing import List, Dict
+from .legal import inject_json, inject_markdown, get_copyright_text
 from .utils import logger, console
 from rich.table import Table
 
@@ -16,8 +20,9 @@ class Reporter:
             
     def save_json(self, results: List[Dict]):
         path = os.path.join(self.output_dir, "scan_results.json")
+        data_with_meta = inject_json({"findings": results})
         with open(path, "w") as f:
-            json.dump(results, f, indent=4)
+            json.dump(data_with_meta, f, indent=4)
         logger.info(f"[+] Report saved to {path}")
 
     def generate_final_report(self, results: List[Dict], chains: List[Dict], target: str, intel: Dict):
@@ -41,70 +46,70 @@ class Reporter:
         # Filter vital findings
         critical_findings = [r for r in results if r.get('diff_score', 0) > 60]
         
-        md = f"""# HunterX Security Assessment Report
-
-**Target:** {target}
-**Date:** {date_str}
-**Tool:** HunterX v3.0 (NullC0d3)
-
----
-
-## 1. Executive Summary
-
-HunterX performed an automated, reasoning-based security assessment of **{target}**. The assessment utilized a multi-stage orchestration pipeline focusing on non-destructive verification of vulnerabilities.
-
-**Overall Posture:** {"Critical Issues Found" if critical_findings else "No Critical Issues Detected"}
-**Technology Stack:** {server_header}
-
----
-
-## 2. Key Findings
-
-"""
+        md_lines = [
+            "# HunterX Security Assessment Report",
+            "",
+            f"**Target:** {target}",
+            f"**Date:** {date_str}",
+            f"**Tool:** HunterX v4.0 ({get_copyright_text()})",
+            "",
+            "---",
+            "",
+            "## 1. Executive Summary",
+            "",
+            f"HunterX performed an automated, reasoning-based security assessment of **{target}**. The assessment utilized a multi-stage orchestration pipeline focusing on non-destructive verification of vulnerabilities.",
+            "",
+            f"**Overall Posture:** {'Critical Issues Found' if critical_findings else 'No Critical Issues Detected'}",
+            f"**Technology Stack:** {server_header}",
+            "",
+            "---",
+            "",
+            "## 2. Key Findings",
+            "",
+        ]
         if not critical_findings:
-            md += "*No high-confidence vulnerabilities were detected during this assessment.*\n"
+            md_lines.append("*No high-confidence vulnerabilities were detected during this assessment.*\n")
         else:
             for i, f in enumerate(critical_findings, 1):
-                md += f"### {i}. {f.get('payload_category', 'Anomaly')} (Score: {f.get('diff_score')})\n"
-                md += f"- **Payload:** `{f.get('payload')}`\n"
-                md += "- **Impact:** Potential for unauthorized access or execution.\n"
-                md += "- **Verification:** Differential response analysis confirmed significant anomaly.\n\n"
+                md_lines.append(f"### {i}. {f.get('payload_category', 'Anomaly')} (Score: {f.get('diff_score')})")
+                md_lines.append(f"- **Payload:** `{f.get('payload')}`")
+                md_lines.append("- **Impact:** Potential for unauthorized access or execution.")
+                md_lines.append("- **Verification:** Differential response analysis confirmed significant anomaly.")
+                md_lines.append("")
 
-        md += """---
-
-## 3. Attack Path Possibilities
-
-Based on verified findings, the Reasoning Engine identified the following potential attack chains. Note that these paths have **NOT** been executed.
-
-| Chain | Likelihood | Preconditions |
-|-------|------------|---------------|
-"""
+        md_lines.extend([
+            "---",
+            "",
+            "## 3. Attack Path Possibilities",
+            "",
+            "Based on verified findings, the Reasoning Engine identified the following potential attack chains. Note that these paths have **NOT** been executed.",
+            "",
+            "| Chain | Likelihood | Preconditions |",
+            "|-------|------------|---------------|",
+        ])
         if not chains:
-             md += "| None Identified | - | - |\n"
+            md_lines.append("| None Identified | - | - |")
         else:
             for c in chains:
                 likelihood = c.get('likelihood', 'Unknown')
                 pre = ', '.join(c.get('preconditions', []))
-                md += f"| {c['chain']} | {likelihood} | {pre} |\n"
+                md_lines.append(f"| {c['chain']} | {likelihood} | {pre} |")
 
-        md += """
----
-
-## 4. Methodology
-
-This assessment followed a strict **Safety-by-Design** protocol:
-1.  **Passive Analysis:** Zero-interaction gathering of headers and metadata.
-2.  **Probe Stage:** Low-noise anomaly detection.
-3.  **Verification:** Context-aware proofing without destructive payloads.
-
-**Constraint:** No file deletion, reverse shells, or persistence mechanisms were employed.
-
----
-
-## 5. Disclaimer
-
-This report is for authorized internal use only.
-"""
+        md_lines.extend([
+            "",
+            "---",
+            "",
+            "## 4. Methodology",
+            "",
+            "This assessment followed a strict **Safety-by-Design** protocol:",
+            "1.  **Passive Analysis:** Zero-interaction gathering of headers and metadata.",
+            "2.  **Probe Stage:** Low-noise anomaly detection.",
+            "3.  **Verification:** Context-aware proofing without destructive payloads.",
+            "",
+            "**Constraint:** No file deletion, reverse shells, or persistence mechanisms were employed.",
+        ])
+        md = "\n".join(md_lines)
+        md = inject_markdown(md, header=False, footer=True)
         return md
 
     def _create_evidence_pack(self, md_path: str):

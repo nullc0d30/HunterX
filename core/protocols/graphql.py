@@ -1,4 +1,7 @@
-import json
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 from typing import List, Dict, Optional
 
 import requests

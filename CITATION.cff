@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use HunterX in your research, please cite it as below."
+title: "HunterX: AI-Assisted Vulnerability Hunter"
+authors:
+  - family-names: "Awad"
+    given-names: "Ahmed"
+    alias: "NullC0d3"
+    affiliation: "NullC0d3 Security"
+    orcid: ""
+    email: ""
+    website: "https://github.com/nullc0d30"
+version: 4.0
+date-released: 2026-07-22
+doi: ""
+url: "https://github.com/nullc0d30/HunterX"
+repository-code: "https://github.com/nullc0d30/HunterX"
+license: "Proprietary"
+keywords:
+  - "security"
+  - "penetration testing"
+  - "red team"
+  - "vulnerability assessment"
+  - "AI"
+  - "cybersecurity"
+  - "offensive security"
+type: "software"
+abstract: "HunterX is a production-grade Red Team orchestration framework that acts as a reasoning engine — observing, hypothesizing, probing, and verifying vulnerabilities using a strictly gated 4-stage pipeline with extreme operational safety, explainability, and stealth."
+preferred-citation:
+  type: "software"
+  title: "HunterX: AI-Assisted Vulnerability Hunter"
+  authors:
+    - family-names: "Awad"
+      given-names: "Ahmed"
+      alias: "NullC0d3"
+  version: 4.0
+  date-released: 2026-07-22
+  url: "https://github.com/nullc0d30/HunterX"

@@ -1,5 +1,7 @@
-# SPDX-License-Identifier: Proprietary
-# Copyright NullC0d3 — HunterX v3.1
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
@@ -7,6 +9,7 @@ from rich.console import Console
 from rich import box
 import os
 import time
+from .legal import get_html_footer
 
 class SimpleVisualizer:
     def __init__(self, mode="cli", output_dir="reports"):
@@ -149,9 +152,7 @@ class SimpleVisualizer:
                     <ul>{findings_html or '<li>No findings yet</li>'}</ul>
                 </div>
                 
-                <div style="text-align: center; color: #555; font-size: 0.8em;">
-                    HunterX v3.0 Product Edition
-                </div>
+                {get_html_footer()}
             </div>
         </body>
         </html>

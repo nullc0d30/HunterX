@@ -1,5 +1,9 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import re
-from typing import List, Dict
+from typing import List
 
 SIGNATURES: List[tuple] = [
     # === LFI / Path Traversal ===

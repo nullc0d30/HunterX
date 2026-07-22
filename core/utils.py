@@ -1,12 +1,14 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All Rights Reserved.
+#
+# HunterX — AI-Assisted Vulnerability Hunter
 import json
 import logging
-import os
 import random
 import string
 import signal
 import sys
 from datetime import datetime, timezone
-from typing import Optional
 
 from rich.console import Console
 from rich.logging import RichHandler
