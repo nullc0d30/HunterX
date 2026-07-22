@@ -90,7 +90,7 @@ Example GitHub Actions step:
 - name: Run HunterX scan
   run: |
     docker run --rm \
-      -v ${{ github.workspace }}/reports:/data \
+      -v {% raw %}${{ github.workspace }}{% endraw %}/reports:/data \
       nullc0d30/hunterx:latest \
       -u https://staging.example.com \
       --profile internal \

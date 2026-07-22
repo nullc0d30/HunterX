@@ -61,7 +61,7 @@ jobs:
     container:
       image: nullc0d30/hunterx:latest
     steps:
-      - run: hunterx scan -u ${{ secrets.TARGET_URL }} \
+      - run: hunterx scan -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
           -o /reports/report.sarif --format sarif
 ```
 

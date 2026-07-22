@@ -84,7 +84,7 @@ print(results.to_dict())
 ```yaml
 - name: Run HunterX Scan
   run: |
-    docker run nullc0d30/hunterx scan -u ${{ secrets.TARGET_URL }} \
+    docker run nullc0d30/hunterx scan -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
       -o /reports/report.sarif --format sarif
 ```
 

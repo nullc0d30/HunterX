@@ -17,7 +17,6 @@ lang: en_US
 timezone: UTC
 
 # SEO
-google_analytics:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
