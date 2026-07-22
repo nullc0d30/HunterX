@@ -1,105 +1,97 @@
 ---
 layout: default
-title: HunterX — AI-Assisted Vulnerability Hunter
+title: Documentation Hub
 description: >-
-  HunterX is an open-source, production-grade Red Team orchestration framework
-  powered by a 4-stage reasoning engine for vulnerability assessment,
-  penetration testing, and security research. Supports REST API, AI/ML
-  analysis, WebSocket and GraphQL testing, OOB detection, and plugin system.
-  Apache 2.0 licensed.
-image: /assets/images/hunterx-social.png
+  Comprehensive documentation for HunterX — the open-source, AI-assisted
+  vulnerability scanner and Red Team orchestration framework. Installation,
+  quickstart, API reference, tutorials, configuration, plugins, Docker,
+  comparisons, and community resources.
 ---
 
-# HunterX
+# Documentation Hub
 
-**The AI-Assisted Vulnerability Hunter — Automated Decision Support for Offensive Operations**
-
-HunterX is a production-grade [Red Team](https://en.wikipedia.org/wiki/Red_team) orchestration framework by **Ahmed Awad (NullC0d3)**. It acts as a reasoning engine that observes, hypothesizes, probes, and verifies vulnerabilities using a strictly gated 4-stage pipeline with extreme operational safety, explainability, and stealth.
-
-Unlike traditional vulnerability scanners that rely on brute force and signature matching, HunterX builds a **baseline fingerprint** of the target, analyzes **response differentials**, considers **authentication state**, **operator profile**, and **contextual signals** before increasing confidence in a finding.
+Welcome to the HunterX documentation. HunterX is an open-source, AI-assisted vulnerability scanner and penetration testing framework for professional Red Teams, bug bounty hunters, and security researchers.
 
 ---
 
-## Quick Navigation
+## Getting Started
 
-| Resource | Description |
-|----------|-------------|
+| Section | Description |
+|---------|-------------|
 | [Quickstart Guide](quickstart) | Install and run your first scan in 5 minutes |
-| [Features Overview](features) | Full capability breakdown |
-| [REST API Documentation](api) | FastAPI server, endpoints, job queue |
-| [Docker Guide](docker) | Container deployment |
-| [Plugin System](plugins) | Write custom detectors, reporters, hooks |
-| [Roadmap](roadmap) | Upcoming features and releases |
+| [Features Overview](features) | Complete capability breakdown |
+| [Architecture](features#core-pipeline) | 4-stage reasoning pipeline explained |
+| [Installation](quickstart#installation) | pip, Docker, and source installation |
+
+## Reference
+
+| Section | Description |
+|---------|-------------|
+| [Configuration Reference](configuration) | All YAML options, env vars, defaults |
+| [REST API Reference](api) | Every endpoint, request/response, error codes |
+| [CLI Reference](quickstart#your-first-scan) | Command-line flags and arguments |
+| [Operator Profiles](profiles) | Internal, Bounty, Gov — behavioral constraints |
+| [Authentication](authentication) | Basic, Bearer, Cookie, Form Login |
+
+## Guides
+
+| Section | Description |
+|---------|-------------|
+| [Docker Guide](docker) | Container deployment and production best practices |
+| [Plugin Development](plugins) | Write custom detectors, reporters, and hooks |
+| [Python SDK](api#python-sdk-example) | Programmatic usage from Python |
+
+## Learning
+
+| Section | Description |
+|---------|-------------|
+| [Tutorials](tutorials) | Step-by-step hands-on guides |
+| [Examples](examples) | Real-world usage examples |
+| [FAQ](faq) | Frequently asked questions |
+| [Benchmarks](benchmarks) | Performance and resource measurements |
+
+## Comparisons
+
+| Section | Description |
+|---------|-------------|
+| [HunterX vs Nuclei](comparisons/vs-nuclei) | Feature and architecture comparison |
+| [HunterX vs OWASP ZAP](comparisons/vs-zap) | Feature and architecture comparison |
+| [HunterX vs Burp Suite](comparisons/vs-burp) | Feature and architecture comparison |
+| [HunterX vs OpenVAS](comparisons/vs-openvas) | Feature and architecture comparison |
+
+## Blog
+
+| Section | Description |
+|---------|-------------|
+| [Blog Home](blog) | Technical articles and updates |
+| [RSS Feed](blog/feed.xml) | Subscribe to new articles |
+
+## Community
+
+| Section | Description |
+|---------|-------------|
+| [GitHub Repository](https://github.com/nullc0d30/HunterX) | Source code, issues, discussions |
+| [Docker Hub](https://hub.docker.com/r/nullc0d30/hunterx) | Container images |
+| [Contributing Guide](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md) | How to contribute |
+| [Code of Conduct](https://github.com/nullc0d30/HunterX/blob/main/CODE_OF_CONDUCT.md) | Community standards |
+
+## About
+
+| Section | Description |
+|---------|-------------|
+| [About the Author](about-author) | Ahmed Awad (NullC0d3) |
+| [Changelog](changelog) | Release history |
+| [Roadmap](roadmap) | Planned features and releases |
+| [License](https://github.com/nullc0d30/HunterX/blob/main/LICENSE) | Apache 2.0 |
+| [Security Policy](https://github.com/nullc0d30/HunterX/blob/main/SECURITY.md) | Vulnerability disclosure |
+| [Citation](https://github.com/nullc0d30/HunterX/blob/main/CITATION.cff) | Academic citation |
 
 ---
 
-## Key Capabilities
+## Quick Links
 
-- **4-Stage Pipeline**: Passive Intel → Probe → Confirm → Verify
-- **200+ Detection Signatures**: LFI, RCE, SQLi, SSTI, SSRF, XSS, Open Redirect, XXE
-- **REST API Server**: FastAPI-based async scan jobs with health checks and job queue
-- **AI/ML Analysis**: LLM integration (Ollama) for automated finding review; scikit-learn anomaly clustering
-- **Protocol Testing**: WebSocket endpoint discovery, GraphQL introspection and batching
-- **Authentication**: Basic, Bearer Token, Cookie Jar, Form Login
-- **OOB Detection**: Blind XXE, SSRF, and RCE via collaborator callbacks
-- **Time-Based Injection**: Blind SQLi/NoSQLi timing analysis
-- **WAF Evasion**: 50+ WAF signatures, auto-abort, payload mutation engine
-- **Plugin System**: Decorator-based detector, reporter, and hook plugins
-- **Reporting**: Markdown, JSON, ZIP evidence, SARIF 2.1 (VS Code/GitHub CodeQL)
-- **Docker**: Optimized 271MB multi-stage image, non-root user, OCI labels
-
----
-
-## Quick Start
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Standard vulnerability scan
-python hunterx.py -u https://target.com --profile bounty
-
-# Scan with AI analysis
-python hunterx.py -u https://target.com --ai --ai-model llama3.2
-
-# API server mode
-python hunterx.py api --port 8443
-
-# Docker
-docker run --rm nullc0d30/hunterx:latest -u https://target.com -o /data
-```
-
-See the [Quickstart Guide](quickstart) for detailed setup instructions.
-
----
-
-## Project Statistics
-
-| Metric | Value |
-|--------|-------|
-| License | Apache 2.0 |
-| Python | 3.11, 3.12, 3.13 |
-| Tests | 76 (100% pass rate) |
-| Lint | ruff — 0 errors |
-| Docker Image | 271MB (multi-stage) |
-| Signature Count | 200+ |
-| Built-in Profiles | 3 (Internal, Bounty, Gov) |
-
----
-
-## Citation
-
-```bibtex
-@software{hunterx2026,
-  author = {Ahmed Awad (NullC0d3)},
-  title = {HunterX: AI-Assisted Vulnerability Hunter},
-  version = {4.0.1},
-  year = {2026},
-  license = {Apache-2.0},
-  url = {https://github.com/nullc0d30/HunterX}
-}
-```
-
----
-
-*HunterX — Safe, smart, community-driven security assessment. Apache 2.0 licensed.*
+- [&#9733; Star on GitHub](https://github.com/nullc0d30/HunterX)
+- [&#128722; Docker Hub](https://hub.docker.com/r/nullc0d30/hunterx)
+- [&#128172; Discussions](https://github.com/nullc0d30/HunterX/discussions)
+- [&#128196; Blog](blog)
+- [&#128269; Changelog](changelog)
