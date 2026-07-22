@@ -1,0 +1,45 @@
+# Version Control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+
+# IDE / Editors
+.vscode
+.idea
+*.swp
+*.swo
+
+# Project Output
+reports/*
+logs/*
+!reports/.gitkeep
+
+# Docs & Tests
+tests/
+examples/
+docs/
+task.md
+implementation_plan.md
+walkthrough.md
+DOCKER_HUB.md
+README.docker.md
+PRODUCT.md
+
+# System
+.DS_Store
+Thumbs.db
+
+# Screenshots
+Screenshot*.png
