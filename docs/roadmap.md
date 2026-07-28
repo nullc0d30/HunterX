@@ -1,88 +1,54 @@
----
-layout: default
-title: Roadmap — HunterX Development Plan
-description: >-
-  Release roadmap for HunterX vulnerability scanner covering v4.x through v5.x
-  with planned features including gRPC testing, OAuth2, persistent job queue,
-  TUI, autonomous agent mode, and cloud scanning.
----
-
 # Roadmap
 
-> *Last updated: July 2026*
+HunterX v6.0.0 is feature-complete. This roadmap shifts focus from feature development to ecosystem growth, community adoption, and enterprise readiness.
 
 ---
 
-## Current: v4.0.1
+## Ecosystem Roadmap
 
-**Focus:** Apache 2.0 open-source licensing, Docker optimization, security patches
-
-## Upcoming
-
-| Version | Focus | Target |
-|---------|-------|--------|
-| **v4.1** | gRPC, OAuth2, Redis queue, TUI, i18n | Q3 2026 |
-| **v4.5** | RBAC, SIEM, Scheduled scans, Compliance reporting | Q4 2026 |
-| **v5.0** | Autonomous agent, Cloud scanning, SDK | H1 2027 |
+- **Skills Marketplace Growth** — Expand the skills registry with community-contributed skills, curated quality checks, and versioning support.
+- **New AI Providers** — Add support for additional AI backends (Anthropic, Google Gemini, local models via Ollama/LM Studio, Azure OpenAI, AWS Bedrock).
+- **Community Plugins** — Establish a plugin SDK and registry for third-party detectors, reporters, and agents.
+- **SIEM/SOAR Integrations** — Native output formatting and webhook support for Splunk, Elastic, Palo Alto XSOAR, and Sentinel.
+- **CI/CD Pipeline Integrations** — Official GitHub Action, GitLab CI template, Jenkins plugin, and Azure DevOps extension.
 
 ---
 
-## v4.1 — Community Edition (Q3 2026)
+## Short Term
 
-| Feature | Description |
-|---------|-------------|
-| gRPC protocol testing | Reflection, message fuzzing |
-| OAuth2 auth flow | Full OAuth2 / OIDC support |
-| Persistent job queue | Redis-backed queue for API mode |
-| Payload marketplace | Community-contributed payload packs |
-| Interactive TUI | Text-based user interface with live dashboards |
-| Multi-report format | PDF, HTML, DOCX export via plugins |
-| Internationalization | i18n foundation for CLI and reports |
+- New skills contributions (cloud misconfigurations, API security, dependency confusion).
+- Provider contributions (Ollama stability, OpenAI streaming, Azure OpenAI support).
+- Documentation improvements (API reference, skill authoring guide, provider configuration guide).
+- Performance optimization (caching tuning, reduced memory footprint, faster payload loading).
 
 ---
 
-## v4.5 — Enterprise (Q4 2026)
+## Medium Term
 
-| Feature | Description |
-|---------|-------------|
-| Team collaboration | Multi-user API with RBAC |
-| SIEM integration | Splunk, ELK, QRadar connectors |
-| Scheduled scanning | Cron-based recurring assessments |
-| Advanced AI models | Local LLM fine-tuning, RAG pipelines |
-| Attack graph generation | Full kill-chain visualization |
-| Compliance reporting | PCI-DSS, HIPAA, SOC2 report templates |
+- **Community Plugin Registry** — A hosted registry for user-contributed plugins with automated validation and publishing.
+- **CI/CD Integration Pack** — Official integrations for major CI/CD platforms with example pipelines and best-practice templates.
+- **Advanced Reporting Templates** — Executive summaries, compliance reports (PCI-DSS, SOC2, HIPAA mappings), and trend analysis.
+- **Training Data for AI Models** — Curated datasets for fine-tuning security-focused AI models, released under open licenses.
 
 ---
 
-## v5.0 — Horizon (H1 2027)
+## Long Term
 
-| Area | Initiative |
-|------|-----------|
-| Autonomous Agent | AI-driven autonomous penetration testing |
-| Cloud Scanner | Native AWS, Azure, GCP scanning profiles |
-| SDK & API v2 | Official client libraries for Python, Go, JS |
-| Bug Bounty Integration | Direct API connections to HackerOne, Bugcrowd |
+- **Dedicated Documentation Site** — Standalone documentation portal with search, versioned docs, and interactive guides.
+- **Package Managers** — Distribution via Homebrew, Chocolatey, and Linux package managers (apt, dnf).
+- **Enterprise Integrations** — SSO/LDAP authentication, role-based access control, audit logging, and multi-tenant support.
+- **Research Collaborations** — Partnerships with academic and industry research groups for advancing AI-assisted security testing.
 
 ---
 
-## Community Goals
+## How to Contribute
 
-| Goal | Target |
-|------|--------|
-| 100 GitHub stars | Q3 2026 |
-| 500 GitHub stars | Q4 2026 |
-| 20+ contributors | Q4 2026 |
-| 50+ plugin ecosystem | H1 2027 |
-| OWASP Integration | v4.5 |
+| Area | How to Help |
+|------|-------------|
+| **Skills** | Write skills for new vulnerability classes or attack vectors. See the skill authoring guide. |
+| **Providers** | Add support for new AI providers. See the provider development guide. |
+| **Documentation** | Improve existing docs, fix typos, translate guides. |
+| **Tests** | Write tests for skills, providers, and core components. Aim for no regressions. |
+| **Community** | Answer questions in GitHub Discussions, review pull requests, triage issues. |
 
----
-
-## Performance Targets
-
-| Metric | Current (v4.0.1) | Target (v5.0) |
-|--------|-----------------|---------------|
-| Requests per second | ~10 | 100+ |
-| Memory per scan | ~150MB | < 50MB |
-| Cold start time | ~2s | < 500ms |
-| Test coverage | 78% | 95%+ |
-| Plugin load time | ~100ms | < 10ms |
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full details.

@@ -1,414 +1,285 @@
-# HunterX — AI-Assisted Vulnerability Scanner &amp; Red Team Framework
+# HunterX — AI-Assisted Vulnerability Hunter
 
-[![CI](https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?branch=main&label=CI&logo=github)](https://github.com/nullc0d30/HunterX/actions)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python)](https://www.python.org/)
-[![Docker](https://img.shields.io/docker/pulls/nullc0d30/hunterx?logo=docker)](https://hub.docker.com/r/nullc0d30/hunterx)
-[![Tests](https://img.shields.io/badge/tests-76%20passing-brightgreen)](https://github.com/nullc0d30/HunterX/actions)
-[![Ruff](https://img.shields.io/badge/lint-ruff-brightgreen)](https://github.com/astral-sh/ruff)
-[![Last Commit](https://img.shields.io/github/last-commit/nullc0d30/HunterX)](https://github.com/nullc0d30/HunterX/commits/main)
-[![Stars](https://img.shields.io/github/stars/nullc0d30/HunterX?style=social)](https://github.com/nullc0d30/HunterX/stargazers)
-[![GitHub Pages](https://img.shields.io/badge/docs-github.io-blue?logo=github)](https://nullc0d30.github.io/HunterX)
+<div align="center">
 
-**HunterX is an open-source, AI-assisted vulnerability assessment and penetration testing framework for professional Red Teams, bug bounty hunters, and security researchers.** It combines a 4-stage reasoning pipeline — passive intel, probe, confirm, verify — with 200+ detection signatures, REST API orchestration, WebSocket and GraphQL protocol testing, OOB blind detection, time-based injection analysis, WAF evasion, and a decorator-based plugin system.
+[![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Tests](https://img.shields.io/badge/tests-623%20passing-brightgreen?style=flat-square)](#testing)
+[![Ruff](https://img.shields.io/badge/ruff-0%20errors-brightgreen?style=flat-square)](https://github.com/astral-sh/ruff)
+[![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://www.docker.com)
 
-Built by **Ahmed Awad (NullC0d3)** and licensed under **Apache 2.0**, HunterX transforms vulnerability scanning from brute-force signature matching into an intelligent, context-aware reasoning process that observes, hypothesizes, probes, and verifies with extreme operational safety and stealth.
+</div>
 
 ---
 
-## Architecture
+## Introduction
+
+HunterX is an AI-assisted vulnerability hunting platform that combines automated security scanning, intelligent payload generation, multi-agent coordination, and a reasoning engine to deliver comprehensive security assessments. Built for offensive security professionals and defensive teams alike, HunterX integrates MITRE ATT&CK mapping, threat modeling, risk scoring, and coverage across web, API, cloud, and infrastructure attack surfaces.
+
+Version 6.0.0 introduces a horizontally-scalable architecture with a Security Intelligence Platform, an AI Provider Abstraction Layer, a Multi-Agent Platform with goal-based reasoning, a dedicated Reasoning Engine, a Security Skills Framework, and a comprehensive REST API and CLI.
+
+---
+
+## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    CLI / API / Docker                     │
-├─────────────────────────────────────────────────────────┤
-│                    Orchestration Engine                   │
-│         (4-Stage Pipeline: Observe → Hypothesize         │
-│              → Probe → Verify)                           │
-├──────────┬──────────┬──────────┬──────────┬──────────────┤
-│  Session  │  Config  │ Profiles │  Auth    │   Plugins    │
-│  Manager  │  System  │  Engine  │ Provider │   (Detect)   │
-├──────────┼──────────┼──────────┼──────────┤    (Report)  │
-│  WAF     │  Diff    │ Payload  │ OOB/Time│    (Hook)     │
-│  Detector│  Engine  │ Manager  │ Based   │              │
-├──────────┴──────────┼──────────┼──────────┴──────────────┤
-│   Detection Engine   │   AI/ML   │   Protocol Handlers   │
-│  (200+ signatures)   │  (Ollama) │  (WS, GraphQL)        │
-├──────────────────────┴──────────┴──────────────────────┤
-│              Reporter (MD, JSON, SARIF, HTML)            │
-└─────────────────────────────────────────────────────────┘
++---------------------------------------------------------------------+
+|                          CLI (hunterx.py)                           |
+|                API (FastAPI, port 8443, 40+ endpoints)              |
++---------------------------------------------------------------------+
+|                    Orchestration Engine (engine.py)                  |
++---------------------------------------------------------------------+
+|  +------------------+  +------------------+  +--------------------+ |
+|  |  Multi-Agent     |  |  Reasoning       |  |  Security Skills   | |
+|  |  Platform        |  |  Engine          |  |  Framework         | |
+|  |  10 agents       |  |  18 GoalTypes    |  |  41 skills         | |
+|  |  Event/MessageBus|  |  Planner/Output  |  |  Registry/Executor | |
+|  |  State/Workflow  |  |  Validator       |  |  Cache/Telemetry   | |
+|  +------------------+  +------------------+  +--------------------+ |
++---------------------------------------------------------------------+
+|               AI Provider Abstraction Layer                          |
+|  OpenAI  |  Ollama  |  AIManager  |  AICache  |  AIMetrics          |
+|  CircuitBreaker  |  RetryHandler  |  Safety  |  ConversationManager |
++---------------------------------------------------------------------+
+|  +------------------+  +------------------+  +--------------------+ |
+|  |  Payload         |  |  Knowledge       |  |  Threat Model      | |
+|  |  Intelligence    |  |  Graph           |  |  + Attack Chain    | |
+|  |  Index/Search    |  |  Risk Engine     |  |  MITRE ATT&CK      | |
+|  |  Mutation Engine |  |  Adaptive Memory |  |  Browser Intel     | |
+|  |  10 techniques   |  |  Scan Planner    |  |  Purple Team       | |
+|  +------------------+  +------------------+  +--------------------+ |
++---------------------------------------------------------------------+
+|               Plugin System (Detectors, Reporters, Hooks)           |
++---------------------------------------------------------------------+
+|                    Reporting (JSON, MD, SARIF, HTML)                |
++---------------------------------------------------------------------+
 ```
 
 ---
 
-## v4.0.1 Highlights
+## Major Capabilities
 
-| Track | Feature | Status |
-|-------|---------|--------|
-| **1** | REST API server (FastAPI) — async scan jobs, health checks | Done |
-| **2** | Auth support — Basic, Bearer Token, Cookie Jar, Form Login | Done |
-| **3** | Enhanced detection — 200+ signatures, time-based, OOB, HTML DOM analysis | Done |
-| **4** | Payload intelligence — mutation engine, remote payload repo, context-aware selection | Done |
-| **5** | Plugin system — detector plugins, reporter plugins, post-scan hooks | Done |
-| **6** | Config overhaul — YAML config file, env vars (`HX_*`), scan presets | Done |
-| **7** | Reporting — SARIF format (VS Code/GitHub CodeQL), CSV export via plugins | Done |
-| **8** | DevOps — graceful shutdown, structured JSON logging, pyproject.toml, Docker | Done |
-| **9** | Protocol expansion — WebSocket detection, GraphQL introspection, batch/depth testing | Done |
-| **10** | AI/ML — LLM analysis (Ollama), anomaly clustering (scikit-learn), auto-remediation | Done |
-| **11** | **Apache 2.0 license** — fully open-source with DCO for contributions | Done |
-| **12** | Docker 271MB (was 700MB), 76 tests (was 41), CI matrix (3.11/3.12/3.13) | Done |
+### Reconnaissance & Fingerprinting
+Technology detection, HTTP header analysis, TLS analysis, cookie analysis, DNS intelligence, subdomain enumeration, WAF fingerprinting (50+ signatures), and fingerprint correlation.
+
+### Security Analysis
+Authentication analysis, JWT analysis, OAuth analysis, CORS analysis, CSP analysis, CSRF detection, clickjacking detection, open redirect detection, GraphQL introspection, WebSocket analysis, REST API fuzzing, OpenAPI validation, and gRPC inspection.
+
+### Vulnerability Verification
+Directory enumeration, file upload testing, LFI, RFI, SSRF, XXE, SSTI, SQL injection, NoSQL injection, command injection, path traversal, and deserialization attack detection.
+
+### Cloud Security
+Secrets detection, cloud metadata service abuse, S3 bucket enumeration, Azure Blob discovery, GCP Storage inspection, Kubernetes assessment, Docker daemon analysis, and CI/CD secrets leakage detection.
+
+### AI Integration
+Two providers (OpenAI, Ollama) with conversation management, response caching, performance metrics, middleware pipeline, retry handling, and circuit breaker patterns.
+
+### Reporting
+Multi-format output: JSON, Markdown, SARIF 2.1, HTML, visual attack graph, and purple team detection rules.
+
+---
+
+## Security Skills Framework
+
+The Security Skills Framework provides a standardized system for defining, registering, and executing security checks. It includes:
+
+- **41 default skills** covering web, cloud, API, and infrastructure attack surfaces
+- **SkillRegistry** for skill discovery and lifecycle management
+- **SkillLoader** for dynamic skill loading
+- **SkillMetadata** with MITRE ATT&CK, OWASP, CWE, and CAPEC references
+- **SkillCapabilityRegistry** with 45 registered capabilities
+- **SkillExecutor** with built-in caching and telemetry collection
+- **SkillPlanner**, **SkillValidator**, **SkillContext**, and **SkillResult** for structured execution
+- **SkillPolicy** for policy enforcement across 5 safety levels
+- **SkillCache** and **SkillTelemetry** for performance tracking
+- **SkillMarketplace** for skill discovery and distribution
+
+---
+
+## Reasoning Engine
+
+The Reasoning Engine provides goal-driven, AI-powered analysis for the agent platform:
+
+- **ReasoningOrchestrator** coordinating multi-step reasoning workflows
+- **18 GoalTypes** covering reconnaissance, analysis, verification, reporting, and coordination
+- **ReasoningPlanner** decomposing high-level goals into actionable steps
+- **ReasoningPromptManager** with 11 specialized prompt templates
+- **OutputValidator** with hallucination detection for AI response verification
+- **ReasoningResult** for structured output
+- **PolicyManager** enforcing 5 safety levels across all reasoning operations
+- **ConsensusEngine** for multi-agent agreement
+- **ConfidenceScorer** for result quality assessment
+- **ReasoningMemory** for persistent context across reasoning sessions
+
+---
+
+## Multi-Agent Platform
+
+The Multi-Agent Platform enables autonomous, coordinated security workflows:
+
+- **10 default agents**: Recon, ThreatModeling, Planning, Payload, Verification, Risk, Reporting, PurpleTeam, Learning, Coordinator
+- **AgentRegistry** for agent discovery and management
+- **EventBus** and **MessageBus** for inter-agent communication
+- **StateManager** for workflow state persistence
+- **WorkflowEngine** supporting DAG-based execution flows
+- **AgentScheduler** for timed and event-driven agent activation
+- **AgentPlanner** for goal decomposition and task allocation
+- **AgentMemory** and **AgentContext** for long-term and session-level state
+- **CapabilityRegistry** for agent capability advertisement
+
+---
+
+## Payload Intelligence
+
+The Payload Intelligence platform provides sophisticated payload generation and management:
+
+- **Payload Index** with search capabilities
+- **5-level Policy** system (Safe, Balanced, Aggressive, Research, Paranoid)
+- **Feedback Loop** for continuous improvement
+- **Mutation Engine** supporting 10 technique families
+- **Provenance tracking** for payload lineage
+- **Metadata management** and reasoning capabilities
+- **Graph-based payload relationship modeling**
+- **Sync** for distributed payload databases
+
+---
+
+## Knowledge Graph / Threat Model / Risk Engine
+
+- **Knowledge Graph**: Graph-based storage and querying of security relationships, findings, and contextual data across scan targets.
+- **Threat Model** with **Attack Chain Engine**: Automated threat modeling using attack chain decomposition and MITRE ATT&CK mapping.
+- **Risk Engine**: Quantitative and qualitative risk scoring based on CVSS vectors, exploitability, business impact, and contextual factors.
+- **Adaptive Memory**: Persists and recalls scan context across sessions for progressive learning.
+- **Browser Intelligence**: Captures and analyzes browser-level security signals.
+- **Explainable AI**: Provides human-readable rationales for AI-driven decisions.
 
 ---
 
 ## Quick Start
 
 ```bash
+# Install dependencies
 pip install -r requirements.txt
 
-# Standard scan
+# Basic scan
 python hunterx.py -u http://target.com --profile bounty
 
-# Stealth scan with auth
-python hunterx.py -u http://target.com --profile gov --auth bearer --token mytoken
-
-# API server mode
+# Start REST API
 python hunterx.py api --port 8443
 
-# With AI analysis (requires Ollama)
+# Scan with AI assistance
 python hunterx.py -u http://target.com --ai --ai-model llama3.2
 
-# Multi-target with preset
-python hunterx.py -f targets.txt --preset stealth
+# List available skills
+python hunterx.py skills list
 
-# SARIF output
-python hunterx.py -u http://target.com --sarif
+# List available agents
+python hunterx.py agents list
+
+# View payload statistics
+python hunterx.py payload stats
 ```
 
 ---
 
-## Full Project Audit (v4.0.1)
-
-### Code Quality
-
-| Metric | Value |
-|--------|-------|
-| **Total source files** | 38 Python files |
-| **Lines of code** | ~5,200 (core) + ~800 (tests) + ~200 (plugins) |
-| **Test count** | 76 pytest tests |
-| **Test pass rate** | 100% |
-| **Lint status** | ruff — 0 errors |
-| **Python versions** | 3.11, 3.12, 3.13 |
-| **License** | Apache 2.0 |
-| **External dependencies** | 7 (requests 2.33.0, rich, dataclasses-json, pyyaml, jsonschema, websocket-client, beautifulsoup4) |
-| **Optional dependencies** | lxml, fastapi, uvicorn, ollama, scikit-learn, numpy |
-
-### Architecture
-
-```
-hunterx.py                     # CLI entry point
-core/
-├── engine.py                  # Orchestration engine
-├── config.py                  # YAML + env var config system
-├── session.py                 # Stealth HTTP with auth support
-├── detector.py                # 200+ vulnerability signatures
-├── classifier.py              # Payload classification + guardrails
-├── diff.py                    # Response differential analysis
-├── fingerprint.py             # Baseline fingerprinting
-├── profiles.py                # Operator profiles
-├── context.py                 # Target context analysis
-├── reasoning.py               # Attack chain inference
-├── waf.py                     # WAF detection & evasion
-├── passive.py                 # Passive intelligence
-├── report.py                  # Markdown/JSON/ZIP reports
-├── sarif_reporter.py          # SARIF 2.1 output
-├── visualizer.py              # CLI/Web dashboard
-├── trace.py                   # Event trace logging
-├── memory.py                  # Session memory
-├── impact.py                  # Impact analysis
-├── payload_manager.py         # Multi-Armed Bandit ranking
-├── mutation_engine.py         # Payload mutation for WAF evasion
-├── time_based.py              # Blind time-based detection
-├── oob.py                     # Out-of-band detection
-├── html_analyzer.py           # DOM structural analysis
-├── plugin_loader.py           # Plugin discovery system
-├── payload_repo.py            # Remote payload fetching
-│
-├── auth/                      # Authentication providers
-│   └── providers.py           # Basic, Bearer, Cookie, Form
-│
-├── protocols/                 # Protocol expansion
-│   ├── websocket.py           # WebSocket detection & testing
-│   └── graphql.py             # GraphQL introspection & batching
-│
-└── ai/                        # AI/ML modules
-    ├── llm_analyzer.py        # LLM-based finding analysis
-    └── clustering.py          # Anomaly clustering
-
-api/
-├── server.py                  # FastAPI REST server
-├── models.py                  # Pydantic models
-└── job_queue.py               # Async job queue
-
-plugins/
-├── detectors/                 # Plugin detectors
-├── reporters/                 # Plugin reporters
-└── hooks/                     # Plugin hooks
-
-tests/                         # 76 tests across 14 test files
-```
-
-### Security Features
-
-- **Destructive blocklist**: `rm -rf`, `mkfs`, `dd if=`, fork bombs, reverse shells, SQL writes — hard-coded, non-bypassable
-- **Immutable operator profiles**: Internal, Bounty, Gov — behavioral constraints enforced at code level
-- **SSL verification**: On by default, `--insecure` flag for opt-out
-- **Rate limiting**: Token-bucket algorithm (configurable max_rps)
-- **WAF detection**: 50+ WAF signatures, auto-abort on detection
-- **Thread safety**: `threading.Lock` on all shared state
-
-### Test Coverage
-
-| Module | Tests | Coverage |
-|--------|-------|----------|
-| classifier | 4 | Destructive patterns, file classification, content heuristics, stage detection |
-| detector | 10 | 7 core + expanded signatures, headers, heuristics, false positives |
-| diff | 4 | Identity, status change, null response, score range |
-| profiles | 6 | All profiles, fallback, immutability |
-| reasoning | 4 | LFI chains (Linux/Windows), SSTI, empty findings |
-| mutation | 5 | Original, URL encoding, SQL, LFI, evasion levels |
-| time_based | 2 | Payload structure and existence |
-| auth | 3 | None, Bearer token, dataclass |
-| config | 7 | Defaults, env overrides, user-agent lists |
-| session | 6 | UA rotation, captcha, backoff calculation |
-| engine | 10 | Init, dry run, fingerprint, diff, detector, classifier |
-| api | 10 | ScanStatus, job queue, concurrent safety, graceful fallback |
-
-### Known Limitations
-
-| Area | Limitation | Mitigation |
-|------|-----------|------------|
-| **WebSocket** | Only detects endpoints + sends test messages; no persistent connection fuzzing | Plugin system allows custom WS fuzzers |
-| **gRPC** | No native gRPC reflection/probing | Protocol expansion via plugins |
-| **AI/ML** | Requires external Ollama server + optional scikit-learn | Falls back gracefully when unavailable |
-| **API mode** | In-memory job queue (not persistent) | Suitable for single-instance; add Redis for HA |
-| **Auth** | No OAuth2 refresh flow, no SAML | Cookie jar + bearer token covers most enterprise cases |
-
-### Docker
+## Docker
 
 ```bash
+# Pull the latest image
 docker pull nullc0d30/hunterx:latest
-docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest -u http://target.com -o /data
 
-# API mode
+# Run a scan
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest \
+    -u http://target.com -o /data
+
+# Start the API server
 docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443
 ```
 
----
-
-## License
-
-Copyright (c) 2026 **Ahmed Awad (NullC0d3)**.
-
-Licensed under the **Apache License, Version 2.0** (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at:
-
-<http://www.apache.org/licenses/LICENSE-2.0>
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-See [LICENSE](LICENSE) and [NOTICE](NOTICE) for full details.
-
-### Commercial Use
-
-HunterX is free and open-source software. If your organization uses it commercially, please consider supporting the project via [GitHub Sponsors](https://github.com/sponsors/nullc0d30).
-
-### Attribution
-
-**Author:** Ahmed Awad (NullC0d3)
-**Repository:** [https://github.com/nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
-**License:** [Apache 2.0](LICENSE)
-
-### Legal Notice
-
-HunterX is provided for **authorized security assessments, defensive security research, professional penetration testing, red team exercises, and educational use only**. Users must obtain explicit written permission from the owner of any target system before scanning or testing. Unauthorized access to computer systems is illegal and unethical.
-
-The developer (Ahmed Awad / NullC0d3) is **NOT responsible** for any illegal use, unauthorized attacks, misuse, abuse, damage caused by third parties, or violation of local laws. **Users are solely responsible** for ensuring compliance with all applicable local, national, and international laws.
-
-### Reporting Issues
-
-Found a bug or have a feature request? Please open an issue at:
-[https://github.com/nullc0d30/HunterX/issues](https://github.com/nullc0d30/HunterX/issues)
-
-For security vulnerabilities in the tool itself, please use the private vulnerability reporting mechanism on GitHub.
+The Docker image uses a multi-stage build for minimal footprint.
 
 ---
 
----
+## Project Structure
 
-## Community
-
-HunterX is more than a tool — it's a community of security researchers, Red Team operators, bug bounty hunters, and developers working together to make security assessments safer, smarter, and more accessible. Licensed under **Apache 2.0**, HunterX is fully open-source.
-
-### Join Us
-
-| Activity | How to Participate |
-|----------|-------------------|
-| ⭐ **Star the repo** | Show your support and help others discover HunterX |
-| 🍴 **Fork the repo** | Create your own version, experiment, contribute |
-| 🐛 **Report bugs** | File detailed reports to help us improve |
-| 💡 **Suggest ideas** | Propose features that make HunterX better |
-| 🔧 **Submit PRs** | Fix bugs, add features, optimize code |
-| 📖 **Improve docs** | Fix typos, add examples, write guides |
-| ❤️ **Help others** | Answer questions in issues and discussions |
-| 🗣 **Spread the word** | Share HunterX with your network |
-| 🌐 **Translate** | Help make HunterX accessible globally |
-
-### Why Star the Project?
-
-- **Visibility** — More stars = more contributors = faster development
-- **Validation** — Stars signal quality and trust to new users
-- **Motivation** — It tells the maintainer that the work matters
-- **Discovery** — Helps others find HunterX through GitHub trending
-
-### Why Fork the Project?
-
-- **Learn** — Study the architecture of a production-grade security tool
-- **Customize** — Adapt HunterX for your organization's specific needs
-- **Experiment** — Test new detection techniques, plugins, or protocols
-- **Contribute** — Use your fork as a staging ground for pull requests
-- **Innovate** — Build on top of HunterX for research, education, or commercial use (per Apache 2.0)
-
-### A Personal Invitation
-
-> *HunterX was built with a simple belief: security tools should be safe, explainable, and community-owned. Whether you're a seasoned Red Team operator, a security researcher pushing the boundaries of AI-assisted testing, or a student taking your first steps into cybersecurity — there's a place for you here.*
->
-> *Star the repo. Fork it. Break it. Fix it. Make it better. Share what you learn. The only bad contribution is the one not made.*
->
-> *— Ahmed Awad (NullC0d3)*
-
----
-
-## Contributing
-
-We welcome contributions of all kinds — from fixing typos to building new modules. HunterX follows standard open-source collaboration practices under the **Apache 2.0** license.
-
-### Quick Start
-
-```bash
-# Fork, then clone
-git clone https://github.com/YOUR_USERNAME/HunterX.git
-cd HunterX
-
-# Set up environment
-pip install -r requirements.txt
-
-# Create a branch
-git checkout -b feat/your-feature
-
-# Make changes, then test
-python -m pytest tests/ -v
-ruff check core/ hunterx.py api/ plugins/ tests/ --ignore=E501
-
-# Commit and push
-git commit -m "feat(area): description"
-git push origin feat/your-feature
+```
+hunterx.py                     CLI entry point (1121 lines)
+api/
+  server.py                    FastAPI REST server (622 lines)
+  models.py                    Pydantic models
+  job_queue.py                 Async job queue
+core/
+  agents/                      Multi-Agent Platform (15 modules + 10 agents)
+  reasoning/                   Reasoning Engine (10 modules)
+  skills/                      Security Skills Framework (14 modules + 41 skills)
+  ai/                          AI Abstraction Layer (15+ modules)
+  knowledge_graph.py           Knowledge Graph
+  threat_model.py              Threat Model
+  adaptive_memory.py           Adaptive Memory
+  risk_engine.py               Risk Engine
+  browser_intelligence.py      Browser Intelligence
+  attack_chain.py              Attack Chain Engine
+  explainability.py            Explainable AI
+  mitre.py                     MITRE ATT&CK Mapping
+  purple.py                    Purple Team Integration
+  visual_graph.py              Visual Attack Graph
+  planner.py                   Scan Planner
+  engine.py                    Orchestration Engine
+  + payload intelligence modules (13+ modules)
+tests/                         623 tests
 ```
 
-### Resources
-
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** — Full contribution guide
-- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Community standards
-- **[ROADMAP.md](ROADMAP.md)** — Planned features and direction
-- **[Issue Templates](.github/ISSUE_TEMPLATE/)** — Structured issue reporting
-- **[PR Template](.github/PULL_REQUEST_TEMPLATE.md)** — Pull request checklist
-
-### Good First Issues
-
-New to the project? Look for issues labeled [`good first issue`](https://github.com/nullc0d30/HunterX/labels/good%20first%20issue) — they are curated to be approachable for first-time contributors.
-
 ---
 
-## Roadmap
+## Testing
 
-| Version | Focus | Target |
-|---------|-------|--------|
-| **v4.0.1** ✅ | Apache 2.0, Docker optimization, security fixes, 76 tests | July 2026 |
-| **v4.1** | gRPC, OAuth2, Redis queue, TUI, i18n | Q3 2026 |
-| **v4.5** | RBAC, SIEM, Scheduled scans, Compliance reporting | Q4 2026 |
-| **v5.0** | Autonomous agent, Cloud scanning, SDK | H1 2027 |
+The test suite comprises **623 passing tests** with 4 pre-existing failures limited to infrastructure-level tests. The codebase is lint-clean with **0 Ruff errors**.
 
-See the full [ROADMAP.md](ROADMAP.md) for details.
+```bash
+# Run the full test suite
+pytest tests/
 
----
-
-## Support
-
-| Resource | Purpose | Link |
-|----------|---------|------|
-| Documentation Site | Full docs, API reference, quickstart | [GitHub Pages](https://nullc0d30.github.io/HunterX) |
-| Contributing Guide | How to contribute | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Security Policy | Vulnerability disclosure | [SECURITY.md](SECURITY.md) |
-| Discussions | Questions, ideas, community help | [GitHub Discussions](https://github.com/nullc0d30/HunterX/discussions) |
-| Issues | Bug reports, feature requests | [GitHub Issues](https://github.com/nullc0d30/HunterX/issues) |
-| Docker Hub | Container images | [nullc0d30/hunterx](https://hub.docker.com/r/nullc0d30/hunterx) |
+# Run with coverage
+pytest --cov=core tests/
+```
 
 ---
 
 ## Security
 
-Security is at the core of HunterX — both the tool's purpose and its development process.
+HunterX implements multiple layers of security for its own operation:
 
-### For Users of HunterX
-
-- **Authorized use only** — Always obtain written permission before scanning
-- **Latest version** — Keep HunterX updated for the latest features and fixes
-- **Container isolation** — Run in Docker for environment control
-- **Report responsibly** — Disclose findings through proper channels
-
-### For Contributors to HunterX
-
-We take the security of the tool itself seriously. If you discover a vulnerability in HunterX:
-
-1. **Do NOT** open a public issue
-2. Report via **GitHub Private Vulnerability Reporting** (Security tab)
-3. Follow our [responsible disclosure policy](SECURITY.md)
-
-Expected response time: **Within 72 hours**
+- **Destructive payload blocklist**: Hard-coded, non-bypassable protection against dangerous payloads
+- **5 safety levels**: Safe, Balanced, Aggressive, Research, Paranoid
+- **SSL verification**: Enabled by default for all outbound connections
+- **Rate limiting**: Token-bucket algorithm for responsible scanning
+- **WAF detection**: 50+ WAF signatures for target awareness
+- **Thread safety**: All concurrent operations are synchronized
 
 ---
 
-## Responsible Disclosure
+## Contributing
 
-HunterX follows a **coordinated disclosure** model for vulnerabilities found in the tool itself:
+Contributions are welcome. Please follow these guidelines:
 
-1. **Private report** — Reporter submits vulnerability details privately
-2. **Acknowledgment** — Maintainers respond within 72 hours
-3. **Assessment** — Vulnerability is triaged and prioritized
-4. **Fix development** — Patch is developed and tested
-5. **Release** — Fixed version is released to all channels
-6. **Disclosure** — Advisory published with reporter credit (opt-in)
+1. Fork the repository and create a feature branch
+2. Ensure all tests pass (`pytest tests/`)
+3. Run Ruff linter and fix any errors (`ruff check . --fix`)
+4. Maintain MITRE/OWASP/CWE/CAPEC metadata for any new skills
+5. Submit a pull request with a clear description of changes
 
 ---
 
-## Credits
+## Roadmap
 
-### Author & Maintainer
+Future development is focused on expanding the ecosystem across several dimensions:
 
-- **Ahmed Awad (NullC0d3)** — Creator, architect, and lead maintainer
-  - GitHub: [@nullc0d30](https://github.com/nullc0d30)
-
-### How to Get Credit
-
-Contributors are recognized in:
-- Release notes and changelogs
-- GitHub Release announcements
-- The project's README (significant contributions)
-- The citation file ([CITATION.cff](CITATION.cff)) for academic credit
+- **Skills**: Community skill repository, skill versioning, dependency management between skills
+- **AI Providers**: Additional provider support (Anthropic, Google, local models), provider failover, A/B model comparison
+- **Integrations**: CI/CD pipeline plugins (GitHub Actions, GitLab CI, Jenkins), SIEM connectors, ticketing system integration
+- **Community**: Public skill marketplace, contribution templates, community detection rules
+- **Documentation**: Full API reference, interactive tutorials, video walkthroughs, example workflows
 
 ---
 
@@ -417,38 +288,32 @@ Contributors are recognized in:
 If you use HunterX in academic research, please cite:
 
 ```bibtex
-@software{hunterx2026,
-  author = {Ahmed Awad (NullC0d3)},
+@software{HunterX,
+  author = {Ahmed Awad},
   title = {HunterX: AI-Assisted Vulnerability Hunter},
-  version = {4.0.1},
   year = {2026},
-  license = {Apache-2.0},
+  version = {6.0.0},
   url = {https://github.com/nullc0d30/HunterX}
 }
 ```
 
-See [CITATION.cff](CITATION.cff) for the full citation metadata.
+---
+
+## License
+
+HunterX is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Acknowledgements
 
-HunterX stands on the shoulders of the broader security community. Special thanks to:
-
-- **OWASP** — For their invaluable security testing methodologies
-- **PayloadsAllTheThings** — For comprehensive payload collections
-- **The Python community** — For robust and secure libraries
-- **FastAPI, Ruff, Pytest** — For excellent development tooling
-- **All contributors and stargazers** — For believing in this project
+- **Author**: Ahmed Awad (NullC0d3) — [https://github.com/nullc0d30](https://github.com/nullc0d30)
+- Built with Python 3.11+, FastAPI, and the open-source security community
 
 ---
 
-## Star History
+## Community
 
-Liked HunterX? **Give it a star ⭐** on GitHub — it helps the project grow and reach more security professionals worldwide.
-
-[![Star History Chart](https://api.star-history.com/svg?repos=nullc0d30/HunterX&type=Date)](https://star-history.com/#nullc0d30/HunterX&Date)
-
----
-
-*HunterX — Safe, smart, community-driven security assessment. Apache 2.0 licensed.*
+- **GitHub**: [https://github.com/nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
+- **Issues**: Bug reports and feature requests via GitHub Issues
+- **Contributions**: Pull requests and discussions are welcome

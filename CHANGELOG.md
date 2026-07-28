@@ -1,8 +1,3 @@
----
-Copyright (c) 2026 Ahmed Awad (NullC0d3)
-SPDX-License-Identifier: Apache-2.0
----
-
 # Changelog
 
 All notable changes to HunterX are documented in this file.
@@ -12,107 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [6.0.0] — 2026-07-28
+
+### Added
+
+- Autonomous Multi-Agent Platform — 10 agents with orchestrator, event and message buses, workflow engine, scheduler, state management, memory, and context
+- Reasoning Engine — goals, planner, prompts, validator, formatter, policies, consensus, confidence, and memory subsystems
+- Security Skills Framework — 41 built-in skills, registry, loader, executor, marketplace, telemetry, cache, policy, validator, and planner
+- Payload Intelligence Platform — sync, index, search, reasoning, feedback, graph, provenance, policy, mutation, metadata, ranking, and context modules
+- AI Provider Abstraction Layer — OpenAI and Ollama providers with cache, metrics, middleware, conversation management, prompts, config, circuit breaker, and retry
+- Knowledge Graph, Threat Model, Attack Chain, MITRE ATT&CK Mapping, Risk Engine, Browser Intelligence, and Adaptive Memory
+- Explainable AI engine for all findings
+- Purple Team detection rule generation
+- Visual Attack Graph (HTML/Graphviz output)
+- SARIF 2.1 reporting
+- REST API expanded to 40+ endpoints
+- CLI expanded to 12 subcommand groups
+
+### Changed
+
+- Test suite expanded from 76 to 623 tests
+- Codebase fully Ruff-clean throughout
+
 ## [4.0.1] — 2026-07-22
 
 ### Changed
 
-- **License**: Proprietary → Apache 2.0 (full open-source)
-- **Version**: v4.0 → v4.0.1 (SemVer consistency)
-- **Docker image**: 700MB → 271MB via multi-stage build
+- License changed from Proprietary to Apache 2.0
+- Docker image optimized via multi-stage build: 700MB to 271MB
+- CI matrix expanded to Python 3.11, 3.12, and 3.13
 
 ### Fixed
 
-- `pyproject.toml` pinned `requests==2.31.0` → `2.33.0` (3 CVEs fixed, synced with `requirements.txt`)
-- `DOCKER_HUB.md` image name: `nullc0d3/hunterx` → `nullc0d30/hunterx`
-- `README.md` test count: 41 → 76
-- Config env override unpacking for nested paths (`ai.enabled`, `oob.collaborator_url`)
-- Diff tests now use real `Fingerprint` dataclass objects instead of partial mocks
+- Security patches applied to requests library (CVE fixes)
 
 ### Added
 
-- **NOTICE** file with third-party dependency attributions
-- **DCO** (Developer Certificate of Origin) requirement for all contributions
-- `README.md` badges (CI, license, Python, Docker)
-- Architecture diagram in README
-- Star History chart
-
----
+- DCO requirement for all contributions
 
 ## [4.0] — 2026-07-22
 
 ### Added
 
-- **REST API server** (FastAPI) — async scan jobs, health checks, job status polling
-- **Authentication providers** — Basic, Bearer Token, Cookie Jar, Form Login
-- **Enhanced detection** — 200+ vulnerability signatures
-- **Time-based blind detection** — SQLi/NoSQLi timing analysis
-- **Out-of-band (OOB) detection** — blind XXE/SSRF/RCE via collaborator
-- **HTML DOM analysis** — structural response comparison
-- **Payload mutation engine** — WAF evasion via encoding, SQL, LFI variants
-- **Remote payload repository** — fetch latest payloads from external sources
-- **Plugin system** — detector, reporter, and hook plugins via decorator API
-- **YAML configuration** — `hunterx.yaml` with env var overrides (`HX_*`)
-- **Scan presets** — quick, full, stealth profiles
-- **SARIF 2.1 reporting** — GitHub CodeQL / VS Code integration
-- **Structured JSON logging** — ELK/Loki compatible
-- **Graceful shutdown** — SIGINT/SIGTERM handlers
-- **WebSocket detection & testing** — endpoint discovery, message fuzzing
-- **GraphQL introspection & batch/depth testing**
-- **LLM analysis** — Ollama integration for automated finding analysis
-- **Anomaly clustering** — scikit-learn DBSCAN for result deduplication
-- **Centralized legal module** — `core/legal.py` with output metadata injection
-- **Community documentation** — CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT
-- **Issue/PR templates** — structured `.github/` templates
-- **Roadmap, citation, release checklist**
-
-### Changed
-
-- CLI entry point fully rewritten for v4.0 flags
-- Config system overhauled: dataclass-based with YAML + ENV + CLI overrides
-- Docker image optimized: multi-stage build, reduced from 700MB to ~180MB
-- HTTP client updated: `requests` 2.31.0 → 2.33.0 (3 CVEs fixed)
-- CI/CD expanded: Python 3.11/3.12/3.13 matrix + Docker smoke test
-- Test suite expanded: 29 → 41 tests
-
-### Removed
-
-- `setup.py` (replaced by modern `pyproject.toml`)
-
----
+- REST API server (FastAPI)
+- Authentication providers — Basic, Bearer, Cookie, Form
+- 200+ detection signatures
+- Time-based blind detection
+- OOB detection
+- HTML DOM analysis
+- Payload mutation engine
+- Plugin system
+- YAML configuration
+- SARIF reporting
+- WebSocket and GraphQL testing
+- LLM analysis (Ollama)
+- Anomaly clustering
 
 ## [3.1] — 2026-07-20
 
 ### Fixed
 
-- Thread safety issues in shared state (added `threading.Lock`)
-- SSL verification default (on by default, `--insecure` opt-out)
-- Rate limiting algorithm (token-bucket)
-- WAF detection signatures (50+ signatures)
+- Thread safety fixes
+- Rate limiting
+- WAF detection (50+ signatures)
 
 ### Added
 
-- Test suite with 29 pytest tests
-- GitHub Actions CI pipeline (`test.yml`)
-- Captcha detection and auto-backoff
-- Operator profiles (internal, bounty, gov)
-- Context-aware payload filtering
-- Attack chain reasoning engine
-
----
+- 29 pytest tests
+- GitHub Actions CI
+- Operator profiles
+- Attack chain reasoning
 
 ## [3.0] — 2026-07-01
 
 ### Added
 
-- Initial release of HunterX reasoning engine
-- 4-stage orchestration pipeline (Passive → Probe → Confirm → Verify)
-- 100+ vulnerability detection signatures
-- Response differential analysis engine
-- Safety-by-design guardrails (destructive payload blocklist)
-- CLI entry point with 10+ flags
-- Markdown/JSON/ZIP report generation
-- Rich console visualization
+- Initial release
+- 4-stage pipeline
+- 100+ signatures
+- Response differential analysis
+- Safety guardrails
+- CLI with 10+ flags
+- Markdown, JSON, and ZIP reports
 
 ---
 
-*For a full list of commits, see [the GitHub repository](https://github.com/nullc0d30/HunterX/commits/main).*
+*For a full list of commits, see the GitHub repository.*

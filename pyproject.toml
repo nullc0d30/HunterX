@@ -9,7 +9,7 @@ build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
 name = "hunterx"
-version = "4.0.1"
+version = "6.0.0"
 description = "The AI-Assisted Vulnerability Hunter — Automated Decision Support for Offensive Operations"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -41,7 +41,13 @@ dependencies = [
     "websocket-client==1.8.0",
     "beautifulsoup4==4.12.3",
     "lxml==5.3.0",
+    "networkx>=3.0",
 ]
+
+[project.optional-dependencies]
+playwright = ["playwright>=1.40"]
+graphviz = ["graphviz>=0.20"]
+all = ["hunterx[playwright,graphviz]"]
 
 [project.urls]
 Homepage = "https://github.com/nullc0d30/HunterX"

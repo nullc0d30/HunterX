@@ -1,13 +1,48 @@
----
-Copyright (c) 2026 Ahmed Awad (NullC0d3)
-SPDX-License-Identifier: Apache-2.0
----
-
 # Security Policy
 
-## Responsible Vulnerability Disclosure
+HunterX takes the security of the tool and its users seriously. This document outlines the vulnerability reporting process, supported versions, and security features.
 
-HunterX is a security assessment framework. We take the security of our tool and its users seriously. If you discover a security vulnerability within HunterX itself (as opposed to using HunterX to test targets), we encourage you to report it responsibly.
+---
+
+## Scope
+
+This security policy covers the **HunterX tool itself** — its source code, dependencies, and official distribution channels.
+
+Vulnerabilities in third-party AI providers, skills contributed by the community, or systems being tested should be reported to the respective maintainers or vendors.
+
+---
+
+## Responsible Disclosure
+
+**Do not open public GitHub issues for security vulnerabilities.** Please use GitHub's Private Vulnerability Reporting feature.
+
+We ask that you:
+
+- Allow time for a fix to be developed before disclosing the vulnerability publicly.
+- Provide sufficient detail to reproduce and understand the issue.
+- Do not exploit the vulnerability beyond what is necessary to demonstrate the issue.
+
+---
+
+## Reporting Process
+
+1. **Report** — Submit a vulnerability report via [GitHub Private Vulnerability Reporting](https://github.com/NullC0d3/HunterX/security/advisories/new).
+2. **Acknowledgment** — The maintainers will acknowledge receipt within 72 hours.
+3. **Investigation** — The maintainers will investigate and determine severity, impact, and fix approach.
+4. **Fix** — A patch is developed and tested. For critical issues, a patch release is expedited.
+5. **Release** — The fix is released in a new version with a changelog entry.
+6. **Disclosure** — After the fix is released, the vulnerability is publicly disclosed with credit to the reporter.
+
+---
+
+## Response Times
+
+| Severity | Acknowledgment | Patch Target |
+|----------|---------------|--------------|
+| Critical | Within 72 hours | Within 14 days |
+| High     | Within 72 hours | Within 30 days |
+| Medium   | Within 1 week  | Within 60 days |
+| Low      | Within 1 week  | Next release |
 
 ---
 
@@ -15,118 +50,27 @@ HunterX is a security assessment framework. We take the security of our tool and
 
 | Version | Supported |
 |---------|-----------|
-| 4.x (latest) | ✅ Full support |
-| 3.x | ❌ End of life |
-| < 3.0 | ❌ End of life |
+| v6.0.0  | Yes       |
+| < v6.0.0 | No       |
 
-Only the latest major release receives security patches. Users are strongly encouraged to keep their installations up to date.
-
----
-
-## Reporting a Security Vulnerability
-
-**Do NOT report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
-
-Please report vulnerabilities through one of these channels:
-
-### Option 1: GitHub Private Vulnerability Reporting (Recommended)
-
-The repository has **Private Vulnerability Reporting** enabled. This is the preferred reporting method:
-
-1. Navigate to the repository's **Security** tab
-2. Click **Report a vulnerability**
-3. Fill out the form with details
-
-### Option 2: Email via Issue
-
-If you cannot use private reporting, open a regular issue asking for a secure contact method. **Do not include vulnerability details in the public issue.**
-
----
-
-## What to Include
-
-When reporting, please provide:
-
-- **Type of vulnerability** (e.g., XSS, command injection, privilege escalation)
-- **Affected component** (file path, function, version)
-- **Steps to reproduce** — minimal, complete, reproducible
-- **Expected vs actual behavior**
-- **Impact assessment** — what an attacker could achieve
-- **Suggested fix** (optional but appreciated)
-- **Your contact information** (for follow-up)
-
----
-
-## Response Timeline
-
-| Timeframe | Action |
-|-----------|--------|
-| Within 72 hours | Acknowledgment of receipt |
-| Within 1 week | Initial assessment and triage |
-| Within 2 weeks | Fix in progress or mitigation identified |
-| Within 30 days | Patch released (depending on severity) |
-| After patch | Coordinated public disclosure |
-
----
-
-## Coordinated Disclosure
-
-We practice **coordinated (responsible) disclosure**:
-
-1. Reporter submits vulnerability privately
-2. We acknowledge, assess, and develop a fix
-3. We release a patched version
-4. We agree on a disclosure date with the reporter
-5. We publish an advisory with credit to the reporter (if desired)
-
-We aim to complete this process within **30 days** for high-severity issues.
-
----
-
-## Scope
-
-### In Scope
-
-- Source code vulnerabilities in `core/`, `api/`, `plugins/`, and `hunterx.py`
-- Docker image vulnerabilities
-- CI/CD pipeline vulnerabilities
-- Dependency vulnerabilities affecting the tool
-
-### Out of Scope
-
-- Vulnerabilities discovered by using HunterX on targets
-- Third-party tools or libraries (report those upstream)
-- Social engineering attacks on maintainers
-- Denial of service against the repository or infrastructure
-
----
-
-## Safe Harbor
-
-We will not pursue legal action against individuals who:
-
-- Report vulnerabilities through our private channels
-- Follow our disclosure policy
-- Act in good faith to improve the security of the project
-- Do not access or modify user data without permission
-- Do not disrupt the project's infrastructure
+Only the latest stable release receives security patches. Users are strongly encouraged to keep HunterX up to date.
 
 ---
 
 ## Recognition
 
-We maintain a **Security Researchers Hall of Fame** in our release notes. With your permission, we will credit you for your finding.
+Contributors who report valid security vulnerabilities will be credited in the release notes for the version containing the fix, unless they prefer to remain anonymous.
 
 ---
 
-## Recommendations for Users
+## Security Features
 
-- Always use the **latest version** of HunterX
-- Verify image signatures for Docker deployments
-- Review dependencies regularly for known CVEs
-- Run with least-privilege user accounts (default in Docker)
-- Isolate HunterX executions in containers or VMs
+HunterX includes multiple layers of safety guardrails:
 
----
+- **Policy Levels** — Five-level policy system controlling what actions skills and agents can perform: `default`, `prompt`, `auto`, `ask`, and `prohibited`.
+- **Destructive Blocklist** — Commands and operations classified as destructive are blocked by policy, preventing accidental or malicious system modification.
+- **WAF Detection** — Web application firewall pattern detection identifies and flags potentially malicious payloads before they reach AI providers or skills.
+- **Rate Limiting** — Configurable rate limiting on AI provider requests prevents abuse and excessive resource consumption.
+- **SSL Verification** — All outbound HTTPS connections validate SSL certificates by default. Verification can be disabled in development environments only.
 
-*Thank you for helping keep HunterX and its community safe.*
+These features work together to provide defense-in-depth, ensuring that even if one layer is bypassed, others remain active.

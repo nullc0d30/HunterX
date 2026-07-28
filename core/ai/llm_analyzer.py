@@ -1,30 +1,19 @@
-# Copyright (c) 2026 Ahmed Awad (NullC0d3)
-# SPDX-License-Identifier: Apache-2.0
-#
-# HunterX — AI-Assisted Vulnerability Hunter
-import json
-from typing import List, Dict, Optional
+from __future__ import annotations
 
-try:
-    import ollama
-    HAS_OLLAMA = True
-except ImportError:
-    HAS_OLLAMA = False
+import json
+from typing import Any, Dict, List, Optional
+
+from ..utils import logger
+from .manager import AIManager
+from .models import Message
 
 
 class LLMAnalyzer:
-    """Uses local LLM (via Ollama) for semantic analysis of anomalous responses."""
+    def __init__(self, manager: Optional[AIManager] = None):
+        self._manager = manager or AIManager()
 
-    def __init__(self, model: str = "llama3.2", endpoint: str = "http://localhost:11434"):
-        self.model = model
-        self.endpoint = endpoint
-        self._client = None
-        if HAS_OLLAMA:
-            self._client = ollama.Client(host=endpoint)
-
-    def analyze_finding(self, finding: Dict, context: Dict) -> Optional[Dict]:
-        """Ask LLM to classify and explain a finding."""
-        if not self._client:
+    def analyze_finding(self, finding: Dict[str, Any], context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        if not self._manager._config.enabled:
             return None
 
         prompt = f"""You are a security analyst. Analyze this vulnerability finding:
@@ -43,32 +32,32 @@ Respond in JSON format:
 "next_steps": ["step1", "step2"]}}"""
 
         try:
-            resp = self._client.generate(model=self.model, prompt=prompt)
-            text = resp.get("response", "")
-            # Extract JSON from response
+            response = self._manager.chat(
+                messages=[Message.user(prompt)],
+                temperature=0.3,
+                max_tokens=1024,
+            )
+            text = response.content
             json_start = text.find("{")
             json_end = text.rfind("}") + 1
             if json_start >= 0 and json_end > json_start:
                 return json.loads(text[json_start:json_end])
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"LLMAnalyzer: analysis failed: {e}")
+
         return None
 
-    def batch_analyze(self, findings: List[Dict], context: Dict) -> List[Dict]:
-        """Analyze multiple findings, returns enriched results."""
-        enriched = []
+    def batch_analyze(self, findings: List[Dict[str, Any]], context: Dict[str, Any]) -> List[Dict[str, Any]]:
+        enriched: List[Dict[str, Any]] = []
         for f in findings:
             llm_result = self.analyze_finding(f, context)
             if llm_result:
                 f["llm_analysis"] = llm_result
-                enriched.append(f)
-            else:
-                enriched.append(f)
+            enriched.append(f)
         return enriched
 
-    def suggest_remediation(self, finding: Dict) -> Optional[str]:
-        """Ask LLM for remediation advice."""
-        if not self._client:
+    def suggest_remediation(self, finding: Dict[str, Any]) -> Optional[str]:
+        if not self._manager._config.enabled:
             return None
 
         prompt = f"""Suggest a fix for this vulnerability:
@@ -79,7 +68,15 @@ Payload: {finding.get('payload', '')}
 Provide a concise remediation recommendation (2-3 sentences)."""
 
         try:
-            resp = self._client.generate(model=self.model, prompt=prompt)
-            return resp.get("response", "").strip()
-        except Exception:
+            response = self._manager.chat(
+                messages=[Message.user(prompt)],
+                temperature=0.3,
+                max_tokens=512,
+            )
+            return response.content.strip()
+        except Exception as e:
+            logger.debug(f"LLMAnalyzer: remediation failed: {e}")
             return None
+
+    def set_manager(self, manager: AIManager) -> None:
+        self._manager = manager

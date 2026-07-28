@@ -5,7 +5,7 @@
 import concurrent.futures
 import threading
 import urllib.parse
-from typing import List, Dict, Optional
+from typing import Any, List, Dict, Optional
 
 from .config import config
 from .session import StealthSession
@@ -20,7 +20,7 @@ from .waf import WAFDetect
 from .trace import TraceLogger
 from .profiles import get_profile
 from .passive import PassiveIntel
-from .reasoning import ReasoningEngine
+from .reasoning_engine_old import ReasoningEngine
 from .visualizer import SimpleVisualizer
 from .memory import SessionMemory
 from .impact import ImpactAnalyzer
@@ -31,6 +31,21 @@ from .mutation_engine import MutationEngine
 from .plugin_loader import PluginLoader
 from .ai import LLMAnalyzer, AnomalyCluster
 from .sarif_reporter import SARIFReporter
+
+# Intelligence layer modules (optional, preserve backward compatibility)
+from .knowledge_graph import KnowledgeGraph
+from .attack_chain import AttackChainEngine
+from .threat_model import ThreatModelEngine
+from .relationship import RelationshipEngine
+from .evolution import PayloadEvolutionEngine
+from .adaptive_memory import AdaptiveMemory
+from .planner import Planner
+from .visual_graph import VisualAttackGraph
+from .browser_intelligence import BrowserIntelligenceEngine
+from .explainability import ExplainabilityEngine
+from .risk_engine import RiskEngine
+from .mitre import MITREMapper
+from .purple import PurpleTeamOutput
 
 
 class Engine:
@@ -101,6 +116,53 @@ class Engine:
         self.active_categories = set()
         self.request_count = 0
         self.inferred_chains = []
+
+        # Intelligence layer (optional, initialized lazily)
+        self._intel_enabled = options.get("intel", True)
+        self.knowledge_graph: Optional[KnowledgeGraph] = None
+        self.attack_chain_engine: Optional[AttackChainEngine] = None
+        self.threat_model_engine: Optional[ThreatModelEngine] = None
+        self.relationship_engine: Optional[RelationshipEngine] = None
+        self.evolution_engine: Optional[PayloadEvolutionEngine] = None
+        self.adaptive_memory: Optional[AdaptiveMemory] = None
+        self.planner: Optional[Planner] = None
+        self.visual_graph: Optional[VisualAttackGraph] = None
+        self.browser_intel: Optional[BrowserIntelligenceEngine] = None
+        self.explainability: Optional[ExplainabilityEngine] = None
+        self.risk_engine: Optional[RiskEngine] = None
+        self.mitre_mapper: Optional[MITREMapper] = None
+        self.purple_output: Optional[PurpleTeamOutput] = None
+
+        # Intelligence layer outputs
+        self.attack_paths: List[Dict] = []
+        self.threat_model: Optional[Dict[str, Any]] = None
+        self.risk_scores: List[Dict] = []
+        self.mitre_mappings: List[Dict] = []
+        self.purple_rules: Dict[str, List[str]] = {}
+        self.explanations: List[Dict] = []
+        self.scan_plan: Optional[Dict[str, Any]] = None
+
+        if self._intel_enabled:
+            self.attack_chain_engine = AttackChainEngine()
+            self.threat_model_engine = ThreatModelEngine()
+            self.relationship_engine = RelationshipEngine()
+            self.evolution_engine = PayloadEvolutionEngine()
+            self.adaptive_memory = AdaptiveMemory(
+                use_sqlite=options.get("memory_db", True),
+            )
+            self.planner = Planner(adaptive_memory=self.adaptive_memory)
+            self.visual_graph = VisualAttackGraph()
+            self.explainability = ExplainabilityEngine()
+            self.risk_engine = RiskEngine(
+                weighting_profile=options.get("risk_profile", "default"),
+            )
+            self.mitre_mapper = MITREMapper()
+            self.purple_output = PurpleTeamOutput(
+                output_dir=options.get("output_dir", "reports"),
+            )
+
+            if options.get("browser"):
+                self.browser_intel = BrowserIntelligenceEngine()
 
         if options.get("insecure"):
             config.verify_ssl = False
@@ -339,8 +401,131 @@ class Engine:
         # === PLUGIN HOOKS: after_scan ===
         self.plugin_loader.run_hooks("after_scan", results=self.results, url=self.target_url)
 
+        # === INTELLIGENCE LAYER (OPTIONAL) ===
+        if self._intel_enabled and self.results:
+            self._run_intelligence_pipeline()
+
         self.visualizer.stop()
         logger.info("Scan Finished.")
+
+    def _run_intelligence_pipeline(self):
+        logger.info(">>> Running Intelligence Layer")
+
+        # 1. Build Knowledge Graph
+        logger.info("Building Knowledge Graph...")
+        self.knowledge_graph = KnowledgeGraph(target_url=self.target_url)
+        self.knowledge_graph.build_from_findings(self.results, self.context)
+        logger.info(f"Knowledge Graph: {self.knowledge_graph.node_count()} nodes, {self.knowledge_graph.edge_count()} edges")
+        self.trace.log("KNOWLEDGE_GRAPH", f"Built graph with {self.knowledge_graph.node_count()} nodes", {})
+
+        # 2. Build Threat Model
+        logger.info("Building Threat Model...")
+        threat_model_obj = self.threat_model_engine.build(
+            self.target_url, self.results, self.context, self.knowledge_graph,
+        )
+        self.threat_model = threat_model_obj.to_dict()
+        logger.info(f"Threat Model: {len(threat_model_obj.assets)} assets, {len(threat_model_obj.entry_points)} entry points")
+
+        # 3. Generate Scan Plan
+        logger.info("Generating Scan Plan...")
+        plan = self.planner.plan(self.target_url, self.results, self.knowledge_graph, self.context)
+        self.scan_plan = plan.to_dict()
+        if plan.actions:
+            logger.info(f"Planner: {len(plan.actions)} actions planned (confidence={plan.total_confidence:.2f})")
+
+        # 4. Analyze Risk
+        logger.info("Running Risk Analysis...")
+        risk_scores = self.risk_engine.evaluate_multi(self.results, self.knowledge_graph)
+        self.risk_scores = self.risk_engine.get_risk_matrix(risk_scores)
+        aggregated = self.risk_engine.aggregate_risk(list(risk_scores.values()))
+        logger.info(f"Risk: Aggregated={aggregated.normalized_score:.3f} ({aggregated.severity})")
+
+        for i, res in enumerate(self.results):
+            key = res.get("payload", "")[:40]
+            if key in risk_scores:
+                self.results[i]["risk"] = risk_scores[key].to_dict()
+
+        # 5. Build Attack Chains
+        logger.info("Building Attack Chains...")
+        attack_paths = self.attack_chain_engine.build_attack_paths(self.results, self.knowledge_graph)
+        self.attack_paths = self.attack_chain_engine.to_dict(attack_paths)
+        logger.info(f"Attack Chains: {len(attack_paths)} paths generated")
+
+        # 6. Map to MITRE
+        logger.info("Mapping findings to MITRE ATT&CK...")
+        mitre_mappings = self.mitre_mapper.map_findings(self.results)
+        self.mitre_mappings = [m.to_dict() for m in mitre_mappings]
+        logger.info(f"MITRE: {len(mitre_mappings)} techniques mapped")
+
+        # 7. Generate Explanations
+        logger.info("Generating AI Explanations...")
+        self.explanations = []
+        for finding in self.results:
+            explanation = self.explainability.explain_finding(finding, self.knowledge_graph, self.context)
+            self.explanations.append(explanation.to_dict())
+        logger.info(f"Explanations: {len(self.explanations)} findings explained")
+
+        # 8. Run Relationship Inference
+        logger.info("Running Relationship Inference...")
+        relations = self.relationship_engine.extract_relations(self.knowledge_graph, self.results, self.context)
+        logger.info(f"Relationships: {len(relations)} infrastructure relations inferred")
+
+        # 9. Generate Purple Team Rules
+        if self.options.get("purple", False):
+            logger.info("Generating Purple Team Detection Rules...")
+            self.purple_rules = self.purple_output.generate_all(self.results, mitre_mappings)
+            logger.info(f"Purple: {sum(len(v) for v in self.purple_rules.values())} detection rules generated")
+
+        # 10. Generate Visual Attack Graph
+        if self.options.get("attack_graph", True):
+            output_dir = self.options.get("output_dir", "reports")
+            try:
+                graph_path = f"{output_dir}/attack_graph.html"
+                self.visual_graph.from_knowledge_graph(self.knowledge_graph, graph_path)
+                logger.info(f"Attack Graph saved to {graph_path}")
+
+                chain_path = f"{output_dir}/attack_chains.html"
+                if attack_paths:
+                    self.visual_graph.from_attack_paths(attack_paths, self.knowledge_graph, chain_path)
+                    logger.info(f"Attack Chains graph saved to {chain_path}")
+            except Exception as e:
+                logger.debug(f"Visual graph generation failed: {e}")
+
+        # 11. Payload Evolution Recording
+        logger.info("Recording payload evolution data...")
+        for res in self.results:
+            self.evolution_engine.record_result(
+                original_payload=res.get("payload", ""),
+                mutated_payload=res.get("payload", ""),
+                category=res.get("payload_category", "GENERIC"),
+                success=res.get("diff_score", 0) > 50,
+                detected=False,
+                blocked=res.get("blocked", False),
+                confidence=res.get("risk", {}).get("confidence", 0.5),
+            )
+
+        # 12. Check if browser intelligence is enabled
+        if self.options.get("browser") and self.browser_intel:
+            logger.info("Running Browser Intelligence (async)...")
+            try:
+                import asyncio
+                snapshot = asyncio.run(self.browser_intel.collect(self.target_url))
+                if snapshot and hasattr(snapshot, "to_dict"):
+                    logger.info(f"Browser: collected {len(snapshot.cookies)} cookies, {len(snapshot.intercepted_requests)} requests")
+            except Exception as e:
+                logger.debug(f"Browser intelligence failed: {e}")
+
+        # 13. Track in adaptive memory
+        self.adaptive_memory.record_target_fingerprint(
+            self.target_url,
+            {
+                "timestamp": str(__import__("datetime").datetime.utcnow()),
+                "finding_count": len(self.results),
+                "categories": list(self.active_categories),
+            },
+        )
+
+        logger.info("Intelligence Layer Complete.")
 
     def _run_stage(self, payloads: List[Dict], stage_id: int):
         if not payloads:

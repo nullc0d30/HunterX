@@ -1,293 +1,174 @@
----
-Copyright (c) 2026 Ahmed Awad (NullC0d3)
-SPDX-License-Identifier: Apache-2.0
----
-
 # Contributing to HunterX
 
-**Welcome!** Thank you for your interest in contributing to HunterX — the AI-Assisted Vulnerability Hunter.
+Thank you for your interest in contributing to HunterX. This document outlines the process for contributing code, documentation, and other improvements.
 
-HunterX is a community-driven, reasoning-driven Red Team orchestration framework licensed under **Apache 2.0**. We believe that security tools should be safe, explainable, and community-owned. Whether you are a security researcher, Python developer, documentarian, or enthusiast, your contributions are valued.
-
----
-
-## Table of Contents
-
-- [Project Vision](#project-vision)
-- [Ways to Contribute](#ways-to-contribute)
-- [Getting Started](#getting-started)
-- [Fork Workflow](#fork-workflow)
-- [Pull Request Workflow](#pull-request-workflow)
-- [Branch Naming Convention](#branch-naming-convention)
-- [Commit Message Convention](#commit-message-convention)
-- [Coding Style](#coding-style)
-- [Testing Requirements](#testing-requirements)
-- [Documentation Guidelines](#documentation-guidelines)
-- [Issue Reporting](#issue-reporting)
-- [Feature Requests](#feature-requests)
-- [Bug Reporting](#bug-reporting)
-- [Security Vulnerability Reporting](#security-vulnerability-reporting)
-- [Review Process](#review-process)
-- [Community Expectations](#community-expectations)
+All contributions are welcome — whether fixing a typo, adding a skill, writing tests, or implementing a new provider.
 
 ---
 
-## Project Vision
+## Welcome
 
-HunterX aims to become the industry standard for **safe, reasoning-based vulnerability assessment**. We envision a tool that:
-
-- Prioritizes **safety** — non-destructive verification only
-- Empowers **Red Teams** with context-aware intelligence
-- Leverages **AI/ML** for smarter, faster analysis
-- Builds a **community-driven** payload and plugin ecosystem
-- Remains **free and open-source** (Apache 2.0) for defensive security research
-
----
-
-## Ways to Contribute
-
-| Icon | Contribution Area | Description |
-|------|------------------|-------------|
-| ⭐ | Star the repo | Increases visibility and reach |
-| 🐛 | Report bugs | File detailed bug reports |
-| 💡 | Suggest features | Propose enhancements via issues |
-| 🔧 | Submit PRs | Fix bugs, add features, improve code |
-| 📖 | Improve docs | Fix typos, add examples, clarify |
-| 🌐 | Translate | Help with internationalization |
-| 🛡 | Security research | Report vulnerabilities responsibly |
-| ⚡ | Optimize | Improve performance and reliability |
-| ❤️ | Community support | Help others in issues and discussions |
+HunterX is released under the **Apache 2.0** license. All contributors must agree to the **Developer Certificate of Origin (DCO)**. Every commit must include a `Signed-off-by` line.
 
 ---
 
 ## Getting Started
 
-1. **Read the README** — Understand the project scope and architecture
-2. **Check open issues** — Look for `good first issue` or `help wanted` labels
-3. **Join discussions** — Share ideas in GitHub Discussions
-4. **Set up your environment**:
+1. Fork the repository on GitHub.
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/HunterX.git
+   ```
+3. Add the upstream remote:
+   ```bash
+   git remote add upstream https://github.com/NullC0d3/HunterX.git
+   ```
+4. Create a branch for your work (see [Branch Naming](#branch-naming)).
+5. Make your changes.
+6. Run tests locally before pushing.
+
+---
+
+## Development Setup
 
 ```bash
-git clone https://github.com/nullc0d30/HunterX.git
-cd HunterX
 pip install -r requirements.txt
-python hunterx.py --help
 ```
 
----
-
-## Fork Workflow
-
-1. Fork the repository on GitHub
-2. Clone your fork locally:
+Install pre-commit hooks to automatically check code style:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/HunterX.git
-cd HunterX
+pre-commit install
 ```
 
-3. Add the upstream repository:
-
-```bash
-git remote add upstream https://github.com/nullc0d30/HunterX.git
-```
-
-4. Create a feature branch (see branch naming below)
-5. Make your changes
-6. Push to your fork
-7. Submit a Pull Request to the `main` branch
+Pre-commit hooks run Ruff and other checks on every commit.
 
 ---
 
-## Pull Request Workflow
+## Code Style
 
-1. **Ensure your fork is up to date** with upstream `main`
-2. **Run tests** before submitting
-3. **Open a PR** against the `main` branch
-4. **Fill out the PR template** completely
-5. **Link related issues** (e.g., `Closes #42`)
-6. **Wait for review** — maintainers will review within 3–5 business days
-7. **Address feedback** — make requested changes
-8. **Merge** — once approved, a maintainer will merge your PR
-
-> **Note:** All PRs must pass CI (lint + tests) before merging.
-
----
-
-## Branch Naming Convention
-
-Use descriptive, hyphen-separated names with a type prefix:
-
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `feat/` | New feature | `feat/websocket-fuzzer` |
-| `fix/` | Bug fix | `fix/crash-on-empty-target` |
-| `docs/` | Documentation | `docs/api-examples` |
-| `refactor/` | Code refactoring | `refactor/detector-engine` |
-| `test/` | Testing | `test/add-oob-tests` |
-| `perf/` | Performance | `perf/cache-payloads` |
-| `chore/` | Maintenance | `chore/update-deps` |
-| `security/` | Security fix | `security/sql-injection-escape` |
-
----
-
-## Commit Message Convention
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <short summary>
-
-[optional body]
-
-[optional footer]
-```
-
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `security`
-
-Examples:
-
-```
-feat(protocols): add gRPC reflection probing
-fix(detector): handle None response in header scan
-docs(readme): update docker usage examples
-test(auth): add OAuth2 refresh flow test
-```
-
----
-
-## Coding Style
-
-- **Language:** Python 3.11+
-- **Formatter:** [Ruff](https://docs.astral.sh/ruff/)
+- **Linter:** Ruff
 - **Line length:** 120 characters
-- **Imports:** Standard library, third-party, local (grouped)
-- **Type hints:** Required for all function signatures
-- **Docstrings:** Google-style for public APIs
-- **Naming:** `snake_case` for functions/variables, `PascalCase` for classes, `UPPER_CASE` for constants
-- **Comments:** Minimal — code should be self-documenting
+- **Target Python:** 3.11+
+- **Type hints:** Required for all function signatures and public methods.
 
-Run the linter before submitting:
+Run the linter before committing:
 
 ```bash
-ruff check core/ hunterx.py api/ plugins/ tests/ --ignore=E501
+ruff check .
 ```
 
 ---
 
-## Testing Requirements
+## Testing
 
-- All contributions must include or update tests
-- We use **pytest** as the test framework
-- Tests reside in the `tests/` directory
-- Minimum **80% coverage** for new code
-- Run the full suite before submitting:
+All contributions must maintain or increase the test pass rate. There are currently **623 tests** in the test suite.
+
+Run tests:
 
 ```bash
-python -m pytest tests/ -v
+pytest tests/ -v
+```
+
+No regressions are allowed. If your change fixes a bug, add a test that reproduces the bug and verify it passes.
+
+---
+
+## Pull Request Process
+
+1. Ensure your branch is up to date with `main`.
+2. Open a pull request against the `main` branch.
+3. Use the pull request template — fill in all sections.
+4. Link the issue your PR addresses (if applicable).
+5. Add a changelog entry in `CHANGELOG.md` under the appropriate section.
+6. Ensure all commits include a DCO sign-off (`Signed-off-by:`).
+7. Ensure all CI checks pass (lint, test, build).
+
+A maintainer will review your PR. You may be asked to make changes before it is merged.
+
+---
+
+## Commit Messages
+
+Use **Conventional Commits** format:
+
+```
+<type>: <short description>
+
+<optional body>
+```
+
+Types:
+
+| Type       | Usage                          |
+|------------|--------------------------------|
+| `feat:`    | A new feature                  |
+| `fix:`     | A bug fix                      |
+| `docs:`    | Documentation changes          |
+| `test:`    | Adding or updating tests       |
+| `refactor:`| Code refactoring               |
+| `chore:`   | Maintenance, tooling, CI       |
+
+Example:
+
+```
+feat: add AWS S3 bucket enumeration skill
 ```
 
 ---
 
-## Documentation Guidelines
+## Branch Naming
 
-- Use **Markdown** for all documentation
-- Place module docs in docstrings (Google-style)
-- Update `README.md` for user-facing changes
-- Include **code examples** where applicable
-- Keep language **clear and professional**
-- Check spelling and grammar
+Use descriptive branch names with a type prefix:
 
----
+- `feat/description` — new features
+- `fix/description` — bug fixes
+- `docs/description` — documentation changes
 
-## Issue Reporting
-
-- Search existing issues before creating a new one
-- Use the appropriate issue template
-- Be specific and provide reproducible examples
-- Include environment details (OS, Python version, etc.)
+Examples: `feat/s3-enumeration`, `fix/ollama-timeout`, `docs/api-reference`
 
 ---
 
-## Feature Requests
+## Code Review
 
-- Explain the **problem** you want to solve
-- Describe the **proposed solution**
-- Mention **alternatives** you considered
-- Tag with `enhancement` label
+Reviewers will check for:
 
----
+- Correctness: Does the code do what it claims?
+- Security: Are there any injection vectors or unsafe patterns?
+- Style: Does it follow Ruff conventions and type hints?
+- Tests: Are there sufficient tests covering the change?
+- Documentation: Are public APIs and behaviors documented?
+- Performance: Is the approach efficient for the expected workloads?
 
-## Bug Reporting
-
-- Use the **Bug Report** template
-- Include **steps to reproduce**
-- Provide **expected vs actual behavior**
-- Attach **logs or screenshots** if applicable
-- Mention your **environment** (OS, Python, dependencies)
+Be prepared to iterate. All reviews are conducted respectfully and constructively.
 
 ---
 
-## Security Vulnerability Reporting
+## DCO (Developer Certificate of Origin)
 
-**Do NOT open public issues for security vulnerabilities.**
+Every commit must include a `Signed-off-by` line in the commit message, certifying that you have the right to submit the code under the project's license.
 
-Instead, follow our [Security Policy](SECURITY.md) and report via:
+To sign off a commit:
 
-- **GitHub Private Vulnerability Reporting** — enabled on this repository
-- **Email:** Open an issue requesting a secure channel
+```bash
+git commit -s -m "feat: add S3 bucket enumeration skill"
+```
 
-We practice **responsible disclosure** and will acknowledge reports within 72 hours.
-
----
-
-## Developer Certificate of Origin (DCO)
-
-All contributors must certify that they have the right to submit their contributions under the Apache 2.0 license. This is done by adding a `Signed-off-by` line to each commit:
+This adds:
 
 ```
 Signed-off-by: Your Name <your.email@example.com>
 ```
 
-By signing off, you certify that:
-- The contribution was created in whole or in part by you and you have the right to submit it under the Apache 2.0 license
-- The contribution is based on previous work that, to the best of your knowledge, is covered under an appropriate open-source license
-- The contribution was provided to you by someone else who certified the above
-- You have not and will not maintain any patent claims against anyone regarding this contribution
-
-To sign off automatically, use `git commit -s`.
-
-## Review Process
-
-1. **Automated checks** — CI runs lint + tests automatically
-2. **DCO check** — All commits must include `Signed-off-by` line
-3. **Code review** — At least one maintainer reviews
-4. **Feedback** — We aim to provide initial feedback within 3 business days
-5. **Approval** — Two approvals required for significant changes
-6. **Merge** — Squash merge preferred for clean history
+For more information, see [developercertificate.org](https://developercertificate.org/).
 
 ---
 
-## Community Expectations
+## Resources
 
-- **Be respectful** — We follow the [Code of Conduct](CODE_OF_CONDUCT.md)
-- **Be patient** — Maintainers are volunteers
-- **Be constructive** — Focus on solutions, not blame
-- **Be inclusive** — Everyone is welcome regardless of background
-- **Be professional** — This is a security tool; professionalism matters
-
----
-
-## Need Help?
-
-- Check [SUPPORT.md](SUPPORT.md) for resources
-- Ask in GitHub Discussions
-- Read the [README.md](README.md) for quick start
-
----
-
-*Thank you for contributing to HunterX! Together, we build safer security tools.*
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+- [Main Documentation](https://github.com/NullC0d3/HunterX/wiki)
+- [API Reference](https://github.com/NullC0d3/HunterX/wiki/API-Reference)
+- [Skill Authoring Guide](https://github.com/NullC0d3/HunterX/wiki/Skill-Authoring-Guide)
+- [Provider Development Guide](https://github.com/NullC0d3/HunterX/wiki/Provider-Development-Guide)
+- [Issue Tracker](https://github.com/NullC0d3/HunterX/issues)
+- [Discussions](https://github.com/NullC0d3/HunterX/discussions)

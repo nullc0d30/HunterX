@@ -22,13 +22,13 @@ def test_mutation_sql():
     me = MutationEngine("high")
     variants = me.mutate("' OR 1=1 --", "SQLI")
     techniques = {v["technique"] for v in variants}
-    assert "sql_comment_whitespace" in techniques
+    assert "sql_comment_ws" in techniques
 
 def test_mutation_lfi():
     me = MutationEngine("high")
     variants = me.mutate("../../../etc/passwd", "LFI")
     techniques = {v["technique"] for v in variants}
-    assert "lfi_double_dot_double_slash" in techniques
+    assert "lfi_double_dot" in techniques
 
 def test_low_evasion():
     me = MutationEngine("low")
