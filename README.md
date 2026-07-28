@@ -10,6 +10,7 @@
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/u/nullc0d30)
 [![CI](https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?branch=main&style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/actions)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
+[![DOI](https://zenodo.org/badge/DOI/10.6084/m9.figshare.33102290.svg)](https://doi.org/10.6084/m9.figshare.33102290)
 
 **HunterX** is an open-source platform for AI-assisted security assessment. It combines automated vulnerability scanning, a plugin-based security skills framework, multi-agent coordination, a reasoning engine with AI provider abstraction, knowledge graph analysis, threat modeling, and MITRE ATT&CK mapping into a single extensible platform.
 
@@ -1015,11 +1016,14 @@ If you use HunterX in academic research, please cite:
   year = {2026},
   version = {6.0.0},
   license = {Apache-2.0},
+  doi = {10.6084/m9.figshare.33102290},
   url = {https://github.com/nullc0d30/HunterX}
 }
 ```
 
-For the full citation metadata (authors, ORCID, DOI, etc.), see [CITATION.cff](CITATION.cff).
+DOI: [10.6084/m9.figshare.33102290](https://doi.org/10.6084/m9.figshare.33102290)
+
+For the full citation metadata, see [CITATION.cff](CITATION.cff).
 
 ---
 
