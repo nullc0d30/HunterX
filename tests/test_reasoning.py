@@ -6,7 +6,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from core.reasoning import ReasoningEngine
+from core.reasoning_engine_old import ReasoningEngine
 from core.context import TargetContext
 
 def test_lfi_chain_linux():

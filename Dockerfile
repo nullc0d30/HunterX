@@ -2,20 +2,6 @@
 #
 # HunterX — AI-Assisted Vulnerability Hunter
 
-# Stage 1: Build stage (only if native deps needed)
-FROM python:3.11-slim AS builder
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PIP_NO_CACHE_DIR=1
-
-WORKDIR /build
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-
-# Stage 2: Runtime
 FROM python:3.11-slim AS runtime
 
 LABEL maintainer="NullC0d3"
@@ -36,14 +22,14 @@ ENV PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 
-# Copy only installed packages from builder
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Create non-root user
 RUN groupadd -r hunterx && useradd -r -g hunterx hunterx
 
-# Copy source files (exclude payloads from build context - mount at runtime)
+# Copy source files
 COPY hunterx.py .
 COPY core/ ./core/
 COPY api/ ./api/
