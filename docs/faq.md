@@ -32,7 +32,7 @@ faq_page: true
    Stage 0 (Passive Intel) gathers target context from headers and detects WAF, WebSocket endpoints, and GraphQL. Stage 1 (Probe) sends diverse probes across attack categories. Stage 2 (Confirm) deepens probes in categories showing anomalies. Stage 3 (Verify) safely verifies confirmed vulnerabilities.
 
 7. **Does HunterX support Docker?**
-   Yes. HunterX provides an optimized 271MB multi-stage Docker image available on Docker Hub at `nullc0d30/hunterx`. The container runs as a non-root user and follows security best practices.
+    Yes. HunterX provides a multi-stage Docker image available on Docker Hub at `nullc0d30/hunterx`. The container runs as a non-root user, supports linux/amd64 and linux/arm64, and follows security best practices.
 
 8. **Can I run HunterX as an API server?**
    Yes. HunterX includes a built-in FastAPI REST server. Start it with `python hunterx.py api --port 8443`. Submit scan jobs via `POST /scan`, poll results via `GET /scan/{id}`, check health via `GET /health`.

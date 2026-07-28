@@ -1,0 +1,78 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — AI-Assisted Vulnerability Hunter
+# Docker Compose configuration for CLI and API modes
+#
+# Usage:
+#   docker compose run --rm hunterx -u https://target.com --profile bounty
+#   docker compose up -d hunterx-api
+#   docker compose run --rm hunterx --help
+
+services:
+  # CLI mode — run a scan and exit
+  hunterx:
+    image: nullc0d30/hunterx:latest
+    build:
+      context: .
+      args:
+        VERSION: 6.0.0
+    container_name: hunterx-cli
+    profiles:
+      - cli
+    volumes:
+      - ./reports:/data
+      - ./hunterx.yaml:/app/hunterx.yaml:ro
+    environment:
+      - HX_LOG_LEVEL=${HX_LOG_LEVEL:-INFO}
+      - HX_AI_PROVIDER=${HX_AI_PROVIDER:-}
+      - HX_AI_API_KEY=${HX_AI_API_KEY:-}
+      - HX_AI_MODEL=${HX_AI_MODEL:-}
+      - OLLAMA_HOST=${OLLAMA_HOST:-}
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # API mode — persistent server
+  hunterx-api:
+    image: nullc0d30/hunterx:latest
+    build:
+      context: .
+      args:
+        VERSION: 6.0.0
+    container_name: hunterx-api
+    profiles:
+      - api
+    ports:
+      - "${HX_API_PORT:-8443}:8443"
+    volumes:
+      - ./reports:/data
+      - ./hunterx.yaml:/app/hunterx.yaml:ro
+    environment:
+      - HX_LOG_LEVEL=${HX_LOG_LEVEL:-INFO}
+      - HX_API_PORT=8443
+      - HX_API_HOST=0.0.0.0
+      - HX_AI_PROVIDER=${HX_AI_PROVIDER:-}
+      - HX_AI_API_KEY=${HX_AI_API_KEY:-}
+      - HX_AI_MODEL=${HX_AI_MODEL:-}
+      - OLLAMA_HOST=${OLLAMA_HOST:-}
+    command: ["api", "--port", "8443"]
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: "2"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8443/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

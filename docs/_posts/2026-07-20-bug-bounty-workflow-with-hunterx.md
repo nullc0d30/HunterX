@@ -30,37 +30,34 @@ This profile ensures you stay within program limits while maximizing coverage.
 
 ```bash
 # Gather intelligence without sending probes
-hunterx scan -u http://target.com --passive-only
+python hunterx.py -u http://target.com --dry-run
 ```
 
 ### 2. Focused Scanning
 
 ```bash
 # Scan with Bounty profile, JSON output for analysis
-hunterx scan -u http://target.com \
-  -p bounty \
-  --format json \
-  -o findings.json \
-  --include-category sqli,xss
+python hunterx.py -u http://target.com \
+  --profile bounty \
+  -o findings.json
 ```
 
 ### 3. Authenticated Testing
 
 ```bash
-hunterx scan -u http://target.com \
-  -a form \
-  --auth-user user@example.com \
-  --auth-pass s3cret \
-  -p bounty
+python hunterx.py -u http://target.com \
+  --auth form \
+  --username user@example.com \
+  --password s3cret \
+  --profile bounty
 ```
 
 ### 4. Results Analysis
 
 ```bash
-# Convert to SARIF for VS Code
-hunterx scan -u http://target.com \
-  -p bounty \
-  --format sarif \
+# Scan with SARIF output for VS Code integration
+python hunterx.py -u http://target.com \
+  --profile bounty \
   -o report.sarif
 ```
 

@@ -17,7 +17,7 @@ HunterX provides an optimized 271MB multi-stage Docker image running as a non-ro
 ## Quick Start
 
 ```bash
-docker run nullc0d30/hunterx scan -u http://example.com
+docker run --rm nullc0d30/hunterx:latest -u http://example.com --profile bounty
 ```
 
 ## Production Deployment
@@ -25,29 +25,29 @@ docker run nullc0d30/hunterx scan -u http://example.com
 ### Volume Mounting
 
 ```bash
-docker run \
-  -v $(pwd)/config:/config \
-  -v $(pwd)/reports:/reports \
-  nullc0d30/hunterx \
-  scan -c /config/hunterx.yaml -u http://example.com -o /reports/report.md
+docker run --rm \
+  -v $(pwd)/hunterx.yaml:/app/hunterx.yaml:ro \
+  -v $(pwd)/reports:/data \
+  nullc0d30/hunterx:latest \
+  -u http://example.com -o /data
 ```
 
 ### Resource Limits
 
 ```bash
-docker run \
+docker run --rm \
   --memory="512m" \
   --cpus="2" \
-  nullc0d30/hunterx scan -u http://example.com
+  nullc0d30/hunterx:latest -u http://example.com
 ```
 
 ### API Server
 
 ```bash
-docker run \
+docker run --rm \
   -p 8443:8443 \
-  -v $(pwd)/reports:/reports \
-  nullc0d30/hunterx api --port 8443
+  -v $(pwd)/reports:/data \
+  nullc0d30/hunterx:latest api --port 8443
 ```
 
 ## CI/CD Integration
@@ -61,8 +61,8 @@ jobs:
     container:
       image: nullc0d30/hunterx:latest
     steps:
-      - run: hunterx scan -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
-          -o /reports/report.sarif --format sarif
+      - run: python hunterx.py -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
+          -o /data/report.sarif
 ```
 
 ### GitLab CI
@@ -71,7 +71,7 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - hunterx scan -u $TARGET_URL -o report.sarif --format sarif
+    - python hunterx.py -u $TARGET_URL -o report.sarif
   artifacts:
     paths: [report.sarif]
 ```
@@ -86,5 +86,5 @@ scan:
 ## Image Tags
 
 - `latest`: Most recent stable release
-- `4.0.1`: Specific version
+- `6.0.0`: Specific version
 - `dev`: Development build (unstable)
