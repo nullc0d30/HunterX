@@ -12,7 +12,11 @@
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
 [![DOI](https://zenodo.org/badge/DOI/10.6084/m9.figshare.33102290.svg)](https://doi.org/10.6084/m9.figshare.33102290)
 
-**HunterX** is an open-source platform for AI-assisted security assessment. It combines automated vulnerability scanning, a plugin-based security skills framework, multi-agent coordination, a reasoning engine with AI provider abstraction, knowledge graph analysis, threat modeling, and MITRE ATT&CK mapping into a single extensible platform.
+**HunterX** is an open-source, AI-assisted offensive security platform and intelligent vulnerability assessment framework. Unlike traditional scanners that rely solely on payload execution or signature matching, HunterX follows a reasoning-driven workflow — **Observe → Hypothesize → Probe → Verify** — enabling context-aware security analysis, evidence-driven decision making, and intelligent vulnerability verification with explainable AI outputs.
+
+Built as a modular cybersecurity platform, HunterX integrates an AI Reasoning Engine with provider abstraction, a Multi-Agent Architecture (10 agents), a Security Skills Framework (41 skills), a Knowledge Graph for attack path analysis, Payload Intelligence, Threat Modeling, MITRE ATT&CK mapping, OWASP mapping, CWE mapping, and CAPEC mapping. The platform covers web security, API security, cloud security, authentication security, and network security through a unified automation layer with enterprise-ready reporting.
+
+HunterX combines 41 security skills, 10 specialized AI agents, 18 goal types, intelligent payload management, graph-based security analysis, explainable AI, REST APIs, workflow automation, and enterprise-grade reporting into a single extensible security automation framework.
 
 ![HunterX Screenshot](Screenshot%202026-07-28%20234114.png)
 
