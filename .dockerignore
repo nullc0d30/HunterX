@@ -9,37 +9,50 @@ __pycache__
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+dist/
+build/
 .Python
 env/
 venv/
+.venv/
 .env
-.venv
 
 # IDE / Editors
-.vscode
-.idea
+.vscode/
+.idea/
 *.swp
 *.swo
+*~
 
 # Project Output
-reports/*
-logs/*
-!reports/.gitkeep
+reports/
+logs/
+*.log
 
-# Docs & Tests
+# Tests & Docs (not needed in runtime image)
 tests/
-examples/
 docs/
+examples/
+*.md
 task.md
 implementation_plan.md
 walkthrough.md
-DOCKER_HUB.md
-README.docker.md
 PRODUCT.md
 
 # System
 .DS_Store
 Thumbs.db
 
-# Screenshots
-Screenshot*.png
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Secrets
+*.key
+*.pem
+*.cert
+*.crt
+credentials.json
+*.env.local

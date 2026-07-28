@@ -221,7 +221,7 @@ docker run --rm \
     -u http://target.com --ai --ai-model gpt-4 -o /data
 
 # API mode with persistent reports
-docker run --rm -p 8443:8443 -v $(pwd)/reports:/app/reports \
+docker run --rm -p 8443:8443 -v $(pwd)/reports:/data \
     nullc0d30/hunterx:latest api --port 8443
 ```
 

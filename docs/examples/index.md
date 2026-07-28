@@ -60,7 +60,7 @@ curl http://localhost:8443/health
 ## Docker
 
 ```bash
-docker run -v $(pwd)/reports:/reports nullc0d30/hunterx \
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest \
   scan -u http://example.com -o /reports/report.md
 ```
 
@@ -84,7 +84,7 @@ print(results.to_dict())
 ```yaml
 - name: Run HunterX Scan
   run: |
-    docker run nullc0d30/hunterx scan -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
+    docker run --rm nullc0d30/hunterx:latest -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
       -o /reports/report.sarif --format sarif
 ```
 
