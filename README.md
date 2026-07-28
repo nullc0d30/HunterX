@@ -14,6 +14,8 @@
 
 **HunterX** is an open-source platform for AI-assisted security assessment. It combines automated vulnerability scanning, a plugin-based security skills framework, multi-agent coordination, a reasoning engine with AI provider abstraction, knowledge graph analysis, threat modeling, and MITRE ATT&CK mapping into a single extensible platform.
 
+![HunterX Screenshot](Screenshot%202026-07-28%20234114.png)
+
 [Getting Started](#quick-start) •
 [Documentation](#documentation-hub) •
 [Installation](#installation) •
