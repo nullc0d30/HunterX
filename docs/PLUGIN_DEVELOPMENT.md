@@ -1,3 +1,10 @@
+---
+layout: default
+title: HunterX Plugin Development Guide v6.0.0 — HunterX v6.0.0
+description: Plugin development guide for HunterX v6.0.0. Detector, Reporter, Hook, Agent, and Skill plugin development with SDK.
+permalink: /plugin-development/
+---
+
 # HunterX Plugin Development Guide v6.0.0
 
 HunterX v6.0.0 supports extensibility through a plugin architecture with five plugin types: Detector, Reporter, Hook, Agent, and Skill plugins. This document describes how to develop each type.

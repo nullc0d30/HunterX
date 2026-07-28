@@ -1,3 +1,10 @@
+---
+layout: default
+title: HunterX Configuration v6.0.0 — HunterX v6.0.0
+description: Complete configuration reference for HunterX v6.0.0. YAML options, environment variables, profiles, and CLI overrides.
+permalink: /configuration/
+---
+
 # HunterX Configuration v6.0.0
 
 ## Overview

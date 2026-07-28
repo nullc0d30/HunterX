@@ -83,7 +83,7 @@ faq_page: true
     Use GitHub Private Vulnerability Reporting (Security tab) or open a regular issue requesting a secure communication channel. Do NOT post vulnerability details in public issues.
 
 24. **Does HunterX have a roadmap?**
-    Yes. The roadmap includes v4.1 (gRPC, OAuth2, Redis queue, TUI), v4.5 (RBAC, SIEM, scheduled scans), and v5.0 (autonomous agent, cloud scanning, SDK). See the full ROADMAP.md.
+    Yes. The v6.0.0 roadmap focuses on ecosystem growth: community skill repository, additional AI providers (Anthropic, Google Gemini), CI/CD pipeline plugins (GitHub Actions, GitLab CI), SIEM connectors, and collaborative scanning. See the full ROADMAP.md.
 
 25. **How does HunterX compare to Nuclei?**
     Nuclei is a fast template-based scanner using YAML templates. HunterX is a reasoning-driven framework with a 4-stage pipeline, response differential analysis, and context-aware scoring. Both are complementary — Nuclei excels at template-based checks, HunterX excels at depth and reasoning.
@@ -101,7 +101,7 @@ faq_page: true
     HunterX supports single-target (`-u URL`), multi-target file (`-f targets.txt`), and API-driven scanning. Limits are governed by the operator profile (e.g., Bounty: 500 requests, Gov: 100 requests).
 
 30. **How do I cite HunterX in academic research?**
-    Use the CITATION.cff file or the BibTeX entry in the README. Example: `@software{hunterx2026, author = {Ahmed Awad (NullC0d3)}, title = {HunterX: AI-Assisted Vulnerability Hunter}, version = {4.0.1}, year = {2026}, license = {Apache-2.0}, url = {https://github.com/nullc0d30/HunterX} }`
+    Use the CITATION.cff file or the BibTeX entry in the README. Example: `@software{hunterx2026, author = {Ahmed Awad (NullC0d3)}, title = {HunterX: AI-Assisted Vulnerability Hunter}, version = {6.0.0}, year = {2026}, license = {Apache-2.0}, url = {https://github.com/nullc0d30/HunterX} }`
 
 31. **What is the plugin API?**
     HunterX plugins use decorators: `@detector(name)` for response analysis, `@reporter(name)` for output formats, and `@hook(event)` for scan lifecycle callbacks. Plugins are auto-discovered from the `plugins/` directory.
@@ -110,7 +110,7 @@ faq_page: true
     Yes. HunterX uses a token-bucket algorithm for rate limiting. The maximum requests per second (`max_rps`) is configurable via YAML, CLI, or the `HX_MAX_RPS` environment variable.
 
 33. **Can I run HunterX in passive mode?**
-    Yes. Use the `--passive-only` flag to run only passive intelligence gathering without sending any probes.
+    Use the `--dry-run` flag for logic verification without sending any requests.
 
 34. **What is the destructive payload blocklist?**
     HunterX includes a hard-coded, non-bypassable blocklist of destructive payloads including `rm -rf`, `mkfs`, `dd if=`, fork bombs, reverse shells, and SQL write statements. These are blocked at the code level before any request is sent.

@@ -72,7 +72,7 @@ Custom profiles override all defaults and are not shown in legal banners or `--h
 ## Profile Selection
 
 Select a profile via:
-- CLI: `python hunterx.py scan -u http://example.com -p bounty`
+- CLI: `python hunterx.py -u http://example.com -p bounty`
 - Config: `profile: name: bounty` in `hunterx.yaml`
 - Env: `HX_PROFILE=bounty`
 

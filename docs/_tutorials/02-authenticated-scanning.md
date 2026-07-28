@@ -12,15 +12,15 @@ description: >-
 ## Basic Auth
 
 ```bash
-python hunterx.py scan -u http://example.com/admin \
-  -a basic --auth-user admin --auth-pass s3cret
+python hunterx.py -u http://example.com/admin \
+  -a basic --username admin --password s3cret
 ```
 
 ## Bearer Token
 
 ```bash
-python hunterx.py scan -u http://example.com/api \
-  -a bearer --auth-token eyJhbGciOiJIUzI1NiIs...
+python hunterx.py -u http://example.com/api \
+  -a bearer --token eyJhbGciOiJIUzI1NiIs...
 ```
 
 ## Cookie Jar
@@ -36,7 +36,7 @@ Create `cookies.json`:
 ```
 
 ```bash
-python hunterx.py scan -u http://example.com --cookie-file cookies.json
+python hunterx.py -u http://example.com --cookie-file cookies.json
 ```
 
 ## Form Login
@@ -44,8 +44,8 @@ python hunterx.py scan -u http://example.com --cookie-file cookies.json
 HunterX can programmatically log in via HTML forms:
 
 ```bash
-python hunterx.py scan -u http://example.com \
-  -a form --auth-user user --auth-pass pass
+python hunterx.py -u http://example.com \
+  -a form --username user --password pass
 ```
 
 For custom form fields, use the YAML config:

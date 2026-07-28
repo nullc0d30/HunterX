@@ -16,7 +16,7 @@ description: >-
 ## Single-Target Scan
 
 ```bash
-python hunterx.py scan -u http://example.com
+python hunterx.py -u http://example.com
 ```
 
 This runs all 4 stages against the target and produces a Markdown report.
@@ -34,7 +34,7 @@ http://target3.com
 Run:
 
 ```bash
-python hunterx.py scan -f targets.txt --format json -o results.json
+python hunterx.py -f targets.txt --format json -o results.json
 ```
 
 ## Passive-Only Mode
@@ -42,7 +42,7 @@ python hunterx.py scan -f targets.txt --format json -o results.json
 Gather information without sending probes:
 
 ```bash
-python hunterx.py scan -u http://example.com --passive-only
+python hunterx.py -u http://example.com --passive-only
 ```
 
 This runs Stage 0 (passive intel) and exits.

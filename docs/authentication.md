@@ -14,7 +14,7 @@ HunterX supports four authentication modes for scanning authenticated targets.
 ## Basic Auth
 
 ```bash
-python hunterx.py scan -u http://example.com -a basic --auth-user admin --auth-pass s3cret
+python hunterx.py -u http://example.com -a basic --username admin --password s3cret
 ```
 
 YAML:
@@ -29,7 +29,7 @@ auth:
 ## Bearer Token
 
 ```bash
-python hunterx.py scan -u http://example.com -a bearer --auth-token eyJhbGciOi...
+python hunterx.py -u http://example.com -a bearer --token eyJhbGciOi...
 ```
 
 YAML:
@@ -45,7 +45,7 @@ auth:
 Load cookies from a JSON file:
 
 ```bash
-python hunterx.py scan -u http://example.com --cookie-file cookies.json
+python hunterx.py -u http://example.com --cookie-file cookies.json
 ```
 
 YAML:

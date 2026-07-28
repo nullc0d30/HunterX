@@ -41,7 +41,7 @@ Performance measurements on standard configurations. All tests run against OWASP
 | Image | Size | Compression |
 |-------|------|-------------|
 | `nullc0d30/hunterx:latest` | 271 MB | gzip |
-| `nullc0d30/hunterx:4.0.1` | 271 MB | gzip |
+| `nullc0d30/hunterx:6.0.0` | 271 MB | gzip |
 
 ## API Server Performance
 
