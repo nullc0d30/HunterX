@@ -1,3 +1,10 @@
+---
+layout: default
+title: Autonomous Multi-Agent Platform — HunterX v6.0.0
+description: AI-powered autonomous multi-agent platform for security testing. Collaborate specialized agents for automated vulnerability assessment.
+permalink: /agents/
+---
+
 # Autonomous Multi-Agent Platform
 
 ## Overview

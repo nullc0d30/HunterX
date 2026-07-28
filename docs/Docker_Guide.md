@@ -1,3 +1,10 @@
+---
+layout: default
+title: Docker Guide — HunterX v6.0.0
+description: Complete Docker deployment guide for HunterX. Multi-stage builds, volumes, environment variables, security profiles, and production deployment.
+permalink: /docker/
+---
+
 # HunterX v6.0.0 Docker Guide
 
 This guide covers running HunterX in Docker containers, including quick start, API mode, building locally, and production considerations.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Roadmap — HunterX v6.0.0
+description: HunterX project roadmap focusing on ecosystem growth, community adoption, and enterprise readiness.
+permalink: /roadmap/
+---
+
 # Roadmap
 
 HunterX v6.0.0 is feature-complete. This roadmap shifts focus from feature development to ecosystem growth, community adoption, and enterprise readiness.

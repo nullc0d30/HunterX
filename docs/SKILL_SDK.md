@@ -1,3 +1,10 @@
+---
+layout: default
+title: Security Skills SDK — Developer Guide — HunterX v6.0.0
+description: Security Skills SDK developer guide for HunterX v6.0.0. Build custom security skills with the Skill SDK API.
+permalink: /skill-sdk/
+---
+
 # Security Skills SDK — Developer Guide
 
 > **HunterX v6.0.0**  

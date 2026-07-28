@@ -1,3 +1,10 @@
+---
+layout: default
+title: Reference Guide — HunterX v6.0.0
+description: Complete CLI and REST API reference for HunterX v6.0.0. All commands, arguments, endpoints, and examples.
+permalink: /reference-guide/
+---
+
 # HunterX v6.0.0 Reference Guide
 
 ## Table of Contents

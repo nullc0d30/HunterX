@@ -1,12 +1,12 @@
 title: HunterX — AI-Assisted Vulnerability Hunter
-tagline: Production-grade Red Team orchestration framework with 4-stage reasoning pipeline
+tagline: Open-source AI-assisted vulnerability scanner with Security Skills Framework, Reasoning Engine, and Multi-Agent Platform
 description: >-
-  HunterX is an open-source, AI-assisted vulnerability scanner and Red Team
-  orchestration framework. It uses a reasoning engine to observe, hypothesize,
-  probe, and verify vulnerabilities through a gated 4-stage pipeline with
-  operational safety, stealth, and explainability. Supports REST API, WebSocket,
-  GraphQL, OOB detection, time-based injection, WAF evasion, and plugin system.
-  Licensed under Apache 2.0.
+  HunterX is an open-source AI-assisted vulnerability scanner and security
+  assessment platform. Features include a Security Skills Framework (41 skills),
+  Reasoning Engine, Multi-Agent Platform (10 agents), AI Provider Abstraction
+  Layer, Knowledge Graph, Threat Modeling, Attack Chain Analysis, Payload
+  Intelligence Platform with mutation engine, MITRE ATT&CK mapping, and
+  enterprise REST API. Licensed under Apache 2.0.
 url: "https://nullc0d30.github.io/HunterX"
 baseurl: "/HunterX"
 repository: nullc0d30/HunterX
@@ -75,6 +75,8 @@ exclude:
   - vendor
   - Gemfile
   - Gemfile.lock
+  - "*.ps1"
+  - "*.bat"
 
 # Feed
 feed:

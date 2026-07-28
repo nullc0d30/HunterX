@@ -12,31 +12,31 @@ description: >-
 ## Basic Scan
 
 ```bash
-python hunterx.py scan -u http://example.com
+python hunterx.py -u http://example.com
 ```
 
 ## Multi-Target Scan
 
 ```bash
-python hunterx.py scan -f targets.txt --format json -o results.json
+python hunterx.py -f targets.txt --format json -o results.json
 ```
 
 ## Bounty Profile
 
 ```bash
-python hunterx.py scan -u http://example.com -p bounty --max-rps 10
+python hunterx.py -u http://example.com -p bounty --max-rps 10
 ```
 
 ## Authenticated Scan (Bearer Token)
 
 ```bash
-python hunterx.py scan -u http://example.com -a bearer --auth-token eyJhbG...
+python hunterx.py -u http://example.com -a bearer --token eyJhbG...
 ```
 
 ## Form Login
 
 ```bash
-python hunterx.py scan -u http://example.com -a form --auth-user admin --auth-pass s3cret
+python hunterx.py -u http://example.com -a form --username admin --password s3cret
 ```
 
 ## API Server

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Reasoning Engine — HunterX v6.0.0
+description: AI reasoning engine for HunterX v6.0.0. Goal decomposition, task generation, and validated result processing.
+permalink: /reasoning-engine/
+---
+
 # Reasoning Engine — HunterX v6.0.0
 
 ## Architecture

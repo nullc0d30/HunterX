@@ -1,3 +1,10 @@
+---
+layout: default
+title: Performance Guide — HunterX v6.0.0
+description: Performance characteristics, caching strategies, concurrency tuning, and benchmark estimates for HunterX.
+permalink: /performance-guide/
+---
+
 # Performance Characteristics
 
 This document describes the performance architecture and expected performance characteristics of HunterX.

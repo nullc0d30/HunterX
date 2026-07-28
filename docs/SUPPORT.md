@@ -1,3 +1,10 @@
+---
+layout: default
+title: Support — HunterX v6.0.0
+description: Support channels for HunterX open-source AI-assisted vulnerability scanner. Community forums, documentation, and enterprise support.
+permalink: /support/
+---
+
 # Support
 
 This document describes the support channels available for HunterX.

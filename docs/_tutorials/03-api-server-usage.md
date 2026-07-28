@@ -23,7 +23,7 @@ curl http://localhost:8443/health
 
 Response:
 ```json
-{"status": "healthy", "version": "4.0.1"}
+{"status": "healthy", "version": "6.0.0"}
 ```
 
 ## Submit a Scan
