@@ -1,170 +1,180 @@
 ---
 layout: default
-title: HunterX — AI-Assisted Vulnerability Hunter
-keywords: HunterX, Linux Security Tool, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing
+title: HunterX — AI-Assisted Offensive Security Framework
+keywords: HunterX, Linux Security Tool, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security
 description: >-
-  HunterX is an open-source AI-assisted vulnerability scanner and security
-  assessment platform. Security Skills Framework, Reasoning Engine, Multi-Agent
-  Platform, Knowledge Graph, Threat Modeling, Payload Intelligence, MITRE ATT&CK
-  mapping, and REST API. Apache 2.0.
+  HunterX is an AI-assisted offensive security framework combining intelligent
+  reconnaissance, adaptive vulnerability discovery, payload orchestration, and
+  explainable reasoning. Observe · Hypothesize · Probe · Verify.
 ---
 
-<div class="hero">
-
-<img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" width="200" height="auto" style="margin-bottom:1rem;">
-
-[![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
-[![Tests](https://img.shields.io/badge/tests-623%20passing-brightgreen?style=flat-square)](https://github.com/nullc0d30/HunterX/actions)
-[![Ruff](https://img.shields.io/badge/ruff-0%20errors-brightgreen?style=flat-square)](https://github.com/astral-sh/ruff)
-[![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/u/nullc0d30)
-
-**HunterX** is an open-source AI-assisted vulnerability scanner and security assessment platform. It combines a **Security Skills Framework** (41 plugin-based skills), a **Reasoning Engine** (18 goal types), a **Multi-Agent Platform** (10 specialized agents), **AI Provider Abstraction** (OpenAI, Ollama), **Knowledge Graph**, **Threat Modeling**, **Attack Chain Analysis**, and **Payload Intelligence** into a single extensible platform.
-
-```bash
-# One-shot scan
-hunterx target.com
-
-# Full scan with AI analysis
-hunterx scan https://target.com --ai --ai-model llama3.2
-
-# List modules, run diagnostics, view reports
-hunterx module list
-hunterx doctor
-hunterx report
-
-# Start the API server
-hunterx api --port 8443
-```
-
-<div class="hero-actions">
-  <a href="{{ '/installation' | relative_url }}" class="primary">Install HunterX</a>
-  <a href="{{ '/quickstart' | relative_url }}" class="secondary">Quickstart Guide</a>
-  <a href="{{ '/documentation' | relative_url }}" class="secondary">Documentation</a>
-  <a href="https://github.com/nullc0d30/HunterX" class="secondary">GitHub</a>
+<!-- ===== HERO ===== -->
+<div class="lp-hero">
+  <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" class="lp-hero-logo">
+  <h1>HunterX</h1>
+  <div class="subtitle">AI-Assisted Offensive Security Framework</div>
+  <div class="pipeline"><span>Observe</span> &rarr; <span>Hypothesize</span> &rarr; <span>Probe</span> &rarr; <span>Verify</span></div>
+  <p>HunterX combines intelligent reconnaissance, adaptive vulnerability discovery, payload orchestration, and explainable security reasoning into a single modular platform. No external scanners required.</p>
+  <div class="lp-hero-actions">
+    <a href="{{ '/installation' | relative_url }}" class="primary">Install HunterX</a>
+    <a href="{{ '/quickstart' | relative_url }}" class="secondary">Quickstart</a>
+    <a href="https://github.com/nullc0d30/HunterX" class="secondary">GitHub</a>
+  </div>
+  <div class="lp-hero-badges">
+    <a href="https://github.com/nullc0d30/HunterX/releases"><img src="https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github" alt="Release"></a>
+    <a href="https://pypi.org/project/hunterx/"><img src="https://img.shields.io/pypi/v/hunterx?style=flat-square&logo=pypi" alt="PyPI"></a>
+    <a href="https://github.com/nullc0d30/HunterX/actions"><img src="https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?style=flat-square&label=tests" alt="Tests"></a>
+    <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="License"></a>
+    <a href="https://hub.docker.com/r/nullc0d30/hunterx"><img src="https://img.shields.io/docker/pulls/nullc0d30/hunterx?style=flat-square&logo=docker" alt="Docker"></a>
+    <a href="https://python.org"><img src="https://img.shields.io/pypi/pyversions/hunterx?style=flat-square&logo=python" alt="Python"></a>
+  </div>
 </div>
 
+<!-- ===== WHY HUNTERX? ===== -->
+<div class="lp-section fade-in">
+  <div class="lp-section-header">
+    <h2>Why HunterX?</h2>
+    <p>Traditional scanners rely on payload volume and signature matching. HunterX reasons about what vulnerabilities <em>might</em> exist before probing, then verifies with evidence.</p>
+  </div>
+  <div class="lp-compare-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>AI / Reasoning</th>
+          <th>Multi-Agent</th>
+          <th>Payload Intelligence</th>
+          <th>Reporting</th>
+          <th>Architecture</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>HunterX</td>
+          <td>LLM-native (multi-provider)</td>
+          <td>10 agents, DAG workflows</td>
+          <td>FTS5-indexed, 5-level policy</td>
+          <td>SARIF, HTML, graph, purple team</td>
+          <td>Unified Python framework</td>
+        </tr>
+        <tr>
+          <td>Nmap</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>XML</td>
+          <td>C, single-purpose</td>
+        </tr>
+        <tr>
+          <td>Nuclei</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>JSON</td>
+          <td>Go, template engine</td>
+        </tr>
+        <tr>
+          <td>Metasploit</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>Console</td>
+          <td>Ruby, framework</td>
+        </tr>
+        <tr>
+          <td>Amass</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>JSON</td>
+          <td>Go, single-purpose</td>
+        </tr>
+        <tr>
+          <td>ffuf</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>JSON</td>
+          <td>Go, single-purpose</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
----
-
-## Why HunterX?
-
-Traditional vulnerability scanners operate on payload volume and signature matching. HunterX is built around a structured reasoning pipeline: **Observe, Hypothesize, Probe, Verify**. Each phase is backed by dedicated platform components that coordinate through a concurrent event bus.
-
-| Capability | Description |
-|---|---|
-| **Security Skills Framework** | 41 built-in skills covering web, API, cloud, and infrastructure security. Each skill carries MITRE ATT&CK, OWASP, CWE, and CAPEC metadata. Independently installable, policy-driven, cacheable, and telemetry-tracked. |
-| **Reasoning Engine** | Accepts goals and produces validated results through planning, AI prompting, and multi-call consensus. Supports 18 goal types including vulnerability detection, risk assessment, exploit verification, and remediation planning. |
-| **Multi-Agent Platform** | 10 specialized agents coordinate through concurrent event and message buses, executing DAG-based workflows with state persistence, checkpoint, and resume capabilities. |
-| **AI Provider Abstraction** | Decouples reasoning from specific AI providers. Built-in support for OpenAI and Ollama with session management, caching (SHA256 + TTL + LRU), metrics, middleware, retry, and circuit breaker. |
-| **Knowledge Graph** | Graph-based storage for security relationships, findings, attack paths, and contextual data. Enables cross-scan correlation and attack path inference. |
-| **Threat Modeling & Attack Chains** | Automated threat modeling with STRIDE/LINDDUN categorization, trust boundary mapping, attack chain decomposition, and automated chain inference from findings. |
-| **Payload Intelligence** | SQLite-indexed payload repository with FTS5 full-text search, 5-level execution policy, 10-family mutation engine, provenance tracking, feedback loop, and graph-based payload relationships. |
-| **Explainable AI** | Every AI-driven decision produces structured results with confidence scores, evidence citations, consensus data, decision traces, and provider metadata. |
-| **Enterprise REST API** | FastAPI server with 40+ endpoints covering scanning, payload management, agent coordination, reasoning, skills, AI providers, configuration, and system health. |
-| **MITRE ATT&CK + OWASP Mapping** | All skills, findings, and recommendations carry MITRE ATT&CK techniques, OWASP categories, CWE IDs, CAPEC IDs, and CVSS v3.1 scoring. |
-
----
-
-## Feature Highlights
-
-<div class="feature-grid">
-
-<div class="feature-card">
-<h3>Web Security</h3>
-<p>LFI, RFI, SQLi, NoSQLi, XSS, SSTI, SSRF, XXE, Command Injection, Path Traversal, Deserialization, Open Redirect, Header Injection, and more.</p>
+<!-- ===== KEY FEATURES ===== -->
+<div class="lp-section fade-in" style="background:var(--bg-alt);padding-top:4rem;padding-bottom:4rem;max-width:100%;">
+  <div style="max-width:var(--max-width);margin:0 auto;padding:0 1.5rem;">
+    <div class="lp-section-header">
+      <h2>Key Features</h2>
+      <p>Everything you need for depth-oriented security assessment in a single platform.</p>
+    </div>
+    <div class="lp-card-grid">
+      <div class="lp-card">
+        <span class="lp-card-icon">&#9881;</span>
+        <h3>41 Security Skills</h3>
+        <p>Built-in skills covering web, API, cloud, and infrastructure security. Each carries MITRE ATT&CK, OWASP, CWE, and CAPEC metadata.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#129302;</span>
+        <h3>Reasoning Engine</h3>
+        <p>18 goal types across vulnerability detection, risk assessment, exploit verification, and remediation planning with multi-call consensus.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#9729;</span>
+        <h3>Multi-Agent Platform</h3>
+        <p>10 specialized agents collaborate through event/message buses with DAG-based workflows, checkpoint/resume, and isolated memory.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#9889;</span>
+        <h3>AI Provider Abstraction</h3>
+        <p>Decoupled AI provider layer supporting OpenAI and Ollama with caching, metrics, middleware, retry, and circuit breaker.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#128220;</span>
+        <h3>Payload Intelligence</h3>
+        <p>SQLite + FTS5-indexed payload repository with 5-level safety policy, 10-family mutation engine, provenance tracking, and feedback loop.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#128200;</span>
+        <h3>Knowledge Graph</h3>
+        <p>Entity-relationship store for findings, targets, payloads, and attack paths. Enables cross-scan correlation and relationship analysis.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#128737;</span>
+        <h3>Threat Modeling</h3>
+        <p>STRIDE/LINDDUN categorization, trust boundary mapping, automated threat scenarios, and kill chain analysis.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#128196;</span>
+        <h3>Enterprise Reporting</h3>
+        <p>JSON, Markdown, SARIF 2.1 (VS Code / CodeQL), HTML, attack graphs, purple team detection rules, and ZIP evidence packages.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#128274;</span>
+        <h3>Safety-by-Design</h3>
+        <p>Non-bypassable destructive payload blocklist, WAF detection with auto-abort, configurable rate limiting, and policy-driven execution.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="feature-card">
-<h3>API Security</h3>
-<p>REST API fuzzing, GraphQL introspection, WebSocket analysis, gRPC inspection, OpenAPI validation, rate limit testing, and API version detection.</p>
-</div>
-
-<div class="feature-card">
-<h3>Cloud Security</h3>
-<p>Secrets detection, cloud metadata abuse, S3/Azure/GCP enumeration, Kubernetes assessment, Docker analysis, and CI/CD secrets leakage detection.</p>
-</div>
-
-<div class="feature-card">
-<h3>Authentication</h3>
-<p>Basic, Bearer, Cookie Jar, Form Login, JWT analysis (algorithm confusion, claim tampering), and OAuth2 flow analysis.</p>
-</div>
-
-<div class="feature-card">
-<h3>Reconnaissance</h3>
-<p>Technology fingerprinting, HTTP header analysis, TLS analysis, cookie analysis, DNS enumeration, subdomain discovery, and WAF fingerprinting (50+ signatures).</p>
-</div>
-
-<div class="feature-card">
-<h3>AI Integration</h3>
-<p>OpenAI and Ollama providers with conversation management, caching, metrics, middleware, retry, and circuit breaker. Extensible provider interface.</p>
-</div>
-
-<div class="feature-card">
-<h3>Knowledge Graph</h3>
-<p>Entity-relationship store for findings, targets, payloads, attack paths, and threat actors. Enables cross-scan correlation and relationship analysis.</p>
-</div>
-
-<div class="feature-card">
-<h3>Threat Modeling</h3>
-<p>STRIDE/LINDDUN categorization, trust boundary mapping, automated threat scenario generation, and kill chain progression analysis.</p>
-</div>
-
-<div class="feature-card">
-<h3>Payload Intelligence</h3>
-<p>FTS5-indexed repository, 5-level safety policy, 10 mutation technique families, provenance tracking, effectiveness feedback loop, and context-aware selection.</p>
-</div>
-
-<div class="feature-card">
-<h3>Reporting</h3>
-<p>JSON, Markdown, SARIF 2.1, HTML, visual attack graphs, purple team detection rules, and ZIP evidence packages.</p>
-</div>
-
-<div class="feature-card">
-<h3>Multi-Agent Architecture</h3>
-<p>10 specialized agents with DAG-based workflows, event/message buses, priority queues, state persistence, checkpoint, and resume.</p>
-</div>
-
-<div class="feature-card">
-<h3>Plugin System</h3>
-<p>Detector, reporter, hook, agent, and skill plugins. Independent skill installation, policy management, and telemetry.</p>
-</div>
-
-</div>
-
----
-
-## Comparison
-
-HunterX stands apart from traditional security scanners by unifying AI-assisted reasoning, multi-agent orchestration, and enterprise reporting into a single platform.
-
-| Tool | Scanning | AI | Multi-Agent | Payload Intelligence | Reporting | Architecture |
-|---|---|---|---|---|---|---|
-| **HunterX** | Observe → Hypothesize → Probe → Verify | LLM-native (multi-provider) | 10 agents, DAG workflows | FTS5-indexed, 5-level policy | SARIF, HTML, graph, purple team | Unified Python framework |
-| **Nmap** | Port scan + service detection | No | No | No | XML/Grepable | C, single-purpose |
-| **Metasploit** | Exploit delivery + post-exploit | No | No | No | Console-only | Ruby, framework |
-| **Nuclei** | YAML template matching | No | No | No | JSON/STDOUT | Go, template engine |
-| **Amass** | Subdomain + ASN enumeration | No | No | No | JSON/graph | Go, single-purpose |
-| **Sliver** | C2 + implant framework | No | No | No | CLI/console | Go, C2-focused |
-| **ffuf** | Fuzzing / wordlist brute-force | No | No | No | JSON/CSV | Go, single-purpose |
-
----
-
-## Architecture Overview
-
-HunterX follows a layered architecture where each component has clear responsibilities and communicates through defined interfaces.
-
-<div class="arch-diagram">
+<!-- ===== ARCHITECTURE ===== -->
+<div class="lp-section fade-in">
+  <div class="lp-section-header">
+    <h2>Architecture</h2>
+    <p>Layered design with clear component responsibilities and defined communication interfaces.</p>
+  </div>
+  <div class="lp-architecture">
+<pre>
                     +---------------------------+
                     |    CLI / API / Docker      |
-                    +-------------+-------------+
-                                  |
-                    +-------------+-------------+
-                    | Orchestration Engine       |
-                    | (Observe -> Hypothesize -> |
-                    |  Probe -> Verify)          |
+                    +---------------------------+
+                               |
+                    +---------------------------+
+                    |  Orchestration Engine      |
+                    |  Observe &rarr; Hypothesize &rarr;  |
+                    |  Probe &rarr; Verify          |
                     +--+--------+--------+------+
                        |        |        |
               +--------+  +----+----+  +--------+
@@ -199,99 +209,147 @@ HunterX follows a layered architecture where each component has clear responsibi
               | SARIF /   |
               | HTML      |
               +-----------+
+</pre>
+  </div>
 </div>
 
----
+<!-- ===== WORKFLOW ===== -->
+<div class="lp-section fade-in" style="background:var(--bg-alt);padding-top:4rem;padding-bottom:4rem;max-width:100%;">
+  <div style="max-width:var(--max-width);margin:0 auto;padding:0 1.5rem;">
+    <div class="lp-section-header">
+      <h2>Assessment Workflow</h2>
+      <p>The HunterX reasoning pipeline drives every scan through four distinct phases.</p>
+    </div>
+    <div class="lp-workflow">
+<pre>
+  +----------+     +----------+     +----------+     +----------+     +----------+
+  |  Target  |     |  Recon   |     |Reasoning |     | Payload  |     |Reporting |
+  |  Input   | &rarr;  |  Intel   | &rarr;  | Engine   | &rarr;  |  Intel   | &rarr;  |  Output  |
+  | URL/     |     | Finger-  |     | Hypothes-|     | Select   |     | JSON/MD  |
+  | Domain   |     | printing |     | ize      |     | Mutate   |     | SARIF    |
+  +----------+     | WAF Det. |     | Plan     |     | Execute  |     | HTML     |
+                   +----------+     | Verify   |     +----------+     | Graph    |
+                                    +----------+                      +----------+
+                                              \                          /
+                                               \  +----------------+   /
+                                                &rarr; | Verification  | &larr;
+                                                    | Agent         |
+                                                    | Confidence    |
+                                                    | Scoring       |
+                                                    | FP Filtering  |
+                                                    +----------------+
+</pre>
+    </div>
+  </div>
+</div>
 
-## Quick Start
+<!-- ===== SHOWCASE ===== -->
+<div class="lp-section fade-in">
+  <div class="lp-section-header">
+    <h2>Showcase</h2>
+    <p>HunterX in action &mdash; from reconnaissance through reporting.</p>
+  </div>
+  <div class="lp-showcase">
+    <div class="lp-showcase-item">
+      <div class="lp-showcase-placeholder">
+        <code>hunterx scan target.com --profile bounty --preset quick</code>
+      </div>
+      <div class="caption">CLI Scan Execution</div>
+    </div>
+    <div class="lp-showcase-item">
+      <div class="lp-showcase-placeholder" style="aspect-ratio:16/12;">
+        <code>SARIF 2.1 &bull; HTML &bull; Knowledge Graph</code>
+      </div>
+      <div class="caption">Reporting Formats</div>
+    </div>
+    <div class="lp-showcase-item">
+      <div class="lp-showcase-placeholder">
+        <code>41 Skills &bull; 18 Goals &bull; 10 Agents</code>
+      </div>
+      <div class="caption">Architecture Overview</div>
+    </div>
+  </div>
+</div>
 
-```bash
-# Install
-pip install hunterx
+<!-- ===== COMMUNITY ===== -->
+<div class="lp-section fade-in" style="background:var(--bg-alt);padding-top:4rem;padding-bottom:4rem;max-width:100%;">
+  <div style="max-width:var(--max-width);margin:0 auto;padding:0 1.5rem;">
+    <div class="lp-section-header">
+      <h2>Community</h2>
+      <p>HunterX is open-source and community-driven. Apache 2.0 licensed.</p>
+    </div>
+    <div class="lp-community-links">
+      <a href="https://github.com/nullc0d30/HunterX" class="lp-community-link">
+        <span class="link-icon">&#9733;</span>
+        <div><div class="link-text">GitHub</div><div class="link-desc">Star &amp; fork the repository</div></div>
+      </a>
+      <a href="https://github.com/nullc0d30/HunterX/issues" class="lp-community-link">
+        <span class="link-icon">&#9888;</span>
+        <div><div class="link-text">Issues</div><div class="link-desc">Report bugs &amp; request features</div></div>
+      </a>
+      <a href="https://github.com/nullc0d30/HunterX/discussions" class="lp-community-link">
+        <span class="link-icon">&#9993;</span>
+        <div><div class="link-text">Discussions</div><div class="link-desc">Ask questions &amp; share ideas</div></div>
+      </a>
+      <a href="{{ '/blog' | relative_url }}" class="lp-community-link">
+        <span class="link-icon">&#128214;</span>
+        <div><div class="link-text">Blog</div><div class="link-desc">News, guides &amp; deep dives</div></div>
+      </a>
+      <a href="{{ '/roadmap' | relative_url }}" class="lp-community-link">
+        <span class="link-icon">&#128197;</span>
+        <div><div class="link-text">Roadmap</div><div class="link-desc">What&rsquo;s coming next</div></div>
+      </a>
+      <a href="{{ '/contributing' | relative_url }}" class="lp-community-link">
+        <span class="link-icon">&#128187;</span>
+        <div><div class="link-text">Contributing</div><div class="link-desc">How to get involved</div></div>
+      </a>
+    </div>
+  </div>
+</div>
 
-# Scan a target
-hunterx target.com
+<!-- ===== RELATED PROJECTS ===== -->
+<div class="lp-section fade-in" style="padding-top:2rem;padding-bottom:2rem;">
+  <div class="lp-section-header" style="margin-bottom:1.5rem;">
+    <h2 style="font-size:1.2rem;">Related Projects</h2>
+  </div>
+  <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+    <a href="https://ahmedawadresearch.github.io" style="padding:0.5rem 1rem;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:0.9rem;">Ahmed Awad Research</a>
+    <a href="https://anubisxframework.github.io/" style="padding:0.5rem 1rem;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:0.9rem;">AnubisX Framework</a>
+  </div>
+</div>
 
-# Full scan with AI analysis
-hunterx scan https://target.com --ai --ai-model llama3.2
+<!-- ===== ABOUT ===== -->
+<div class="lp-section fade-in">
+  <div class="lp-section-header">
+    <h2>About</h2>
+    <p>HunterX is built with a focus on reasoning-driven security assessment, safety-by-design, and enterprise-grade reporting.</p>
+  </div>
+  <div class="lp-about-grid">
+    <div class="lp-about-card">
+      <h3>&#128100; Author</h3>
+      <p><strong>Ahmed Awad</strong> (NullC0d3) &mdash; Cybersecurity Threat Intelligence Analyst and open-source developer. Creator of HunterX, AnubisX Framework, and RabbitHole.</p>
+      <p style="margin-top:0.5rem;"><a href="{{ '/about-author' | relative_url }}">Learn more &rarr;</a></p>
+    </div>
+    <div class="lp-about-card">
+      <h3>&#127919; Mission</h3>
+      <p>Democratize intelligent vulnerability assessment by combining AI-assisted reasoning with comprehensive security testing in a single, extensible open-source platform.</p>
+    </div>
+    <div class="lp-about-card">
+      <h3>&#128752; Responsible Use</h3>
+      <p>HunterX is provided exclusively for authorized security testing. Users are solely responsible for obtaining authorization before scanning any target.</p>
+      <p style="margin-top:0.5rem;"><a href="{{ '/responsible-use' | relative_url }}">Read the policy &rarr;</a></p>
+    </div>
+    <div class="lp-about-card">
+      <h3>&#128214; License</h3>
+      <p>Released under the Apache License, Version 2.0. Free to use, modify, and distribute for any purpose.</p>
+      <p style="margin-top:0.5rem;"><a href="{{ '/license' | relative_url }}">View license &rarr;</a></p>
+    </div>
+  </div>
+</div>
 
-# View reports
-hunterx report
-
-# System diagnostics
-hunterx doctor
-```
-
-### Docker
-
-```bash
-docker pull nullc0d30/hunterx:latest
-
-# Run a scan
-docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest scan target.com
-
-# API mode
-docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443
-
-# With AI analysis
-docker run --rm -v $(pwd)/reports:/data \
-    -e OPENAI_API_KEY=sk-... \
-    nullc0d30/hunterx:latest \
-    scan target.com --ai --ai-model gpt-4
-```
-
----
-
-## Documentation Hub
-
-| Guide | Description |
-|---|---|
-| [Installation](installation) | Install via pip, pipx, install.sh, Docker, or from source |
-| [Quickstart Guide](quickstart) | Run your first scan in 5 minutes |
-| [CLI Reference](cli) | Full CLI command and argument reference |
-| [REST API Reference](api) | All 40+ endpoints, request/response schemas |
-| [Configuration Guide](configuration) | YAML reference, environment variables, policy levels |
-| [Security Skills Framework](security-skills-framework) | 41 skills, registry, executor, policy management |
-| [Reasoning Engine](reasoning-engine) | 18 goal types, planner, validator, consensus |
-| [Multi-Agent Platform](agents) | 10 agents, event/message buses, workflows |
-| [AI Provider Guide](ai-provider-guide) | Provider abstraction, adding providers, caching |
-| [Skill SDK](skill-sdk) | Creating custom security skills |
-| [Plugin Development](plugin-development) | Detector, reporter, hook, and agent plugins |
-| [Module Reference](modules) | Available scan modules |
-| [Docker Guide](Docker_Guide) | Container deployment, volumes, environment |
-| [Examples](examples) | Real-world usage examples |
-| [Tutorials](tutorials) | Step-by-step walkthroughs |
-| [FAQ](faq) | Frequently asked questions |
-| [Roadmap](roadmap) | Upcoming features and development plans |
-
----
-
-## Community
-
-- [Star on GitHub](https://github.com/nullc0d30/HunterX)
-- [Report Bugs](https://github.com/nullc0d30/HunterX/issues)
-- [Ask Questions](https://github.com/nullc0d30/HunterX/discussions)
-- [Read the Blog](blog)
-- [Fork and Contribute](https://github.com/nullc0d30/HunterX)
-
----
-
-## Responsible Use
-
-HunterX is provided exclusively for authorized security testing, including professional penetration testing with written authorization, defensive security research, bug bounty programs that explicitly authorize testing, red team exercises conducted with permission, and educational purposes. Users are solely responsible for obtaining authorization before scanning any target.
-
-[Read the full Responsible Use policy &rarr;](responsible-use)
-
----
-
-## About the Author
-
-**Ahmed Awad** (known online as **NullC0d3**) is a Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. He is the creator of HunterX, the AnubisX Framework, and RabbitHole.
-
-- [About the Author](about-author)
-- [GitHub](https://github.com/nullc0d30)
-- [Docker Hub](https://hub.docker.com/u/nullc0d30)
-
----
-
-*HunterX is licensed under the Apache License, Version 2.0. Copyright &copy; 2026 Ahmed Awad (NullC0d3).*
+<!-- ===== DOCS CTA ===== -->
+<div class="lp-docs-cta fade-in">
+  <h2>Documentation</h2>
+  <p>Explore the complete documentation, API reference, tutorials, and guides.</p>
+  <a href="{{ '/documentation' | relative_url }}" class="primary">Browse Documentation &rarr;</a>
+</div>
