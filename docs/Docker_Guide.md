@@ -39,7 +39,7 @@ docker run --rm nullc0d30/hunterx:latest --help
 docker run --rm \
   -v "$(pwd)/reports:/data" \
   nullc0d30/hunterx:latest \
-  -u https://target.com --profile bounty -o /data
+  scan https://target.com --profile bounty -o /data
 ```
 
 ### Full Scan with All Skills
@@ -48,7 +48,7 @@ docker run --rm \
 docker run --rm \
   -v "$(pwd)/reports:/data" \
   nullc0d30/hunterx:latest \
-  -u https://target.com --preset full -o /data
+  scan https://target.com --preset full -o /data
 ```
 
 ### Stealth Scan
@@ -57,7 +57,7 @@ docker run --rm \
 docker run --rm \
   -v "$(pwd)/reports:/data" \
   nullc0d30/hunterx:latest \
-  -u https://target.com --stealth high --threads 2 --delay 3 -o /data
+  scan https://target.com --stealth high --threads 2 --delay 3 -o /data
 ```
 
 ### AI-Assisted Scan
@@ -67,7 +67,7 @@ docker run --rm \
   -v "$(pwd)/reports:/data" \
   -e OLLAMA_HOST=http://host.docker.internal:11434 \
   nullc0d30/hunterx:latest \
-  -u https://target.com --ai --ai-model llama3.2 -o /data
+  scan https://target.com --ai --ai-model llama3.2 -o /data
 ```
 
 ### With External Configuration
@@ -77,7 +77,7 @@ docker run --rm \
   -v "$(pwd)/reports:/data" \
   -v "$(pwd)/hunterx.yaml:/app/hunterx.yaml:ro" \
   nullc0d30/hunterx:latest \
-  -u https://target.com --profile internal -o /data
+  scan https://target.com --profile internal -o /data
 ```
 
 ---
@@ -113,7 +113,7 @@ curl -X POST http://localhost:8443/scan \
 ### CLI Mode (Run a Scan)
 
 ```bash
-docker compose run --rm hunterx -u https://target.com --profile bounty
+docker compose run --rm hunterx scan https://target.com --profile bounty
 ```
 
 ### API Mode (Persistent Server)
@@ -192,7 +192,7 @@ services:
 git clone https://github.com/nullc0d30/HunterX.git
 cd HunterX
 docker build -t hunterx:local .
-docker run --rm hunterx:local -u https://target.com --profile bounty
+docker run --rm hunterx:local scan https://target.com --profile bounty
 ```
 
 Build with version metadata:
@@ -239,7 +239,7 @@ docker run --rm \
   --memory="2g" --cpus="2" \
   -v "$(pwd)/reports:/data" \
   nullc0d30/hunterx:latest \
-  -u https://target.com --profile bounty -o /data
+  scan https://target.com --profile bounty -o /data
 ```
 
 - **No exposed ports by default**: Only the API server mode exposes port 8443.
@@ -271,7 +271,7 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - hunterx -u $TARGET_URL -o report.sarif
+    - hunterx scan $TARGET_URL -o report.sarif
   artifacts:
     paths: [report.sarif]
 ```

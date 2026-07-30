@@ -122,8 +122,7 @@ hunterx scan https://example.com --ai --ai-model gpt-4 --ai-endpoint https://my-
 ## Multi-Target Scanning
 
 ```bash
-# Targets file (one URL per line)
-hunterx scan target.com -f targets.txt
+for url in target1.com target2.com target3.com; do hunterx scan "$url"; done
 
 # Dry run (logic check only, no requests sent)
 hunterx scan target.com --dry-run

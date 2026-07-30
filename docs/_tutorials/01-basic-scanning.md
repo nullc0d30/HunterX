@@ -16,7 +16,7 @@ description: >-
 ## Single-Target Scan
 
 ```bash
-hunterx -u http://example.com
+hunterx scan http://example.com
 ```
 
 This runs all 4 stages against the target and produces a Markdown report.
@@ -34,7 +34,7 @@ http://target3.com
 Run:
 
 ```bash
-hunterx -f targets.txt --format json -o results.json
+for url in $(cat targets.txt); do hunterx scan "$url" --output-dir "./results/$url"; done
 ```
 
 ## Passive-Only Mode
@@ -42,7 +42,7 @@ hunterx -f targets.txt --format json -o results.json
 Gather information without sending probes:
 
 ```bash
-hunterx -u http://example.com --passive-only
+hunterx scan http://example.com --passive-only
 ```
 
 This runs Stage 0 (passive intel) and exits.

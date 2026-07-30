@@ -73,7 +73,7 @@ Custom profiles override all defaults and are not shown in legal banners or `--h
 ## Profile Selection
 
 Select a profile via:
-- CLI: `hunterx -u http://example.com -p bounty`
+- CLI: `hunterx scan http://example.com --profile bounty`
 - Config: `profile: name: bounty` in `hunterx.yaml`
 - Env: `HX_PROFILE=bounty`
 

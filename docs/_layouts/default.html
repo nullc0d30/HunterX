@@ -21,10 +21,10 @@
   <meta property="og:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
   <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="HunterX — AI-Assisted Vulnerability Hunter">
+  <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}">
+  <meta property="og:image:width" content="918">
+  <meta property="og:image:height" content="918">
+  <meta property="og:image:alt" content="HunterX — AI-Assisted Offensive Security Framework Logo">
   <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:locale" content="en_US">
   {% if page.layout == 'post' %}
@@ -44,8 +44,8 @@
   <meta name="twitter:creator" content="@nullc0d30">
   <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
-  <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
-  <meta name="twitter:image:alt" content="HunterX — AI-Assisted Vulnerability Hunter">
+  <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}">
+  <meta name="twitter:image:alt" content="HunterX — AI-Assisted Offensive Security Framework Logo">
   {% if page.layout == 'post' %}
   <meta name="twitter:label1" content="Written by">
   <meta name="twitter:data1" content="Ahmed Awad (NullC0d3)">
@@ -59,9 +59,11 @@
   <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ '/sitemap.xml' | absolute_url }}">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🎯</text></svg>">
-  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAdhJREFUWEftlT9Lw0AYh38X/w8oFIpWBOvg4CQ4OAiC4CJdxE0cBEFwcnAR3NwEBxdxEEFwEBxcnNycnJycnAQHQUhBqNf2S3JpS5Kml5S7NDfccO89v+d97yMAMcQYAgAA8A+AGBwBo4H4BYgBMAY+A/AJZoL3AN4A3gOw04sNzwCEKcFdANeS/3cBKEl+I8C2AHYBnAO4BPAF4JwkPklmRIAKAPWPSJ8AnCbJYy9BE2AE4CGAY5K8myYQwHMAFZL8oDQhAFSl3a4AQBPALkk+mhI4BLDMCEMjLVljAHJJXkzSoekagBpJDnSSQYClADaT5LFJAlkAU5J86AUEMAhgIUnemCQQB0gA2E+SVaMI1ABkSfLCJIMEYBbAYZJslEogD2BW64lNAkkA0yT5ZgrBCEATwFKSvBklkAOwRImeGiWwASBFkg8mCD6AJZL8borAO4CVJPlmHOEFQJUk/4wg9AHMA1hPknc/EezW4D2AN0ny3SgC3Qh4HnqJ0QVI8tIYAbdH/QDwzAR+R+ALLwDOAwBGZkD7kMyR5Jeh3+FYGG9k3P93qwy1X3fR7wBMk6QB9+sB4J8BM8kfO50HNe8G6IYAAAAASUVORK5CYII=">
-  <link rel="mask-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🎯</text></svg>" color="#155799">
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/images/favicon-16x16.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/images/favicon-32x32.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/apple-touch-icon.png' | relative_url }}">
+  <link rel="manifest" href="{{ '/assets/images/site.webmanifest' | relative_url }}">
   <meta name="theme-color" content="#0d1117">
 
   <!-- Critical CSS -->
@@ -241,6 +243,28 @@
     }
   </style>
 
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "HunterX",
+    "description": "{{ site.description | escape }}",
+    "url": "{{ site.url }}{{ site.baseurl }}",
+    "logo": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+    "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+    "sameAs": [
+      "https://github.com/nullc0d30/HunterX",
+      "https://hub.docker.com/u/nullc0d30"
+    ],
+    "founder": {
+      "@type": "Person",
+      "name": "Ahmed Awad (NullC0d3)",
+      "url": "https://github.com/nullc0d30"
+    }
+  }
+  </script>
+
   <!-- JSON-LD: WebSite -->
   <script type="application/ld+json">
   {
@@ -259,6 +283,11 @@
         "https://github.com/nullc0d30",
         "https://hub.docker.com/u/nullc0d30"
       ]
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "HunterX",
+      "logo": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png"
     },
     "potentialAction": {
       "@type": "SearchAction",
@@ -286,6 +315,12 @@
       "name": "Ahmed Awad (NullC0d3)",
       "url": "https://github.com/nullc0d30"
     },
+    "publisher": {
+      "@type": "Organization",
+      "name": "HunterX",
+      "logo": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png"
+    },
+    "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
     "license": "https://www.apache.org/licenses/LICENSE-2.0",
     "url": "https://github.com/nullc0d30/HunterX",
     "version": "6.0.0",
@@ -350,6 +385,7 @@
 
   <header class="site-header" role="banner">
     <div class="wrapper" style="flex-direction:column;max-width:var(--max-width);padding:0;">
+      <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" width="160" height="auto" style="margin-bottom:0.5rem;">
       <h1>{% if page.url == '/' %}HunterX{% else %}{{ page.title | default: site.title }}{% endif %}</h1>
       <p>{% if page.url == '/' %}Open-source AI-assisted vulnerability scanner for Linux. Red Team Framework, Offensive Security, Attack Surface Management, Threat Intelligence, Penetration Testing, and Bug Bounty automation.{% else %}{{ page.description | default: site.tagline }}{% endif %}</p>
       <nav class="header-nav" aria-label="Primary navigation">
@@ -460,6 +496,9 @@
   {% endif %}
 
   <footer class="site-footer" role="contentinfo">
+    <div style="margin-bottom:0.75rem;">
+      <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" width="80" height="auto" style="opacity:0.7;">
+    </div>
     <div class="footer-links">
       <a href="https://github.com/nullc0d30/HunterX">GitHub</a>
       <a href="https://hub.docker.com/u/nullc0d30">Docker Hub</a>

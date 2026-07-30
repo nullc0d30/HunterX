@@ -32,7 +32,8 @@ hunterx scan https://example.com --preset quick
 ## Multi-Target Scan
 
 ```bash
-hunterx scan target.com -f targets.txt -o ./results
+# Multi-target: pass target directly or script it
+for url in target1.com target2.com target3.com; do hunterx scan "$url" -o "./results/$url"; done
 ```
 
 ## Bounty Profile
