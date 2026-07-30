@@ -3,9 +3,9 @@ layout: default
 title: Frequently Asked Questions — HunterX
 keywords: FAQ, troubleshooting, bug bounty, open source security
 description: >-
-  Comprehensive FAQ covering HunterX vulnerability scanner: licensing, features,
-  architecture, usage, Docker, API, plugins, comparisons, and troubleshooting.
-  Apache 2.0 open-source.
+  Comprehensive FAQ covering HunterX offensive security framework: licensing,
+  features, architecture, usage, Docker, API, plugins, comparisons, and
+  troubleshooting. Apache 2.0 open-source.
 faq_page: true
 ---
 

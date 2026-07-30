@@ -3,8 +3,8 @@ layout: default
 title: Features & Architecture — HunterX v6.0.0
 keywords: Security Skills Framework, Reasoning Engine, Multi-Agent Platform, offensive security
 description: >-
-  Complete feature breakdown of HunterX v6.0.0 open-source vulnerability
-  scanner: Security Skills Framework (41 skills), Reasoning Engine (18 goals),
+  Complete feature breakdown of HunterX v6.0.0 open-source offensive security
+  framework: Security Skills Framework (41 skills), Reasoning Engine (18 goals),
   Multi-Agent Platform (10 agents), AI Provider Layer, Knowledge Graph, Threat
   Modeling, Payload Intelligence, and MITRE ATT&CK mapping for offensive
   security, penetration testing, and bug bounty hunting.

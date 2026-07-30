@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX — AI-Assisted Offensive Security Framework
 # Docker image publish workflow
 #
 # Publishes to Docker Hub: nullc0d30/hunterx
@@ -66,7 +66,7 @@ jobs:
             type=sha,format=short
           labels: |
             org.opencontainers.image.title=HunterX
-            org.opencontainers.image.description=AI-Assisted Vulnerability Hunter
+            org.opencontainers.image.description=AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting
             org.opencontainers.image.vendor=NullC0d3
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.version=${{ steps.meta.outputs.version }}

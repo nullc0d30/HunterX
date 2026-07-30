@@ -25,13 +25,13 @@ Comprehensive documentation is available in the repository and wiki:
 - [Support Guide](./docs/Support_Guide.md) — FAQ and troubleshooting
 - [Performance Guide](./docs/Performance_Guide.md) — Performance characteristics
 - [Design Decisions](./docs/Design_Decisions.md) — Architectural decisions
-- [Wiki](https://github.com/NullC0d3/HunterX/wiki) — Extended guides and references
+- [Wiki](https://github.com/nullc0d30/HunterX/wiki) — Extended guides and references
 
 ---
 
 ## GitHub Issues
 
-Use [GitHub Issues](https://github.com/NullC0d3/HunterX/issues) for:
+Use [GitHub Issues](https://github.com/nullc0d30/HunterX/issues) for:
 
 - Bug reports (with reproduction steps and logs)
 - Feature requests (with use case descriptions)
@@ -43,7 +43,7 @@ Before opening an issue, search existing issues to avoid duplicates. Use the pro
 
 ## GitHub Discussions
 
-Use [GitHub Discussions](https://github.com/NullC0d3/HunterX/discussions) for:
+Use [GitHub Discussions](https://github.com/nullc0d30/HunterX/discussions) for:
 
 - Questions about usage or configuration
 - Ideas and feature brainstorming
@@ -56,7 +56,7 @@ Discussions are community-driven. While maintainers participate, responses from 
 
 ## Security
 
-Report security vulnerabilities via [GitHub Private Vulnerability Reporting](https://github.com/NullC0d3/HunterX/security/advisories/new).
+Report security vulnerabilities via [GitHub Private Vulnerability Reporting](https://github.com/nullc0d30/HunterX/security/advisories/new).
 
 **Do not** open public issues for security vulnerabilities. See [SECURITY.md](./SECURITY.md) for the full security policy.
 
@@ -64,7 +64,7 @@ Report security vulnerabilities via [GitHub Private Vulnerability Reporting](htt
 
 ## Commercial Support
 
-Commercial support and sponsorship are available via [GitHub Sponsors](https://github.com/sponsors/NullC0d3).
+Commercial support and sponsorship are available via [GitHub Sponsors](https://github.com/sponsors/nullc0d30).
 
 Sponsorship helps fund:
 

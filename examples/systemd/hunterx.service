@@ -1,0 +1,31 @@
+[Unit]
+Description=HunterX — AI-Assisted Offensive Security Framework
+Documentation=https://nullc0d30.github.io/HunterX
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hunterx
+Group=hunterx
+WorkingDirectory=/opt/hunterx
+Environment=HX_LOG_LEVEL=INFO
+Environment=HX_CONFIG=/opt/hunterx/hunterx.yaml
+Environment=HX_DATA_DIR=/var/lib/hunterx
+Environment=HX_REPORT_DIR=/var/lib/hunterx/reports
+ExecStart=/usr/local/bin/hunterx api --host 0.0.0.0 --port 8443
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hunterx
+LimitNOFILE=65536
+PrivateTmp=true
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/hunterx
+
+[Install]
+WantedBy=multi-user.target

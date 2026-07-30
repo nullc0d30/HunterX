@@ -39,6 +39,7 @@ hunterx api --port 8443
 [Quick Start](#quick-start) ·
 [CLI Reference](#cli-reference) ·
 [Comparison](#comparison) ·
+[Documentation](https://nullc0d30.github.io/HunterX) ·
 [Contributing](#contributing)
 
 </div>
@@ -636,9 +637,17 @@ Use GitHub Private Vulnerability Reporting: https://github.com/nullc0d30/HunterX
 
 ## Roadmap
 
+See [ROADMAP.md](ROADMAP.md) for the full development roadmap.
+
 - **v6.x** — Community skill repository, Anthropic/Gemini/Bedrock providers, provider failover
 - **v7.x** — CI/CD integrations (GitHub Actions, GitLab CI, Jenkins), SIEM connectors, collaborative scanning
 - **Long-term** — Skill marketplace, enterprise features (RBAC, SSO), package managers (Homebrew, apt)
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 
 ---
 
@@ -659,6 +668,15 @@ git push origin feat/your-feature
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+---
+
+## Support
+
+- [Documentation Site](https://nullc0d30.github.io/HunterX) — Full documentation, tutorials, and API reference
+- [GitHub Issues](https://github.com/nullc0d30/HunterX/issues) — Bug reports and feature requests
+- [GitHub Discussions](https://github.com/nullc0d30/HunterX/discussions) — Questions, ideas, and community support
+- [Security Policy](SECURITY.md) — Responsible disclosure and reporting process
 
 ---
 

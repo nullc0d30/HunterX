@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.0.0] — 2026-07-30
 
 ### Added
-
 - Autonomous Multi-Agent Platform — 10 agents with orchestrator, event and message buses, workflow engine, scheduler, state management, memory, and context
 - Reasoning Engine — goals, planner, prompts, validator, formatter, policies, consensus, confidence, and memory subsystems
 - Security Skills Framework — 41 built-in skills, registry, loader, executor, marketplace, telemetry, cache, policy, validator, and planner
@@ -25,30 +24,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI expanded to 12 subcommand groups
 
 ### Changed
-
 - Test suite expanded from 76 to 623 tests
 - Codebase fully Ruff-clean throughout
+
+### Fixed
+- N/A (major version release)
+
+### Security
+- Safety-by-design destructive payload blocklist
+- WAF detection with auto-abort
+- Configurable rate limiting
+- Policy-driven execution controls
+
+### Performance
+- Multi-stage Docker build: 700MB → 271MB
+- FTS5-indexed payload search
+- Concurrent agent execution
+
+### Documentation
+- Comprehensive documentation site at https://nullc0d30.github.io/HunterX
+- SDK and plugin development guides
+- Architecture and design decision documents
+
+### Developer Experience
+- Ruff linting configured project-wide
+- MyPy type checking support
+- DCO requirement for contributions
+- Full CI/CD pipeline (test, lint, build, publish)
+
+### Compatibility
+- Python 3.11, 3.12, 3.13
+- Linux, macOS, Windows
+- Docker multi-platform images
+- REST API v1 (breaking from v4.x API)
+
+### References
+- GitHub Release: https://github.com/nullc0d30/HunterX/releases/tag/v6.0.0
+
+---
 
 ## [4.0.1] — 2026-07-22
 
 ### Changed
-
 - License changed from Proprietary to Apache 2.0
 - Docker image optimized via multi-stage build: 700MB to 271MB
 - CI matrix expanded to Python 3.11, 3.12, and 3.13
 
 ### Fixed
-
 - Security patches applied to requests library (CVE fixes)
 
 ### Added
-
 - DCO requirement for all contributions
+
+### Security
+- License transition to Apache 2.0
+- Dependency vulnerability fixes
+
+### Developer Experience
+- DCO sign-off requirement introduced
+- Expanded CI coverage across Python versions
+
+### References
+- GitHub Release: https://github.com/nullc0d30/HunterX/releases/tag/v4.0.1
+
+---
 
 ## [4.0] — 2026-07-22
 
 ### Added
-
 - REST API server (FastAPI)
 - Authentication providers — Basic, Bearer, Cookie, Form
 - 200+ detection signatures
@@ -63,25 +106,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LLM analysis (Ollama)
 - Anomaly clustering
 
+### Performance
+- Payload mutation engine
+- Concurrent scanning support
+
+### Documentation
+- REST API documentation
+- Authentication guide
+- Plugin development guide
+
+### References
+- GitHub Release: https://github.com/nullc0d30/HunterX/releases/tag/v4.0
+
+---
+
 ## [3.1] — 2026-07-20
 
 ### Fixed
-
 - Thread safety fixes
 - Rate limiting
 - WAF detection (50+ signatures)
 
 ### Added
-
 - 29 pytest tests
 - GitHub Actions CI
 - Operator profiles
 - Attack chain reasoning
 
+### Developer Experience
+- CI pipeline via GitHub Actions
+- Test framework established
+
+### References
+- GitHub Release: https://github.com/nullc0d30/HunterX/releases/tag/v3.1
+
+---
+
 ## [3.0] — 2026-07-01
 
 ### Added
-
 - Initial release
 - 4-stage pipeline
 - 100+ signatures
@@ -89,6 +152,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety guardrails
 - CLI with 10+ flags
 - Markdown, JSON, and ZIP reports
+
+### References
+- GitHub Release: https://github.com/nullc0d30/HunterX/releases/tag/v3.0
 
 ---
 

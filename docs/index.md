@@ -1,7 +1,7 @@
 ---
 layout: default
 title: HunterX — AI-Assisted Offensive Security Framework
-keywords: HunterX, Linux Security Tool, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security
+keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis
 description: >-
   HunterX is an AI-assisted offensive security framework combining intelligent
   reconnaissance, adaptive vulnerability discovery, payload orchestration, and

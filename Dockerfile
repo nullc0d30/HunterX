@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX — AI-Assisted Offensive Security Framework
 # Official Docker image: nullc0d30/hunterx
 # Multi-stage build for minimal production image
 
@@ -44,7 +44,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.vendor="NullC0d3" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.title="HunterX" \
-      org.opencontainers.image.description="HunterX ${VERSION} — AI-Assisted Vulnerability Hunter. Authorized security assessments only." \
+      org.opencontainers.image.description="HunterX ${VERSION} — AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting." \
       org.opencontainers.image.base.name="docker.io/python:3.11-slim"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -78,9 +78,9 @@ VOLUME ["/data"]
 
 EXPOSE 8443
 
-# Health check: verify the hunterx CLI works
+# Health check: verify the hunterx runtime is functional
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD hunterx --help >/dev/null 2>&1 || exit 1
+    CMD hunterx doctor >/dev/null 2>&1 || exit 1
 
 ENTRYPOINT ["hunterx"]
 CMD ["--help"]
