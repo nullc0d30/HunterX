@@ -33,7 +33,7 @@ penetration-testing-tool, network-security, ethical-hacking
 
 ## Social Preview (Settings → General → Social Preview)
 
-Upload `docs/assets/images/hunterx-social.png` (1200×630px).
+Upload `logo.png` (918×918px) from the repository root. This image is used as the official project logo, OpenGraph image, Twitter Card image, and favicon base.
 
 ---
 

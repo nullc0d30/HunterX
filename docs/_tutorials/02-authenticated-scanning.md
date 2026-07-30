@@ -12,15 +12,15 @@ description: >-
 ## Basic Auth
 
 ```bash
-hunterx -u http://example.com/admin \
-  -a basic --username admin --password s3cret
+hunterx scan http://example.com/admin \
+  --auth basic --username admin --password s3cret
 ```
 
 ## Bearer Token
 
 ```bash
-hunterx -u http://example.com/api \
-  -a bearer --token eyJhbGciOiJIUzI1NiIs...
+hunterx scan http://example.com/api \
+  --auth bearer --token eyJhbGciOiJIUzI1NiIs...
 ```
 
 ## Cookie Jar
@@ -36,7 +36,7 @@ Create `cookies.json`:
 ```
 
 ```bash
-hunterx -u http://example.com --cookie-file cookies.json
+hunterx scan http://example.com --cookie-file cookies.json
 ```
 
 ## Form Login
@@ -44,8 +44,8 @@ hunterx -u http://example.com --cookie-file cookies.json
 HunterX can programmatically log in via HTML forms:
 
 ```bash
-hunterx -u http://example.com \
-  -a form --username user --password pass
+hunterx scan http://example.com \
+  --auth form --username user --password pass
 ```
 
 For custom form fields, use the YAML config:

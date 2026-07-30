@@ -11,6 +11,8 @@ description: >-
 
 <div class="hero">
 
+<img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" width="200" height="auto" style="margin-bottom:1rem;">
+
 [![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)

@@ -15,7 +15,7 @@ HunterX supports four authentication modes for scanning authenticated targets.
 ## Basic Auth
 
 ```bash
-hunterx -u http://example.com -a basic --username admin --password s3cret
+hunterx scan http://example.com --auth basic --username admin --password s3cret
 ```
 
 YAML:
@@ -30,7 +30,7 @@ auth:
 ## Bearer Token
 
 ```bash
-hunterx -u http://example.com -a bearer --token eyJhbGciOi...
+hunterx scan http://example.com --auth bearer --token eyJhbGciOi...
 ```
 
 YAML:
@@ -46,7 +46,7 @@ auth:
 Load cookies from a JSON file:
 
 ```bash
-hunterx -u http://example.com --cookie-file cookies.json
+hunterx scan http://example.com --cookie-file cookies.json
 ```
 
 YAML:

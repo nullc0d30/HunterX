@@ -234,10 +234,10 @@ Full reference: [REST API](api)
 
 ```bash
 # Scanning
-hunterx -u http://target.com --profile bounty
-hunterx -u http://target.com --preset full --threads 10
-hunterx -u http://target.com --ai --ai-model llama3.2
-hunterx -f targets.txt --profile gov --stealth high
+hunterx scan http://target.com --profile bounty
+hunterx scan http://target.com --preset full --threads 10
+hunterx scan http://target.com --ai --ai-model llama3.2
+hunterx scan target.com --profile gov --stealth high
 
 # API Server
 hunterx api --port 8443
@@ -246,7 +246,7 @@ hunterx api --port 8443
 hunterx skills list
 hunterx agents list
 hunterx payload stats
-hunterx reasoning create --goal "Assess auth" --target http://target.com
+hunterx reasoning inspect <goal_id>
 hunterx workflow list
 hunterx ai providers
 ```

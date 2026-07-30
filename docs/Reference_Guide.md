@@ -248,13 +248,13 @@ hunterx [options] <command>
 ### Basic Scan
 
 ```bash
-hunterx -u http://target.com --profile bounty
+hunterx scan http://target.com --profile bounty
 ```
 
 ### Scan with Intelligence Layer
 
 ```bash
-hunterx -u http://target.com --graph --threat-model --risk --purple
+hunterx scan http://target.com --graph --threat-model --risk --purple
 ```
 
 ### API Server
@@ -266,7 +266,7 @@ hunterx api --port 8443
 ### AI-Powered Scan
 
 ```bash
-hunterx -u http://target.com --ai --ai-model llama3.2
+hunterx scan http://target.com --ai --ai-model llama3.2
 ```
 
 ### Payload Management

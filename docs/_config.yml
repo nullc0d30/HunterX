@@ -12,7 +12,8 @@ description: >-
 url: "https://nullc0d30.github.io/HunterX"
 baseurl: "/HunterX"
 repository: nullc0d30/HunterX
-logo: /assets/images/hunterx-social.png
+logo: /assets/images/logo.png
+image: /assets/images/logo.png
 author:
   name: Ahmed Awad (NullC0d3)
   url: https://github.com/nullc0d30
@@ -65,7 +66,7 @@ defaults:
     values:
       layout: default
       author: Ahmed Awad (NullC0d3)
-      image: /assets/images/hunterx-social.png
+      image: /assets/images/logo.png
   - scope:
       path: "_posts"
     values:

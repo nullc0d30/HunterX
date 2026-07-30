@@ -17,7 +17,7 @@ HunterX provides an optimized 271MB multi-stage Docker image running as a non-ro
 ## Quick Start
 
 ```bash
-docker run --rm nullc0d30/hunterx:latest -u http://example.com --profile bounty
+docker run --rm nullc0d30/hunterx:latest scan http://example.com --profile bounty
 ```
 
 ## Production Deployment
@@ -29,7 +29,7 @@ docker run --rm \
   -v $(pwd)/hunterx.yaml:/app/hunterx.yaml:ro \
   -v $(pwd)/reports:/data \
   nullc0d30/hunterx:latest \
-  -u http://example.com -o /data
+  scan http://example.com -o /data
 ```
 
 ### Resource Limits
@@ -38,7 +38,7 @@ docker run --rm \
 docker run --rm \
   --memory="512m" \
   --cpus="2" \
-  nullc0d30/hunterx:latest -u http://example.com
+  nullc0d30/hunterx:latest scan http://example.com
 ```
 
 ### API Server
@@ -61,7 +61,7 @@ jobs:
     container:
       image: nullc0d30/hunterx:latest
     steps:
-      - run: hunterx -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
+      - run: hunterx scan {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
           -o /data/report.sarif
 ```
 
@@ -71,7 +71,7 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - hunterx -u $TARGET_URL -o report.sarif
+    - hunterx scan $TARGET_URL -o report.sarif
   artifacts:
     paths: [report.sarif]
 ```
