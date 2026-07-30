@@ -1,11 +1,14 @@
 ---
 layout: default
 title: Support — HunterX v6.0.0
-description: Support channels for HunterX open-source AI-assisted vulnerability scanner. Community forums, documentation, and enterprise support.
+description: >-
+  Support channels for HunterX open-source AI-assisted vulnerability scanner
+  and red team framework. Community forums, GitHub Discussions, documentation,
+  and issue tracking for penetration testing and cybersecurity tool support.
 permalink: /support/
 ---
 
-# Support
+## Support
 
 This document describes the support channels available for HunterX.
 

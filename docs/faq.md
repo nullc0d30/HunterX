@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Frequently Asked Questions — HunterX
+keywords: FAQ, troubleshooting, bug bounty, open source security
 description: >-
   Comprehensive FAQ covering HunterX vulnerability scanner: licensing, features,
   architecture, usage, Docker, API, plugins, comparisons, and troubleshooting.
@@ -8,13 +9,13 @@ description: >-
 faq_page: true
 ---
 
-# Frequently Asked Questions
+## Frequently Asked Questions
 
 <div itemscope itemtype="https://schema.org/FAQPage">
 {% capture faq_items %}
 
 1. **What is HunterX?**
-   HunterX is an open-source, AI-assisted vulnerability assessment and penetration testing framework. It uses a 4-stage reasoning pipeline — passive intel, probe, confirm, verify — to identify security vulnerabilities in web applications and APIs. Licensed under Apache 2.0.
+   HunterX is an open-source, AI-assisted vulnerability assessment and penetration testing framework. It uses a 4-stage reasoning pipeline — Observe, Hypothesize, Probe, Verify — to identify security vulnerabilities in web applications and APIs. Licensed under Apache 2.0.
 
 2. **Who should use HunterX?**
    HunterX is designed for professional Red Team operators, penetration testers, bug bounty hunters, security researchers, and DevOps engineers who need an automated, context-aware vulnerability scanner with safety-by-design guardrails.
@@ -29,16 +30,16 @@ faq_page: true
    Traditional scanners rely on brute-force payload matching. HunterX uses a reasoning engine that builds a baseline fingerprint, analyzes response differentials, considers authentication state, operator profile, and contextual signals before increasing confidence in a finding. It is safer, more accurate, and more explainable.
 
 6. **How does the 4-stage pipeline work?**
-   Stage 0 (Passive Intel) gathers target context from headers and detects WAF, WebSocket endpoints, and GraphQL. Stage 1 (Probe) sends diverse probes across attack categories. Stage 2 (Confirm) deepens probes in categories showing anomalies. Stage 3 (Verify) safely verifies confirmed vulnerabilities.
+   Stage 1 (Observe) gathers target context from headers and detects WAF, WebSocket endpoints, and GraphQL. Stage 2 (Hypothesize) forms security hypotheses based on observed attack surface. Stage 3 (Probe) executes targeted tests via 41 security skills. Stage 4 (Verify) validates findings and eliminates false positives.
 
 7. **Does HunterX support Docker?**
     Yes. HunterX provides a multi-stage Docker image available on Docker Hub at `nullc0d30/hunterx`. The container runs as a non-root user, supports linux/amd64 and linux/arm64, and follows security best practices.
 
 8. **Can I run HunterX as an API server?**
-   Yes. HunterX includes a built-in FastAPI REST server. Start it with `python hunterx.py api --port 8443`. Submit scan jobs via `POST /scan`, poll results via `GET /scan/{id}`, check health via `GET /health`.
+   Yes. HunterX includes a built-in FastAPI REST server. Start it with `hunterx api --port 8443`. Submit scan jobs via `POST /scan`, poll results via `GET /scan/{id}`, check health via `GET /health`.
 
 9. **Does HunterX support authenticated scanning?**
-   Yes. HunterX supports Basic Auth, Bearer Token, Cookie Jar (from JSON file), and Form Login authentication. Configure via CLI flags or the `hunterx.yaml` configuration file.
+   Yes. HunterX supports Basic Auth, Bearer Token, Cookie Jar (from JSON file), Form Login, and JWT authentication. Configure via CLI flags or the `hunterx.yaml` configuration file.
 
 10. **What vulnerability types can HunterX detect?**
     HunterX detects 200+ vulnerability signatures including LFI/Path Traversal, RCE/Command Injection, SQL Injection, SSTI, SSRF, XSS, Open Redirect, and XXE.
@@ -65,7 +66,7 @@ faq_page: true
     Yes. HunterX includes 50+ WAF detection signatures, auto-abort on WAF detection, and a payload mutation engine that generates encoding, SQL, and LFI variants for evasion.
 
 18. **What reporting formats are supported?**
-    Markdown (human-readable), JSON (machine-parsable), SARIF 2.1 (VS Code/GitHub CodeQL integration), HTML (visual dashboard), and ZIP (evidence package).
+    Markdown (human-readable), JSON (machine-parsable), SARIF 2.1 (VS Code/GitHub CodeQL integration), HTML (visual dashboard), attack graphs, purple team detection rules, and ZIP (evidence package).
 
 19. **Can I use HunterX in CI/CD pipelines?**
     Yes. HunterX runs in Docker and can be integrated into GitHub Actions, GitLab CI, Jenkins, or any CI/CD platform. SARIF output integrates natively with GitHub CodeQL.
@@ -77,13 +78,13 @@ faq_page: true
     HunterX is Apache 2.0 licensed, which permits commercial use. If your organization uses it commercially, please consider supporting the project via GitHub Sponsors.
 
 22. **Can I contribute to HunterX?**
-    Yes. Contributions are welcome. See the CONTRIBUTING.md guide for fork workflow, commit conventions, and the DCO (Developer Certificate of Origin) requirement.
+    Yes. Contributions are welcome. See the [Contributing Guide]({{ '/contributing' | relative_url }}) for fork workflow, commit conventions, and the DCO (Developer Certificate of Origin) requirement.
 
 23. **How do I report a security vulnerability in HunterX?**
-    Use GitHub Private Vulnerability Reporting (Security tab) or open a regular issue requesting a secure communication channel. Do NOT post vulnerability details in public issues.
+    Use GitHub Private Vulnerability Reporting (Security tab) or open a regular issue requesting a secure communication channel.
 
 24. **Does HunterX have a roadmap?**
-    Yes. The v6.0.0 roadmap focuses on ecosystem growth: community skill repository, additional AI providers (Anthropic, Google Gemini), CI/CD pipeline plugins (GitHub Actions, GitLab CI), SIEM connectors, and collaborative scanning. See the full ROADMAP.md.
+    Yes. See the [Roadmap]({{ '/roadmap' | relative_url }}) for planned features including community skill repository, additional AI providers, CI/CD integrations, and enterprise features.
 
 25. **How does HunterX compare to Nuclei?**
     Nuclei is a fast template-based scanner using YAML templates. HunterX is a reasoning-driven framework with a 4-stage pipeline, response differential analysis, and context-aware scoring. Both are complementary — Nuclei excels at template-based checks, HunterX excels at depth and reasoning.
@@ -98,7 +99,7 @@ faq_page: true
     No. HunterX works fully offline. AI/ML features (Ollama, scikit-learn) and OOB detection (collaborator URL) are optional and disabled by default.
 
 29. **What is the maximum number of targets I can scan?**
-    HunterX supports single-target (`-u URL`), multi-target file (`-f targets.txt`), and API-driven scanning. Limits are governed by the operator profile (e.g., Bounty: 500 requests, Gov: 100 requests).
+    HunterX supports single-target (`hunterx target.com`) and API-driven scanning. Limits are governed by the operator profile (e.g., Bounty: 500 requests, Gov: 100 requests).
 
 30. **How do I cite HunterX in academic research?**
     Use the CITATION.cff file or the BibTeX entry in the README. Example: `@software{hunterx2026, author = {Ahmed Awad (NullC0d3)}, title = {HunterX: AI-Assisted Vulnerability Hunter}, version = {6.0.0}, year = {2026}, license = {Apache-2.0}, url = {https://github.com/nullc0d30/HunterX} }`
@@ -110,7 +111,7 @@ faq_page: true
     Yes. HunterX uses a token-bucket algorithm for rate limiting. The maximum requests per second (`max_rps`) is configurable via YAML, CLI, or the `HX_MAX_RPS` environment variable.
 
 33. **Can I run HunterX in passive mode?**
-    Use the `--dry-run` flag for logic verification without sending any requests.
+    Use the `--dry-run` flag for logic verification without sending any requests, or `--passive-only` for Stage 0 reconnaissance.
 
 34. **What is the destructive payload blocklist?**
     HunterX includes a hard-coded, non-bypassable blocklist of destructive payloads including `rm -rf`, `mkfs`, `dd if=`, fork bombs, reverse shells, and SQL write statements. These are blocked at the code level before any request is sent.

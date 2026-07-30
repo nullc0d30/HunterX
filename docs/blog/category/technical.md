@@ -6,7 +6,7 @@ description: >-
   system, and internals for security researchers and developers.
 ---
 
-# Technical Articles
+## Technical Articles
 
 <ul>
 {% for post in site.posts %}

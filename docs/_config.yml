@@ -1,20 +1,41 @@
 title: HunterX — AI-Assisted Vulnerability Hunter
-tagline: Open-source AI-assisted vulnerability scanner with Security Skills Framework, Reasoning Engine, and Multi-Agent Platform
+tagline: Open-source AI-assisted vulnerability scanner for Linux. Red Team Framework, Offensive Security, Attack Surface Management, Threat Intelligence, Penetration Testing, and Bug Bounty automation.
 description: >-
   HunterX is an open-source AI-assisted vulnerability scanner and security
-  assessment platform. Features include a Security Skills Framework (41 skills),
-  Reasoning Engine, Multi-Agent Platform (10 agents), AI Provider Abstraction
-  Layer, Knowledge Graph, Threat Modeling, Attack Chain Analysis, Payload
-  Intelligence Platform with mutation engine, MITRE ATT&CK mapping, and
-  enterprise REST API. Licensed under Apache 2.0.
+  assessment platform for Linux. Features include a Security Skills Framework
+  (41 skills), Reasoning Engine, Multi-Agent Platform (10 agents), AI Provider
+  Abstraction Layer, Knowledge Graph, Threat Modeling, Attack Chain Analysis,
+  Payload Intelligence Platform with mutation engine, MITRE ATT&CK mapping,
+  and enterprise REST API. Open source security tool for penetration testing,
+  red team operations, bug bounty hunting, OSINT reconnaissance, attack surface
+  management, and cybersecurity automation. Licensed under Apache 2.0.
 url: "https://nullc0d30.github.io/HunterX"
 baseurl: "/HunterX"
 repository: nullc0d30/HunterX
+logo: /assets/images/hunterx-social.png
 author:
   name: Ahmed Awad (NullC0d3)
   url: https://github.com/nullc0d30
+twitter:
+  username: nullc0d30
+  card: summary_large_image
+social:
+  name: HunterX
+  links:
+    - https://github.com/nullc0d30/HunterX
+    - https://hub.docker.com/u/nullc0d30
 lang: en_US
 timezone: UTC
+
+# SEO keywords
+keywords: >-
+  HunterX, Linux Security Tool, Red Team Framework, Offensive Security, OSINT,
+  Attack Surface Management, Threat Intelligence, Cybersecurity, Penetration
+  Testing, Automation, Reconnaissance, Bug Bounty, Open Source Security,
+  vulnerability scanner, AI-assisted penetration testing, security assessment,
+  red team framework, cybersecurity framework, Security Skills Framework,
+  Knowledge Graph, Threat Modeling, Payload Intelligence, MITRE ATT&CK, OWASP,
+  API security, web application security, cloud security
 
 # SEO
 plugins:
@@ -81,3 +102,9 @@ exclude:
 # Feed
 feed:
   path: /blog/feed.xml
+
+# SEO tag
+webmaster_verifications:
+  google: ""
+  bing: ""
+  yandex: ""

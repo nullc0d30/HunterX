@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/nullc0d30/HunterX/discussions
+    about: Please ask questions and start discussions here.
+  - name: Security Issues
+    url: https://github.com/NullC0d3/HunterX/security/advisories/new
+    about: Report security vulnerabilities via Private Vulnerability Reporting.

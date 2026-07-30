@@ -1,11 +1,15 @@
 ---
 layout: default
 title: HunterX Plugin Development Guide v6.0.0 — HunterX v6.0.0
-description: Plugin development guide for HunterX v6.0.0. Detector, Reporter, Hook, Agent, and Skill plugin development with SDK.
+description: >-
+  Plugin development guide for HunterX v6.0.0 open-source vulnerability
+  scanner. Build custom Detector, Reporter, Hook, Agent, and Skill plugins
+  to extend the red team framework for penetration testing and cybersecurity
+  automation.
 permalink: /plugin-development/
 ---
 
-# HunterX Plugin Development Guide v6.0.0
+## Plugin Development Guide
 
 HunterX v6.0.0 supports extensibility through a plugin architecture with five plugin types: Detector, Reporter, Hook, Agent, and Skill plugins. This document describes how to develop each type.
 

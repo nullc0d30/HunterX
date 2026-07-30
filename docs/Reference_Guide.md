@@ -1,11 +1,15 @@
 ---
 layout: default
 title: Reference Guide — HunterX v6.0.0
-description: Complete CLI and REST API reference for HunterX v6.0.0. All commands, arguments, endpoints, and examples.
+description: >-
+  Complete CLI and REST API reference for HunterX v6.0.0 vulnerability
+  scanner. All commands, arguments, endpoints, and examples for the
+  open-source Linux security tool for penetration testing, red team
+  operations, and cybersecurity automation.
 permalink: /reference-guide/
 ---
 
-# HunterX v6.0.0 Reference Guide
+## Reference Guide
 
 ## Table of Contents
 
@@ -46,7 +50,7 @@ permalink: /reference-guide/
 ## Usage
 
 ```
-python hunterx.py [options] <command>
+hunterx [options] <command>
 ```
 
 ---
@@ -244,55 +248,55 @@ python hunterx.py [options] <command>
 ### Basic Scan
 
 ```bash
-python hunterx.py -u http://target.com --profile bounty
+hunterx -u http://target.com --profile bounty
 ```
 
 ### Scan with Intelligence Layer
 
 ```bash
-python hunterx.py -u http://target.com --graph --threat-model --risk --purple
+hunterx -u http://target.com --graph --threat-model --risk --purple
 ```
 
 ### API Server
 
 ```bash
-python hunterx.py api --port 8443
+hunterx api --port 8443
 ```
 
 ### AI-Powered Scan
 
 ```bash
-python hunterx.py -u http://target.com --ai --ai-model llama3.2
+hunterx -u http://target.com --ai --ai-model llama3.2
 ```
 
 ### Payload Management
 
 ```bash
-python hunterx.py payload sync
-python hunterx.py payload index
-python hunterx.py payload search "XSS" --limit 10
+hunterx payload sync
+hunterx payload index
+hunterx payload search "XSS" --limit 10
 ```
 
 ### Agent Management
 
 ```bash
-python hunterx.py agents list
-python hunterx.py agents status
+hunterx agents list
+hunterx agents status
 ```
 
 ### Skills Management
 
 ```bash
-python hunterx.py skills list
-python hunterx.py skills info sql_injection
+hunterx skills list
+hunterx skills info sql_injection
 ```
 
 ### AI Provider Management
 
 ```bash
-python hunterx.py ai providers
-python hunterx.py ai health --provider ollama
-python hunterx.py ai test --prompt "Analyze this log"
+hunterx ai providers
+hunterx ai health --provider ollama
+hunterx ai test --prompt "Analyze this log"
 ```
 
 ---
@@ -306,7 +310,7 @@ Base URL: `http://localhost:8443`
 All endpoints are implemented via **FastAPI** in `api/server.py`. Start the server:
 
 ```bash
-python hunterx.py api --port 8443
+hunterx api --port 8443
 ```
 
 Requires `fastapi` and `uvicorn`:

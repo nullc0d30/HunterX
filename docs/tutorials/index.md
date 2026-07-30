@@ -7,7 +7,7 @@ description: >-
   bounty, and CI/CD integration.
 ---
 
-# Tutorials
+## Tutorials
 
 Step-by-step hands-on guides for HunterX.
 
@@ -22,19 +22,25 @@ Step-by-step hands-on guides for HunterX.
 {% endfor %}
 </ul>
 
-## Tutorial Topics
+## Available Tutorials
 
-1. **Basic Scanning**: Single-target, multi-target, passive mode
-2. **Advanced Configuration**: Custom headers, proxies, timeouts
-3. **Authenticated Scanning**: Form login, bearer token, cookie jar
-4. **Profile Selection**: Internal vs Bounty vs Gov profiles
-5. **API Server Usage**: REST API scan job management
-6. **Plugin Development**: Custom detectors, reporters, hooks
-7. **Reporting**: SARIF, HTML, ZIP evidence packages
-8. **Docker Deployment**: Production container setup
-9. **CI/CD Integration**: GitHub Actions, GitLab CI, Jenkins
-10. **AI/ML Features**: LLM analysis and anomaly detection
+1. **Basic Scanning** — Single-target and multi-target scans, passive mode
+2. **Authenticated Scanning** — Form login, bearer token, cookie jar, JWT
+3. **API Server Usage** — REST API scan job management
+4. **Profile Selection** — Internal vs Bounty vs Gov profiles
+5. **Plugin Development** — Custom detectors, reporters, hooks
+6. **Reporting** — SARIF, HTML, attack graphs, ZIP evidence packages
+7. **Docker Deployment** — Production container setup
+8. **CI/CD Integration** — GitHub Actions, GitLab CI, Jenkins
+9. **AI/ML Features** — LLM analysis and anomaly detection
+
+## Related Guides
+
+- [Quickstart Guide]({{ '/quickstart' | relative_url }})
+- [Examples]({{ '/examples' | relative_url }})
+- [Installation]({{ '/installation' | relative_url }})
+- [CLI Reference]({{ '/cli' | relative_url }})
 
 ## Contribute a Tutorial
 
-Tutorials are welcome via pull request. See the [contributing guide](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md).
+Tutorials are welcome via pull request. See the [contributing guide]({{ '/contributing' | relative_url }}).

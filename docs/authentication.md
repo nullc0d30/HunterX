@@ -2,19 +2,20 @@
 layout: default
 title: Authentication Modes — HunterX
 description: >-
-  HunterX authentication configuration: Basic Auth, Bearer Token, Cookie Jar,
-  and Form Login. CLI flags, YAML config, and environment variable setup for
-  authenticated vulnerability scanning.
+  HunterX authentication configuration for penetration testing and bug bounty
+  hunting. Basic Auth, Bearer Token, Cookie Jar, Form Login, and JWT analysis.
+  CLI flags, YAML config, and environment variable setup for the open-source
+  Linux security tool.
 ---
 
-# Authentication
+## Authentication
 
 HunterX supports four authentication modes for scanning authenticated targets.
 
 ## Basic Auth
 
 ```bash
-python hunterx.py -u http://example.com -a basic --username admin --password s3cret
+hunterx -u http://example.com -a basic --username admin --password s3cret
 ```
 
 YAML:
@@ -29,7 +30,7 @@ auth:
 ## Bearer Token
 
 ```bash
-python hunterx.py -u http://example.com -a bearer --token eyJhbGciOi...
+hunterx -u http://example.com -a bearer --token eyJhbGciOi...
 ```
 
 YAML:
@@ -45,7 +46,7 @@ auth:
 Load cookies from a JSON file:
 
 ```bash
-python hunterx.py -u http://example.com --cookie-file cookies.json
+hunterx -u http://example.com --cookie-file cookies.json
 ```
 
 YAML:

@@ -7,7 +7,7 @@ description: >-
   and security research.
 ---
 
-# Blog
+## Blog
 
 ## Latest Posts
 

@@ -3,47 +3,76 @@ layout: default
 title: Examples — HunterX Usage
 description: >-
   Real-world usage examples for HunterX vulnerability scanner. Basic scans,
-  authenticated testing, API server, CI/CD integration, Docker deployment,
-  and plugin development examples.
+  authenticated testing, AI analysis, API server, Docker deployment,
+  reporting, and plugin development examples.
 ---
 
-# Examples
+## Examples
+
+## Basic Reconnaissance
+
+```bash
+# Passive recon only
+hunterx scan target.com --passive-only
+
+# Stealth scan for production
+hunterx scan target.com --stealth high --threads 2
+
+# Dry run (verify logic, no requests)
+hunterx scan target.com --dry-run
+```
 
 ## Basic Scan
 
 ```bash
-python hunterx.py -u http://example.com
+hunterx target.com
+hunterx scan https://example.com --preset quick
 ```
 
 ## Multi-Target Scan
 
 ```bash
-python hunterx.py -f targets.txt --format json -o results.json
+hunterx scan target.com -f targets.txt -o ./results
 ```
 
 ## Bounty Profile
 
 ```bash
-python hunterx.py -u http://example.com -p bounty --max-rps 10
+hunterx scan https://example.com --profile bounty --preset quick \
+    --category injection,authentication
 ```
 
 ## Authenticated Scan (Bearer Token)
 
 ```bash
-python hunterx.py -u http://example.com -a bearer --token eyJhbG...
+hunterx scan https://example.com --auth bearer --token eyJhbG...
 ```
 
 ## Form Login
 
 ```bash
-python hunterx.py -u http://example.com -a form --username admin --password s3cret
+hunterx scan https://example.com --auth form --username admin --password s3cret \
+    --login-url https://example.com/login
+```
+
+## AI-Powered Analysis
+
+```bash
+# Local Ollama
+hunterx scan target.com --ai --ai-model llama3.2
+
+# OpenAI
+hunterx scan target.com --ai --ai-model gpt-4
+
+# Generate AI explanations
+hunterx scan target.com --ai --explain
 ```
 
 ## API Server
 
 ```bash
 # Start server
-python hunterx.py api --port 8443
+hunterx api --port 8443
 
 # Submit scan
 curl -X POST http://localhost:8443/scan \
@@ -61,21 +90,35 @@ curl http://localhost:8443/health
 
 ```bash
 docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest \
-  scan -u http://example.com -o /reports/report.md
+    scan target.com -o /data
+```
+
+## Reporting
+
+```bash
+# Generate SARIF for CodeQL integration
+hunterx scan target.com --sarif
+
+# Generate visual attack graph
+hunterx scan target.com --attack-graph
+
+# Generate threat model
+hunterx scan target.com --threat-model
+
+# Generate purple team detection rules
+hunterx scan target.com --purple
+
+# Generate knowledge graph
+hunterx scan target.com --graph
 ```
 
 ## Python SDK
 
 ```python
-from hunterx.scanner import Scanner
+from hunterx import HunterX
 
-scanner = Scanner(
-    url="http://example.com",
-    profile="bounty",
-    max_rps=10,
-    format="json"
-)
-results = scanner.run()
+client = HunterX(target="http://example.com", profile="bounty")
+results = client.run()
 print(results.to_dict())
 ```
 
@@ -84,8 +127,8 @@ print(results.to_dict())
 ```yaml
 - name: Run HunterX Scan
   run: |
-    docker run --rm nullc0d30/hunterx:latest -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
-      -o /reports/report.sarif --format sarif
+    docker run --rm nullc0d30/hunterx:latest \
+      scan ${{ secrets.TARGET_URL }} -o /reports/report.sarif
 ```
 
 ## Custom Plugin

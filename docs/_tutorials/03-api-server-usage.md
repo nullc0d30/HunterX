@@ -7,12 +7,12 @@ description: >-
   from Python.
 ---
 
-# Tutorial: Using HunterX as an API Server
+## Tutorial: Using HunterX as an API Server
 
 ## Starting the Server
 
 ```bash
-python hunterx.py api --port 8443 --host 0.0.0.0
+hunterx api --port 8443 --host 0.0.0.0
 ```
 
 ## Health Check

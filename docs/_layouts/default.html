@@ -7,9 +7,9 @@
 
   <title>{% if page.title %}{{ page.title | escape }} — HunterX{% else %}{{ site.title | escape }}{% endif %}</title>
   <meta name="description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
-
-  <!-- SEO keywords -->
-  <meta name="keywords" content="AI-assisted vulnerability scanner, AI-assisted penetration testing, vulnerability assessment, security assessment, red team framework, cybersecurity framework, open-source security, Threat Intelligence, Security Skills Framework, Knowledge Graph, Threat Modeling, Payload Intelligence, security automation, security orchestration, Purple Team, MITRE ATT&CK, OWASP, API security, web application security, cloud security, GraphQL security, WebSocket security, bug bounty, security research, {{ page.tags | default: '' | join: ', ' }}">
+  <meta name="keywords" content="{% if page.keywords %}{{ page.keywords | escape }}, {% endif %}HunterX, Linux Security Tool, Red Team Framework, Offensive Security, OSINT, Attack Surface Management, Threat Intelligence, Cybersecurity, Penetration Testing, Automation, Reconnaissance, Bug Bounty, Open Source Security, vulnerability scanner, AI-assisted penetration testing, security assessment">
+  <meta name="author" content="Ahmed Awad (NullC0d3)">
+  <meta name="robots" content="index, follow">
 
   <!-- Search Engine Verification -->
   <meta name="google-site-verification" content="{{ site.google_site_verification | default: '' }}">
@@ -22,19 +22,41 @@
   <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="HunterX — AI-Assisted Vulnerability Hunter">
   <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:locale" content="en_US">
-  <meta property="og:updated_time" content="{{ page.date | date_to_xmlschema | default: site.time | date_to_xmlschema }}">
+  {% if page.layout == 'post' %}
+  <meta property="og:published_time" content="{{ page.date | date_to_xmlschema }}">
+  <meta property="article:author" content="Ahmed Awad (NullC0d3)">
+  <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+    {% if page.tags %}
+      {% for tag in page.tags %}
+  <meta property="article:tag" content="{{ tag | escape }}">
+      {% endfor %}
+    {% endif %}
+  {% endif %}
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nullc0d30">
+  <meta name="twitter:creator" content="@nullc0d30">
   <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
   <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/hunterx-social.png' | absolute_url }}">
+  <meta name="twitter:image:alt" content="HunterX — AI-Assisted Vulnerability Hunter">
+  {% if page.layout == 'post' %}
+  <meta name="twitter:label1" content="Written by">
+  <meta name="twitter:data1" content="Ahmed Awad (NullC0d3)">
+  <meta name="twitter:label2" content="Category">
+  <meta name="twitter:data2" content="{{ page.categories | join: ', ' | default: 'Security' }}">
+  {% endif %}
 
   <!-- Canonical -->
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ '/blog/feed.xml' | absolute_url }}">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ '/sitemap.xml' | absolute_url }}">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🎯</text></svg>">
@@ -44,7 +66,6 @@
 
   <!-- Critical CSS -->
   <style>
-    /* Reset & Base */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #ffffff; --bg-alt: #f6f8fa; --bg-code: #f6f8fa;
@@ -89,7 +110,6 @@
     blockquote { border-left: 4px solid var(--accent); padding: 0 1rem; color: var(--text-muted); margin: 1rem 0; }
     hr { border: 0; border-top: 1px solid var(--border); margin: 2rem 0; }
 
-    /* Header */
     .site-header {
       background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
       color: var(--text-inverse); padding: 2.5rem 1rem; text-align: center;
@@ -106,7 +126,6 @@
     .header-nav a.primary { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
     .header-nav a.primary:hover { background: rgba(255,255,255,0.3); }
 
-    /* Layout */
     .wrapper { display: flex; flex: 1; max-width: var(--max-width); margin: 0 auto; width: 100%; }
     .sidebar {
       width: 240px; flex-shrink: 0; padding: 1.5rem 1rem; border-right: 1px solid var(--border);
@@ -125,11 +144,9 @@
     .sidebar-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer; font-size: 0.875rem; margin-bottom: 1rem; }
     .sidebar-overlay { display: none; }
 
-    /* Main Content */
     .main-content { flex: 1; padding: 2rem; min-width: 0; }
     .main-content > *:first-child { margin-top: 0; }
 
-    /* Search */
     .search-container { max-width: var(--max-width); margin: 1rem auto; padding: 0 2rem; width: 100%; }
     .search-input {
       width: 100%; padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: var(--radius);
@@ -142,7 +159,6 @@
     .search-results a:last-child { border-bottom: 0; }
     .search-results a:hover { background: var(--bg-alt); text-decoration: none; }
 
-    /* Breadcrumb */
     .breadcrumb-nav { max-width: var(--max-width); margin: 0 auto; padding: 0.75rem 2rem; width: 100%; font-size: 0.8rem; }
     .breadcrumb-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .breadcrumb-list li { margin: 0; }
@@ -150,7 +166,6 @@
     .breadcrumb-list a { color: var(--text-muted); }
     .breadcrumb-list a:hover { color: var(--accent); }
 
-    /* Footer */
     .site-footer {
       background: var(--bg-alt); border-top: 1px solid var(--border); padding: 2rem; text-align: center;
       font-size: 0.85rem; color: var(--text-muted); margin-top: auto;
@@ -159,10 +174,8 @@
     .site-footer a:hover { color: var(--accent); }
     .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem; }
 
-    /* Tables in main content */
     .main-content table { display: block; overflow-x: auto; }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .site-header { padding: 1.5rem 1rem; }
       .site-header h1 { font-size: 1.5rem; }
@@ -180,7 +193,6 @@
       .footer-links { gap: 0.75rem; font-size: 0.8rem; }
     }
 
-    /* Utility */
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
     .badge { display: inline-block; padding: 0.15em 0.5em; font-size: 0.75rem; font-weight: 600; border-radius: 2em; }
     .badge-blue { background: #ddf4ff; color: #0969da; }
@@ -192,7 +204,6 @@
       .badge-red { background: rgba(248,81,73,0.15); color: #f85149; }
     }
 
-    /* Hero section for homepage */
     .hero { text-align: center; padding: 2rem 0; }
     .hero h1 { font-size: 2.5rem; border: 0; margin-bottom: 0.5rem; }
     .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 1.5rem; }
@@ -208,7 +219,6 @@
     .hero-actions a.secondary { border: 1px solid var(--border); color: var(--text); }
     .hero-actions a.secondary:hover { border-color: var(--accent); text-decoration: none; }
 
-    /* Feature cards */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
     .feature-card {
       border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem;
@@ -218,10 +228,8 @@
     .feature-card h3 { margin-top: 0; font-size: 1rem; border: 0; }
     .feature-card p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0; }
 
-    /* Architecture diagram */
     .arch-diagram { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4; overflow-x: auto; white-space: pre; background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; }
 
-    /* Callout boxes */
     .callout { border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; background: var(--bg-alt); }
     .callout-warning { border-left-color: #d29922; }
     .callout-danger { border-left-color: #cf222e; }
@@ -241,6 +249,8 @@
     "name": "HunterX",
     "url": "{{ site.url }}{{ site.baseurl }}",
     "description": "{{ site.description | escape }}",
+    "keywords": "HunterX, Linux Security Tool, Red Team Framework, Offensive Security, OSINT, Attack Surface Management, Threat Intelligence, Cybersecurity, Penetration Testing, Bug Bounty, Open Source Security",
+    "inLanguage": "en-US",
     "author": {
       "@type": "Person",
       "name": "Ahmed Awad (NullC0d3)",
@@ -269,6 +279,7 @@
     "name": "HunterX",
     "description": "{{ site.description | escape }}",
     "applicationCategory": "SecurityApplication",
+    "applicationSubCategory": "VulnerabilityScanner",
     "operatingSystem": "Linux, macOS, Windows",
     "author": {
       "@type": "Person",
@@ -282,6 +293,8 @@
     "softwareHelp": "{{ site.url }}{{ site.baseurl }}/quickstart/",
     "downloadUrl": "https://github.com/nullc0d30/HunterX",
     "releaseNotes": "{{ site.url }}{{ site.baseurl }}/releases/",
+    "keywords": "HunterX, vulnerability scanner, penetration testing, red team, security assessment, open source security",
+    "featureList": "41 security skills, reasoning engine, multi-agent platform, AI provider abstraction, knowledge graph, threat modeling, payload intelligence, REST API, SARIF reporting, MITRE ATT&CK mapping",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -297,26 +310,54 @@
     "@type": "Person",
     "name": "Ahmed Awad",
     "alternateName": "NullC0d3",
-    "description": "Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. Creator of HunterX.",
+    "description": "Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. Creator of HunterX vulnerability scanner.",
     "url": "https://github.com/nullc0d30",
     "sameAs": [
       "https://github.com/nullc0d30",
-      "https://hub.docker.com/u/nullc0d30"
+      "https://hub.docker.com/u/nullc0d30",
+      "https://www.linkedin.com/in/nullc0d3"
     ]
   }
   </script>
+
+  {% if page.layout == 'post' %}
+  <!-- JSON-LD: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ page.title | escape }}",
+    "description": "{{ page.description | escape }}",
+    "author": {
+      "@type": "Person",
+      "name": "Ahmed Awad (NullC0d3)"
+    },
+    "datePublished": "{{ page.date | date_to_xmlschema }}",
+    "dateModified": "{{ page.date | date_to_xmlschema }}",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ page.url | absolute_url }}"
+    }
+  }
+  </script>
+  {% endif %}
+
+  {% if page.faq_page %}
+  <!-- JSON-LD: FAQPage is rendered inline in page content -->
+  {% endif %}
 </head>
 <body>
 
   <header class="site-header" role="banner">
     <div class="wrapper" style="flex-direction:column;max-width:var(--max-width);padding:0;">
       <h1>{% if page.url == '/' %}HunterX{% else %}{{ page.title | default: site.title }}{% endif %}</h1>
-      <p>{% if page.url == '/' %}Open-source AI-assisted vulnerability scanner with Security Skills Framework, Reasoning Engine, and Multi-Agent Platform{% else %}{{ page.description | default: site.tagline }}{% endif %}</p>
+      <p>{% if page.url == '/' %}Open-source AI-assisted vulnerability scanner for Linux. Red Team Framework, Offensive Security, Attack Surface Management, Threat Intelligence, Penetration Testing, and Bug Bounty automation.{% else %}{{ page.description | default: site.tagline }}{% endif %}</p>
       <nav class="header-nav" aria-label="Primary navigation">
         <a href="{{ '/' | relative_url }}" class="primary">Home</a>
+        <a href="{{ '/installation' | relative_url }}">Install</a>
         <a href="{{ '/quickstart' | relative_url }}">Quickstart</a>
         <a href="{{ '/features' | relative_url }}">Features</a>
-        <a href="{{ '/api' | relative_url }}">REST API</a>
+        <a href="{{ '/cli' | relative_url }}">CLI</a>
         <a href="{{ '/documentation' | relative_url }}">Docs</a>
         <a href="{{ '/blog' | relative_url }}">Blog</a>
         <a href="https://github.com/nullc0d30/HunterX">GitHub</a>
@@ -331,7 +372,6 @@
   </div>
   {% endif %}
 
-  <!-- Mobile sidebar toggle -->
   <div class="wrapper">
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation menu" aria-expanded="false">
       &#9776; Navigation
@@ -437,7 +477,6 @@
     </div>
   </footer>
 
-  <!-- Mobile sidebar toggle script -->
   <script>
     (function() {
       var toggle = document.getElementById('sidebarToggle');
@@ -455,7 +494,6 @@
           overlay.classList.remove('show');
           toggle.setAttribute('aria-expanded', 'false');
         });
-        // Close on escape
         document.addEventListener('keydown', function(e) {
           if (e.key === 'Escape' && sidebar.classList.contains('show')) {
             sidebar.classList.remove('show');

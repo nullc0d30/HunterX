@@ -8,7 +8,7 @@ description: >-
 permalink: /responsible-use/
 ---
 
-# Responsible Use & Legal Notice
+## Responsible Use & Legal Notice
 
 HunterX is a powerful vulnerability assessment and penetration testing framework. With great power comes great responsibility. This document outlines the acceptable use policy, legal considerations, and disclaimers governing the use of HunterX.
 

@@ -1,56 +1,41 @@
 ---
-name: 🐛 Bug Report
-about: Report a bug to help us improve HunterX
-title: "[BUG] "
+name: Bug Report
+about: Report a problem with HunterX
+title: ""
 labels: bug
 assignees: ""
 ---
 
-## Bug Description
+## Description
 
 A clear and concise description of the bug.
 
 ## Steps to Reproduce
 
-1. Run command: `...`
-2. With config: `...`
-3. See error
+1. Run `hunterx ...`
+2. ...
 
 ## Expected Behavior
 
-What should have happened?
+What should have happened.
 
 ## Actual Behavior
 
-What actually happened?
+What actually happened.
 
 ## Environment
 
-- **OS:** [e.g. Windows 11, Ubuntu 22.04, macOS 14]
-- **Python version:** [e.g. 3.11.4]
-- **HunterX version:** [e.g. 4.0]
-- **Docker:** [Yes/No — if Yes, include image tag]
+- HunterX version: <!-- hunterx --version -->
+- OS: <!-- e.g. Ubuntu 22.04, macOS 15, Windows 11 -->
+- Python version: <!-- python3 --version -->
+- Installation method: <!-- pip, pipx, git clone, Docker, install.sh -->
 
-## Logs / Screenshots
+## Logs
 
 ```
-Paste relevant logs, error output, or screenshots here.
-```
-
-## Configuration
-
-```yaml
-# Paste relevant parts of your hunterx.yaml or CLI flags here
+Paste relevant logs with -vv verbose mode enabled.
 ```
 
 ## Additional Context
 
-- Did it work in a previous version?
-- Is it reproducible?
-- Any workarounds?
-
-## Checklist
-
-- [ ] I searched existing issues before filing
-- [ ] I am running the latest version
-- [ ] I included a minimal reproducible example
+Add any other context, screenshots, or config files.

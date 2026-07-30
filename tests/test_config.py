@@ -2,11 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # HunterX — AI-Assisted Vulnerability Hunter
-import os
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
-from core.config import Config, AuthConfig, OOBConfig, AIConfig
+from hunterx.config.config import Config, AuthConfig, OOBConfig, AIConfig
 
 
 def test_config_defaults():

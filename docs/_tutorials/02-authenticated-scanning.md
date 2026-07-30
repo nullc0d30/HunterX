@@ -7,19 +7,19 @@ description: >-
   practical examples.
 ---
 
-# Tutorial: Authenticated Scanning
+## Tutorial: Authenticated Scanning
 
 ## Basic Auth
 
 ```bash
-python hunterx.py -u http://example.com/admin \
+hunterx -u http://example.com/admin \
   -a basic --username admin --password s3cret
 ```
 
 ## Bearer Token
 
 ```bash
-python hunterx.py -u http://example.com/api \
+hunterx -u http://example.com/api \
   -a bearer --token eyJhbGciOiJIUzI1NiIs...
 ```
 
@@ -36,7 +36,7 @@ Create `cookies.json`:
 ```
 
 ```bash
-python hunterx.py -u http://example.com --cookie-file cookies.json
+hunterx -u http://example.com --cookie-file cookies.json
 ```
 
 ## Form Login
@@ -44,7 +44,7 @@ python hunterx.py -u http://example.com --cookie-file cookies.json
 HunterX can programmatically log in via HTML forms:
 
 ```bash
-python hunterx.py -u http://example.com \
+hunterx -u http://example.com \
   -a form --username user --password pass
 ```
 

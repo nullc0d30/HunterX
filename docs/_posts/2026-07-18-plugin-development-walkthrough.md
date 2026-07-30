@@ -10,7 +10,7 @@ author: Ahmed Awad (NullC0d3)
 categories: [technical, extensions]
 ---
 
-# Plugin Development with HunterX
+## Plugin Development with HunterX
 
 HunterX has a decorator-based plugin system with three plugin types: detector, reporter, and hook.
 

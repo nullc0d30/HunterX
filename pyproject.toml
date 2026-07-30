@@ -5,7 +5,7 @@
 
 [build-system]
 requires = ["setuptools>=68.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "hunterx"
@@ -15,50 +15,62 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
 authors = [
-    {name = "NullC0d3", email = "https://github.com/nullc0d30"},
-]
-maintainers = [
     {name = "Ahmed Awad (NullC0d3)"},
 ]
-keywords = ["security", "red-team", "vulnerability", "penetration-testing"]
+keywords = [
+    "security", "red-team", "vulnerability", "penetration-testing",
+    "bug-bounty", "offensive-security", "ai",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: Security :: Penetration Testing",
 ]
 
 dependencies = [
-    "requests==2.33.0",
-    "rich==13.7.1",
-    "dataclasses-json==0.6.7",
-    "pyyaml==6.0.2",
-    "jsonschema==4.23.0",
-    "websocket-client==1.8.0",
-    "beautifulsoup4==4.12.3",
-    "lxml==5.3.0",
+    "requests>=2.32.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0.0",
+    "websocket-client>=1.8.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
     "networkx>=3.0",
+    "urllib3>=2.0",
+    "dataclasses-json>=0.6.0",
+    "jsonschema>=4.20.0",
 ]
 
 [project.optional-dependencies]
-playwright = ["playwright>=1.40"]
+api = ["fastapi>=0.115.0", "uvicorn>=0.30.0", "pydantic>=2.0"]
+browser = ["playwright>=1.40"]
 graphviz = ["graphviz>=0.20"]
-all = ["hunterx[playwright,graphviz]"]
+ml = ["scikit-learn>=1.3", "numpy>=1.24"]
+all = ["hunterx[api,browser,graphviz,ml]"]
 
 [project.urls]
 Homepage = "https://github.com/nullc0d30/HunterX"
 Repository = "https://github.com/nullc0d30/HunterX"
-Documentation = "https://github.com/nullc0d30/HunterX"
+Documentation = "https://nullc0d30.github.io/HunterX"
+Changelog = "https://github.com/nullc0d30/HunterX/blob/main/CHANGELOG.md"
+Issues = "https://github.com/nullc0d30/HunterX/issues"
+
+[project.scripts]
+hunterx = "hunterx.cli:main"
 
 [tool.setuptools]
 license-files = ["LICENSE"]
 
 [tool.setuptools.package-data]
-hunterx = ["py.typed"]
+hunterx = ["py.typed", "config/*.yaml", "assets/payloads/*", "assets/data/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -73,4 +85,4 @@ ignore = ["E501"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["hunterx*", "core*", "api*", "plugins*"]
+include = ["hunterx*"]

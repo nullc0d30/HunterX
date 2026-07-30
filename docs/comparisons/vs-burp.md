@@ -7,7 +7,7 @@ description: >-
   detection, pricing, and use case analysis.
 ---
 
-# HunterX vs Burp Suite
+## HunterX vs Burp Suite
 
 | Dimension | HunterX | Burp Suite Professional |
 |-----------|---------|------------------------|

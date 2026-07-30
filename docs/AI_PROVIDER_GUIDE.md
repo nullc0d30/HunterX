@@ -1,11 +1,14 @@
 ---
 layout: default
 title: AI Provider Abstraction Layer — HunterX v6.0.0
-description: Modular AI provider abstraction layer for HunterX. Integrate OpenAI, Ollama, and other backends with caching and metrics.
+description: >-
+  AI provider abstraction layer for HunterX vulnerability scanner. Integrate
+  OpenAI, Ollama, and LLM backends for AI-assisted security testing,
+  threat intelligence analysis, and penetration testing automation.
 permalink: /ai-provider-guide/
 ---
 
-# AI Provider Abstraction Layer
+## AI Provider Abstraction Layer
 
 HunterX v6.0.0 introduces a fully modular, plugin-based AI provider abstraction layer under `core/ai/`. This layer decouples the application from any single AI provider, enabling seamless integration of multiple backends (OpenAI, Ollama, etc.) with caching, metrics, middleware, and conversation management built in.
 

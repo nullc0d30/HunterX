@@ -1,0 +1,72 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — AI-Assisted Vulnerability Hunter
+# Release workflow — SBOM, checksums, artifact verification
+# Triggers: tags matching v*.*.*
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Generate SBOM (CycloneDX)
+        uses: cyclonedx/gh-python-generator@v2
+        with:
+          path: "."
+          output: "dist/hunterx.sbom.json"
+          format: "json"
+          spec-version: "1.5"
+
+      - name: Generate checksums
+        working-directory: dist
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          sha512sum * >> SHA512SUMS.txt
+          b2sum * >> B2SUMS.txt 2>/dev/null || true
+
+      - name: Verify checksums
+        working-directory: dist
+        run: |
+          sha256sum -c SHA256SUMS.txt
+          sha512sum -c SHA512SUMS.txt
+
+      - name: Generate provenance attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/*"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true

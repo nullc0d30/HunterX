@@ -1,14 +1,16 @@
 ---
 layout: default
 title: Features & Architecture — HunterX v6.0.0
+keywords: Security Skills Framework, Reasoning Engine, Multi-Agent Platform, offensive security
 description: >-
-  Complete feature breakdown of HunterX v6.0.0: Security Skills Framework (41
-  skills), Reasoning Engine (18 goals), Multi-Agent Platform (10 agents), AI
-  Provider Abstraction, Knowledge Graph, Threat Modeling, Payload Intelligence,
-  REST API, and plugin architecture.
+  Complete feature breakdown of HunterX v6.0.0 open-source vulnerability
+  scanner: Security Skills Framework (41 skills), Reasoning Engine (18 goals),
+  Multi-Agent Platform (10 agents), AI Provider Layer, Knowledge Graph, Threat
+  Modeling, Payload Intelligence, and MITRE ATT&CK mapping for offensive
+  security, penetration testing, and bug bounty hunting.
 ---
 
-# Features & Architecture
+## Features & Architecture
 
 HunterX is an open-source AI-assisted vulnerability scanner and security assessment platform designed for professional Red Teams, bug bounty hunters, security researchers, and enterprise security teams.
 
@@ -232,21 +234,21 @@ Full reference: [REST API](api)
 
 ```bash
 # Scanning
-python hunterx.py -u http://target.com --profile bounty
-python hunterx.py -u http://target.com --preset full --threads 10
-python hunterx.py -u http://target.com --ai --ai-model llama3.2
-python hunterx.py -f targets.txt --profile gov --stealth high
+hunterx -u http://target.com --profile bounty
+hunterx -u http://target.com --preset full --threads 10
+hunterx -u http://target.com --ai --ai-model llama3.2
+hunterx -f targets.txt --profile gov --stealth high
 
 # API Server
-python hunterx.py api --port 8443
+hunterx api --port 8443
 
 # Subcommands
-python hunterx.py skills list
-python hunterx.py agents list
-python hunterx.py payload stats
-python hunterx.py reasoning create --goal "Assess auth" --target http://target.com
-python hunterx.py workflow list
-python hunterx.py ai providers
+hunterx skills list
+hunterx agents list
+hunterx payload stats
+hunterx reasoning create --goal "Assess auth" --target http://target.com
+hunterx workflow list
+hunterx ai providers
 ```
 
 Full reference: [CLI Reference](cli)

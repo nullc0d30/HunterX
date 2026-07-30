@@ -2,12 +2,14 @@
 layout: default
 title: REST API Reference — HunterX v6.0.0
 description: >-
-  Complete REST API reference for HunterX v6.0.0. 40+ endpoints covering scan
-  management, AI providers, agents, skills, payloads, workflows, reasoning,
+  Complete REST API reference for HunterX v6.0.0 vulnerability scanner. 40+
+  endpoints covering scan management, AI providers, agents, skills, payloads,
+  workflows, reasoning, and system health. Automate penetration testing and
+  security assessment pipelines.
   configuration, and system health. FastAPI-based.
 ---
 
-# REST API Reference
+## REST API Reference
 
 HunterX includes a built-in REST API server built with [FastAPI](https://fastapi.tiangolo.com/). It provides 40+ endpoints for integrating HunterX into automation pipelines, CI/CD workflows, and custom toolchains.
 
@@ -17,13 +19,13 @@ HunterX includes a built-in REST API server built with [FastAPI](https://fastapi
 
 ```bash
 # Default port 8443
-python hunterx.py api --port 8443
+hunterx api --port 8443
 
 # Custom host and port
-python hunterx.py api --port 8080 --host 0.0.0.0
+hunterx api --port 8080 --host 0.0.0.0
 
 # With debug logging
-python hunterx.py api --port 8443 --debug
+hunterx api --port 8443 --debug
 
 # Docker
 docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443

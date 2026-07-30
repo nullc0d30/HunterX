@@ -1,11 +1,15 @@
 ---
 layout: default
 title: Reasoning Engine — HunterX v6.0.0
-description: AI reasoning engine for HunterX v6.0.0. Goal decomposition, task generation, and validated result processing.
+description: >-
+  AI reasoning engine for HunterX v6.0.0 vulnerability scanner. Goal
+  decomposition, task generation, and validated result processing for
+  AI-assisted penetration testing, threat intelligence analysis, and
+  offensive security automation.
 permalink: /reasoning-engine/
 ---
 
-# Reasoning Engine — HunterX v6.0.0
+## Reasoning Engine
 
 ## Architecture
 

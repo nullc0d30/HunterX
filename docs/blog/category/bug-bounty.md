@@ -6,7 +6,7 @@ description: >-
   safe testing practices, and integration with bug bounty toolchains.
 ---
 
-# Bug Bounty Articles
+## Bug Bounty Articles
 
 <ul>
 {% for post in site.posts %}

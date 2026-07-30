@@ -2,13 +2,14 @@
 layout: default
 title: Docker Guide — HunterX v6.0.0
 description: >-
-  Production-grade Docker deployment guide for HunterX v6.0.0. Multi-stage build,
-  multi-architecture (amd64/arm64), non-root user, volumes, environment variables,
-  Docker Compose, security best practices, and CI/CD publishing.
+  Production-grade Docker deployment guide for HunterX v6.0.0 vulnerability
+  scanner. Multi-stage build, multi-architecture (amd64/arm64), non-root user,
+  volumes, environment variables, Docker Compose, security best practices, and
+  CI/CD publishing for containerized penetration testing.
 permalink: /docker/
 ---
 
-# Docker Guide
+## Docker Guide
 
 HunterX provides an official Docker image published at **`nullc0d30/hunterx`** on Docker Hub. The image is built with multi-stage Dockerfiles for minimal size, runs as a non-root user, and supports `linux/amd64` and `linux/arm64` architectures.
 
@@ -270,7 +271,7 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - python hunterx.py -u $TARGET_URL -o report.sarif
+    - hunterx -u $TARGET_URL -o report.sarif
   artifacts:
     paths: [report.sarif]
 ```

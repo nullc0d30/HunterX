@@ -1,11 +1,14 @@
 ---
 layout: default
 title: Governance — HunterX v6.0.0
-description: Governance model for HunterX open-source security project. Community guidelines, decision-making, and contribution process.
+description: >-
+  Governance model for HunterX open-source security project. Community
+  guidelines, decision-making, and contribution process for the Linux security
+  tool and red team framework.
 permalink: /governance/
 ---
 
-# Governance
+## Governance
 
 This document describes the governance model for the HunterX project.
 

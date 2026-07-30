@@ -1,11 +1,14 @@
 ---
 layout: default
 title: Performance Guide — HunterX v6.0.0
-description: Performance characteristics, caching strategies, concurrency tuning, and benchmark estimates for HunterX.
+description: >-
+  Performance characteristics, caching strategies, concurrency tuning, and
+  benchmark estimates for the HunterX vulnerability scanner on Linux.
+  Optimize scanning speed for penetration testing and bug bounty operations.
 permalink: /performance-guide/
 ---
 
-# Performance Characteristics
+## Performance Characteristics
 
 This document describes the performance architecture and expected performance characteristics of HunterX.
 
