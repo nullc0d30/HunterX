@@ -1,7 +1,3 @@
 User-agent: *
 Allow: /
-Allow: /assets/
-Disallow: /archive/
-Crawl-delay: 10
-
 Sitemap: https://nullc0d30.github.io/HunterX/sitemap.xml

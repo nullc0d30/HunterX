@@ -1,12 +1,12 @@
 ---
 layout: default
 title: Installation — HunterX v6.0.0
-keywords: Linux Security Tool, pip install hunterx, vulnerability scanner installation
+keywords: cross-platform security framework, pip install hunterx, offensive security installation
 description: >-
-  Install HunterX vulnerability scanner on Linux via pip, pipx, install.sh,
-  Docker, or from source. System requirements and per-distribution package
-  details for Ubuntu, Debian, Fedora, Arch, and Alpine. Open-source
-  penetration testing and red team tool.
+  Install HunterX on Linux, macOS, and Windows. Cross-platform Python
+  framework for offensive security — install via pip, pipx, install.sh,
+  Docker, or from source. System requirements and package details for Ubuntu,
+  Debian, Fedora, Arch, and Alpine. Apache 2.0 open-source.
 permalink: /installation/
 ---
 

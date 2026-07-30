@@ -3,10 +3,10 @@ layout: default
 title: Documentation Hub — HunterX v6.0.0
 keywords: documentation, HunterX guide, cybersecurity tool documentation
 description: >-
-  Central documentation hub for HunterX v6.0.0 open-source vulnerability
-  scanner and red team framework. Browse getting started guides, CLI reference,
-  REST API docs, architecture, agent platform, skills framework, and community
-  resources for cybersecurity automation and penetration testing.
+  Central documentation hub for HunterX v6.0.0 open-source offensive security
+  framework. Browse getting started guides, CLI reference, REST API docs,
+  architecture, agent platform, skills framework, and community resources for
+  cybersecurity automation and penetration testing.
 permalink: /documentation/
 ---
 
@@ -83,10 +83,10 @@ Welcome to the HunterX v6.0.0 documentation hub. Use this page to navigate all a
 | [Blog]({{ '/blog' | relative_url }}) | Project news, updates, and technical posts. |
 | [Roadmap]({{ '/roadmap' | relative_url }}) | Upcoming features and development plans. |
 | [Changelog]({{ '/changelog' | relative_url }}) | Full version history. |
-| [Discussions](https://github.com/NullC0d3/HunterX/discussions) | Join the community discussion. |
-| [Issues](https://github.com/NullC0d3/HunterX/issues) | Report bugs and request features. |
+| [Discussions](https://github.com/nullc0d30/HunterX/discussions) | Join the community discussion. |
+| [Issues](https://github.com/nullc0d30/HunterX/issues) | Report bugs and request features. |
 | [Responsible Use]({{ '/responsible-use' | relative_url }}) | Legal notice and acceptable use policy. |
-| [GitHub](https://github.com/NullC0d3/HunterX) | Source code repository. |
+| [GitHub](https://github.com/nullc0d30/HunterX) | Source code repository. |
 
 ## About
 

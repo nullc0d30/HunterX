@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX — AI-Assisted Offensive Security Framework
 
 [build-system]
 requires = ["setuptools>=68.0"]
@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hunterx"
 version = "6.0.0"
-description = "The AI-Assisted Vulnerability Hunter — Automated Decision Support for Offensive Operations"
+description = "AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -19,13 +19,16 @@ authors = [
 ]
 keywords = [
     "security", "red-team", "vulnerability", "penetration-testing",
-    "bug-bounty", "offensive-security", "ai",
+    "bug-bounty", "offensive-security", "ai", "vulnerability-scanner",
+    "osint", "reconnaissance", "web-security", "cloud-security",
+    "api-security", "mitre-attack", "owasp", "python",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -33,7 +36,9 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Security",
+    "Topic :: Security :: Cryptography",
     "Topic :: Security :: Penetration Testing",
+    "Typing :: Typed",
 ]
 
 dependencies = [

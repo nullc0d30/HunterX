@@ -29,7 +29,6 @@ HunterX v6.0.0 is the current stable release. This roadmap outlines planned deve
 - **Interactive in-app tutorials**
 - **Enterprise features** — RBAC, audit logging, SSO/LDAP
 - **Package managers** — Homebrew, Chocolatey, Linux package managers (apt, dnf)
-- **Dedicated documentation site** with versioned docs and interactive guides
 - **Research collaborations** — Academic and industry partnerships
 
 ---

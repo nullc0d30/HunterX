@@ -26,7 +26,7 @@ We ask that you:
 
 ## Reporting Process
 
-1. **Report** — Submit a vulnerability report via [GitHub Private Vulnerability Reporting](https://github.com/NullC0d3/HunterX/security/advisories/new).
+1. **Report** — Submit a vulnerability report via [GitHub Private Vulnerability Reporting](https://github.com/nullc0d30/HunterX/security/advisories/new).
 2. **Acknowledgment** — The maintainers will acknowledge receipt within 72 hours.
 3. **Investigation** — The maintainers will investigate and determine severity, impact, and fix approach.
 4. **Fix** — A patch is developed and tested. For critical issues, a patch release is expedited.

@@ -8,7 +8,7 @@ Configure these settings in the GitHub repository UI for maximum search engine d
 
 ### Description
 ```
-HunterX — AI-Assisted Vulnerability Hunter. Production-grade Red Team orchestration framework with 4-stage reasoning pipeline, 200+ detection signatures, REST API, AI/ML analysis, and plugin system. Apache 2.0.
+HunterX — AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting. Apache 2.0.
 ```
 
 ### Website
@@ -23,17 +23,34 @@ https://nullc0d30.github.io/HunterX
 Add ALL of these topics (comma-separated):
 
 ```
-security, penetration-testing, vulnerability-scanner, red-team, bug-bounty,
-cybersecurity, offensive-security, python, web-security, osint,
-vulnerability-assessment, security-tools, web-application-security,
-penetration-testing-tool, network-security, ethical-hacking
+red-team, vulnerability-scanner, penetration-testing, offensive-security,
+security-framework, security-automation, attack-surface,
+attack-surface-management, threat-intelligence, reconnaissance, web-security,
+osint, bug-bounty, linux-security, python, cli-tool, owasp, mitre-attck,
+ai-security, open-source
 ```
 
 ---
 
 ## Social Preview (Settings → General → Social Preview)
 
-Upload `logo.png` (918×918px) from the repository root. This image is used as the official project logo, OpenGraph image, Twitter Card image, and favicon base.
+Upload `logo.png` (918×974px) from the repository root. This image is used as the official project logo, OpenGraph image, Twitter Card image, and favicon base.
+
+---
+
+## Docker Hub (hub.docker.com → Repo → Settings)
+
+1. Navigate to `https://hub.docker.com/repository/docker/nullc0d30/hunterx/general`
+2. Under **Repository Logo**, click **Upload Logo**
+3. Select `logo.png` from the repository root (918×974px)
+4. Under **Description**, paste the official description:
+
+   ```
+   AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting.
+   ```
+
+5. Under **Links → Website**, set: `https://nullc0d30.github.io/HunterX`
+6. Under **Links → Source**, set: `https://github.com/nullc0d30/HunterX`
 
 ---
 

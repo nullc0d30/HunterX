@@ -21,7 +21,7 @@ HunterX is released under the **Apache 2.0** license. All contributors must agre
    ```
 3. Add the upstream remote:
    ```bash
-   git remote add upstream https://github.com/NullC0d3/HunterX.git
+   git remote add upstream https://github.com/nullc0d30/HunterX.git
    ```
 4. Create a branch for your work (see [Branch Naming](#branch-naming)).
 5. Make your changes.
@@ -171,5 +171,5 @@ For more information, see [developercertificate.org](https://developercertificat
 - [REST API Reference](https://nullc0d30.github.io/HunterX/api/)
 - [Skill SDK](docs/SKILL_SDK.md)
 - [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT.md)
-- [Issue Tracker](https://github.com/NullC0d3/HunterX/issues)
-- [Discussions](https://github.com/NullC0d3/HunterX/discussions)
+- [Issue Tracker](https://github.com/nullc0d30/HunterX/issues)
+- [Discussions](https://github.com/nullc0d30/HunterX/discussions)
