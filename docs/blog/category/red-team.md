@@ -7,7 +7,7 @@ description: >-
   operators.
 ---
 
-# Red Team Articles
+## Red Team Articles
 
 <ul>
 {% for post in site.posts %}

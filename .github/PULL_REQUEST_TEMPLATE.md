@@ -1,68 +1,22 @@
----
-Copyright (c) 2026 Ahmed Awad (NullC0d3)
-SPDX-License-Identifier: Apache-2.0
----
+## Description
 
-## Summary
+Please include a summary of the change and which issue it fixes.
 
-<!-- Provide a clear, concise summary of your changes. -->
-
-Fixes #(issue) | Closes #(issue) | Related to #(issue)
+Fixes #(issue)
 
 ## Type of Change
 
-<!-- Check the box that applies. -->
-
-- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
-- [ ] ✨ New feature (non-breaking change that adds functionality)
-- [ ] 💥 Breaking change (fix or feature that breaks existing functionality)
-- [ ] 📖 Documentation update
-- [ ] 🔧 Refactoring (no functional changes)
-- [ ] ⚡ Performance improvement
-- [ ] 🧪 Test addition or update
-- [ ] 🔒 Security fix
-- [ ] 🧹 Chore (maintenance, dependency updates, etc.)
-
-## Testing
-
-<!-- Describe how you tested your changes. -->
-
-- [ ] All existing tests pass: `python -m pytest tests/ -v`
-- [ ] Ruff lint clean: `ruff check .`
-- [ ] Added new tests for my changes (if applicable)
-- [ ] Manual testing performed (describe below)
-
-### Test Results
-
-```
-Paste test output here
-```
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Documentation update
+- [ ] Refactor / style
+- [ ] CI / tooling
 
 ## Checklist
 
-- [ ] I have read the [CONTRIBUTING.md](../CONTRIBUTING.md) guide
-- [ ] My code follows the project's coding style
-- [ ] I have added type hints for all function signatures
-- [ ] I have updated documentation (if applicable)
-- [ ] My changes generate no new warnings or errors
-- [ ] I have added tests that prove my fix/feature works
-- [ ] New and existing tests pass locally
-- [ ] Any dependent changes have been merged
-
-## Screenshots (if applicable)
-
-<!-- Add screenshots to help explain your changes. -->
-
-## Breaking Changes
-
-<!-- Describe any breaking changes and migration steps. -->
-
-None
-
-## Additional Notes
-
-<!-- Any other information that would help reviewers. -->
-
----
-
-*Thank you for contributing to HunterX! 🚀*
+- [ ] I have read the [CONTRIBUTING](../CONTRIBUTING.md) guide.
+- [ ] My code follows the project's code style (`ruff check .`).
+- [ ] All existing tests pass (`pytest tests/ -v`).
+- [ ] I have added tests for new functionality.
+- [ ] My commits are signed off (DCO).
+- [ ] I have updated the documentation if needed.

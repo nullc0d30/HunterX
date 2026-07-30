@@ -1,11 +1,15 @@
 ---
 layout: default
 title: Security Skills Framework (SSF) — HunterX v6.0.0
-description: Security Skills Framework (SSF) for HunterX v6.0.0. Architecture, components, and SDK for security skill development.
+description: >-
+  Security Skills Framework (SSF) for HunterX v6.0.0 vulnerability scanner.
+  41 built-in security skills for web, API, cloud, and infrastructure
+  vulnerability detection. Architecture, components, and SDK for skill
+  development in the open-source red team framework.
 permalink: /security-skills-framework/
 ---
 
-# Security Skills Framework (SSF)
+## Security Skills Framework (SSF)
 
 > HunterX v6.0.0 — Architecture, Components, and SDK
 

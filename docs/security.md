@@ -7,7 +7,7 @@ description: >-
   vulnerability scanner.
 ---
 
-# Security Policy
+## Security Policy
 
 ## Supported Versions
 

@@ -1,6 +1,7 @@
 ---
 layout: default
 title: HunterX — AI-Assisted Vulnerability Hunter
+keywords: HunterX, Linux Security Tool, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing
 description: >-
   HunterX is an open-source AI-assisted vulnerability scanner and security
   assessment platform. Security Skills Framework, Reasoning Engine, Multi-Agent
@@ -13,15 +14,32 @@ description: >-
 [![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![Tests](https://img.shields.io/badge/tests-623%20passing-brightgreen?style=flat-square)](https://github.com/nullc0d30/HunterX/actions)
 [![Ruff](https://img.shields.io/badge/ruff-0%20errors-brightgreen?style=flat-square)](https://github.com/astral-sh/ruff)
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/u/nullc0d30)
 
 **HunterX** is an open-source AI-assisted vulnerability scanner and security assessment platform. It combines a **Security Skills Framework** (41 plugin-based skills), a **Reasoning Engine** (18 goal types), a **Multi-Agent Platform** (10 specialized agents), **AI Provider Abstraction** (OpenAI, Ollama), **Knowledge Graph**, **Threat Modeling**, **Attack Chain Analysis**, and **Payload Intelligence** into a single extensible platform.
 
+```bash
+# One-shot scan
+hunterx target.com
+
+# Full scan with AI analysis
+hunterx scan https://target.com --ai --ai-model llama3.2
+
+# List modules, run diagnostics, view reports
+hunterx module list
+hunterx doctor
+hunterx report
+
+# Start the API server
+hunterx api --port 8443
+```
+
 <div class="hero-actions">
-  <a href="{{ '/quickstart' | relative_url }}" class="primary">Quickstart Guide</a>
-  <a href="{{ '/features' | relative_url }}" class="secondary">Features &amp; Architecture</a>
-  <a href="{{ '/api' | relative_url }}" class="secondary">REST API</a>
+  <a href="{{ '/installation' | relative_url }}" class="primary">Install HunterX</a>
+  <a href="{{ '/quickstart' | relative_url }}" class="secondary">Quickstart Guide</a>
+  <a href="{{ '/documentation' | relative_url }}" class="secondary">Documentation</a>
   <a href="https://github.com/nullc0d30/HunterX" class="secondary">GitHub</a>
 </div>
 
@@ -116,6 +134,22 @@ Traditional vulnerability scanners operate on payload volume and signature match
 
 ---
 
+## Comparison
+
+HunterX stands apart from traditional security scanners by unifying AI-assisted reasoning, multi-agent orchestration, and enterprise reporting into a single platform.
+
+| Tool | Scanning | AI | Multi-Agent | Payload Intelligence | Reporting | Architecture |
+|---|---|---|---|---|---|---|
+| **HunterX** | Observe → Hypothesize → Probe → Verify | LLM-native (multi-provider) | 10 agents, DAG workflows | FTS5-indexed, 5-level policy | SARIF, HTML, graph, purple team | Unified Python framework |
+| **Nmap** | Port scan + service detection | No | No | No | XML/Grepable | C, single-purpose |
+| **Metasploit** | Exploit delivery + post-exploit | No | No | No | Console-only | Ruby, framework |
+| **Nuclei** | YAML template matching | No | No | No | JSON/STDOUT | Go, template engine |
+| **Amass** | Subdomain + ASN enumeration | No | No | No | JSON/graph | Go, single-purpose |
+| **Sliver** | C2 + implant framework | No | No | No | CLI/console | Go, C2-focused |
+| **ffuf** | Fuzzing / wordlist brute-force | No | No | No | JSON/CSV | Go, single-purpose |
+
+---
+
 ## Architecture Overview
 
 HunterX follows a layered architecture where each component has clear responsibilities and communicates through defined interfaces.
@@ -165,41 +199,25 @@ HunterX follows a layered architecture where each component has clear responsibi
               +-----------+
 </div>
 
-The platform is organized into these core subsystems:
-
-| Subsystem | Description |
-|---|---|
-| **Orchestration Engine** | Drives the 4-stage execution loop: Observe (collect context), Hypothesize (form hypotheses), Probe (execute tests), Verify (validate findings) |
-| **Multi-Agent Platform** | 10 specialized agents with concurrent event/message buses, DAG workflows, and state persistence |
-| **Reasoning Engine** | 18 goal types with planning, AI prompting, validation, and multi-call consensus |
-| **Security Skills Framework** | 41 skills with registration, execution, policy, caching, and telemetry |
-| **Payload Intelligence** | SQLite + FTS5, 5-level policy, 10 mutation families, feedback loop, provenance tracking |
-| **Knowledge Graph** | Entity-relationship store for findings, targets, and contextual data |
-| **AI Provider Layer** | Provider abstraction with session management, caching, metrics, middleware, retry, and circuit breaker |
-| **Reporter** | Multi-format output: JSON, Markdown, SARIF 2.1, HTML, attack graphs, evidence packages |
-
 ---
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install
+pip install hunterx
 
-# Run a basic vulnerability scan
-python hunterx.py -u http://target.com --profile bounty
+# Scan a target
+hunterx target.com
 
-# Start the REST API server on port 8443
-python hunterx.py api --port 8443
+# Full scan with AI analysis
+hunterx scan https://target.com --ai --ai-model llama3.2
 
-# Scan with AI analysis (requires Ollama)
-python hunterx.py -u http://target.com --ai --ai-model llama3.2
+# View reports
+hunterx report
 
-# List registered security skills
-python hunterx.py skills list
-
-# List registered agents
-python hunterx.py agents list
+# System diagnostics
+hunterx doctor
 ```
 
 ### Docker
@@ -208,11 +226,16 @@ python hunterx.py agents list
 docker pull nullc0d30/hunterx:latest
 
 # Run a scan
-docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest \
-    -u http://target.com -o /data
+docker run --rm -v $(pwd)/reports:/data nullc0d30/hunterx:latest scan target.com
 
 # API mode
 docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443
+
+# With AI analysis
+docker run --rm -v $(pwd)/reports:/data \
+    -e OPENAI_API_KEY=sk-... \
+    nullc0d30/hunterx:latest \
+    scan target.com --ai --ai-model gpt-4
 ```
 
 ---
@@ -221,20 +244,23 @@ docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443
 
 | Guide | Description |
 |---|---|
-| [Quickstart Guide](quickstart) | Install and run your first scan in 5 minutes |
-| [Features & Architecture](features) | Complete capability breakdown and system architecture |
+| [Installation](installation) | Install via pip, pipx, install.sh, Docker, or from source |
+| [Quickstart Guide](quickstart) | Run your first scan in 5 minutes |
 | [CLI Reference](cli) | Full CLI command and argument reference |
-| [REST API Reference](api) | All 40+ endpoints, request/response schemas, error codes |
+| [REST API Reference](api) | All 40+ endpoints, request/response schemas |
 | [Configuration Guide](configuration) | YAML reference, environment variables, policy levels |
-| [Docker Guide](docker) | Container deployment, volumes, environment, security |
 | [Security Skills Framework](security-skills-framework) | 41 skills, registry, executor, policy management |
 | [Reasoning Engine](reasoning-engine) | 18 goal types, planner, validator, consensus |
 | [Multi-Agent Platform](agents) | 10 agents, event/message buses, workflows |
-| [AI Provider Guide](ai-provider-guide) | Provider abstraction, adding providers, caching, metrics |
+| [AI Provider Guide](ai-provider-guide) | Provider abstraction, adding providers, caching |
 | [Skill SDK](skill-sdk) | Creating custom security skills |
 | [Plugin Development](plugin-development) | Detector, reporter, hook, and agent plugins |
-| [Support Guide](support) | FAQ, common issues, troubleshooting |
-| [Release Notes](releases) | Version history and migration guides |
+| [Module Reference](modules) | Available scan modules |
+| [Docker Guide](Docker_Guide) | Container deployment, volumes, environment |
+| [Examples](examples) | Real-world usage examples |
+| [Tutorials](tutorials) | Step-by-step walkthroughs |
+| [FAQ](faq) | Frequently asked questions |
+| [Roadmap](roadmap) | Upcoming features and development plans |
 
 ---
 

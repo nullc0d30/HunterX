@@ -6,7 +6,7 @@ description: >-
   breaking changes, and migration guides.
 ---
 
-# Release Announcements
+## Release Announcements
 
 <ul>
 {% for post in site.posts %}

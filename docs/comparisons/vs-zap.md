@@ -7,7 +7,7 @@ description: >-
   and security testing workflows.
 ---
 
-# HunterX vs OWASP ZAP
+## HunterX vs OWASP ZAP
 
 | Dimension | HunterX | OWASP ZAP |
 |-----------|---------|-----------|

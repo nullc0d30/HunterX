@@ -8,7 +8,7 @@ description: >-
   Apache 2.0 licensed.
 ---
 
-# Releases
+## Releases
 
 ## v6.0.0 (Current)
 

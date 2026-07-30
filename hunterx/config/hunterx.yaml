@@ -1,0 +1,72 @@
+# HunterX v4.0.1 Configuration File
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# All values can be overridden by CLI flags or HX_* environment variables.
+
+profile: bounty
+stealth: medium
+threads: 5
+timeout: 15
+retries: 3
+verify_ssl: true
+max_rps: 10.0
+
+# Thresholds
+probe_anomaly_threshold: 30
+confirm_anomaly_threshold: 50
+max_verify_per_category: 5
+failure_suppression_threshold: 10
+diff_length_score_cap: 10.0
+
+# Output
+output_dir: reports
+evidence_level: medium
+min_confidence: 0.0
+visual: cli
+
+# Authentication (optional)
+auth:
+  type: none  # none, basic, bearer, cookie, form
+  username: null
+  password: null
+  token: null
+  cookie_file: null
+  login_url: null
+  login_data: {}
+
+# OOB / Callback
+oob:
+  enabled: false
+  collaborator_url: null
+
+# AI / LLM (optional)
+ai:
+  enabled: false
+  provider: ollama
+  model: llama3.2
+  endpoint: http://localhost:11434
+
+# Scan presets
+presets:
+  quick:
+    threads: 10
+    max_verify_per_category: 2
+    stealth: low
+  full:
+    threads: 5
+    max_verify_per_category: 10
+    stealth: medium
+  stealth:
+    threads: 2
+    max_verify_per_category: 3
+    stealth: high
+    max_rps: 2.0
+
+# Custom profiles (extend built-in)
+custom_profiles:
+  # Example:
+  # my_team:
+  #   extends: bounty
+  #   min_delay: 0.5
+  #   max_delay: 2.0
+  #   hard_cap_total_requests: 2000
+  {}

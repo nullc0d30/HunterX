@@ -10,7 +10,7 @@ author: Ahmed Awad (NullC0d3)
 categories: [technical, devops]
 ---
 
-# Deploying HunterX in Production with Docker
+## Deploying HunterX in Production with Docker
 
 HunterX provides an optimized 271MB multi-stage Docker image running as a non-root user.
 
@@ -61,7 +61,7 @@ jobs:
     container:
       image: nullc0d30/hunterx:latest
     steps:
-      - run: python hunterx.py -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
+      - run: hunterx -u {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
           -o /data/report.sarif
 ```
 
@@ -71,7 +71,7 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - python hunterx.py -u $TARGET_URL -o report.sarif
+    - hunterx -u $TARGET_URL -o report.sarif
   artifacts:
     paths: [report.sarif]
 ```

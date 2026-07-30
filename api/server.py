@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # HunterX — AI-Assisted Vulnerability Hunter
+import os
 import time
-from typing import Dict, List
+from typing import Any, Dict, List
 
 try:
     from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -482,7 +483,7 @@ if HAS_FASTAPI:
         return goal.to_dict()
 
     @app.get("/reasoning/{goal_id}")
-    async def get_reasoning(goal_id: str):
+    async def get_reasoning_by_goal(goal_id: str):
         from core.reasoning.engine import ReasoningOrchestrator
         engine = ReasoningOrchestrator()
         result = engine.inspect_reasoning(goal_id)

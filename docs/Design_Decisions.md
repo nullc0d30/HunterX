@@ -1,11 +1,14 @@
 ---
 layout: default
 title: Design Decisions — HunterX v6.0.0
-description: Key architectural design decisions for HunterX AI-assisted vulnerability scanner. Rationale behind security testing framework choices.
+description: >-
+  Key architectural design decisions for HunterX AI-assisted vulnerability
+  scanner and red team framework. Rationale behind security testing framework
+  choices for offensive security and attack surface management.
 permalink: /design-decisions/
 ---
 
-# Design Decisions
+## Design Decisions
 
 This document explains the key architectural decisions made in HunterX and the rationale behind them.
 

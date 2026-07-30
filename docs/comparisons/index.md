@@ -7,7 +7,7 @@ description: >-
   OpenVAS.
 ---
 
-# Comparisons
+## Comparisons
 
 Objective, technical comparisons between HunterX and popular vulnerability scanners.
 

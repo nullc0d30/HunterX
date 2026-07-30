@@ -7,7 +7,7 @@ description: >-
   methodology, performance, and use case analysis.
 ---
 
-# HunterX vs Nuclei
+## HunterX vs Nuclei
 
 | Dimension | HunterX | Nuclei |
 |-----------|---------|--------|

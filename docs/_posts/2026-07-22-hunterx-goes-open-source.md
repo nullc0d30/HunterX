@@ -10,7 +10,7 @@ author: Ahmed Awad (NullC0d3)
 categories: [releases, community]
 ---
 
-# HunterX Goes Open Source
+## HunterX Goes Open Source
 
 Today I'm excited to announce that HunterX — the AI-assisted vulnerability scanner and Red Team framework — is now fully open source under the **Apache License 2.0**.
 

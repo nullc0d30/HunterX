@@ -10,7 +10,7 @@ author: Ahmed Awad (NullC0d3)
 categories: [technical, red-team]
 ---
 
-# Understanding HunterX's 4-Stage Reasoning Pipeline
+## Understanding HunterX's 4-Stage Reasoning Pipeline
 
 Traditional vulnerability scanners operate on a simple model: send a payload, check for a match. HunterX replaces this with a **reasoning pipeline** inspired by how human penetration testers think.
 

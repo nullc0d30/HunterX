@@ -7,7 +7,7 @@ description: >-
   use case analysis.
 ---
 
-# HunterX vs OpenVAS
+## HunterX vs OpenVAS
 
 | Dimension | HunterX | OpenVAS (Greenbone) |
 |-----------|---------|---------------------|

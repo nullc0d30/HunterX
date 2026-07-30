@@ -1,11 +1,14 @@
 ---
 layout: default
 title: HunterX Architecture Guide — HunterX v6.0.0
-description: Architecture guide for HunterX v6.0.0 AI-assisted vulnerability scanner. System design, component relationships, and data flow.
+description: >-
+  Architecture guide for HunterX v6.0.0 AI-assisted vulnerability scanner.
+  System design, component relationships, and data flow for the open-source
+  Linux security tool and red team framework.
 permalink: /architecture/
 ---
 
-# HunterX Architecture Guide
+## HunterX Architecture Guide
 
 **Version:** 6.0.0
 

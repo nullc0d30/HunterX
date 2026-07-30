@@ -1,11 +1,15 @@
 ---
 layout: default
 title: Security Skills SDK — Developer Guide — HunterX v6.0.0
-description: Security Skills SDK developer guide for HunterX v6.0.0. Build custom security skills with the Skill SDK API.
+description: >-
+  Security Skills SDK developer guide for HunterX v6.0.0 vulnerability
+  scanner. Build custom security skills for penetration testing, bug bounty
+  hunting, and cybersecurity automation using the Skill SDK API for the
+  open-source Linux security tool.
 permalink: /skill-sdk/
 ---
 
-# Security Skills SDK — Developer Guide
+## Security Skills SDK — Developer Guide
 
 > **HunterX v6.0.0**  
 > Build custom security analysis skills for the HunterX platform.

@@ -2,12 +2,13 @@
 layout: default
 title: Benchmarks — HunterX Performance
 description: >-
-  HunterX vulnerability scanner performance benchmarks: scan time, memory
-  usage, request throughput, Docker image size, and scaling characteristics.
+  HunterX vulnerability scanner performance benchmarks for Linux penetration
+  testing. Scan time, memory usage, request throughput, Docker image size, and
+  scaling characteristics for the open-source security tool.
   Data from OWASP WebGoat benchmarks.
 ---
 
-# Benchmarks
+## Benchmarks
 
 Performance measurements on standard configurations. All tests run against OWASP WebGoat v2023.4 on a 4-core, 8GB RAM VM unless otherwise specified.
 

@@ -1,44 +1,23 @@
 ---
-name: 💡 Feature Request
+name: Feature Request
 about: Suggest an idea for HunterX
-title: "[FEATURE] "
+title: ""
 labels: enhancement
 assignees: ""
 ---
 
-## Problem Statement
+## Problem
 
-What problem would this feature solve? Describe the pain point clearly.
+What problem would this feature solve? Describe the use case.
 
 ## Proposed Solution
 
-Describe the feature you'd like to see. Be as specific as possible.
+A clear description of what you'd like to see added.
 
-## Alternative Solutions
+## Alternatives Considered
 
-What alternatives have you considered?
-
-## Impact
-
-- **Who would use this?** [e.g. Red Team operators, bug bounty hunters, developers]
-- **How would they use it?**
-- **What is the benefit?**
-
-## Example Usage
-
-```
-# Show how you imagine using this feature
-hunterx --new-flag value --another-option
-```
+Any alternative approaches you've thought about.
 
 ## Additional Context
 
-- Links to similar features in other tools
-- References to research papers or CVEs
-- Mockups or diagrams (if applicable)
-
-## Checklist
-
-- [ ] I searched existing issues before filing
-- [ ] This feature aligns with HunterX's vision
-- [ ] I am willing to help implement this (optional)
+Links to related issues, discussions, or references.

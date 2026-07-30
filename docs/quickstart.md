@@ -1,13 +1,14 @@
 ---
 layout: default
 title: Quickstart Guide — HunterX v6.0.0
+keywords: Quickstart, penetration testing, bug bounty, vulnerability scanner
 description: >-
-  Install and run HunterX v6.0.0 in 5 minutes. Covers source installation, Docker
+  Install and run HunterX v6.0.0 in 5 minutes. Covers pip installation, Docker
   deployment, basic scanning, AI-assisted scanning, authentication, profiles,
   presets, and API server mode.
 ---
 
-# Quickstart Guide
+## Quickstart Guide
 
 Install and run HunterX in 5 minutes.
 
@@ -16,7 +17,7 @@ Install and run HunterX in 5 minutes.
 ## Prerequisites
 
 - Python 3.11+
-- pip
+- pip or pipx
 - (Optional) Docker
 - (Optional for AI features) [Ollama](https://ollama.ai) or OpenAI API key
 
@@ -24,14 +25,10 @@ Install and run HunterX in 5 minutes.
 
 ## Installation
 
-### From Source
+### pip (Recommended)
 
 ```bash
-git clone https://github.com/nullc0d30/HunterX.git
-cd HunterX
-pip install -r requirements.txt
-python setup.py
-python hunterx.py --help
+pip install hunterx
 ```
 
 ### Docker
@@ -41,33 +38,34 @@ docker pull nullc0d30/hunterx:latest
 docker run --rm nullc0d30/hunterx:latest --help
 ```
 
+See the full [Installation Guide](installation) for all methods (pipx, install.sh, source).
+
 ---
 
 ## Your First Scan
 
-### Basic Vulnerability Scan
-
 ```bash
-python hunterx.py -u https://example.com --profile bounty
+# One-shot scan
+hunterx target.com
+
+# Explicit scan command
+hunterx scan https://example.com
 ```
 
-This runs a standard bug-bounty profile scan with medium stealth, 41 security skills, response differential analysis, and WAF detection.
+This runs a standard scan with all 41 security skills, response differential analysis, and WAF detection.
 
-### Full Scan
-
-```bash
-python hunterx.py -u https://example.com --preset full --threads 10
-```
-
-Enables all available skills and runs with maximum coverage.
-
-### Stealth Scan
+### Scan Presets
 
 ```bash
-python hunterx.py -u https://example.com --stealth high --threads 2 --delay 3
-```
+# Quick preset (common vectors only)
+hunterx scan https://example.com --preset quick
 
-Low-noise mode with long delays, minimal threads, and conservative probing.
+# Full preset (all skills, maximum coverage)
+hunterx scan https://example.com --preset full --threads 10
+
+# Stealth preset (low noise, production-safe)
+hunterx scan https://example.com --preset stealth
+```
 
 ---
 
@@ -75,13 +73,13 @@ Low-noise mode with long delays, minimal threads, and conservative probing.
 
 ```bash
 # Bounty profile — balanced, bug-bounty-oriented skills
-python hunterx.py -u https://example.com --profile bounty
+hunterx scan https://example.com --profile bounty
 
 # Internal profile — comprehensive, all skills
-python hunterx.py -u https://example.com --profile internal
+hunterx scan https://example.com --profile internal
 
 # Government profile — strict compliance, detailed reporting
-python hunterx.py -u https://example.com --profile gov
+hunterx scan https://example.com --profile gov
 ```
 
 ---
@@ -90,20 +88,18 @@ python hunterx.py -u https://example.com --profile gov
 
 ```bash
 # Basic authentication
-python hunterx.py -u https://example.com --auth basic --username admin --password secret
+hunterx scan https://example.com --auth basic --username admin --password secret
 
 # Bearer token
-python hunterx.py -u https://example.com --auth bearer --token eyJhbGciOiJIUzI1NiIs...
+hunterx scan https://example.com --auth bearer --token eyJhbGciOiJIUzI1NiIs...
 
 # Cookie-based session
-python hunterx.py -u https://example.com --auth cookie --cookie-file cookies.json
+hunterx scan https://example.com --auth cookie --cookie-file cookies.json
 
 # Form login
-python hunterx.py -u https://example.com --auth form --username admin --password secret \
-    --login-url https://example.com/login --username-field user --password-field pass
+hunterx scan https://example.com --auth form --username admin \
+    --login-url https://example.com/login
 
-# JWT analysis
-python hunterx.py -u https://example.com --auth jwt --token eyJhbGciOiJIUzI1NiIs...
 ```
 
 ---
@@ -112,13 +108,13 @@ python hunterx.py -u https://example.com --auth jwt --token eyJhbGciOiJIUzI1NiIs
 
 ```bash
 # Local model with Ollama
-python hunterx.py -u https://example.com --ai --ai-model llama3.2 --ai-provider ollama
+hunterx scan https://example.com --ai --ai-model llama3.2
 
 # OpenAI
-python hunterx.py -u https://example.com --ai --ai-model gpt-4 --ai-provider openai
+hunterx scan https://example.com --ai --ai-model gpt-4
 
 # Custom AI settings
-python hunterx.py -u https://example.com --ai --ai-model gpt-4 --ai-temperature 0.3
+hunterx scan https://example.com --ai --ai-model gpt-4 --ai-endpoint https://my-proxy.example.com
 ```
 
 ---
@@ -127,10 +123,10 @@ python hunterx.py -u https://example.com --ai --ai-model gpt-4 --ai-temperature 
 
 ```bash
 # Targets file (one URL per line)
-python hunterx.py -f targets.txt --profile bounty
+hunterx scan target.com -f targets.txt
 
 # Dry run (logic check only, no requests sent)
-python hunterx.py -f targets.txt --profile bounty --dry-run
+hunterx scan target.com --dry-run
 ```
 
 ---
@@ -139,7 +135,7 @@ python hunterx.py -f targets.txt --profile bounty --dry-run
 
 ```bash
 # Start the API server
-python hunterx.py api --port 8443
+hunterx api --port 8443
 ```
 
 Submit scan jobs via REST API:
@@ -161,20 +157,20 @@ See the [REST API reference](api) for all 40+ endpoints.
 docker run --rm \
   -v $(pwd)/reports:/data \
   nullc0d30/hunterx:latest \
-  -u https://example.com --profile bounty -o /data
+  scan target.com -o /data
 
 # AI-assisted scan
 docker run --rm \
   -v $(pwd)/reports:/data \
   -e OPENAI_API_KEY=sk-... \
   nullc0d30/hunterx:latest \
-  -u https://example.com --ai --ai-model gpt-4 -o /data
+  scan target.com --ai --ai-model gpt-4 -o /data
 
 # API server
 docker run --rm -p 8443:8443 nullc0d30/hunterx:latest api --port 8443
 ```
 
-See the [Docker Guide](docker) for production deployment.
+See the [Docker Guide](Docker_Guide) for production deployment.
 
 ---
 
@@ -195,9 +191,10 @@ Reports are generated in the output directory:
 
 ## What's Next
 
-- [Features & Architecture](features) — Full capability breakdown
+- [Installation Guide](installation) — All install methods
 - [CLI Reference](cli) — All commands and arguments
 - [REST API](api) — All endpoints and examples
 - [Security Skills Framework](security-skills-framework) — 41 skills
-- [Docker Guide](docker) — Production deployment
+- [Docker Guide](Docker_Guide) — Production deployment
 - [Plugin Development](plugin-development) — Extend HunterX
+- [Contributing](contributing) — How to contribute

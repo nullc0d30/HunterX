@@ -166,9 +166,10 @@ For more information, see [developercertificate.org](https://developercertificat
 
 ## Resources
 
-- [Main Documentation](https://github.com/NullC0d3/HunterX/wiki)
-- [API Reference](https://github.com/NullC0d3/HunterX/wiki/API-Reference)
-- [Skill Authoring Guide](https://github.com/NullC0d3/HunterX/wiki/Skill-Authoring-Guide)
-- [Provider Development Guide](https://github.com/NullC0d3/HunterX/wiki/Provider-Development-Guide)
+- [Documentation Site](https://nullc0d30.github.io/HunterX/)
+- [CLI Reference](https://nullc0d30.github.io/HunterX/cli/)
+- [REST API Reference](https://nullc0d30.github.io/HunterX/api/)
+- [Skill SDK](docs/SKILL_SDK.md)
+- [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT.md)
 - [Issue Tracker](https://github.com/NullC0d3/HunterX/issues)
 - [Discussions](https://github.com/NullC0d3/HunterX/discussions)

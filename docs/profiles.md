@@ -2,12 +2,13 @@
 layout: default
 title: Operator Profiles — HunterX
 description: >-
-  HunterX operator profiles define behavioral constraints for the scanner.
-  Internal, Bounty, Gov, and Custom profiles with request limits, rate
-  limiting, destructive payload allowance, and passive-mode defaults.
+  HunterX operator profiles define behavioral constraints for penetration
+  testing and bug bounty scanning. Internal, Bounty, Gov, and Custom profiles
+  with request limits, rate control, and stealth settings for the open-source
+  Linux security tool.
 ---
 
-# Operator Profiles
+## Operator Profiles
 
 HunterX uses operator profiles to enforce safety constraints. Each profile sets defaults for rate limiting, maximum requests, destructive payload allowance, and scan mode.
 
@@ -72,7 +73,7 @@ Custom profiles override all defaults and are not shown in legal banners or `--h
 ## Profile Selection
 
 Select a profile via:
-- CLI: `python hunterx.py -u http://example.com -p bounty`
+- CLI: `hunterx -u http://example.com -p bounty`
 - Config: `profile: name: bounty` in `hunterx.yaml`
 - Env: `HX_PROFILE=bounty`
 

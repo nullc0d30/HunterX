@@ -6,7 +6,7 @@
 # Multi-stage build for minimal production image
 
 # ============================================================
-# Stage 1: Build stage — install dependencies
+# Stage 1: Build stage — install the package
 # ============================================================
 FROM python:3.11-slim AS builder
 
@@ -21,12 +21,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /build
 
-# Install build dependencies only
-COPY requirements.txt .
-RUN pip install --no-cache-dir --no-compile \
-    --require-hashes \
-    -r requirements.txt 2>/dev/null || \
-    pip install --no-cache-dir --no-compile -r requirements.txt
+COPY . .
+
+RUN pip install --no-cache-dir --no-compile "."
 
 # ============================================================
 # Stage 2: Runtime stage — minimal final image
@@ -52,13 +49,12 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app \
     PIP_NO_CACHE_DIR=1 \
     HX_LOG_LEVEL=INFO
 
 WORKDIR /app
 
-# Copy installed Python packages from builder
+# Copy installed Python packages and entry point from builder
 COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
@@ -67,18 +63,14 @@ RUN groupadd -r -g 999 hunterx && \
     useradd -r -g hunterx -u 999 -d /app -s /sbin/nologin hunterx && \
     mkdir -p /data /app/reports
 
-# Copy application source
-COPY hunterx.py .
-COPY core/ ./core/
-COPY api/ ./api/
-COPY plugins/ ./plugins/
-COPY pyproject.toml hunterx.yaml ./
+# Copy runtime configuration and payload data
+COPY hunterx.yaml ./
 COPY payloads/ ./payloads/
 
 # Set ownership and secure permissions
 RUN chown -R hunterx:hunterx /app /data && \
     chmod -R o-rwx /app && \
-    chmod 755 /app /app/hunterx.py /data
+    chmod 755 /app /data
 
 USER hunterx
 
@@ -86,9 +78,9 @@ VOLUME ["/data"]
 
 EXPOSE 8443
 
-# Health check: verify the process is running
+# Health check: verify the hunterx CLI works
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)" || exit 1
+    CMD hunterx --help >/dev/null 2>&1 || exit 1
 
-ENTRYPOINT ["python", "hunterx.py"]
+ENTRYPOINT ["hunterx"]
 CMD ["--help"]

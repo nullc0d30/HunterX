@@ -6,7 +6,7 @@ description: >-
   text and summary of terms for the open-source vulnerability scanner.
 ---
 
-# License
+## License
 
 HunterX is open-source software licensed under the **Apache License, Version 2.0**.
 

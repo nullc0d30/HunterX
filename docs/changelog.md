@@ -6,7 +6,7 @@ description: >-
   Features, fixes, and breaking changes for each version.
 ---
 
-# Changelog
+## Changelog
 
 > Full changelog maintained at [CHANGELOG.md](https://github.com/nullc0d30/HunterX/blob/main/CHANGELOG.md).
 
@@ -33,11 +33,12 @@ description: >-
 - System: health, config, version
 
 ### CLI
-- Subcommands: `skills`, `agents`, `payload`, `workflow`, `reasoning`, `ai`, `config`
+- Commands: `scan`, `module`, `report`, `doctor`, `config`, `update`, `api`
+- Subcommands: `skills`, `agents`, `payload`, `workflow`, `reasoning`, `ai`
 - Profile support: `internal`, `bounty`, `gov`
 - Preset support: `quick`, `full`, `stealth`
 - Authentication: basic, bearer, cookie, form, JWT
-- AI integration flags
+- AI integration flags with multi-provider support
 
 ### Reporting
 - JSON, Markdown, SARIF 2.1, HTML
@@ -55,15 +56,12 @@ description: >-
 ### License Change
 - **License changed from Proprietary to Apache 2.0** — HunterX is now fully open source
 - All source files updated to `SPDX-License-Identifier: Apache-2.0`
-- All documentation files updated to `SPDX-License-Identifier: Apache-2.0`
-- NOTICE file added with third-party dependency attributions
 - CONTRIBUTING.md updated with DCO (Developer Certificate of Origin) requirement
 
 ### Documentation
 - Comprehensive README with badges, CI status, and architecture
 - GitHub Pages site with SEO metadata and structured data
-- Quickstart guide, API reference, Docker guide, FAQ
-- Tutorials for basic scanning, authenticated scanning, and API usage
+- Quickstart guide, API reference, Docker guide, FAQ, tutorials
 
 ### Infrastructure
 - GitHub Actions CI pipeline with Ruff linting and Pytest
@@ -82,7 +80,6 @@ description: >-
 - WebSocket and GraphQL protocol testing
 - OOB detection for blind XXE, SSRF, and RCE
 - WAF fingerprinting with 50+ signatures
-- Operator profiles (internal, bounty, gov) with behavioral constraints
+- Operator profiles (internal, bounty, gov)
 - Stealth modes with configurable timing
 - 76 passing tests
-- Proprietary license

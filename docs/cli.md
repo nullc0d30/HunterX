@@ -1,17 +1,18 @@
 ---
 layout: default
-title: CLI Reference
+title: CLI Reference — HunterX v6.0.0
+keywords: CLI reference, hunterx commands, penetration testing CLI
 description: >-
-  Complete CLI reference for HunterX vulnerability scanner. Documenting all commands,
-  options, flags, subcommands, and practical usage examples for the hunterx command-line tool.
+  Complete CLI reference for HunterX vulnerability scanner. All commands,
+  options, flags, subcommands, and practical usage examples.
 permalink: /cli/
 ---
 
-# CLI Reference
+## CLI Reference
 
-HunterX ships with a unified command-line interface. All commands follow the pattern:
+HunterX ships with a unified command-line interface.
 
-```
+```bash
 hunterx [global-options] <command> [subcommand] [options]
 ```
 
@@ -19,226 +20,290 @@ hunterx [global-options] <command> [subcommand] [options]
 
 ## Global Options
 
-### Core Options
-
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--url` | `-u` | Target URL(s) to scan. Accepts comma-separated list. |
-| `--targets-file` | `-f` | Path to a file containing target URLs (one per line). |
-| `--payload-dir` | `-p` | Directory containing custom payload files. |
-| `--output-dir` | `-o` | Directory to write scan reports and results. |
-| `--config` | `-c` | Path to configuration file (default: `hunterx.json` or `hunterx.yaml`). |
-
-### Profile & Mode
-
 | Flag | Description |
-|------|-------------|
-| `--profile {internal,bounty,gov}` | Scan profile: `internal` (comprehensive, slower), `bounty` (focused on high-value findings), `gov` (compliance-driven). |
-| `--preset {quick,full,stealth}` | Execution preset: `quick` (fast scan), `full` (exhaustive), `stealth` (low-and-slow). |
-| `--stealth {low,medium,high}` | Stealth level controlling request timing and fingerprint avoidance. |
-| `--threads` | Number of concurrent threads (default: auto-detected CPU count). |
-| `--dry-run` | Simulate scan without sending any requests. Useful for validation. |
-| `--insecure` | Disable TLS certificate verification (skip TLS errors). |
-| `--proxy` | HTTP/S proxy to route traffic through (e.g., `http://127.0.0.1:8080`). |
-| `--user-agent` | Custom User-Agent header. |
-| `--headers` | Additional HTTP headers to include with every request (key:value pairs). |
-| `--cookies` | Cookies to include with requests (key=value;key=value). |
-| `--delay` | Fixed delay in milliseconds between requests. |
-| `--random-delay` | Randomized delay range between requests (min-max in ms, e.g., `500-2000`). |
-| `--timeout` | Request timeout in seconds (default: 30). |
-| `--retries` | Number of retry attempts on failure (default: 3). |
-| `--max-depth` | Maximum crawl depth for spidering (default: 5). |
-
-### Authentication Options
-
-| Flag | Description |
-|------|-------------|
-| `--auth {none,basic,bearer,cookie,form,jwt}` | Authentication method. |
-| `--token` | Bearer token or JWT token value. |
-| `--username` | Username for basic/form/jwt authentication. |
-| `--password` | Password for basic/form/jwt authentication. |
-| `--cookie-file` | Path to a Netscape-format cookie file. |
-| `--login-url` | URL to POST login form data to (form auth). |
-| `--username-field` | Username form field name (default: `username`). |
-| `--password-field` | Password form field name (default: `password`). |
-
-### AI Options
-
-| Flag | Description |
-|------|-------------|
-| `--ai` | Enable AI-assisted analysis. |
-| `--ai-model` | AI model to use (e.g., `gpt-4`, `claude-3-opus`). |
-| `--ai-provider` | AI provider to use (e.g., `openai`, `anthropic`, `local`). |
-| `--ai-temperature` | AI temperature setting (0.0–1.0, default: 0.2). |
-| `--ai-max-retries` | Maximum retries for AI requests (default: 3). |
-| `--ai-timeout` | Timeout in seconds for AI requests (default: 60). |
+|---|---|
+| `--help` | Show help and exit |
+| `--version` | Show version and exit |
+| `-v`, `--verbose` | Increase verbosity (`-v` INFO, `-vv` DEBUG) |
+| `-q`, `--quiet` | Suppress output (errors only) |
 
 ---
 
-## Subcommands
+## Commands
+
+| Command | Description |
+|---|---|
+| `scan` | Run a vulnerability scan against a target |
+| `module` | List and search scan modules |
+| `report` | View scan reports and system overview |
+| `doctor` | Run system diagnostics |
+| `config` | View configuration |
+| `update` | Update payloads and modules |
+| `api` | Run as API server |
+| `payload` | Payload Intelligence Platform commands |
+| `agents` | Agent management commands |
+| `workflow` | Workflow management commands |
+| `reasoning` | Reasoning engine commands |
+| `skills` | Security Skills Framework commands |
+| `ai` | AI Provider commands |
+
+---
+
+## Scan Options
+
+### Target
+
+| Argument | Description | Default |
+|---|---|---|---|
+| `target` | Target URL or domain | Required |
+| `-p`, `--payload-dir` | Payload directory | `payloads/` |
+| `-o`, `--output-dir` | Output directory | `reports/` |
+| `-c`, `--config` | YAML config file | `hunterx.yaml` |
+
+### Profiles & Presets
+
+| Flag | Description | Default |
+|---|---|---|
+| `--profile` | Operator profile: `internal`, `bounty`, `gov` | `bounty` |
+| `--preset` | Scan preset: `quick`, `full`, `stealth` | `full` |
+| `--category` | Comma-separated skill categories | all |
+| `--stealth` | Stealth level: `low`, `medium`, `high` | `low` |
+| `--threads` | Concurrent threads | `5` |
+
+### Execution
+
+| Flag | Description |
+|---|---|---|
+| `--dry-run` | Logic verification only (no requests sent) |
+| `--passive-only` | Stage 0 reconnaissance only |
+| `--insecure` | Disable SSL verification |
+
+### Authentication
+
+| Flag | Description |
+|---|---|
+| `--auth` | Auth type: `none`, `basic`, `bearer`, `cookie`, `form` |
+| `--username` | Auth username |
+| `--password` | Auth password |
+| `--token` | Bearer token or JWT |
+| `--cookie-file` | JSON cookie file |
+| `--login-url` | Form login URL |
+
+### AI / LLM
+
+| Flag | Description |
+|---|---|
+| `--ai` | Enable AI/LLM analysis |
+| `--ai-model` | AI model name |
+| `--ai-endpoint` | Custom AI endpoint |
+
+### Advanced
+
+| Flag | Description |
+|---|---|
+| `--oob` | Enable out-of-band detection |
+| `--collaborator` | Collaborator URL for OOB callbacks |
+| `--sarif` | Generate SARIF report |
+| `--graph` | Generate knowledge graph |
+| `--attack-graph` | Generate visual attack graph |
+| `--threat-model` | Generate threat model |
+| `--risk` | Run risk analysis |
+| `--purple` | Generate purple team detection rules |
+| `--explain` | Generate AI explanations |
+| `--browser` | Enable browser intelligence |
+
+---
+
+## Subcommand Reference
+
+### `hunterx scan` — Vulnerability Scanning
+
+Run a vulnerability scan against a target. This is the primary command.
+
+```bash
+hunterx scan https://target.com --profile bounty --preset full
+hunterx scan target.com --ai --ai-model llama3.2
+hunterx scan https://target.com --auth bearer --token $TOKEN --oob
+```
+
+### `hunterx module` — Module Management
+
+List and search available scan modules.
+
+```bash
+hunterx module list
+hunterx module info <id>
+hunterx module search <query>
+```
+
+### `hunterx report` — Report Viewer
+
+View scan reports and system overview.
+
+```bash
+hunterx report
+hunterx report -o <dir>
+hunterx report --json
+```
+
+### `hunterx doctor` — Diagnostics
+
+Run system diagnostics to verify installation and configuration.
+
+```bash
+hunterx doctor
+```
+
+### `hunterx config` — Configuration
+
+View or validate current configuration.
+
+```bash
+hunterx config --show
+```
+
+### `hunterx update` — Updates
+
+Update payloads and modules.
+
+```bash
+hunterx update
+hunterx update --force
+hunterx update --release
+hunterx update --payloads
+```
 
 ### `hunterx api` — REST API Server
 
 Start the built-in REST API server.
 
-| Flag | Alias | Description |
-|------|-------|-------------|
-| `--port` | `-p` | Port to bind (default: 8000). |
-| `--host` | `-H` | Host to bind (default: `127.0.0.1`). |
-| `--debug` | `-d` | Enable debug mode (auto-reload, verbose logging). |
+```bash
+hunterx api --port 8443
+hunterx api --host 0.0.0.0 --port 8080
+```
 
-### `hunterx payload` — Payload Management
+### `hunterx payload` — Payload Intelligence
 
-Manage the payload database.
-
-| Subcommand | Description |
-|------------|-------------|
-| `stats` | Display payload database statistics. |
-| `search <query>` | Search payloads by keyword or category. |
-| `mutate <payload>` | Generate mutations of a given payload. |
-| `feedback` | Submit feedback on payload effectiveness. |
-| `sync` | Synchronize payload database with remote source. |
-| `index` | Rebuild the payload search index. |
-
-### `hunterx skills` — Security Skills Framework
-
-Manage AI-security skills.
-
-| Subcommand | Description |
-|------------|-------------|
-| `list` | List all installed skills. |
-| `info <name>` | Show detailed information about a skill. |
-| `install <name>` | Install a skill from the registry. |
-| `uninstall <name>` | Remove an installed skill. |
-| `search <query>` | Search the skill registry. |
-| `categories` | List all available skill categories. |
-| `mitre` | Browse MITRE ATT&CK technique mappings. |
-| `execute <name> [args]` | Execute a skill directly. |
+```bash
+hunterx payload sync
+hunterx payload index
+hunterx payload search <query>
+hunterx payload info <id>
+hunterx payload stats
+hunterx payload top
+hunterx payload feedback
+hunterx payload policy
+hunterx payload provenance <query>
+```
 
 ### `hunterx agents` — Multi-Agent Platform
 
-Manage the autonomous agent fleet.
-
-| Subcommand | Description |
-|------------|-------------|
-| `list` | List all registered agents and their status. |
-| `status <id>` | Show status and health of a specific agent. |
-| `enable <id>` | Enable a disabled agent. |
-| `disable <id>` | Disable a running agent. |
+```bash
+hunterx agents list
+hunterx agents status
+hunterx agents enable <id>
+hunterx agents disable <id>
+```
 
 ### `hunterx workflow` — Workflow Engine
 
-Manage and execute scan workflows.
-
-| Subcommand | Description |
-|------------|-------------|
-| `list` | List all available workflows. |
-| `create <file>` | Create a new workflow from a definition file. |
-| `execute <id>` | Execute a workflow by ID. |
-| `status <id>` | Check workflow execution status. |
+```bash
+hunterx workflow run <id>
+hunterx workflow inspect <id>
+hunterx workflow graph <id>
+```
 
 ### `hunterx reasoning` — Reasoning Engine
 
-Manage reasoning tasks and requests.
+```bash
+hunterx reasoning inspect <goal_id>
+hunterx reasoning validate <goal_id>
+```
 
-| Subcommand | Description |
-|------------|-------------|
-| `create <goal>` | Create a new reasoning task from a goal description. |
-| `status <id>` | Check reasoning task status. |
-| `list` | List all reasoning tasks. |
-| `sessions` | List active reasoning sessions. |
+### `hunterx skills` — Security Skills Framework
+
+```bash
+hunterx skills list
+hunterx skills info <id>
+hunterx skills search <query>
+hunterx skills install <path>
+hunterx skills uninstall <id>
+hunterx skills enable <id>
+hunterx skills disable <id>
+hunterx skills verify <id>
+hunterx skills doctor <id>
+hunterx skills export <id>
+hunterx skills stats
+```
 
 ### `hunterx ai` — AI Provider Management
 
-Manage AI provider connections and models.
-
-| Subcommand | Description |
-|------------|-------------|
-| `providers` | List configured AI providers. |
-| `health` | Check AI provider health/connectivity. |
-| `test <provider>` | Run a connectivity test against a provider. |
-| `models [provider]` | List available models for a provider. |
-| `sessions` | List active AI sessions. |
-
-### `hunterx config` — Configuration
-
-View or validate configuration.
-
-| Subcommand | Description |
-|------------|-------------|
-| `show` | Display current configuration. |
-| `schema` | Output the configuration JSON schema. |
+```bash
+hunterx ai providers
+hunterx ai health
+hunterx ai config
+hunterx ai cache
+hunterx ai metrics
+hunterx ai test
+hunterx ai models
+```
 
 ---
 
 ## Examples
 
-### 1. Basic Quick Scan
+### Basic Scans
 
 ```bash
-hunterx -u https://example.com --preset quick -o ./results
+# Quick scan
+hunterx scan https://example.com --preset quick
+
+# Full scan with report
+hunterx scan https://example.com --preset full -o ./results
+
+# Stealth scan
+hunterx scan https://example.com --stealth high --threads 2
 ```
 
-### 2. Authenticated Bounty Scan with Proxy
+### Authenticated Bounty Scan
 
 ```bash
-hunterx -u https://target.com --profile bounty --auth bearer \
-  --token eyJhbGciOiJIUzI1NiIs... \
-  --proxy http://127.0.0.1:8080 \
-  --delay 1000 --random-delay 500-1500 \
-  -o ./bounty-results
+hunterx scan https://target.com --profile bounty \
+    --auth bearer --token eyJhbGciOiJIUzI1NiIs... \
+    --proxy http://127.0.0.1:8080 \
+    -o ./bounty-results
 ```
 
-### 3. Stealth Scan with AI Analysis
+### Stealth Scan with AI
 
 ```bash
-hunterx -u https://target.com --preset stealth --stealth high \
-  --ai --ai-provider openai --ai-model gpt-4 \
-  --threads 2 --timeout 60 --retries 2 \
-  -o ./stealth-scan
+hunterx scan https://target.com --preset stealth \
+    --ai --ai-model gpt-4 \
+    --threads 2 --timeout 60
 ```
 
-### 4. Start API Server with Custom Configuration
+### Full Scan with All Options
 
 ```bash
-hunterx api --port 9000 --host 0.0.0.0 --debug
+hunterx scan target.com \
+    --profile internal --preset full \
+    --auth form --login-url https://app.target.com/login \
+    --ai --ai-model llama3.2 \
+    --insecure \
+    -o ./full-results
 ```
 
-### 5. List Agents and Execute a Workflow
-
-```bash
-hunterx agents list
-hunterx workflow list
-hunterx workflow execute scan-workflow-1
-```
-
-### 6. Payload Search and Mutation
+### Payload Search and Mutation
 
 ```bash
 hunterx payload search sqli
-hunterx payload mutate "SELECT * FROM users"
 hunterx payload stats
 ```
 
-### 7. Full Scan with All Options
-
-```bash
-hunterx -f targets.txt \
-  --profile internal --preset full \
-  --auth form --login-url https://app.target.com/login \
-  --username admin --password s3cret \
-  --headers "X-API-Key: abc123" --cookies "session=xyz" \
-  --ai --ai-model claude-3-opus --ai-temperature 0.1 \
-  --insecure --proxy http://127.0.0.1:8080 \
-  --delay 500 --timeout 30 --retries 3 --max-depth 10 \
-  --threads 8 \
-  -o ./full-scan-results
-```
-
-### 8. Check AI Provider Health
+### AI Provider Health
 
 ```bash
 hunterx ai health
 hunterx ai providers
-hunterx ai models openai
+hunterx ai models
 ```
