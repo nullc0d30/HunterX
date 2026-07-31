@@ -65,7 +65,7 @@ flowchart LR
     SK --> PL
     PL --> PK[Payload Knowledge Base]
     PL --> RZ[Reasoning Engine]
-    PK --> PATT[PayloadsAllTheThings<br/>(community-maintained)]
+    PK --> PATT["PayloadsAllTheThings (community-maintained)"]
     RZ --> RP[Reporting]
     RP --> OUT[JSON / SARIF / HTML / Graph]
 ```
