@@ -56,7 +56,7 @@ hunterx scan https://example.com --auth form --username admin --password s3cret 
     --login-url https://example.com/login
 ```
 
-## AI-Powered Analysis
+## AI-Assisted Analysis
 
 ```bash
 # Local Ollama

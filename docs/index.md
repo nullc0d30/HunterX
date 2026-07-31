@@ -322,7 +322,7 @@ description: >-
 <div class="lp-section fade-in">
   <div class="lp-section-header">
     <h2>About</h2>
-    <p>HunterX is built with a focus on reasoning-driven security assessment, safety-by-design, and enterprise-grade reporting.</p>
+    <p>HunterX is built with a focus on reasoning-driven security assessment, safety-by-design, and multi-format reporting (JSON, HTML, SARIF).</p>
   </div>
   <div class="lp-about-grid">
     <div class="lp-about-card">

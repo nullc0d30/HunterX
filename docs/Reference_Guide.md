@@ -263,7 +263,7 @@ hunterx scan http://target.com --graph --threat-model --risk --purple
 hunterx api --port 8443
 ```
 
-### AI-Powered Scan
+### AI-Assisted Scan
 
 ```bash
 hunterx scan http://target.com --ai --ai-model llama3.2

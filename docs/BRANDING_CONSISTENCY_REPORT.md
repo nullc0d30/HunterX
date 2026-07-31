@@ -87,7 +87,7 @@
 | **Discoverability** | **9.5/10** | 20 focused topics, keyword-optimized description |
 | **Cross-Platform Messaging** | **9/10** | Linux install details preserved where appropriate; metadata describes cross-platform framework |
 | **Docker Metadata** | **10/10** | Legal restriction removed, capability-focused description |
-| **Repository Authority** | **10/10** | Mature, consistent, enterprise-grade presentation |
+| **Repository Authority** | **10/10** | Mature, consistent presentation |
 
 **Overall: 9.7 / 10**
 
