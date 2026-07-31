@@ -75,6 +75,7 @@ Welcome to the HunterX v6.0.0 documentation hub. Use this page to navigate all a
 | [vs OWASP ZAP]({{ '/comparisons/vs-zap' | relative_url }}) | Feature comparison with OWASP ZAP. |
 | [vs Nuclei]({{ '/comparisons/vs-nuclei' | relative_url }}) | Feature comparison with ProjectDiscovery Nuclei. |
 | [vs OpenVAS]({{ '/comparisons/vs-openvas' | relative_url }}) | Feature comparison with Greenbone OpenVAS. |
+| [vs PayloadsAllTheThings]({{ '/comparisons/vs-payloadsallthethings' | relative_url }}) | How HunterX integrates the PayloadsAllTheThings payload knowledge base. |
 
 ## Community
 
