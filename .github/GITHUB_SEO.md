@@ -8,7 +8,7 @@ Configure these settings in the GitHub repository UI for maximum search engine d
 
 ### Description
 ```
-HunterX — AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting. Apache 2.0.
+HunterX — AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, a payload intelligence platform backed by the PayloadsAllTheThings knowledge base, and enterprise reporting. Apache 2.0.
 ```
 
 ### Website
@@ -27,7 +27,8 @@ red-team, vulnerability-scanner, penetration-testing, offensive-security,
 security-framework, security-automation, attack-surface,
 attack-surface-management, threat-intelligence, reconnaissance, web-security,
 osint, bug-bounty, linux-security, python, cli-tool, owasp, mitre-attck,
-ai-security, open-source
+ai-security, payloads, payload-library, payloadsallthethings, sarif, dast,
+open-source
 ```
 
 ---
@@ -46,7 +47,7 @@ Upload `logo.png` (918×974px) from the repository root. This image is used as t
 4. Under **Description**, paste the official description:
 
    ```
-   AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting.
+   AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, a payload intelligence platform backed by the PayloadsAllTheThings knowledge base, and enterprise reporting.
    ```
 
 5. Under **Links → Website**, set: `https://nullc0d30.github.io/HunterX`

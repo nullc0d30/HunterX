@@ -75,7 +75,7 @@ Converts agent-expressed Goals into structured AI prompts, dispatches them throu
 Encapsulates security operations (scanning, enumeration, exploitation, detection) into discrete, versioned Skills. The framework manages skill lifecycle (install, register, execute, update, remove). Skills are discovered through a registry, distributed via a marketplace, and instrumented with telemetry for performance and reliability tracking.
 
 ### Payload Intelligence
-Provides payload indexing, semantic search, mutation generation, and feedback-driven refinement. Includes a payload graph that maps relationships between payloads, techniques, and observed outcomes. Enables rapid payload adaptation based on environmental feedback.
+Provides payload indexing, semantic search, mutation generation, and feedback-driven refinement. Payload data is sourced from the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base: `hunterx payload sync` synchronizes upstream content (shallow git clone or latest GitHub release archive) and `hunterx payload index` builds a local SQLite + FTS5 index. Each payload records provenance (source repository, commit hash, release tag, checksum) for auditability. Includes a payload graph that maps relationships between payloads, techniques, and observed outcomes. Enables rapid payload adaptation based on environmental feedback.
 
 ### AI Provider Layer
 An abstracted interface to large language models. Supports multiple backends (Ollama, OpenAI, and others) through a consistent contract. Implements response caching, request/response metrics, middleware pipelines (logging, transformation, validation), and a routing layer that selects the optimal provider per request.
