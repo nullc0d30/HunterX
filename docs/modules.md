@@ -32,7 +32,7 @@ hunterx module search <query>
 
 | Module | Description |
 |---|---|
-| **Payload Intelligence Platform** | SQLite + FTS5 indexed payload repository with 5-level safety policy, 10-family mutation engine, provenance tracking, user feedback loop, and context-aware selection. |
+| **Payload Intelligence Platform** | SQLite + FTS5 indexed payload repository backed by the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base, with 5-level safety policy, 10-family mutation engine, provenance tracking, user feedback loop, and context-aware selection. |
 | **Payload Search** | Full-text search across the payload database using FTS5. |
 | **Payload Mutation** | 10 mutation technique families for encoding, case variation, comment injection, whitespace obfuscation, and more. |
 

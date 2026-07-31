@@ -190,6 +190,12 @@ layout: null
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nullc0d30.github.io/HunterX/comparisons/vs-payloadsallthethings</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://nullc0d30.github.io/HunterX/blog</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     <changefreq>weekly</changefreq>
