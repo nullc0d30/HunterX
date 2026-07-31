@@ -89,7 +89,7 @@ class Reporter:
             "",
             "## 1. Executive Summary",
             "",
-            f"HunterX performed an automated, AI-powered security assessment of **{target}**. The assessment utilized a multi-stage orchestration pipeline with intelligence layer.",
+            f"HunterX performed an automated security assessment of **{target}**. The assessment utilized a multi-stage orchestration pipeline with an intelligence layer.",
             "",
             f"**Overall Posture:** {'Critical Issues Found' if critical_findings else 'No Critical Issues Detected'}",
             f"**Technology Stack:** {server_header}",

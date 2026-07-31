@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-HunterX has been transformed from a standalone security tool into a world-class open-source project (Apache 2.0). The repository now follows GitHub and open-source best practices, making it welcoming to contributors, easy to maintain, and ready for community collaboration.
+HunterX has been transformed from a standalone security tool into an open-source project (Apache 2.0). The repository now follows GitHub and open-source best practices, making it welcoming to contributors and easy to maintain.
 
 ---
 

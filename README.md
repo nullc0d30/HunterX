@@ -474,7 +474,7 @@ hunterx scan target.com --profile bounty --preset quick \
 hunterx scan api.target.com --category api,cloud --evidence-level high --sarif
 ```
 
-### AI-Powered Analysis
+### AI-Assisted Analysis
 
 ```bash
 hunterx scan target.com --ai --ai-model llama3.2

@@ -3,7 +3,7 @@ layout: default
 title: Autonomous Multi-Agent Platform — HunterX v6.0.0
 description: >-
   Multi-agent platform for HunterX red team framework. 10 specialized
-  AI-powered agents for automated vulnerability assessment, penetration testing,
+  AI-assisted agents for automated vulnerability assessment, penetration testing,
   reconnaissance, and offensive security orchestration.
 permalink: /agents/
 ---

@@ -136,7 +136,7 @@ presets:
 | `threat_model` | boolean | `false` | Enable threat modeling |
 | `risk` | boolean | `false` | Enable risk assessment |
 | `purple` | boolean | `false` | Enable purple team simulations |
-| `explain` | boolean | `true` | Enable AI-powered explanations |
+| `explain` | boolean | `true` | Enable AI-assisted explanations |
 | `browser` | boolean | `false` | Enable browser-based analysis |
 | `risk_profile` | string | `default` | Risk assessment profile name |
 | `memory_db` | boolean | `true` | Enable in-memory database caching |
