@@ -116,6 +116,9 @@ faq_page: true
 34. **What is the destructive payload blocklist?**
     HunterX includes a hard-coded, non-bypassable blocklist of destructive payloads including `rm -rf`, `mkfs`, `dd if=`, fork bombs, reverse shells, and SQL write statements. These are blocked at the code level before any request is sent.
 
+35. **Does HunterX maintain its own payload database?**
+    No. HunterX leverages the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base as its payload source. Content is synchronized with `hunterx payload sync` (shallow git clone or latest GitHub release archive), indexed locally with `hunterx payload index`, and each payload records provenance (source repository, commit, release tag, checksum). A set of community-maintained payload files also ships in the `payloads/` directory. HunterX integrates these payloads but does not maintain an independent payload collection.
+
 {% endcapture %}
 
 {% assign items = faq_items | split: '**' %}

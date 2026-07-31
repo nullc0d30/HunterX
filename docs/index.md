@@ -1,7 +1,7 @@
 ---
 layout: default
 title: HunterX — AI-Assisted Offensive Security Framework
-keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis
+keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis, PayloadsAllTheThings, payload library, payload knowledge base, DAST, SARIF, OWASP
 description: >-
   HunterX is an AI-assisted offensive security framework combining intelligent
   reconnaissance, adaptive vulnerability discovery, payload orchestration, and
@@ -136,6 +136,11 @@ description: >-
         <p>SQLite + FTS5-indexed payload repository with 5-level safety policy, 10-family mutation engine, provenance tracking, and feedback loop.</p>
       </div>
       <div class="lp-card">
+        <span class="lp-card-icon">&#128221;</span>
+        <h3>Community Payload Knowledge</h3>
+        <p>Payloads are sourced from the community-maintained <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">PayloadsAllTheThings</a> knowledge base, synchronized and indexed locally with provenance tracking.</p>
+      </div>
+      <div class="lp-card">
         <span class="lp-card-icon">&#128200;</span>
         <h3>Knowledge Graph</h3>
         <p>Entity-relationship store for findings, targets, payloads, and attack paths. Enables cross-scan correlation and relationship analysis.</p>
@@ -210,6 +215,9 @@ description: >-
               | HTML      |
               +-----------+
 </pre>
+    <p style="text-align:center;margin-top:1rem;">Payload Intelligence is backed by the community-maintained
+    <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">PayloadsAllTheThings</a> knowledge base
+    (<code>hunterx payload sync</code>).</p>
   </div>
 </div>
 
@@ -239,8 +247,11 @@ description: >-
                                                     | FP Filtering  |
                                                     +----------------+
 </pre>
-    </div>
+    <p style="text-align:center;margin-top:1rem;">Payload selection draws on the locally indexed
+    <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">PayloadsAllTheThings</a> knowledge base
+    with provenance tracking.</p>
   </div>
+</div>
 </div>
 
 <!-- ===== SHOWCASE ===== -->

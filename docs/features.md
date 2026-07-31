@@ -71,7 +71,7 @@ HunterX follows a layered architecture organized into core subsystems.
 | **Multi-Agent Platform** | 10 specialized agents communicating through concurrent event and message buses; DAG-based workflows with state persistence and checkpoint/resume |
 | **Reasoning Engine** | Accepts goals, creates plans, generates AI prompts, validates responses, reaches consensus across multiple calls. 18 goal types supported |
 | **Security Skills Framework** | Registry of 41 skills with executor, policy, caching, and telemetry. Independent skill installation and version management |
-| **Payload Intelligence** | SQLite + FTS5 payload repository with 5-level execution policy, 10 mutation technique families, provenance tracking, feedback loop |
+| **Payload Intelligence** | SQLite + FTS5 payload repository sourced from the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base, with 5-level execution policy, 10 mutation technique families, provenance tracking, feedback loop |
 | **Knowledge Graph** | Entity-relationship store for findings, targets, payloads, attack paths, and threat actors; supports cross-scan correlation |
 | **AI Provider Layer** | Provider abstraction with session management, caching (SHA256 + TTL + LRU), metrics, middleware, retry, and circuit breaker |
 | **Reporter** | Multi-format output: JSON, Markdown, SARIF 2.1, HTML, visual attack graphs, purple team detection rules, ZIP evidence packages |
@@ -183,7 +183,7 @@ Full reference: [AI Provider Guide](ai-provider-guide)
 
 ## Payload Intelligence
 
-SQLite-indexed payload repository with FTS5 full-text search, 5-level execution policy, 10 mutation technique families (case variation, URL encoding, Base64, Unicode, comment injection, parameter pollution, null byte, whitespace, double encoding, chunked encoding), provenance tracking with mutation lineage, feedback loop for effectiveness scoring, graph-based payload relationships, and context-aware selection based on target technology and WAF presence.
+SQLite-indexed payload repository sourced from the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base, with FTS5 full-text search, 5-level execution policy, 10 mutation technique families (case variation, URL encoding, Base64, Unicode, comment injection, parameter pollution, null byte, whitespace, double encoding, chunked encoding), provenance tracking with mutation lineage (source repository, commit, release tag, checksum), feedback loop for effectiveness scoring, graph-based payload relationships, and context-aware selection based on target technology and WAF presence.
 
 ---
 

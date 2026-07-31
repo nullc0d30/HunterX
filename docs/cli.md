@@ -196,6 +196,8 @@ hunterx payload policy
 hunterx payload provenance <query>
 ```
 
+`hunterx payload sync` synchronizes the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base (shallow git clone or latest GitHub release archive). `hunterx payload index` builds a local SQLite + FTS5 search index with provenance tracking (source repository, commit, release tag, checksum).
+
 ### `hunterx agents` — Multi-Agent Platform
 
 ```bash

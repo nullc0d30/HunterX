@@ -63,7 +63,9 @@ flowchart LR
     RE --> SK[41 Security Skills]
     AE --> PL[Payload Engine]
     SK --> PL
+    PL --> PK[Payload Knowledge Base]
     PL --> RZ[Reasoning Engine]
+    PK --> PATT[PayloadsAllTheThings<br/>(community-maintained)]
     RZ --> RP[Reporting]
     RP --> OUT[JSON / SARIF / HTML / Graph]
 ```
@@ -74,7 +76,7 @@ flowchart LR
 - **AI-native integration** — The reasoning engine, skill planner, report generator, and detection pipeline all consume structured AI output. LLM analysis is optional but deeply integrated.
 - **41 built-in security skills** — Covering web, API, cloud, network, authentication, and infrastructure security. Each skill carries MITRE ATT&CK, OWASP, CWE, and CAPEC metadata.
 - **Multi-agent platform** — 10 specialized agents collaborate through event-driven communication with DAG-based workflows, checkpoint/resume, and isolated memory.
-- **Payload Intelligence Platform** — SQLite + FTS5-indexed payload repository with 5-level safety policy, 10-family mutation engine, provenance tracking, and context-aware selection.
+- **Payload Intelligence Platform** — SQLite + FTS5-indexed payload repository sourced from the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base, with 5-level safety policy, 10-family mutation engine, provenance tracking, and context-aware selection.
 - **Enterprise reporting** — JSON, Markdown, SARIF 2.1 (VS Code / GitHub CodeQL), HTML, attack graphs, purple team detection rules, and ZIP evidence packages.
 - **REST API** — FastAPI server with 40+ endpoints covering scanning, payload management, agent coordination, reasoning, skills, and system health.
 - **Safety-by-design** — Non-bypassable destructive payload blocklist, WAF detection with auto-abort, configurable rate limiting, and policy-driven execution controls.
@@ -96,6 +98,23 @@ HunterX complements existing security tools rather than replacing them. It fills
 | **ffuf** | Fuzzing / wordlist brute-force | — | — | — | JSON |
 
 **When to use HunterX:** Depth-oriented assessments where you need reasoning, context-aware payload selection, and explainable findings — not just a list of matched signatures.
+
+---
+
+## Payload Knowledge Base
+
+HunterX leverages the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base as its primary source of payload data. This is a community project, not a partnership or endorsement — HunterX simply integrates it and gives full credit.
+
+- **Sync** — `hunterx payload sync` (or `hunterx update --payloads`) fetches the latest PayloadsAllTheThings content via a shallow git clone or the latest GitHub release archive.
+- **Index** — `hunterx payload index` builds a local SQLite + FTS5 full-text index over the synced payload files for fast, context-aware search.
+- **Provenance** — every indexed payload records its origin: source repository, commit hash, release tag, and checksum, so payload history is auditable.
+- **Selection** — payloads are ranked by target technology, framework, language, and WAF presence rather than applied blindly.
+
+```bash
+hunterx payload sync    # Sync the PayloadsAllTheThings knowledge base
+hunterx payload index   # Build the local search index
+hunterx payload search sqli   # Search indexed payloads
+```
 
 ---
 
@@ -606,6 +625,13 @@ HunterX uses a reasoning-driven pipeline (Observe → Hypothesize → Probe → 
 </details>
 
 <details>
+<summary><b>Does HunterX maintain its own payload database?</b></summary>
+
+No. HunterX leverages the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base as its payload source. Content is synchronized with `hunterx payload sync`, indexed locally with `hunterx payload index`, and each payload records provenance (source repository, commit, release tag, checksum). A set of community-maintained payload files also ships in the `payloads/` directory.
+
+</details>
+
+<details>
 <summary><b>Do I need an AI provider?</b></summary>
 
 No. AI analysis is optional. All 41 skills run without AI. Enable it with `--ai` when LLM-assisted analysis is desired.
@@ -668,6 +694,20 @@ git push origin feat/your-feature
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+---
+
+## Community Resources
+
+HunterX is community-driven and Apache 2.0 licensed. Join the project, follow development, and explore the open-source resources it builds on.
+
+- [GitHub](https://github.com/nullc0d30/HunterX) — Source code, issues, and discussions
+- [Documentation Site](https://nullc0d30.github.io/HunterX) — Full documentation, tutorials, and API reference
+- [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) — Community-maintained payload knowledge base used by HunterX's Payload Intelligence Platform
+
+### Acknowledgements
+
+HunterX is built on the shoulders of the security community. Payload data is sourced from public security research repositories, including [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) and similar community projects, used in accordance with their respective licenses. See [NOTICE](NOTICE) and [RELEASE_NOTES_v6.0.0.md](RELEASE_NOTES_v6.0.0.md) for full attribution.
 
 ---
 
