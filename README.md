@@ -700,6 +700,13 @@ limitations under the License.
 
 ---
 
+## ⭐ Support HunterX
+
+If HunterX helps your security assessments, consider giving the project a GitHub Star.
+It helps improve visibility and supports continued development.
+
+
+
 <div align="center">
 
 **HunterX** — *Observe. Hypothesize. Probe. Verify.*
