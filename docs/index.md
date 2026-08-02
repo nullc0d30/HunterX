@@ -1,7 +1,7 @@
 ---
 layout: default
 title: HunterX — AI-Assisted Offensive Security Framework
-keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis, PayloadsAllTheThings, payload library, payload knowledge base, DAST, SARIF, OWASP
+keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis, PayloadsAllTheThings, payload library, payload knowledge base, DAST, SARIF, OWASP, OWASP Community, Security Scanner, Web Application Security, API Security
 description: >-
   HunterX is an AI-assisted offensive security framework combining intelligent
   reconnaissance, adaptive vulnerability discovery, payload orchestration, and
@@ -159,6 +159,12 @@ description: >-
         <span class="lp-card-icon">&#128274;</span>
         <h3>Safety-by-Design</h3>
         <p>Non-bypassable destructive payload blocklist, WAF detection with auto-abort, configurable rate limiting, and policy-driven execution.</p>
+      </div>
+      <div class="lp-card">
+        <span class="lp-card-icon">&#127793;</span>
+        <h3>Community Recognition</h3>
+        <p>HunterX is listed in the OWASP Community Vulnerability Scanning Tools catalog.</p>
+        <p style="margin-top:0.5rem;"><a href="https://owasp.org/www-community/Vulnerability_Scanning_Tools">View on OWASP &rarr;</a></p>
       </div>
     </div>
   </div>
