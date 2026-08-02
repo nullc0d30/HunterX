@@ -17,6 +17,7 @@ HunterX is an AI-assisted offensive security framework that combines intelligent
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/r/nullc0d30/hunterx)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
 [![Downloads](https://img.shields.io/pypi/dm/hunterx?style=flat-square&logo=pypi)](https://pypi.org/project/hunterx/)
+[![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
 
 ```bash
 # One-shot scan
@@ -717,6 +718,16 @@ HunterX is built on the shoulders of the security community. Payload data is sou
 - [GitHub Issues](https://github.com/nullc0d30/HunterX/issues) — Bug reports and feature requests
 - [GitHub Discussions](https://github.com/nullc0d30/HunterX/discussions) — Questions, ideas, and community support
 - [Security Policy](SECURITY.md) — Responsible disclosure and reporting process
+
+---
+
+## Community Recognition
+
+HunterX is listed in the following community-maintained security resources:
+
+- **OWASP Community – Vulnerability Scanning Tools**
+  HunterX is included in the OWASP Community Vulnerability Scanning Tools catalog.
+  https://owasp.org/www-community/Vulnerability_Scanning_Tools
 
 ---
 

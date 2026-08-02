@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Documentation Hub — HunterX v6.0.0
-keywords: documentation, HunterX guide, cybersecurity tool documentation
+keywords: documentation, HunterX guide, cybersecurity tool documentation, OWASP, OWASP Community, Vulnerability Scanner
 description: >-
   Central documentation hub for HunterX v6.0.0 open-source offensive security
   framework. Browse getting started guides, CLI reference, REST API docs,
@@ -81,6 +81,7 @@ Welcome to the HunterX v6.0.0 documentation hub. Use this page to navigate all a
 
 | Resource | Description |
 |---|---|
+| [OWASP Community – Vulnerability Scanning Tools](https://owasp.org/www-community/Vulnerability_Scanning_Tools) | Listed in the OWASP Community Vulnerability Scanning Tools catalog. |
 | [Blog]({{ '/blog' | relative_url }}) | Project news, updates, and technical posts. |
 | [Roadmap]({{ '/roadmap' | relative_url }}) | Upcoming features and development plans. |
 | [Changelog]({{ '/changelog' | relative_url }}) | Full version history. |
