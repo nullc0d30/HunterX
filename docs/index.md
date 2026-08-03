@@ -27,6 +27,10 @@ description: >-
     <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="License"></a>
     <a href="https://hub.docker.com/r/nullc0d30/hunterx"><img src="https://img.shields.io/docker/pulls/nullc0d30/hunterx?style=flat-square&logo=docker" alt="Docker"></a>
     <a href="https://python.org"><img src="https://img.shields.io/pypi/pyversions/hunterx?style=flat-square&logo=python" alt="Python"></a>
+    <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/badge/ruff-0%20errors-brightgreen?style=flat-square" alt="Ruff"></a>
+    <a href="https://github.com/nullc0d30/HunterX"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square" alt="Platform"></a>
+    <a href="https://pypi.org/project/hunterx/"><img src="https://img.shields.io/pypi/dm/hunterx?style=flat-square&logo=pypi" alt="Downloads"></a>
+    <a href="https://owasp.org/www-community/Vulnerability_Scanning_Tools"><img src="https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square" alt="OWASP Community"></a>
   </div>
 </div>
 
@@ -186,40 +190,62 @@ description: >-
                     |  Orchestration Engine      |
                     |  Observe &rarr; Hypothesize &rarr;  |
                     |  Probe &rarr; Verify          |
-                    +--+--------+--------+------+
-                       |        |        |
-              +--------+  +----+----+  +--------+
-              | Agents   | Reasoning |  Skills  |
-              | Platform | Engine    | Registry |
-              | 10 agents| 18 goals  | 41 skills|
-              | Event/Msg| Planner   | Executor |
-              | Bus      | Validator | Policy   |
-              | Workflow | Consensus | Cache    |
-              +----+-----+-----+----+-----+----+
-                   |           |            |
-              +----+-----+-----+----+-----+----+
-              | Payload  | Knowledge | Threat   |
-              | Intel    | Graph     | Modeling |
-              | FTS5 idx | Relations | STRIDE   |
-              | Mutation | Paths     | Chains   |
-              | Feedback | Context   | Trust    |
-              +----+-----+-----------+----------+
-                   |
-              +----+------+
-              | AI Provider|
-              | OpenAI     |
-              | Ollama     |
-              | Sessions   |
-              | Caching    |
-              | Metrics    |
-              +----+------+
-                   |
-              +----+------+
-              | Reporter  |
-              | JSON / MD |
-              | SARIF /   |
-              | HTML      |
-              +-----------+
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Agents Platform          |
+                    |   10 agents               |
+                    |   Event / Message Bus     |
+                    |   Workflow &amp; Checkpoint   |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Reasoning Engine        |
+                    |   18 goal types           |
+                    |   Planner &amp; Validator     |
+                    |   Multi-call Consensus    |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Skills Registry         |
+                    |   41 skills               |
+                    |   Executor &amp; Policy       |
+                    |   Cache                   |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Payload Intelligence    |
+                    |   FTS5 index              |
+                    |   Mutation engine         |
+                    |   Feedback loop           |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Knowledge Graph         |
+                    |   Entity relations        |
+                    |   Attack paths            |
+                    |   Context                 |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |   Threat Modeling         |
+                    |   STRIDE &amp; LINDDUN       |
+                    |   Kill chains             |
+                    |   Trust boundaries        |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |    AI Provider            |
+                    |   OpenAI / Ollama         |
+                    |   Sessions &amp; Caching      |
+                    |   Metrics                 |
+                    +------------+--------------+
+                               |
+                    +---------------------------+
+                    |        Reporter           |
+                    |   JSON / MD / SARIF       |
+                    |   HTML / Graph            |
+                    +---------------------------+
 </pre>
     <p style="text-align:center;margin-top:1rem;">Payload Intelligence is backed by the community-maintained
     <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">PayloadsAllTheThings</a> knowledge base
