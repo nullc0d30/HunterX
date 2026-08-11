@@ -8,7 +8,7 @@
 # ============================================================
 # Stage 1: Build stage — install the package
 # ============================================================
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 ARG VERSION=7.0.0
 ARG BUILD_DATE
@@ -28,7 +28,7 @@ RUN pip install --no-cache-dir --no-compile "."
 # ============================================================
 # Stage 2: Runtime stage — minimal final image
 # ============================================================
-FROM python:3.11-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 ARG VERSION=7.0.0
 ARG BUILD_DATE
