@@ -1,0 +1,6 @@
+{
+  "emails": ["root@example.com"],
+  "hosts": ["www.example.com: 93.184.216.34", "mail.example.com: 93.184.216.35"],
+  "ips": ["93.184.216.36"],
+  "interesting_urls": ["https://example.com/admin"]
+}

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Governance — HunterX v6.0.0
+title: Governance — HunterX v7
 description: >-
   Governance model for HunterX open-source security project. Community
   guidelines, decision-making, and contribution process for the Linux security
@@ -111,4 +111,4 @@ HunterX follows **semantic versioning** (MAJOR.MINOR.PATCH):
 - Focus on the best interest of the project and its users
 - Follow the Code of Conduct
 
-See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for full details.
+See [CODE_OF_CONDUCT](/CODE_OF_CONDUCT/) for full details.

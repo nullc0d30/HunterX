@@ -1,0 +1,90 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Packaging Validation.
+#
+# Builds the wheel + sdist, validates them with twine, verifies the CLI entry
+# point, and builds the Docker image (multi-platform compatible). Also verifies
+# `requirements.lock` stays consistent with `pyproject.toml`.
+
+name: Packaging Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: packaging-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-package:
+    name: Python Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+          pip install -e ".[dev]"
+
+      - name: Validate packaging (build + twine)
+        run: python -m eng packaging --json
+
+      - name: Verify lock-file consistency
+        run: python -c "from eng.supplychain import check_lock_consistency; import pathlib; r = check_lock_consistency(pathlib.Path('.')); assert r.ok, r.detail; print(r.detail)"
+
+      - name: Verify CLI entry point from wheel
+        run: |
+          WHL=$(ls dist/*.whl | head -1)
+          python -m pip install --force-reinstall "$WHL"
+          hunterx --help
+          hunterx-arch --help
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: dist/
+          if-no-files-found: error
+
+  docker-image:
+    name: Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build multi-platform image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: hunterx:test
+          provenance: mode=max
+
+      - name: Smoke test
+        run: docker run --rm hunterx:test --help

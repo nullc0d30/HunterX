@@ -1,0 +1,3 @@
+The URL parameter 'cmd' appears to be injectable (via the 'cmd' parameter).
+[+] The injectable parameter is: cmd
+[+] Command injection test completed

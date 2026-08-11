@@ -1,0 +1,3 @@
+FAIL-NEW: 0 (0 New)
+WARN-NEW: 1 (1 New)
+  10038 | Content Security Policy (CSP) Header Not Set | Medium | example.com

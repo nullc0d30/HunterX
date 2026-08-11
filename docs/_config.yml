@@ -1,23 +1,23 @@
-title: HunterX — AI-Assisted Offensive Security Framework
-tagline: AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and enterprise reporting.
+title: HunterX — AI-Powered Security Orchestration & Intelligence Platform
+tagline: Plans, orchestrates, executes, validates, correlates and reports authorized security assessments by integrating open-source security tools.
 description: >-
-  HunterX is an open-source AI-assisted offensive security framework combining
-  intelligent reconnaissance, adaptive vulnerability discovery, payload
-  orchestration, and explainable security reasoning into a single modular
-  platform. Features include a Security Skills Framework (41 skills), Reasoning
-  Engine (18 goal types), Multi-Agent Platform (10 agents), AI Provider
-  Abstraction Layer, Knowledge Graph, Threat Modeling, Attack Chain Analysis,
-  Payload Intelligence Platform with mutation engine, MITRE ATT&CK mapping,
-  and enterprise REST API. Cross-platform Python framework for penetration
-  testing, red team operations, bug bounty hunting, OSINT reconnaissance,
-  attack surface management, and cybersecurity automation. Apache 2.0.
-url: "https://nullc0d30.github.io/HunterX"
+  HunterX is an open-source, authorized cybersecurity testing and research
+  platform. It plans, orchestrates, executes, validates, correlates and reports
+  security assessments by integrating open-source security tools. HunterX v7
+  features autonomous mission orchestration, adaptive mission planning, a
+  toolchain intelligence layer with 100+ registered tools, evidence-driven
+  vulnerability validation, proof and PoC engineering, target memory and
+  campaign intelligence, professional reporting (6 export formats, SARIF), a
+  TIDB-backed persistence layer, and a Clean Architecture Python core. Apache
+  2.0.
+url: "https://nullc0d30.github.io"
 baseurl: "/HunterX"
-repository: nullc0d30/HunterX
+repository: nullc0d30
 logo: /assets/images/logo.png
 image: /assets/images/logo.png
 author:
   name: Ahmed Awad (NullC0d3)
+  alias: NullC0d3
   url: https://github.com/nullc0d30
 twitter:
   username: nullc0d30
@@ -25,22 +25,20 @@ twitter:
 social:
   name: HunterX
   links:
-    - https://github.com/nullc0d30/HunterX
+    - https://github.com/nullc0d30
     - https://hub.docker.com/u/nullc0d30
 lang: en_US
 timezone: UTC
 
 # SEO keywords
 keywords: >-
-  HunterX, Red Team Framework, Offensive Security, OSINT,
+  HunterX, Security Orchestration, Offensive Security, OSINT,
   Attack Surface Management, Threat Intelligence, Cybersecurity, Penetration
   Testing, Automation, Reconnaissance, Bug Bounty, Open Source Security,
-  vulnerability scanner, AI-assisted penetration testing, security assessment,
-  red team framework, cybersecurity framework, Security Skills Framework,
-  Knowledge Graph, Threat Modeling, Payload Intelligence, PayloadsAllTheThings,
-  payload library, payload knowledge base, DAST, SARIF, MITRE ATT&CK, OWASP,
-  API security, web application security, cloud security, security automation,
-  attack surface analysis, multi-agent orchestration, reasoning engine
+  security assessment platform, API security, web application security, cloud
+  security, security automation, mission orchestration, toolchain intelligence,
+  evidence-driven validation, PoC engineering, SARIF, MITRE ATT&CK, OWASP,
+  authorized security testing, red team platform
 
 # SEO
 plugins:
@@ -71,15 +69,15 @@ defaults:
       layout: default
       author: Ahmed Awad (NullC0d3)
       image: /assets/images/logo.png
-  - scope:
-      path: "_posts"
-    values:
-      layout: default
-      author: Ahmed Awad (NullC0d3)
-  - scope:
-      path: "tutorials"
-    values:
-      layout: default
+- scope:
+       path: "_posts"
+     values:
+       layout: post
+       author: Ahmed Awad (NullC0d3)
+- scope:
+       path: "tutorials"
+     values:
+       layout: tutorial
   - scope:
       path: "comparisons"
     values:
@@ -103,6 +101,7 @@ exclude:
   - Gemfile.lock
   - "*.ps1"
   - "*.bat"
+  - archive
 
 # Feed
 feed:

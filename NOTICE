@@ -1,28 +1,23 @@
-HunterX — AI-Assisted Vulnerability Hunter
+HunterX - AI-Powered Security Orchestration & Intelligence Platform
 Copyright (c) 2026 Ahmed Awad (NullC0d3)
 Licensed under the Apache License, Version 2.0 (the "License").
 
 This product includes software developed by third parties:
 
 ---
-requests
-   License: Apache 2.0
-   Copyright (c) 2019 Kenneth Reitz
-   Homepage: https://requests.readthedocs.io/
-
-rich
+pydantic
    License: MIT
-   Copyright (c) 2019 Will McGugan
-   Homepage: https://rich.readthedocs.io/
+   Copyright (c) 2019-2024 Pydantic Services Inc.
+   Homepage: https://github.com/pydantic/pydantic
 
-dataclasses-json
+pydantic-core
    License: MIT
-   Copyright (c) 2020 Charles Li
-   Homepage: https://github.com/lidatong/dataclasses-json
+   Copyright (c) 2022-2024 Pydantic Services Inc.
+   Homepage: https://github.com/pydantic/pydantic-core
 
 PyYAML
    License: MIT
-   Copyright (c) 2017-2021 Ingy döt Net
+   Copyright (c) 2017-2021 Ingy dot Net
    Homepage: https://pyyaml.org/
 
 jsonschema
@@ -30,29 +25,54 @@ jsonschema
    Copyright (c) 2012 Julian Berman
    Homepage: https://github.com/python-jsonschema/jsonschema
 
-websocket-client
-   License: Apache 2.0
-   Copyright (c) 2011-2022 Hiroki Ohtani(liris)
-   Homepage: https://github.com/websocket-client/websocket-client
-
-beautifulsoup4
+rich
    License: MIT
-   Copyright (c) 2004-2024 Leonard Richardson
-   Homepage: https://www.crummy.com/software/BeautifulSoup/
+   Copyright (c) 2019 Will McGugan
+   Homepage: https://github.com/Textualize/rich
 
-lxml
+networkx
    License: BSD-3-Clause
-   Copyright (c) 2004 Infrae. All rights reserved.
-   Homepage: https://lxml.de/
+   Copyright (c) 2004-2024 NetworkX Developers
+   Homepage: https://networkx.org/
+
+urllib3
+   License: MIT
+   Copyright (c) 2008-2020 Andrey Petrov and contributors
+   Homepage: https://urllib3.readthedocs.io/
+
+dataclasses-json
+   License: MIT
+   Copyright (c) 2020 Charles Li
+   Homepage: https://github.com/lidatong/dataclasses-json
+
+dnspython
+   License: ISC
+   Copyright (c) 2001-2024 Nominum, Inc.
+   Homepage: https://www.dnspython.org/
+
+defusedxml
+   License: PSF-2.0
+   Copyright (c) 2013 Christian Heimes
+   Homepage: https://github.com/tiran/defusedxml
+
+SQLAlchemy
+   License: MIT
+   Copyright (c) 2005-2024 Michael Bayer and contributors
+   Homepage: https://www.sqlalchemy.org/
+
+Alembic
+   License: MIT
+   Copyright (c) 2009-2024 Michael Bayer and contributors
+   Homepage: https://alembic.sqlalchemy.org/
 
 ---
 Optional dependencies:
-fastapi, uvicorn (MIT), ollama (MIT), scikit-learn (BSD-3), numpy (BSD-3)
+fastapi, uvicorn (MIT), httpx (BSD-3-Clause), jinja2 (BSD-3-Clause)
 
 ---
-This product includes payload data sourced from public security research
-repositories, including PayloadsAllTheThings and similar community projects,
-used in accordance with their respective licenses.
+This product integrates open-source security tools (e.g. nuclei, httpx,
+subfinder, nmap) which are used in accordance with their respective licenses,
+and references the PayloadsAllTheThings community payload knowledge base.
 
 ---
 For the full Apache 2.0 License text, see the LICENSE file

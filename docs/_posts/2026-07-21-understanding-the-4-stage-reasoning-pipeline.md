@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: Understanding HunterX's 4-Stage Reasoning Pipeline
 description: >-
   Deep dive into the 4-stage reasoning pipeline: Passive Intelligence, Probe,

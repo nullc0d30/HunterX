@@ -1,0 +1,791 @@
+{
+  "version": "1.0.0",
+  "validator_version": "1.0.0",
+  "description": "Deterministic golden scenarios for the Vulnerability Proof Strategy Library & Proof Validator (Sprint 022). Evidence dominates model belief: scanner signatures are insufficient, contradictory evidence is never averaged into confidence and target-state changes invalidate replays.",
+  "scenarios": [
+    {
+      "id": "golden-sqli-confirmed",
+      "name": "Confirmed SQL injection",
+      "vulnerability_class": "sql_injection",
+      "strategy_id": "strategy.sql_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "marker changes query semantics"
+        },
+        {
+          "kind": "error_message",
+          "comparison": "match",
+          "value": "error behavior differs"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "integrity",
+        "confidentiality"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-sqli-non-vulnerable",
+      "name": "SQL injection non-vulnerable (baseline identical)",
+      "vulnerability_class": "sql_injection",
+      "strategy_id": "strategy.sql_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "mismatch",
+          "value": "baseline-identical"
+        }
+      ],
+      "replays": [
+        {
+          "result": "failed",
+          "target_state": "s1"
+        },
+        {
+          "result": "failed",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "contradicted",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-sqli-scanner-only",
+      "name": "SQL injection scanner signature only (false positive)",
+      "vulnerability_class": "sql_injection",
+      "strategy_id": "strategy.sql_injection",
+      "evidence": [
+        {
+          "kind": "external",
+          "comparison": "match",
+          "value": "scanner_signature"
+        }
+      ],
+      "replays": [],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "insufficient_evidence",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-xss-reflected",
+      "name": "Reflected XSS marker",
+      "vulnerability_class": "xss",
+      "strategy_id": "strategy.xss",
+      "evidence": [
+        {
+          "kind": "reflection",
+          "comparison": "match",
+          "value": "marker reflected in context"
+        },
+        {
+          "kind": "body",
+          "comparison": "match",
+          "value": "encoded reflection preserved"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "integrity"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-xss-marker-neutralized",
+      "name": "XSS marker neutralized (not vulnerable)",
+      "vulnerability_class": "xss",
+      "strategy_id": "strategy.xss",
+      "evidence": [
+        {
+          "kind": "reflection",
+          "comparison": "match",
+          "value": "marker-neutralized"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "invalid",
+      "expected_quality": "p0_candidate"
+    },
+    {
+      "id": "golden-ssrf-callback",
+      "name": "SSRF controlled callback",
+      "vulnerability_class": "ssrf",
+      "strategy_id": "strategy.ssrf",
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "comparison": "match",
+          "value": "callback correlation token matched"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "loopback-control-authorized": "yes"
+      },
+      "safety_class": "controlled",
+      "impact_evidence": [
+        "resource_access"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-ssrf-callback-mismatch",
+      "name": "SSRF callback correlation mismatch (false positive)",
+      "vulnerability_class": "ssrf",
+      "strategy_id": "strategy.ssrf",
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "comparison": "mismatch",
+          "value": "callback-correlation-mismatch"
+        }
+      ],
+      "replays": [
+        {
+          "result": "failed",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "loopback-control-authorized": "yes"
+      },
+      "safety_class": "controlled",
+      "expected_verdict": "contradicted",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-lfi-path-traversal",
+      "name": "LFI / path traversal controlled resource",
+      "vulnerability_class": "path_traversal",
+      "strategy_id": "strategy.path_traversal",
+      "evidence": [
+        {
+          "kind": "resource_access",
+          "comparison": "match",
+          "value": "controlled test resource surfaced"
+        },
+        {
+          "kind": "body",
+          "comparison": "match",
+          "value": "expected vs observed marker content"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "confidentiality"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-idor-access-control",
+      "name": "IDOR broken access control (Subject B reaches Resource A)",
+      "vulnerability_class": "broken_access_control",
+      "strategy_id": "strategy.broken_access_control",
+      "evidence": [
+        {
+          "kind": "access_control",
+          "comparison": "match",
+          "value": "Subject B observed Resource A"
+        },
+        {
+          "kind": "status_code",
+          "comparison": "match",
+          "value": "200 returned"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "authorization-validated": "yes"
+      },
+      "safety_class": "controlled",
+      "impact_evidence": [
+        "authorization"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-bola-authorization-enforced",
+      "name": "BOLA authorization enforced (not vulnerable)",
+      "vulnerability_class": "api_authorization",
+      "strategy_id": "strategy.api_authorization",
+      "evidence": [
+        {
+          "kind": "access_control",
+          "comparison": "match",
+          "value": "api-authorization-enforced"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "authorization-validated": "yes"
+      },
+      "safety_class": "controlled",
+      "expected_verdict": "invalid",
+      "expected_quality": "p0_candidate"
+    },
+    {
+      "id": "golden-rce-safe-canary",
+      "name": "Command injection / RCE safe canary proof",
+      "vulnerability_class": "command_injection",
+      "strategy_id": "strategy.command_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "deterministic canary reached"
+        },
+        {
+          "kind": "controlled_callback",
+          "comparison": "match",
+          "value": "authorized callback received"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "integrity"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-auth-bypass",
+      "name": "Authentication bypass",
+      "vulnerability_class": "authentication",
+      "strategy_id": "strategy.authentication",
+      "evidence": [
+        {
+          "kind": "authentication",
+          "comparison": "match",
+          "value": "protected operation reachable unauthenticated"
+        },
+        {
+          "kind": "status_code",
+          "comparison": "match",
+          "value": "200 without auth"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "controlled",
+      "impact_evidence": [
+        "authentication"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-auth-enforced",
+      "name": "Authentication enforced (not vulnerable)",
+      "vulnerability_class": "authentication",
+      "strategy_id": "strategy.authentication",
+      "evidence": [
+        {
+          "kind": "authentication",
+          "comparison": "match",
+          "value": "authentication-enforced"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "controlled",
+      "expected_verdict": "invalid",
+      "expected_quality": "p0_candidate"
+    },
+    {
+      "id": "golden-cors-exploitable",
+      "name": "Exploitable CORS (origin reflection + credentials)",
+      "vulnerability_class": "cors",
+      "strategy_id": "strategy.cors",
+      "evidence": [
+        {
+          "kind": "header",
+          "comparison": "match",
+          "value": "origin reflected"
+        },
+        {
+          "kind": "header",
+          "comparison": "match",
+          "value": "Access-Control-Allow-Credentials true"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "read_only",
+      "impact_evidence": [
+        "confidentiality"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-cors-header-only",
+      "name": "CORS header exists only (not exploitable)",
+      "vulnerability_class": "cors",
+      "strategy_id": "strategy.cors",
+      "evidence": [
+        {
+          "kind": "header",
+          "comparison": "match",
+          "value": "header_exists"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "read_only",
+      "expected_verdict": "insufficient_evidence",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-csrf",
+      "name": "CSRF state-changing request without control",
+      "vulnerability_class": "csrf",
+      "strategy_id": "strategy.csrf",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "state-changing request accepted cross-origin"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "integrity"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-open-redirect",
+      "name": "Open redirect to controlled benign target",
+      "vulnerability_class": "open_redirect",
+      "strategy_id": "strategy.open_redirect",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "redirect location reflects controlled target"
+        },
+        {
+          "kind": "status_code",
+          "comparison": "match",
+          "value": "302"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "redirect-stays-in-scope": "yes"
+      },
+      "safety_class": "benign_marker",
+      "impact_evidence": [
+        "integrity"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-dependency",
+      "name": "Dependency vulnerability confirmed from version evidence",
+      "vulnerability_class": "dependency_vulnerability",
+      "strategy_id": "strategy.dependency_vulnerability",
+      "evidence": [
+        {
+          "kind": "dependency",
+          "comparison": "match",
+          "value": "component resolves to affected version"
+        },
+        {
+          "kind": "version",
+          "comparison": "match",
+          "value": "1.2.3 in affected range"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "passive",
+      "impact_evidence": [
+        "confidentiality"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-cloud-misconfiguration",
+      "name": "Cloud misconfiguration exposure confirmed",
+      "vulnerability_class": "cloud_exposure",
+      "strategy_id": "strategy.cloud_exposure",
+      "evidence": [
+        {
+          "kind": "cloud",
+          "comparison": "match",
+          "value": "resource exposure from authorized metadata"
+        },
+        {
+          "kind": "configuration",
+          "comparison": "match",
+          "value": "public access boundary"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "cloud-metadata-authorized": "yes"
+      },
+      "safety_class": "read_only",
+      "impact_evidence": [
+        "cloud_resource_exposure"
+      ],
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p5_report_ready"
+    },
+    {
+      "id": "golden-novel-behavior-candidate",
+      "name": "Novel behavior never confirms on its own",
+      "vulnerability_class": "unknown_behavior",
+      "strategy_id": "strategy.unknown_behavior",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "unexpected reproducible behavior"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "independent_verified": true,
+      "expected_verdict": "valid",
+      "expected_quality": "p3_proven"
+    },
+    {
+      "id": "golden-replay-mismatch",
+      "name": "Replay mismatch (observed != expected)",
+      "vulnerability_class": "sql_injection",
+      "strategy_id": "strategy.sql_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "differential observed"
+        }
+      ],
+      "replays": [
+        {
+          "result": "failed",
+          "target_state": "s1"
+        },
+        {
+          "result": "failed",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "incomplete",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-target-changed",
+      "name": "Target state changed between proof and replay",
+      "vulnerability_class": "sql_injection",
+      "strategy_id": "strategy.sql_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "differential observed"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s2"
+        },
+        {
+          "result": "success",
+          "target_state": "s2"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "inconclusive",
+      "expected_quality": "p1_observed"
+    },
+    {
+      "id": "golden-scope-mismatch",
+      "name": "Scope mismatch blocks proof",
+      "vulnerability_class": "ssrf",
+      "strategy_id": "strategy.ssrf",
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "comparison": "match",
+          "value": "callback received"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "scope": {
+        "loopback-control-authorized": "no"
+      },
+      "safety_class": "controlled",
+      "expected_verdict": "out_of_scope",
+      "expected_quality": "p0_candidate"
+    },
+    {
+      "id": "golden-unsafe-proof",
+      "name": "Unsafe proof refused",
+      "vulnerability_class": "command_injection",
+      "strategy_id": "strategy.command_injection",
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "comparison": "match",
+          "value": "differential"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "destructive",
+      "expected_verdict": "unsafe",
+      "expected_quality": "p0_candidate"
+    },
+    {
+      "id": "golden-missing-evidence",
+      "name": "Missing evidence leaves proof open",
+      "vulnerability_class": "xss",
+      "strategy_id": "strategy.xss",
+      "evidence": [
+        {
+          "kind": "status_code",
+          "comparison": "match",
+          "value": "200"
+        }
+      ],
+      "replays": [
+        {
+          "result": "success",
+          "target_state": "s1"
+        },
+        {
+          "result": "success",
+          "target_state": "s1"
+        }
+      ],
+      "target_state": "s1",
+      "generated_target_state": "s1",
+      "safety_class": "benign_marker",
+      "expected_verdict": "insufficient_evidence",
+      "expected_quality": "p1_observed"
+    }
+  ]
+}

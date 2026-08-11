@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: HunterX Goes Open Source — Apache 2.0 Relicensing
 description: >-
   HunterX is now fully open source under the Apache License 2.0. Learn about

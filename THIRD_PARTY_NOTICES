@@ -1,0 +1,50 @@
+HunterX - AI-Assisted Vulnerability Hunter
+Copyright (c) 2026 Ahmed Awad (NullC0d3)
+Licensed under the Apache License, Version 2.0.
+
+Third-Party Notices
+===================
+
+HunterX depends on and is distributed alongside the open-source software
+listed below. The full license texts of the Apache-2.0, MIT, BSD and other
+licenses referenced here are provided in the upstream packages.
+
+This file is machine-validated by the compliance quality gate
+(``python -m eng compliance``). Keep it in sync with ``requirements.lock``;
+regenerate the dependency section when dependencies change.
+
+Runtime dependencies
+--------------------
+- pydantic (MIT) - https://github.com/pydantic/pydantic
+- PyYAML (MIT) - https://pyyaml.org/
+- jsonschema (MIT) - https://github.com/python-jsonschema/jsonschema
+- rich (MIT) - https://github.com/Textualize/rich
+- networkx (BSD-3-Clause) - https://github.com/networkx/networkx
+- urllib3 (MIT) - https://github.com/urllib3/urllib3
+- dataclasses-json (MIT) - https://github.com/lidatong/dataclasses-json
+- requests (Apache-2.0) - https://requests.readthedocs.io/
+- websocket-client (Apache-2.0) - https://github.com/websocket-client/websocket-client
+- beautifulsoup4 (MIT) - https://www.crummy.com/software/BeautifulSoup/
+- lxml (BSD-3-Clause) - https://lxml.de/
+
+Optional extras (API / DB / AI / Reporting)
+-------------------------------------------
+- fastapi (MIT) - https://fastapi.tiangolo.com/
+- uvicorn (BSD-3-Clause) - https://www.uvicorn.org/
+- sqlalchemy (MIT) - https://www.sqlalchemy.org/
+- alembic (MIT) - https://alembic.sqlalchemy.org/
+- httpx (BSD-3-Clause) - https://www.python-httpx.org/
+- jinja2 (BSD-3-Clause) - https://jinja.palletsprojects.com/
+
+Development toolchain (dev extra)
+---------------------------------
+- pytest (MIT) - https://pytest.org/
+- ruff (MIT) - https://docs.astral.sh/ruff/
+- build (MIT) - https://github.com/pypa/build
+- mypy (MIT) - https://www.mypy-lang.org/
+- vulture (MIT) - https://github.com/jendrikseipp/vulture
+- bandit (Apache-2.0) - https://bandit.readthedocs.io/
+- pip-audit (Apache-2.0) - https://github.com/pypa/pip-audit
+- safety (MIT) - https://github.com/pyupio/safety
+- twine (Apache-2.0) - https://github.com/pypa/twine
+- cyclonedx-python-lib (Apache-2.0) - https://github.com/CycloneDX/cyclonedx-python-lib

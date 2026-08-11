@@ -1,0 +1,79 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — SBOM & Provenance.
+#
+# Generates CycloneDX + SPDX SBOMs and a provenance manifest on every push to
+# main and on every release tag. Artifacts are uploaded for the release.
+
+name: SBOM & Provenance
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: sbom-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sbom:
+    name: SBOM Generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.lock
+
+      - name: Install SBOM tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install cyclonedx-bom
+          pip install -e ".[dev]"
+
+      - name: Generate CycloneDX SBOM
+        run: python -m eng sbom --format cyclonedx
+
+      - name: Generate SPDX SBOM
+        run: python -m eng sbom --format spdx
+
+      - name: Write provenance manifest
+        run: |
+          python - <<'PY'
+          from eng.supplychain import write_provenance
+          import pathlib
+          version = "main"
+          ref = "${{ github.ref }}"
+          if ref.startswith("refs/tags/v"):
+              version = ref.removeprefix("refs/tags/v")
+          write_provenance(
+              pathlib.Path("."),
+              version=version,
+              artifacts=["hunterx.sbom.json", "hunterx.spdx.json"],
+              commit="${{ github.sha }}",
+          )
+          PY
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            artifacts/hunterx.sbom.json
+            artifacts/hunterx.spdx.json
+            artifacts/provenance.json
+          if-no-files-found: error

@@ -1,0 +1,91 @@
+---
+layout: default
+title: Installation — HunterX v7
+keywords: HunterX Installation, Setup, Requirements
+description: >-
+  Install HunterX v7 on Linux, macOS or Windows, from the installer script,
+  PyPI, source, or Docker.
+---
+
+# Installation
+
+HunterX v7 requires **Python 3.11+**. It runs on Linux, macOS and Windows.
+
+## 1. Installer script (Linux / macOS)
+
+The v7 `install.sh` handles environment detection, a virtual environment,
+dependency installation, the `hunterx` CLI, required directories, database
+initialization and installation verification:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+
+# User-local install (no root)
+curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user
+```
+
+Re-running the installer is safe (idempotent).
+
+## 2. PyPI
+
+```bash
+python -m pip install "hunterx[api,db]"   # full platform
+python -m pip install hunterx             # core
+```
+
+## 3. Source
+
+```bash
+git clone https://github.com/nullc0d30/HunterX.git
+cd HunterX
+python -m pip install -e ".[api,db,dev]"
+```
+
+## 4. Docker
+
+```bash
+docker build -t nullc0d30/hunterx:7.0.0 .
+# or
+docker compose up -d hunterx-api
+```
+
+## Verify the installation
+
+```bash
+hunterx version     # HunterX v7.0.0
+hunterx help        # command list
+hunterx platform    # platform composition
+hunterx config      # resolved configuration
+```
+
+## Database initialization
+
+HunterX v7 uses Alembic migrations. The CLI initializes on demand; for an
+explicit migration run:
+
+```bash
+alembic upgrade head
+```
+
+The database URL defaults to `sqlite:///hunterx.db` and can be overridden with
+`HUNTERX_DATABASE_URL` (see [Configuration](/configuration/)).
+
+## Uninstall
+
+```bash
+sudo bash install.sh --uninstall
+# or for a user install:
+bash install.sh --user --uninstall
+```
+
+## Troubleshooting
+
+- `hunterx: command not found` — the install location is not on `PATH`; the
+  installer prints the required `export PATH=...`.
+- `ModuleNotFoundError: sqlalchemy` — install with the `db` extra:
+  `python -m pip install "hunterx[db]"`.
+
+## Next steps
+
+- [Quickstart](/quickstart/) — run your first mission
+- [CLI Reference](/cli/) — command reference

@@ -1,0 +1,3195 @@
+{
+  "capability": "full-toolchain-intelligence",
+  "name": "Full Toolchain Integration & Professional Tool Intelligence",
+  "version": "1.0.0",
+  "wave": 16,
+  "status": "ratified",
+  "description": "HunterX understands the complete authorized offensive-security toolchain: WHAT each tool does, WHEN to use it, WHAT it requires, HOW to invoke it safely within scope, WHAT its output means and WHAT its output does NOT prove. Structured execution, versioned parsers/normalizers, evidence extraction, cross-tool correlation, fallback strategies and canonical capability vocabulary.",
+  "tool_count": 92,
+  "tools": {
+    "amass": {
+      "name": "Amass",
+      "category": "recon",
+      "subcategory": "dns",
+      "version": "4.2.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asn-enumeration",
+        "org-enumeration",
+        "asset-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "recon-json",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.amass:AmassAdapter",
+      "alternatives": [
+        "subfinder",
+        "findomain",
+        "assetfinder"
+      ],
+      "complementary": [
+        "nuclei",
+        "httpx"
+      ],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "subfinder": {
+      "name": "Subfinder",
+      "category": "recon",
+      "subcategory": "dns",
+      "version": "2.14.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asset-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "recon-json",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.subfinder:SubfinderAdapter",
+      "alternatives": [
+        "amass",
+        "findomain",
+        "assetfinder"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "httpx",
+        "httpx"
+      ]
+    },
+    "assetfinder": {
+      "name": "Assetfinder",
+      "category": "recon",
+      "subcategory": "dns",
+      "version": "0.4.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "recon-text",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.assetfinder:AssetfinderAdapter",
+      "alternatives": [
+        "subfinder",
+        "findomain"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "findomain": {
+      "name": "Findomain",
+      "category": "recon",
+      "subcategory": "dns",
+      "version": "9.0.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "certificate-enumeration",
+        "dns-intelligence"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "recon-json",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.findomain:FindomainAdapter",
+      "alternatives": [
+        "subfinder",
+        "amass"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "theharvester": {
+      "name": "theHarvester",
+      "category": "recon",
+      "subcategory": "osint",
+      "version": "4.3.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "osint",
+        "org-enumeration",
+        "asset-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "recon-json",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.theharvester:TheHarvesterAdapter",
+      "alternatives": [
+        "subfinder",
+        "findomain"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "bbot": {
+      "name": "BBOT",
+      "category": "recon",
+      "subcategory": "attack-surface",
+      "version": "2.3.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asset-discovery",
+        "osint"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "recon-json",
+      "normalizer": "recon-normalizer",
+      "adapter": "hunterx.tools.recon.bbot:BBOTAdapter",
+      "alternatives": [
+        "amass",
+        "subfinder"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "spiderfoot": {
+      "name": "SpiderFoot",
+      "category": "recon",
+      "subcategory": "osint",
+      "version": "4.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "osint",
+        "asset-discovery",
+        "org-enumeration",
+        "asn-enumeration"
+      ],
+      "targets": [
+        "domain",
+        "ip",
+        "org"
+      ],
+      "output_formats": [
+        "json",
+        "csv"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "dnsrecon": {
+      "name": "DNSrecon",
+      "category": "dns",
+      "subcategory": "recon",
+      "version": "1.0.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "dns-enumeration",
+        "brute-force-dns",
+        "record-enumeration"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "xml"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "crt-sh": {
+      "name": "crt.sh Certificate Transparency",
+      "category": "recon",
+      "subcategory": "certificate",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "certificate-enumeration",
+        "subdomain-enumeration"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "dnsx": {
+      "name": "DNSx",
+      "category": "dns",
+      "subcategory": "resolution",
+      "version": "1.2.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "dns-resolution",
+        "record-enumeration",
+        "wildcard-detection"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "dnsx-jsonl",
+      "normalizer": "dns-normalizer",
+      "adapter": "hunterx.tools.dns.dnsx:DnsxAdapter",
+      "alternatives": [
+        "dig",
+        "dnsrecon"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "httpx"
+      ]
+    },
+    "massdns": {
+      "name": "MassDNS",
+      "category": "dns",
+      "subcategory": "resolution",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dns-resolution"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "parser": "dns-json",
+      "normalizer": "dns-normalizer",
+      "adapter": "hunterx.tools.dns.massdns:MassdnsAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "shuffledns": {
+      "name": "Shuffledns",
+      "category": "dns",
+      "subcategory": "resolution",
+      "version": "1.0.9",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dns-resolution",
+        "brute-force-dns"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "dns-json",
+      "normalizer": "dns-normalizer",
+      "adapter": "hunterx.tools.dns.shuffledns:ShufflednsAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "dnspython": {
+      "name": "dnspython",
+      "category": "dns",
+      "subcategory": "library",
+      "version": "2.6.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "dns-resolution",
+        "record-enumeration"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "parser": "json",
+      "normalizer": "dns-normalizer",
+      "adapter": "hunterx.tools.dns.dnspython:DnspythonAdapter",
+      "alternatives": [
+        "dig"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "naabu": {
+      "name": "Naabu",
+      "category": "network",
+      "subcategory": "port",
+      "version": "2.3.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery",
+        "host-discovery"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "naabu-jsonl",
+      "normalizer": "port-normalizer",
+      "adapter": "hunterx.tools.livehost.naabu:NaabuAdapter",
+      "alternatives": [
+        "nmap",
+        "masscan",
+        "rustscan"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nmap",
+        "nmap"
+      ]
+    },
+    "nmap": {
+      "name": "Nmap",
+      "category": "network",
+      "subcategory": "scan",
+      "version": "7.94",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery",
+        "service-discovery",
+        "version-detection",
+        "os-detection",
+        "network-discovery"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "cidr",
+        "network"
+      ],
+      "output_formats": [
+        "xml",
+        "json",
+        "text"
+      ],
+      "parser": "nmap-xml",
+      "normalizer": "port-normalizer",
+      "adapter": "hunterx.tools.livehost.nmap:NmapAdapter",
+      "alternatives": [
+        "masscan",
+        "naabu",
+        "rustscan"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nuclei",
+        "searchsploit",
+        "nuclei",
+        "searchsploit"
+      ]
+    },
+    "masscan": {
+      "name": "Masscan",
+      "category": "network",
+      "subcategory": "port",
+      "version": "1.3.2",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "targets": [
+        "ip",
+        "cidr",
+        "network"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "masscan-json",
+      "normalizer": "port-normalizer",
+      "adapter": "hunterx.tools.livehost.masscan:MasscanAdapter",
+      "alternatives": [
+        "nmap",
+        "naabu"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nmap"
+      ]
+    },
+    "rustscan": {
+      "name": "RustScan",
+      "category": "network",
+      "subcategory": "port",
+      "version": "2.1.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "live-observations",
+      "normalizer": "live-normalizer",
+      "adapter": "hunterx.tools.livehost.rustscan:RustScanAdapter",
+      "alternatives": [
+        "nmap",
+        "naabu"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nmap"
+      ]
+    },
+    "unicornscan": {
+      "name": "Unicornscan",
+      "category": "network",
+      "subcategory": "port",
+      "version": "0.4.7",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "arp-scan": {
+      "name": "arp-scan",
+      "category": "network",
+      "subcategory": "discovery",
+      "version": "1.10.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "host-discovery",
+        "network-discovery"
+      ],
+      "targets": [
+        "network"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "fping": {
+      "name": "fping",
+      "category": "network",
+      "subcategory": "discovery",
+      "version": "5.1.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "host-discovery"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "httpx": {
+      "name": "HTTPx",
+      "category": "web",
+      "subcategory": "probe",
+      "version": "1.6.5",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "http-probing",
+        "technology-detection",
+        "http-configuration-analysis"
+      ],
+      "targets": [
+        "url",
+        "host",
+        "ip"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "httpx-jsonl",
+      "normalizer": "tech-normalizer",
+      "adapter": "hunterx.tools.tech.httpx:HttpxAdapter",
+      "alternatives": [
+        "whatweb",
+        "curl"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nuclei",
+        "katana",
+        "nuclei"
+      ]
+    },
+    "whatweb": {
+      "name": "WhatWeb",
+      "category": "web",
+      "subcategory": "tech",
+      "version": "0.5.5",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "technology-detection",
+        "web-server-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "whatweb-json",
+      "normalizer": "tech-normalizer",
+      "adapter": "hunterx.tools.tech.whatweb:WhatWebAdapter",
+      "alternatives": [
+        "httpx",
+        "wappalyzer"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "wafw00f": {
+      "name": "Wafw00f",
+      "category": "web",
+      "subcategory": "waf",
+      "version": "2.2.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "waf-detection"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "nuclei-waf-templates"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "nikto": {
+      "name": "Nikto",
+      "category": "web",
+      "subcategory": "scan",
+      "version": "2.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "web-server-analysis",
+        "http-configuration-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "xml",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "nuclei",
+        "zap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "testssl.sh": {
+      "name": "testssl.sh",
+      "category": "web",
+      "subcategory": "tls",
+      "version": "3.2.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "tls-analysis",
+        "http-configuration-analysis"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "csv",
+        "html"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "sslscan": {
+      "name": "SSLScan",
+      "category": "web",
+      "subcategory": "tls",
+      "version": "2.1.3",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "tls-analysis"
+      ],
+      "targets": [
+        "host",
+        "ip"
+      ],
+      "output_formats": [
+        "text",
+        "xml"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "testssl.sh"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "katana": {
+      "name": "Katana",
+      "category": "crawl",
+      "subcategory": "crawler",
+      "version": "1.1.2",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "crawling",
+        "url-discovery",
+        "endpoint-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "katana-jsonl",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.katana:KatanaAdapter",
+      "alternatives": [
+        "gospider",
+        "hakrawler"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "arjun",
+        "linkfinder",
+        "jsluice"
+      ]
+    },
+    "gospider": {
+      "name": "Gospider",
+      "category": "crawl",
+      "subcategory": "crawler",
+      "version": "1.1.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "crawling",
+        "url-discovery",
+        "javascript-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "url-jsonl",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.url_discovery:GospiderAdapter",
+      "alternatives": [
+        "katana",
+        "hakrawler"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "arjun"
+      ]
+    },
+    "hakrawler": {
+      "name": "Hakrawler",
+      "category": "crawl",
+      "subcategory": "crawler",
+      "version": "2.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "crawling",
+        "url-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "url-text",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.url_discovery:HakrawlerAdapter",
+      "alternatives": [
+        "katana",
+        "gospider"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "gau": {
+      "name": "GAU",
+      "category": "crawl",
+      "subcategory": "historical",
+      "version": "2.0.9",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "url-text",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.url_discovery:GauAdapter",
+      "alternatives": [
+        "waybackurls",
+        "gauplus"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "waybackurls": {
+      "name": "Waybackurls",
+      "category": "crawl",
+      "subcategory": "historical",
+      "version": "0.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "url-text",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.url_discovery:WaybackurlsAdapter",
+      "alternatives": [
+        "gau",
+        "gauplus"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "urlfinder": {
+      "name": "URLFinder",
+      "category": "crawl",
+      "subcategory": "historical",
+      "version": "1.0.2",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "targets": [
+        "domain",
+        "url"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "parser": "url-text",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.web.url_discovery:UrlfinderAdapter",
+      "alternatives": [
+        "gau",
+        "waybackurls"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "crobat": {
+      "name": "Crobat",
+      "category": "recon",
+      "subcategory": "osint",
+      "version": "1.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "subdomain-enumeration",
+        "historical-url-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "subfinder",
+        "amass"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "gauplus": {
+      "name": "gauplus",
+      "category": "crawl",
+      "subcategory": "historical",
+      "version": "1.0.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "gau",
+        "waybackurls"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "ffuf": {
+      "name": "FFUF",
+      "category": "content",
+      "subcategory": "fuzz",
+      "version": "2.1.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "content-discovery",
+        "directory-enumeration",
+        "file-enumeration",
+        "vhost-enumeration"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "ffuf-json",
+      "normalizer": "url-normalizer",
+      "adapter": "hunterx.tools.content.ffuf:FfufAdapter",
+      "alternatives": [
+        "gobuster",
+        "feroxbuster",
+        "dirsearch"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "feroxbuster": {
+      "name": "Feroxbuster",
+      "category": "content",
+      "subcategory": "fuzz",
+      "version": "2.11.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "content-discovery",
+        "directory-enumeration",
+        "file-enumeration"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "content-jsonl",
+      "normalizer": "content-normalizer",
+      "adapter": "hunterx.tools.content.bruteforcers:FeroxbusterAdapter",
+      "alternatives": [
+        "ffuf",
+        "gobuster",
+        "dirsearch"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "gobuster": {
+      "name": "Gobuster",
+      "category": "content",
+      "subcategory": "fuzz",
+      "version": "3.6.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "directory-enumeration",
+        "file-enumeration",
+        "vhost-enumeration"
+      ],
+      "targets": [
+        "url",
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "content-jsonl",
+      "normalizer": "content-normalizer",
+      "adapter": "hunterx.tools.content.bruteforcers:GobusterAdapter",
+      "alternatives": [
+        "ffuf",
+        "feroxbuster",
+        "dirsearch"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "dirsearch": {
+      "name": "Dirsearch",
+      "category": "content",
+      "subcategory": "fuzz",
+      "version": "0.4.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "directory-enumeration",
+        "file-enumeration"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "content-json",
+      "normalizer": "content-normalizer",
+      "adapter": "hunterx.tools.content.bruteforcers:DirsearchAdapter",
+      "alternatives": [
+        "ffuf",
+        "gobuster",
+        "feroxbuster"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "arjun": {
+      "name": "Arjun",
+      "category": "parameter",
+      "subcategory": "discovery",
+      "version": "2.2.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "parameter-discovery",
+        "get-parameter-discovery",
+        "post-parameter-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "parameter-json",
+      "normalizer": "parameter-normalizer",
+      "adapter": "hunterx.tools.parameter.adapters:ArjunAdapter",
+      "alternatives": [
+        "paramspider"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "sqlmap",
+        "dalfox",
+        "nuclei"
+      ]
+    },
+    "paramspider": {
+      "name": "ParamSpider",
+      "category": "parameter",
+      "subcategory": "discovery",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "parameter-discovery",
+        "historical-parameter-discovery"
+      ],
+      "targets": [
+        "domain"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "parameter-text",
+      "normalizer": "parameter-normalizer",
+      "adapter": "hunterx.tools.parameter.adapters:ParamspiderAdapter",
+      "alternatives": [
+        "arjun"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "kiterunner": {
+      "name": "Kiterunner",
+      "category": "api",
+      "subcategory": "discovery",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "api-discovery",
+        "content-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "parameter-jsonl",
+      "normalizer": "parameter-normalizer",
+      "adapter": "hunterx.tools.parameter.adapters:KiterunnerAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "graphqlmap": {
+      "name": "GraphQLmap",
+      "category": "api",
+      "subcategory": "graphql",
+      "version": "1.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "graphql-analysis",
+        "graphql-introspection",
+        "query-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "graphql-text",
+      "normalizer": "api-normalizer",
+      "adapter": "hunterx.tools.api.graphql_binaries:GraphQLmapAdapter",
+      "alternatives": [
+        "inql"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "inql": {
+      "name": "InQL",
+      "category": "api",
+      "subcategory": "graphql",
+      "version": "6.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "graphql-analysis",
+        "graphql-introspection",
+        "query-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "graphql-text",
+      "normalizer": "api-normalizer",
+      "adapter": "hunterx.tools.api.graphql_binaries:InQLAdapter",
+      "alternatives": [
+        "graphqlmap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "jwt-tool": {
+      "name": "jwt_tool",
+      "category": "api",
+      "subcategory": "auth",
+      "version": "2.2.6",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "jwt-analysis",
+        "authentication-analysis"
+      ],
+      "targets": [
+        "token",
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "openapi-parser": {
+      "name": "OpenAPI / Swagger parser",
+      "category": "api",
+      "subcategory": "schema",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "openapi-analysis",
+        "api-discovery",
+        "api-parameter-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "parser": "openapi-parser",
+      "normalizer": "url-normalizer",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "postman-parser": {
+      "name": "Postman collection parser",
+      "category": "api",
+      "subcategory": "schema",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "api-discovery",
+        "api-parameter-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "parser": "postman-parser",
+      "normalizer": "url-normalizer",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "linkfinder": {
+      "name": "LinkFinder",
+      "category": "javascript",
+      "subcategory": "endpoints",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "js-endpoints",
+      "normalizer": "js-normalizer",
+      "adapter": "hunterx.tools.javascript.external:LinkFinderAdapter",
+      "alternatives": [
+        "xnlinkfinder",
+        "jsluice"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "secretfinder",
+        "secretfinder"
+      ]
+    },
+    "secretfinder": {
+      "name": "SecretFinder",
+      "category": "javascript",
+      "subcategory": "secrets",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "secret-indicator-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "js-secrets",
+      "normalizer": "js-normalizer",
+      "adapter": "hunterx.tools.javascript.external:SecretFinderAdapter",
+      "alternatives": [
+        "jsluice"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "trufflehog",
+        "trufflehog"
+      ]
+    },
+    "xnlinkfinder": {
+      "name": "xnLinkFinder",
+      "category": "javascript",
+      "subcategory": "endpoints",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction",
+        "parameter-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "js-endpoints",
+      "normalizer": "js-normalizer",
+      "adapter": "hunterx.tools.javascript.external:XnLinkFinderAdapter",
+      "alternatives": [
+        "linkfinder",
+        "jsluice"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "jsluice": {
+      "name": "JSluice",
+      "category": "javascript",
+      "subcategory": "analysis",
+      "version": "0.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction",
+        "secret-indicator-discovery",
+        "source-map-discovery"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "linkfinder",
+        "xnlinkfinder"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "nuclei": {
+      "name": "Nuclei",
+      "category": "vulnerability",
+      "subcategory": "scanner",
+      "version": "3.2.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "cve-detection",
+        "misconfiguration-detection",
+        "web-vulnerability-detection",
+        "exposure-detection"
+      ],
+      "targets": [
+        "url",
+        "host",
+        "domain",
+        "ip"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "nuclei-jsonl",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.nuclei:NucleiAdapter",
+      "alternatives": [
+        "nikto",
+        "zap",
+        "openvas"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "searchsploit",
+        "dalfox",
+        "sqlmap",
+        "interactsh"
+      ]
+    },
+    "openvas": {
+      "name": "OpenVAS / Greenbone",
+      "category": "vulnerability",
+      "subcategory": "scanner",
+      "version": "23.0.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "cve-detection",
+        "misconfiguration-detection",
+        "network-vulnerability-detection"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "output_formats": [
+        "xml",
+        "json"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "nuclei"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "wapiti": {
+      "name": "Wapiti",
+      "category": "vulnerability",
+      "subcategory": "scanner",
+      "version": "3.1.7",
+      "support_level": "partial-support",
+      "capabilities": [
+        "web-vulnerability-detection"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "html",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "nuclei"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "sqlmap",
+        "dalfox"
+      ]
+    },
+    "dalfox": {
+      "name": "Dalfox",
+      "category": "injection",
+      "subcategory": "xss",
+      "version": "2.9.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xss-discovery",
+        "reflection-analysis",
+        "parameter-analysis",
+        "xss-validation"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "candidate-json",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:DalfoxAdapter",
+      "alternatives": [
+        "xssstrike"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "proof-replay"
+      ]
+    },
+    "xssstrike": {
+      "name": "XSStrike",
+      "category": "injection",
+      "subcategory": "xss",
+      "version": "3.1.5",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xss-discovery",
+        "dom-analysis",
+        "reflection-analysis"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:XSStrikeAdapter",
+      "alternatives": [
+        "dalfox"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "sqlmap": {
+      "name": "SQLmap",
+      "category": "injection",
+      "subcategory": "sqli",
+      "version": "1.8.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sql-injection-detection",
+        "sql-injection-validation",
+        "database-fingerprinting"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:SQLmapAdapter",
+      "alternatives": [
+        "ghauri"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "proof-replay"
+      ]
+    },
+    "ghauri": {
+      "name": "Ghauri",
+      "category": "injection",
+      "subcategory": "sqli",
+      "version": "2.0.4",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sql-injection-detection",
+        "sql-injection-validation",
+        "database-fingerprinting"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:GhauriAdapter",
+      "alternatives": [
+        "sqlmap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "commix": {
+      "name": "Commix",
+      "category": "injection",
+      "subcategory": "command",
+      "version": "3.9.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "command-injection-detection",
+        "command-injection-validation"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:CommixAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "interactsh"
+      ]
+    },
+    "tplmap": {
+      "name": "Tplmap",
+      "category": "injection",
+      "subcategory": "ssti",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "ssti-detection",
+        "template-engine-identification"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:TplmapAdapter",
+      "alternatives": [
+        "sstimap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "sstimap": {
+      "name": "SSTImap",
+      "category": "injection",
+      "subcategory": "ssti",
+      "version": "1.2.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "ssti-detection",
+        "ssti-validation",
+        "template-engine-identification"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:SSTImapAdapter",
+      "alternatives": [
+        "tplmap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "xxeinjector": {
+      "name": "XXEinjector",
+      "category": "injection",
+      "subcategory": "xxe",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xxe-detection",
+        "xxe-validation",
+        "oob-xml-interaction"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:XXEinjectorAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "interactsh": {
+      "name": "Interactsh",
+      "category": "oob",
+      "subcategory": "callback",
+      "version": "1.2.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "oob-callback",
+        "dns-callback",
+        "http-callback",
+        "smtp-callback",
+        "interaction-correlation"
+      ],
+      "targets": [
+        "callback"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "candidate-text",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.vuln.injection:InteractshAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "proof-replay"
+      ]
+    },
+    "gitleaks": {
+      "name": "Gitleaks",
+      "category": "secrets",
+      "subcategory": "scanner",
+      "version": "8.18.4",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery",
+        "key-discovery"
+      ],
+      "targets": [
+        "repository",
+        "directory",
+        "file"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "gitleaks-json",
+      "normalizer": "secret-normalizer",
+      "adapter": "hunterx.tools.secrets.gitleaks:GitleaksAdapter",
+      "alternatives": [
+        "trufflehog",
+        "detect-secrets"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "trufflehog": {
+      "name": "TruffleHog",
+      "category": "secrets",
+      "subcategory": "scanner",
+      "version": "3.80.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery"
+      ],
+      "targets": [
+        "repository",
+        "directory",
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "secrets-jsonl",
+      "normalizer": "secret-normalizer",
+      "adapter": "hunterx.tools.secrets.trufflehog:TrufflehogAdapter",
+      "alternatives": [
+        "gitleaks",
+        "detect-secrets"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "detect-secrets": {
+      "name": "detect-secrets",
+      "category": "secrets",
+      "subcategory": "scanner",
+      "version": "1.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery"
+      ],
+      "targets": [
+        "repository",
+        "directory",
+        "file"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "gitleaks",
+        "trufflehog"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "semgrep": {
+      "name": "Semgrep",
+      "category": "sast",
+      "subcategory": "static",
+      "version": "1.82.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sast",
+        "code-pattern-analysis",
+        "vulnerability-pattern-detection"
+      ],
+      "targets": [
+        "directory",
+        "repository",
+        "file"
+      ],
+      "output_formats": [
+        "json",
+        "sarif",
+        "text"
+      ],
+      "parser": "candidate-json",
+      "normalizer": "vulnerability-candidate-normalizer",
+      "adapter": "hunterx.tools.sast.semgrep:SemgrepAdapter",
+      "alternatives": [
+        "codeql"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "codeql": {
+      "name": "CodeQL CLI",
+      "category": "sast",
+      "subcategory": "static",
+      "version": "2.17.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "sast",
+        "code-flow-analysis",
+        "taint-analysis",
+        "vulnerability-pattern-detection"
+      ],
+      "targets": [
+        "directory",
+        "repository"
+      ],
+      "output_formats": [
+        "sarif",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "semgrep"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "zap": {
+      "name": "OWASP ZAP",
+      "category": "proxy",
+      "subcategory": "interception",
+      "version": "2.15.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "http-interception",
+        "request-replay",
+        "response-analysis",
+        "active-testing"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "json",
+        "xml",
+        "text"
+      ],
+      "parser": "proxy-text",
+      "normalizer": "proxy-normalizer",
+      "adapter": "hunterx.tools.proxy.adapters:ZapAdapter",
+      "alternatives": [
+        "mitmproxy"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nuclei",
+        "dalfox"
+      ]
+    },
+    "mitmproxy": {
+      "name": "mitmproxy",
+      "category": "proxy",
+      "subcategory": "interception",
+      "version": "10.4.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "http-interception",
+        "request-replay",
+        "response-analysis",
+        "traffic-capture"
+      ],
+      "targets": [
+        "traffic"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "proxy-text",
+      "normalizer": "proxy-normalizer",
+      "adapter": "hunterx.tools.proxy.adapters:MitmproxyAdapter",
+      "alternatives": [
+        "zap"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "proof-replay": {
+      "name": "Proof Replay",
+      "category": "proof",
+      "subcategory": "replay",
+      "version": "1.0.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "safe-validation",
+        "proof-replay",
+        "impact-statement"
+      ],
+      "targets": [
+        "url",
+        "host",
+        "domain",
+        "ip",
+        "service"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "parser": "json",
+      "normalizer": "proof-replay-normalizer",
+      "adapter": "hunterx.tools.proof_replay.adapters:ProofReplayAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "netexec": {
+      "name": "NetExec",
+      "category": "enterprise",
+      "subcategory": "ad",
+      "version": "1.1.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration",
+        "ldap-enumeration",
+        "domain-enumeration"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "impacket",
+        "enum4linux-ng"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "impacket",
+        "ldapsearch"
+      ]
+    },
+    "impacket": {
+      "name": "Impacket",
+      "category": "enterprise",
+      "subcategory": "ad",
+      "version": "0.12.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "kerberos-enumeration",
+        "domain-enumeration"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "netexec"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "enum4linux-ng": {
+      "name": "enum4linux-ng",
+      "category": "enterprise",
+      "subcategory": "ad",
+      "version": "1.3.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration",
+        "domain-enumeration"
+      ],
+      "targets": [
+        "host",
+        "ip"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "netexec",
+        "impacket"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "rpcclient"
+      ]
+    },
+    "ldapsearch": {
+      "name": "ldapsearch",
+      "category": "enterprise",
+      "subcategory": "ldap",
+      "version": "2.6.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "ldap-enumeration",
+        "active-directory-intelligence"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "domain"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "rpcclient": {
+      "name": "rpcclient",
+      "category": "enterprise",
+      "subcategory": "rpc",
+      "version": "4.20.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration"
+      ],
+      "targets": [
+        "host",
+        "ip"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "snmpwalk": {
+      "name": "snmpwalk",
+      "category": "snmp",
+      "subcategory": "enumeration",
+      "version": "5.9.4",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "snmp-enumeration",
+        "network-device-enumeration"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "prowler": {
+      "name": "Prowler",
+      "category": "cloud",
+      "subcategory": "audit",
+      "version": "4.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "aws-security",
+        "azure-security",
+        "gcp-security",
+        "cloud-asset-discovery",
+        "cloud-misconfiguration"
+      ],
+      "targets": [
+        "cloud"
+      ],
+      "output_formats": [
+        "json",
+        "csv",
+        "html",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "scoutsuite"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "nuclei"
+      ]
+    },
+    "scoutsuite": {
+      "name": "ScoutSuite",
+      "category": "cloud",
+      "subcategory": "audit",
+      "version": "5.14.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "aws-security",
+        "azure-security",
+        "gcp-security",
+        "cloud-misconfiguration"
+      ],
+      "targets": [
+        "cloud"
+      ],
+      "output_formats": [
+        "json",
+        "html"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [
+        "prowler"
+      ],
+      "complementary": [],
+      "follow_up": []
+    },
+    "trivy": {
+      "name": "Trivy",
+      "category": "container",
+      "subcategory": "image",
+      "version": "0.54.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "container-analysis",
+        "image-analysis",
+        "sbom",
+        "dependency-analysis"
+      ],
+      "targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "output_formats": [
+        "json",
+        "table",
+        "sarif",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "syft": {
+      "name": "Syft",
+      "category": "container",
+      "subcategory": "sbom",
+      "version": "1.9.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sbom-generation",
+        "container-analysis",
+        "dependency-analysis"
+      ],
+      "targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "output_formats": [
+        "json",
+        "cyclonedx",
+        "spdx",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "grype",
+        "trivy",
+        "grype"
+      ]
+    },
+    "grype": {
+      "name": "Grype",
+      "category": "container",
+      "subcategory": "cve",
+      "version": "0.80.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "container-analysis",
+        "cve-analysis",
+        "dependency-analysis"
+      ],
+      "targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "output_formats": [
+        "json",
+        "table",
+        "sarif",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "kube-bench": {
+      "name": "kube-bench",
+      "category": "container",
+      "subcategory": "kubernetes",
+      "version": "0.9.3",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "kubernetes-security",
+        "k8s-configuration-analysis"
+      ],
+      "targets": [
+        "kubernetes"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "osv-scanner": {
+      "name": "OSV-Scanner",
+      "category": "composition",
+      "subcategory": "dependency",
+      "version": "1.8.4",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dependency-analysis",
+        "vulnerability-mapping"
+      ],
+      "targets": [
+        "lockfile",
+        "directory",
+        "filesystem"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "metasploit": {
+      "name": "Metasploit Framework",
+      "category": "exploit",
+      "subcategory": "framework",
+      "version": "6.4.0",
+      "support_level": "execution-only",
+      "capabilities": [
+        "exploit-validation",
+        "service-validation",
+        "payload-capability",
+        "session-management"
+      ],
+      "targets": [
+        "host",
+        "ip",
+        "service"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "parser": "exploit-text",
+      "normalizer": "exploit-normalizer",
+      "adapter": "hunterx.tools.exploit.adapters:MetasploitAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "searchsploit": {
+      "name": "SearchSploit / ExploitDB",
+      "category": "exploit",
+      "subcategory": "intelligence",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "exploit-research",
+        "cve-research",
+        "version-mapping"
+      ],
+      "targets": [
+        "software",
+        "service"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "exploit-json",
+      "normalizer": "exploit-normalizer",
+      "adapter": "hunterx.tools.exploit.adapters:SearchsploitAdapter",
+      "alternatives": [
+        "exploitdb"
+      ],
+      "complementary": [],
+      "follow_up": [
+        "metasploit",
+        "metasploit"
+      ]
+    },
+    "exploitdb": {
+      "name": "ExploitDB",
+      "category": "exploit",
+      "subcategory": "intelligence",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "exploit-research",
+        "cve-research",
+        "version-mapping"
+      ],
+      "targets": [
+        "software",
+        "service"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "exploit-json",
+      "normalizer": "exploit-normalizer",
+      "adapter": "hunterx.tools.exploit.adapters:ExploitdbAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "cewl": {
+      "name": "CeWL",
+      "category": "payload",
+      "subcategory": "wordlist",
+      "version": "6.2.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "wordlist-generation",
+        "content-discovery-aid",
+        "custom-wordlists"
+      ],
+      "targets": [
+        "url"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "ffuf",
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "hashcat": {
+      "name": "Hashcat",
+      "category": "payload",
+      "subcategory": "cracking",
+      "version": "6.2.6",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "password-cracking",
+        "hash-analysis",
+        "hash-modes"
+      ],
+      "targets": [
+        "hash"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "john": {
+      "name": "John the Ripper",
+      "category": "payload",
+      "subcategory": "cracking",
+      "version": "1.9.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "password-cracking",
+        "hash-analysis"
+      ],
+      "targets": [
+        "hash"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "",
+      "normalizer": "",
+      "adapter": "",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": []
+    },
+    "payloadsallthethings": {
+      "name": "PayloadsAllTheThings",
+      "category": "knowledge",
+      "subcategory": "payloads",
+      "version": "2025.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "payload-intelligence",
+        "payload-generation",
+        "vulnerability-class-payloads"
+      ],
+      "targets": [],
+      "output_formats": [
+        "markdown",
+        "text"
+      ],
+      "parser": "dataset-json",
+      "normalizer": "dataset-normalizer",
+      "adapter": "hunterx.tools.knowledge.adapters:PayloadsAllTheThingsAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "dalfox",
+        "sqlmap",
+        "commix"
+      ]
+    },
+    "seclists": {
+      "name": "SecLists",
+      "category": "knowledge",
+      "subcategory": "wordlists",
+      "version": "2025.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "wordlist-provider",
+        "content-discovery-aid",
+        "dns-bruteforce-aid",
+        "password-audit-aid"
+      ],
+      "targets": [],
+      "output_formats": [
+        "text"
+      ],
+      "parser": "dataset-json",
+      "normalizer": "dataset-normalizer",
+      "adapter": "hunterx.tools.knowledge.adapters:SeclistsAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "ffuf",
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "fuzzdb": {
+      "name": "FuzzDB",
+      "category": "knowledge",
+      "subcategory": "attack-patterns",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "attack-patterns",
+        "payload-intelligence",
+        "response-patterns",
+        "discovery-dictionaries"
+      ],
+      "targets": [],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "parser": "dataset-json",
+      "normalizer": "dataset-normalizer",
+      "adapter": "hunterx.tools.knowledge.adapters:FuzzdbAdapter",
+      "alternatives": [],
+      "complementary": [],
+      "follow_up": [
+        "ffuf",
+        "dalfox",
+        "sqlmap"
+      ]
+    }
+  },
+  "capability_catalog": [
+    "active-directory",
+    "api-discovery",
+    "api-fuzzing",
+    "binary-analysis",
+    "certificate-lookup",
+    "cloud-assessment",
+    "cloud-permission-audit",
+    "container-assessment",
+    "cve-detection",
+    "directory-discovery",
+    "dns-history",
+    "dns-records",
+    "evidence-capture",
+    "exploit-development",
+    "exposed-services",
+    "graphql-testing",
+    "host-discovery",
+    "http-enumeration",
+    "identity-enumeration",
+    "image-scan",
+    "javascript-analysis",
+    "k8s-audit",
+    "kerberos-attacks",
+    "ldap-enumeration",
+    "misconfiguration",
+    "packet-analysis",
+    "parameter-discovery",
+    "port-scanning",
+    "proxy-inspection",
+    "reporting",
+    "sarif-export",
+    "sast",
+    "secrets-detection",
+    "secrets-scan",
+    "serverless-audit",
+    "service-fingerprint",
+    "sqli-detection",
+    "ssl-analysis",
+    "ssti-detection",
+    "static-analysis",
+    "storage-audit",
+    "subdomain-discovery",
+    "technology-detection",
+    "token-analysis",
+    "vulnerability-scan",
+    "weak-config",
+    "web-crawling",
+    "web-fuzzing",
+    "whois-lookup",
+    "xss-detection"
+  ],
+  "toolchains": {
+    "subdomain-discovery": {
+      "capability": "subdomain-discovery",
+      "primary": "amass",
+      "providers": [
+        "amass",
+        "subfinder",
+        "assetfinder",
+        "findomain",
+        "theharvester",
+        "bbot"
+      ],
+      "fallbacks": [
+        "subfinder",
+        "assetfinder",
+        "findomain",
+        "theharvester"
+      ],
+      "complementary": [
+        "subfinder",
+        "assetfinder",
+        "findomain",
+        "theharvester"
+      ]
+    },
+    "dns-records": {
+      "capability": "dns-records",
+      "primary": "dnsrecon",
+      "providers": [
+        "dnsrecon",
+        "dnsx",
+        "massdns",
+        "shuffledns",
+        "dnspython",
+        "seclists"
+      ],
+      "fallbacks": [
+        "dnsx",
+        "massdns",
+        "shuffledns",
+        "dnspython"
+      ],
+      "complementary": [
+        "dnsx",
+        "massdns",
+        "shuffledns",
+        "dnspython"
+      ]
+    },
+    "port-scanning": {
+      "capability": "port-scanning",
+      "primary": "naabu",
+      "providers": [
+        "naabu",
+        "nmap",
+        "masscan",
+        "rustscan",
+        "unicornscan"
+      ],
+      "fallbacks": [
+        "naabu",
+        "masscan",
+        "rustscan",
+        "unicornscan"
+      ],
+      "complementary": [
+        "nmap",
+        "masscan",
+        "rustscan",
+        "unicornscan"
+      ]
+    },
+    "http-probing": {
+      "capability": "http-probing",
+      "primary": "httpx",
+      "providers": [
+        "httpx",
+        "nikto",
+        "testssl.sh",
+        "ffuf",
+        "gobuster"
+      ],
+      "fallbacks": [
+        "nikto",
+        "testssl.sh",
+        "ffuf",
+        "gobuster"
+      ],
+      "complementary": [
+        "nikto",
+        "testssl.sh",
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "technology-detection": {
+      "capability": "technology-detection",
+      "primary": "httpx",
+      "providers": [
+        "httpx",
+        "whatweb",
+        "wafw00f",
+        "nikto"
+      ],
+      "fallbacks": [
+        "whatweb",
+        "wafw00f",
+        "nikto"
+      ],
+      "complementary": [
+        "whatweb",
+        "wafw00f",
+        "nikto"
+      ]
+    },
+    "web-crawling": {
+      "capability": "web-crawling",
+      "primary": "katana",
+      "providers": [
+        "katana",
+        "gospider",
+        "hakrawler",
+        "gau",
+        "waybackurls",
+        "urlfinder"
+      ],
+      "fallbacks": [
+        "gospider",
+        "hakrawler",
+        "gau",
+        "waybackurls"
+      ],
+      "complementary": [
+        "gospider",
+        "hakrawler",
+        "gau",
+        "waybackurls"
+      ]
+    },
+    "directory-discovery": {
+      "capability": "directory-discovery",
+      "primary": "ffuf",
+      "providers": [
+        "ffuf",
+        "feroxbuster",
+        "gobuster",
+        "dirsearch",
+        "kiterunner",
+        "cewl"
+      ],
+      "fallbacks": [
+        "feroxbuster",
+        "gobuster",
+        "dirsearch",
+        "kiterunner"
+      ],
+      "complementary": [
+        "feroxbuster",
+        "gobuster",
+        "dirsearch",
+        "kiterunner"
+      ]
+    },
+    "parameter-discovery": {
+      "capability": "parameter-discovery",
+      "primary": "arjun",
+      "providers": [
+        "arjun",
+        "paramspider",
+        "xnlinkfinder"
+      ],
+      "fallbacks": [
+        "paramspider",
+        "xnlinkfinder"
+      ],
+      "complementary": [
+        "paramspider",
+        "xnlinkfinder"
+      ]
+    },
+    "javascript-analysis": {
+      "capability": "javascript-analysis",
+      "primary": "katana",
+      "providers": [
+        "katana",
+        "gospider",
+        "linkfinder",
+        "secretfinder",
+        "xnlinkfinder",
+        "jsluice"
+      ],
+      "fallbacks": [
+        "gospider",
+        "linkfinder",
+        "secretfinder",
+        "xnlinkfinder"
+      ],
+      "complementary": [
+        "gospider",
+        "linkfinder",
+        "secretfinder",
+        "xnlinkfinder"
+      ]
+    },
+    "vulnerability-scan": {
+      "capability": "vulnerability-scan",
+      "primary": "nuclei",
+      "providers": [
+        "nuclei",
+        "openvas",
+        "wapiti",
+        "semgrep",
+        "codeql",
+        "zap"
+      ],
+      "fallbacks": [
+        "openvas",
+        "wapiti",
+        "semgrep",
+        "codeql"
+      ],
+      "complementary": [
+        "openvas",
+        "wapiti",
+        "semgrep",
+        "codeql"
+      ]
+    },
+    "xss-detection": {
+      "capability": "xss-detection",
+      "primary": "dalfox",
+      "providers": [
+        "dalfox",
+        "xssstrike"
+      ],
+      "fallbacks": [
+        "xssstrike"
+      ],
+      "complementary": [
+        "xssstrike"
+      ]
+    },
+    "sqli-detection": {
+      "capability": "sqli-detection",
+      "primary": "sqlmap",
+      "providers": [
+        "sqlmap",
+        "ghauri"
+      ],
+      "fallbacks": [
+        "ghauri"
+      ],
+      "complementary": [
+        "ghauri"
+      ]
+    },
+    "command-injection": {
+      "capability": "command-injection",
+      "primary": "commix",
+      "providers": [
+        "commix"
+      ],
+      "fallbacks": [],
+      "complementary": []
+    },
+    "oob-testing": {
+      "capability": "oob-testing",
+      "primary": "xxeinjector",
+      "providers": [
+        "xxeinjector",
+        "interactsh"
+      ],
+      "fallbacks": [
+        "interactsh"
+      ],
+      "complementary": [
+        "interactsh"
+      ]
+    },
+    "ssti-detection": {
+      "capability": "ssti-detection",
+      "primary": "tplmap",
+      "providers": [
+        "tplmap",
+        "sstimap"
+      ],
+      "fallbacks": [
+        "sstimap"
+      ],
+      "complementary": [
+        "sstimap"
+      ]
+    },
+    "xxe-detection": {
+      "capability": "xxe-detection",
+      "primary": "xxeinjector",
+      "providers": [
+        "xxeinjector"
+      ],
+      "fallbacks": [],
+      "complementary": []
+    },
+    "graphql-testing": {
+      "capability": "graphql-testing",
+      "primary": "graphqlmap",
+      "providers": [
+        "graphqlmap",
+        "inql"
+      ],
+      "fallbacks": [
+        "inql"
+      ],
+      "complementary": [
+        "inql"
+      ]
+    },
+    "secrets-detection": {
+      "capability": "secrets-detection",
+      "primary": "secretfinder",
+      "providers": [
+        "secretfinder",
+        "jsluice",
+        "gitleaks",
+        "trufflehog",
+        "detect-secrets"
+      ],
+      "fallbacks": [
+        "jsluice",
+        "gitleaks",
+        "trufflehog",
+        "detect-secrets"
+      ],
+      "complementary": [
+        "jsluice",
+        "gitleaks",
+        "trufflehog",
+        "detect-secrets"
+      ]
+    },
+    "static-analysis": {
+      "capability": "static-analysis",
+      "primary": "semgrep",
+      "providers": [
+        "semgrep",
+        "codeql"
+      ],
+      "fallbacks": [
+        "codeql"
+      ],
+      "complementary": [
+        "codeql"
+      ]
+    },
+    "proxy-inspection": {
+      "capability": "proxy-inspection",
+      "primary": "zap",
+      "providers": [
+        "zap",
+        "mitmproxy"
+      ],
+      "fallbacks": [
+        "mitmproxy"
+      ],
+      "complementary": [
+        "mitmproxy"
+      ]
+    },
+    "exploit-development": {
+      "capability": "exploit-development",
+      "primary": "metasploit",
+      "providers": [
+        "metasploit",
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ],
+      "fallbacks": [
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ],
+      "complementary": [
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ]
+    },
+    "exploit-intelligence": {
+      "capability": "exploit-intelligence",
+      "primary": "nuclei",
+      "providers": [
+        "nuclei",
+        "openvas",
+        "grype",
+        "osv-scanner",
+        "metasploit",
+        "searchsploit"
+      ],
+      "fallbacks": [
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ],
+      "complementary": [
+        "openvas",
+        "grype",
+        "osv-scanner",
+        "metasploit"
+      ]
+    },
+    "payload-intelligence": {
+      "capability": "payload-intelligence",
+      "primary": "metasploit",
+      "providers": [
+        "metasploit",
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ],
+      "fallbacks": [
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ],
+      "complementary": [
+        "searchsploit",
+        "exploitdb",
+        "payloadsallthethings",
+        "fuzzdb"
+      ]
+    },
+    "wordlist-provider": {
+      "capability": "wordlist-provider",
+      "primary": "seclists",
+      "providers": [
+        "seclists"
+      ],
+      "fallbacks": [],
+      "complementary": []
+    }
+  },
+  "knowledge_sources": [
+    {
+      "tool_id": "payloadsallthethings",
+      "role": "payload knowledge base",
+      "consumed_by": [
+        "dalfox",
+        "sqlmap",
+        "commix",
+        "sstimap",
+        "xxeinjector"
+      ]
+    },
+    {
+      "tool_id": "seclists",
+      "role": "wordlist provider",
+      "consumed_by": [
+        "ffuf",
+        "gobuster",
+        "feroxbuster",
+        "dirsearch",
+        "massdns",
+        "shuffledns"
+      ]
+    },
+    {
+      "tool_id": "fuzzdb",
+      "role": "attack/response pattern dictionaries",
+      "consumed_by": [
+        "ffuf",
+        "dalfox",
+        "sqlmap",
+        "commix",
+        "sstimap"
+      ]
+    }
+  ],
+  "events": [
+    "tool.execution.started",
+    "tool.execution.completed",
+    "tool.execution.failed",
+    "tool.output.received",
+    "tool.output.parsed",
+    "tool.output.normalized",
+    "tool.evidence.extracted",
+    "tool.observation.created",
+    "tool.result.contradiction",
+    "tool.health.failed",
+    "tool.version.detected",
+    "tool.recommendation.created"
+  ],
+  "interfaces": {
+    "cli": [
+      "hunterx tools list",
+      "hunterx tools show <tool>",
+      "hunterx tools capabilities [<tool>]",
+      "hunterx tools health [<tool>]",
+      "hunterx tools versions [<tool>]",
+      "hunterx tools execute <tool> <target>",
+      "hunterx tools inspect-result <execution_id>",
+      "hunterx tools parse <tool> --raw <output|@file>",
+      "hunterx tools normalize <tool> --records <json>",
+      "hunterx tools chain <objective> --capabilities a,b,c",
+      "hunterx tools recommend <capability>"
+    ],
+    "api": [
+      "GET /tools",
+      "GET /tools/{tool_id}",
+      "GET /tools/{tool_id}/capabilities",
+      "GET /tools/{tool_id}/health",
+      "GET /tools/{tool_id}/versions",
+      "GET /tools/{tool_id}/requirements",
+      "GET /tools/{tool_id}/provenance",
+      "GET /tools/capabilities",
+      "GET /tools/recommend/{capability_id}",
+      "POST /tools/chain",
+      "POST /tools/execute",
+      "GET /tools/executions/{execution_id}/status",
+      "GET /tools/executions/{execution_id}/output",
+      "GET /tools/executions/{execution_id}/result",
+      "POST /tools/parse",
+      "POST /tools/normalize"
+    ]
+  },
+  "architecture": {
+    "domain": "hunterx.domain.tool_intelligence",
+    "application": "hunterx.application.toolchain.ToolchainService",
+    "sdk": "hunterx.tools.sdk",
+    "intelligence": "hunterx.tools.intelligence",
+    "mastery": "hunterx.tools.mastery",
+    "cli": "hunterx.cli.commands (hunterx tools)",
+    "api": "hunterx.api.tools",
+    "documentation": "docs/v7-full-toolchain-intelligence.md"
+  },
+  "testing": [
+    "unit: tests/unit/test_toolchain_service.py",
+    "unit: tests/unit/test_toolchain_events.py",
+    "unit: tests/unit/test_tool_knowledge_fixtures.py",
+    "unit: tests/unit/test_tool_capability_vocabulary.py",
+    "unit: tests/unit/test_toolchain_cli.py",
+    "component: tests/component/test_toolchain_api.py",
+    "golden: tests/golden/test_toolchain_golden.py",
+    "acceptance: tests/acceptance/test_full_toolchain_acceptance.py",
+    "security: tests/security/test_toolchain_security.py",
+    "performance: tests/performance/test_toolchain_performance.py",
+    "architecture: tests/architecture/test_tool_layering.py"
+  ],
+  "manifest_version": "1.0.0"
+}

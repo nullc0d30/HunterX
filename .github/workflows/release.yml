@@ -1,9 +1,17 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
-# Release workflow — SBOM, checksums, artifact verification
+# HunterX — Release Engineering.
+#
 # Triggers: tags matching v*.*.*
+#
+# Pipeline:
+#   1. Validate the semantic version and release-readiness checks.
+#   2. Build wheel + sdist.
+#   3. Generate CycloneDX + SPDX SBOMs, checksums and provenance.
+#   4. Generate changelog + release notes from CHANGELOG.md.
+#   5. Sign artifacts with Cosign (keyless, Sigstore).
+#   6. Create the GitHub Release with release notes and attestations.
 
 name: Release
 
@@ -12,14 +20,44 @@ on:
     tags:
       - "v*.*.*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (semver, e.g. 7.1.0)"
+        required: true
 
 permissions:
   contents: write
   id-token: write
   attestations: write
+  packages: write
 
 jobs:
+  validate:
+    name: Release Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate semantic version + rollback plan
+        run: |
+          python -m eng check-release "${{ steps.version.outputs.version }}"
+
   release:
+    needs: [validate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,19 +76,16 @@ jobs:
         run: python -m build
 
       - name: Generate SBOM (CycloneDX)
-        uses: cyclonedx/gh-python-generator@v2
-        with:
-          path: "."
-          output: "dist/hunterx.sbom.json"
-          format: "json"
-          spec-version: "1.5"
+        run: python -m eng sbom --format cyclonedx
+
+      - name: Generate SBOM (SPDX)
+        run: python -m eng sbom --format spdx
 
       - name: Generate checksums
         working-directory: dist
         run: |
           sha256sum * > SHA256SUMS.txt
           sha512sum * >> SHA512SUMS.txt
-          b2sum * >> B2SUMS.txt 2>/dev/null || true
 
       - name: Verify checksums
         working-directory: dist
@@ -58,15 +93,64 @@ jobs:
           sha256sum -c SHA256SUMS.txt
           sha512sum -c SHA512SUMS.txt
 
+      - name: Write provenance manifest
+        run: |
+          python - <<'PY'
+          from eng.supplychain import write_provenance
+          import pathlib
+          write_provenance(
+              pathlib.Path("."),
+              version="${GITHUB_REF#refs/tags/v}",
+              artifacts=[p.name for p in pathlib.Path("dist").iterdir()] + ["hunterx.sbom.json", "hunterx.spdx.json"],
+              commit="${{ github.sha }}",
+          )
+          PY
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.6.0
+        with:
+          cosign-release: v2.4.1
+
+      - name: Sign distributions and SBOMs (keyless)
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/signatures
+          cd artifacts
+          for f in ../dist/* hunterx.sbom.json hunterx.spdx.json; do
+            [ -f "$f" ] || continue
+            base=$(basename "$f")
+            cosign sign-blob --yes "$f" \
+              --bundle "signatures/${base}.bundle" \
+              --output-signature "signatures/${base}.sig" \
+              --output-certificate "signatures/${base}.crt"
+          done
+          cd ..
+
       - name: Generate provenance attestation
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: "dist/*"
+
+      - name: Extract release notes
+        id: notes
+        run: |
+          python - <<'PY' > "$RUNNER_TEMP/release_notes.md"
+          import pathlib
+          from eng.release import parse_changelog, render_release_notes
+          text = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+          version = "${GITHUB_REF#refs/tags/v}"
+          print(render_release_notes(parse_changelog(text), version))
+          PY
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/*
-          generate_release_notes: true
+            artifacts/hunterx.sbom.json
+            artifacts/hunterx.spdx.json
+            artifacts/provenance.json
+            artifacts/signatures/*
+          body_path: "${{ runner.temp }}/release_notes.md"
+          generate_release_notes: false
           fail_on_unmatched_files: true

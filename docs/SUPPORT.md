@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Support — HunterX v6.0.0
+title: Support — HunterX v7
 description: >-
-  Support channels for HunterX open-source AI-assisted vulnerability scanner
-  and red team framework. Community forums, GitHub Discussions, documentation,
-  and issue tracking for penetration testing and cybersecurity tool support.
+  Support channels for the HunterX v7 security orchestration and intelligence
+  platform: community forums, GitHub Discussions, documentation, and issue
+  tracking.
 permalink: /support/
 ---
 
@@ -18,13 +18,12 @@ This document describes the support channels available for HunterX.
 
 Comprehensive documentation is available in the repository and wiki:
 
-- [README.md](./README.md) — Overview, installation, and quick start
+- [README](/README/) — Overview, installation, and quick start
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — Guide for contributors
 - [SECURITY.md](./SECURITY.md) — Security vulnerability reporting
-- [Docker Guide](./docs/Docker_Guide.md) — Docker usage guide
-- [Support Guide](./docs/Support_Guide.md) — FAQ and troubleshooting
-- [Performance Guide](./docs/Performance_Guide.md) — Performance characteristics
-- [Design Decisions](./docs/Design_Decisions.md) — Architectural decisions
+- [Documentation Hub](./documentation.md) — v7 documentation index
+- [Support Guide](./faq.md) — FAQ and troubleshooting
+- [Architecture](./architecture/README.md) — Architecture enforcement
 - [Wiki](https://github.com/nullc0d30/HunterX/wiki) — Extended guides and references
 
 ---

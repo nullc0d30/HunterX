@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "input": {"FUZZ": "admin"},
+      "position": 1,
+      "status": 200,
+      "length": 1234,
+      "words": 210,
+      "lines": 24,
+      "content-type": "text/html",
+      "redirectlocation": "",
+      "url": "https://example.com/admin",
+      "duration": 128
+    },
+    {
+      "input": {"FUZZ": "backup"},
+      "position": 2,
+      "status": 301,
+      "length": 162,
+      "words": 7,
+      "lines": 1,
+      "content-type": "",
+      "redirectlocation": "https://example.com/backup/",
+      "url": "https://example.com/backup",
+      "duration": 95
+    }
+  ]
+}

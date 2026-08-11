@@ -1,0 +1,43 @@
+{
+  "target": "platform.example.net",
+  "domain": "example.net",
+  "records": [
+    {"name": "platform.example.net", "type": "CNAME", "cname_target": "plat-web-123456.us-east-1.elb.amazonaws.com"},
+    {"name": "data.example.net", "type": "CNAME", "cname_target": "prod-db.ckx9r2abcdef.us-east-1.rds.amazonaws.com"},
+    {"name": "edge.example.net", "type": "CNAME", "cname_target": "d7l8m9n0.cloudfront.net"},
+    {"name": "eu.edge.example.net", "type": "CNAME", "cname_target": "eu-edge.azureedge.net"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Amazon",
+      "issuer_org": "Amazon",
+      "common_name": "platform.example.net",
+      "san": ["platform.example.net", "data.example.net"]
+    }
+  ],
+  "headers": {
+    "Server": "awselb/2.0",
+    "X-Cache": "Hit from cloudfront"
+  },
+  "html": "<html><body>Platform</body></html>",
+  "scripts": [
+    {
+      "url": "https://platform.example.net/app.js",
+      "content": "import { S3Client } from '@aws-sdk/client-s3'; import { DynamoDBClient } from '@aws-sdk/client-dynamodb'; const s3 = new S3Client({ region: 'us-east-1' });"
+    }
+  ],
+  "technologies": [
+    {"name": "Amazon Web Services", "category": "cloud"},
+    {"name": "Amazon EKS", "category": "container"}
+  ],
+  "observed_urls": [
+    "https://platform.example.net/",
+    "https://prod-bucket.s3.amazonaws.com/",
+    "https://eu.edge.example.net/"
+  ],
+  "documents": [
+    {
+      "text": "Multi-cloud architecture: AWS us-east-1 (account 987654321098) with EKS cluster and Azure eu edge; arn:aws:iam::987654321098:role/platform-prod-role; s3:GetObject; k8s ingress nginx."
+    }
+  ]
+}

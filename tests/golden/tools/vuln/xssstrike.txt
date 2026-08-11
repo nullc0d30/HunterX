@@ -1,0 +1,2 @@
+[+] Payload: <script>alert(1)</script>
+[+] XSS found in parameter 'q'

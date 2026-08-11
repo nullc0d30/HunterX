@@ -1,0 +1,3 @@
+{"target":"https://shop.example.com","http_status":200,"plugins":{"Nginx":{"certainty":100,"version":"1.24.0","string":"nginx/1.24.0"},"PHP":[{"certainty":100,"version":"8.1.2","string":"X-Powered-By: PHP/8.1.2"}],"React":{"certainty":90,"string":"_next/static"},"Cloudflare":{"certainty":100,"string":"cf-ray"}}}
+{"target":"https://blog.example.com","http_status":200,"plugins":{"WordPress":[{"certainty":100,"version":"6.4.3","string":"wp-content"},{"certainty":70}],"Nginx":{"certainty":100},"Cloudflare":{"certainty":100}}}
+{"target":"https://old.example.com","http_status":301,"plugins":{"Apache":{"certainty":100,"version":"2.4.57","string":"Apache/2.4.57"},"PHP":{"certainty":80,"version":"7.4.33"}}}

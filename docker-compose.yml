@@ -1,64 +1,35 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
-# Docker Compose configuration for CLI and API modes
+# HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
+# Docker Compose configuration for API and CLI modes
 #
 # Usage:
-#   docker compose run --rm hunterx -u https://target.com --profile bounty
 #   docker compose up -d hunterx-api
-#   docker compose run --rm hunterx --help
+#   docker compose run --rm hunterx help
+#   docker compose run --rm hunterx tools list
 
 services:
-  # CLI mode — run a scan and exit
-  hunterx:
-    image: nullc0d30/hunterx:latest
-    build:
-      context: .
-      args:
-        VERSION: 6.0.0
-    container_name: hunterx-cli
-    profiles:
-      - cli
-    volumes:
-      - ./reports:/data
-      - ./hunterx.yaml:/app/hunterx.yaml:ro
-    environment:
-      - HX_LOG_LEVEL=${HX_LOG_LEVEL:-INFO}
-      - HX_AI_PROVIDER=${HX_AI_PROVIDER:-}
-      - HX_AI_API_KEY=${HX_AI_API_KEY:-}
-      - HX_AI_MODEL=${HX_AI_MODEL:-}
-      - OLLAMA_HOST=${OLLAMA_HOST:-}
-    init: true
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-
-  # API mode — persistent server
+  # API mode — persistent FastAPI server
   hunterx-api:
     image: nullc0d30/hunterx:latest
     build:
       context: .
       args:
-        VERSION: 6.0.0
+        VERSION: 7.0.0
     container_name: hunterx-api
-    profiles:
-      - api
     ports:
-      - "${HX_API_PORT:-8443}:8443"
+      - "${HUNTERX_API_PORT:-8080}:8080"
     volumes:
-      - ./reports:/data
-      - ./hunterx.yaml:/app/hunterx.yaml:ro
+      - hunterx-data:/data
     environment:
-      - HX_LOG_LEVEL=${HX_LOG_LEVEL:-INFO}
-      - HX_API_PORT=8443
-      - HX_API_HOST=0.0.0.0
-      - HX_AI_PROVIDER=${HX_AI_PROVIDER:-}
-      - HX_AI_API_KEY=${HX_AI_API_KEY:-}
-      - HX_AI_MODEL=${HX_AI_MODEL:-}
-      - OLLAMA_HOST=${OLLAMA_HOST:-}
-    command: ["api", "--port", "8443"]
+      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
+      - HUNTERX_LOG_LEVEL=${HUNTERX_LOG_LEVEL:-INFO}
+      - HUNTERX_API_HOST=0.0.0.0
+      - HUNTERX_API_PORT=8080
+      - HUNTERX_API_AUTH_ENABLED=${HUNTERX_API_AUTH_ENABLED:-false}
+      - HUNTERX_API_API_KEY=${HUNTERX_API_KEY:-}
+    command: ["uvicorn", "hunterx.api.app:create_app", "--host", "0.0.0.0", "--port", "8080"]
     init: true
     cap_drop:
       - ALL
@@ -71,8 +42,32 @@ services:
           cpus: "2"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8443/health')"]
+      test: ["CMD", "hunterx", "version"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 15s
+
+  # CLI mode — run one-off commands
+  hunterx:
+    image: nullc0d30/hunterx:latest
+    build:
+      context: .
+      args:
+        VERSION: 7.0.0
+    container_name: hunterx-cli
+    profiles:
+      - cli
+    volumes:
+      - hunterx-data:/data
+    environment:
+      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
+      - HUNTERX_LOG_LEVEL=${HUNTERX_LOG_LEVEL:-INFO}
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  hunterx-data:

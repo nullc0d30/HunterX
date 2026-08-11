@@ -1,0 +1,220 @@
+{
+  "name": "full_security_assessment_golden",
+  "description": "Golden fixture: a full security assessment against a synthetic web target with an intentional SQL injection, a false positive, a tool failure and a hidden endpoint.",
+  "objective": "full_security_assessment",
+  "target": "https://example.com",
+  "initial_knowledge": {
+    "assets": [
+      "https://example.com"
+    ],
+    "technologies": [],
+    "services": [
+      "https"
+    ],
+    "endpoints": [
+      "https://example.com/"
+    ],
+    "parameters": []
+  },
+  "script": [
+    {
+      "action": "ingest",
+      "tool": "subfinder",
+      "asset": "example.com",
+      "raw": {
+        "observation_type": "asset",
+        "content": {
+          "subdomains": [
+            "api.example.com",
+            "admin.example.com"
+          ]
+        },
+        "confidence": 0.9
+      }
+    },
+    {
+      "action": "ingest",
+      "tool": "httpx",
+      "asset": "https://api.example.com",
+      "raw": {
+        "observation_type": "service",
+        "content": {
+          "status": 200,
+          "server": "nginx",
+          "title": "API"
+        }
+      },
+      "confidence": 0.95
+    },
+    {
+      "action": "ingest",
+      "tool": "whatweb",
+      "asset": "https://api.example.com",
+      "raw": {
+        "observation_type": "technology",
+        "content": {
+          "technologies": [
+            "python",
+            "flask"
+          ]
+        }
+      },
+      "confidence": 0.9
+    },
+    {
+      "action": "ingest",
+      "tool": "katana",
+      "asset": "https://api.example.com",
+      "raw": {
+        "observation_type": "endpoint",
+        "content": {
+          "endpoints": [
+            "/search?q=",
+            "/internal-status",
+            "/v1/users?id="
+          ]
+        }
+      },
+      "confidence": 0.9
+    },
+    {
+      "action": "ingest",
+      "tool": "arjun",
+      "asset": "https://api.example.com/search",
+      "raw": {
+        "observation_type": "parameter",
+        "content": {
+          "parameters": [
+            "q"
+          ]
+        }
+      },
+      "confidence": 0.8
+    },
+    {
+      "action": "ingest",
+      "tool": "nuclei",
+      "asset": "https://api.example.com/search",
+      "raw": {
+        "observation_type": "vulnerability",
+        "content": {
+          "template": "sql-injection",
+          "parameter": "q",
+          "severity": "high"
+        },
+        "confidence": 0.6
+      }
+    },
+    {
+      "action": "ingest",
+      "tool": "nuclei",
+      "asset": "https://api.example.com/search",
+      "raw": {
+        "observation_type": "vulnerability",
+        "content": {
+          "template": "xss",
+          "parameter": "q",
+          "severity": "medium"
+        },
+        "confidence": 0.5
+      }
+    },
+    {
+      "action": "hypothesis",
+      "statement": "SQLi on /search?q may allow database access",
+      "category": "injection",
+      "priority": 0.9,
+      "validation_strategy": "sql-injection-testing"
+    },
+    {
+      "action": "baseline",
+      "asset": "https://api.example.com/search",
+      "request_fingerprint": "GET /search?q=1",
+      "status_code": 200,
+      "content_length": 200,
+      "headers": {
+        "server": "nginx"
+      }
+    },
+    {
+      "action": "differential",
+      "asset": "https://api.example.com/search",
+      "classification_hint": "sql_injection",
+      "test_status": 500,
+      "test_length": 400,
+      "test_body": "SQL syntax error near hunterxprobe"
+    },
+    {
+      "action": "hypothesis_update",
+      "statement": "SQLi on /search?q may allow database access",
+      "supporting": [
+        "ev-sqli-1",
+        "ev-sqli-diff"
+      ],
+      "contradicting": [],
+      "verify": true
+    },
+    {
+      "action": "negative",
+      "asset": "https://api.example.com/search",
+      "capability": "xss",
+      "tool": "dalfox",
+      "input": "<script>hunterxprobe()</script>",
+      "outcome": "no reflection"
+    },
+    {
+      "action": "coverage",
+      "asset": "https://api.example.com/search",
+      "capability": "sql_injection",
+      "state": "validated",
+      "tool": "sqlmap",
+      "confidence": 0.95,
+      "evidence_refs": [
+        "ev-sqli-1"
+      ]
+    },
+    {
+      "action": "finding",
+      "finding_id": "F-001",
+      "vulnerability_class": "sql_injection",
+      "asset_key": "https://api.example.com/search",
+      "severity": "high",
+      "tool": "sqlmap",
+      "stage": "proven",
+      "confidence": 0.92,
+      "evidence_refs": [
+        "ev-sqli-1",
+        "ev-sqli-2"
+      ]
+    },
+    {
+      "action": "impact",
+      "finding_id": "F-001",
+      "vulnerability_class": "sql_injection",
+      "asset_key": "https://api.example.com/search",
+      "severity": "critical",
+      "confidence": 0.92
+    },
+    {
+      "action": "cascade"
+    },
+    {
+      "action": "coverage",
+      "asset": "https://api.example.com/internal-status",
+      "capability": "endpoint_enumeration",
+      "state": "validated",
+      "tool": "katana",
+      "confidence": 0.8
+    },
+    {
+      "action": "finalize"
+    }
+  ],
+  "expected_outcome": {
+    "phase": "reporting",
+    "findings_validated": 1,
+    "findings_report_ready": 0,
+    "hypotheses_resolved": 1,
+    "coverage_ratio_gt": 0.0
+  }
+}

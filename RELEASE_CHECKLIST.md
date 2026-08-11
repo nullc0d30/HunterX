@@ -1,60 +1,47 @@
+<!-- Copyright (c) 2026 Ahmed Awad (NullC0d3). SPDX-License-Identifier: Apache-2.0. -->
+
 # Release Checklist
 
-This document outlines the steps required to publish a new HunterX release.
+This document outlines the steps required to publish a new HunterX v7 release.
 
 ---
 
 ## Pre-Release
 
 - [ ] All planned features for this release are implemented and merged to `main`
-- [ ] All tests pass: `pytest tests/ -v`
-- [ ] Linter clean: `ruff check .`
-- [ ] Type checker clean: `mypy hunterx/` (if configured)
+- [ ] Full v7 suite passes: `pytest -m "not tools"`
+- [ ] Linter clean: `ruff check src eng tests alembic`
+- [ ] Type checker clean: `mypy eng src/hunterx/shared`
+- [ ] Security gate clean: `bandit -r src/hunterx`
 - [ ] No open issues tagged `blocker` or `release-critical`
 - [ ] `CHANGELOG.md` is updated with all changes since last release
 - [ ] `CITATION.cff` version updated
 - [ ] Version bumped in:
   - `pyproject.toml`
-  - `hunterx/__init__.py` (if applicable)
-  - `docs/_config.yml` (if applicable)
-  - `docs/_layouts/default.html` (SoftwareApplication JSON-LD version)
-- [ ] `RELEASE_NOTES_vX.Y.Z.md` created with highlights and migration notes
-- [ ] `SECURITY.md` supported versions table updated
+  - `src/hunterx/__init__.py`
 
-## Release Candidates
+## Release Preparation
 
-- [ ] Create release candidate tag: `git tag vX.Y.Z-rc.N`
-- [ ] Run full CI pipeline (lint + test + build)
-- [ ] Test Docker image: `docker build -t hunterx:rc . && docker run --rm hunterx:rc --help`
-- [ ] Verify installation from source: `pip install . && hunterx --version`
-- [ ] Smoke test: run a basic scan against a test target
-- [ ] If AI provider available, smoke test AI-assisted scanning
+- [ ] `install.sh` verified against a clean environment
+- [ ] Clean install from the wheel/sdist succeeds (`pip install dist/*.whl`)
+- [ ] Alembic migrations verified: `alembic upgrade head` on a fresh database
+- [ ] Release tree audit: no development artifacts, no secrets, no v6 active
+      artifacts
+- [ ] Copyright/ownership headers present on project-owned files
+- [ ] Responsible-use disclaimer present (README, docs, SECURITY.md)
+- [ ] Documentation links resolve (`python -m eng gates --gate docs`)
 
-## Release
+## Build & Publish
 
-- [ ] Tag the release: `git tag -s vX.Y.Z -m "HunterX vX.Y.Z"`
-- [ ] Push tag: `git push origin vX.Y.Z`
-- [ ] Create GitHub Release from the tag
-- [ ] Attach release notes (`RELEASE_NOTES_vX.Y.Z.md`)
-- [ ] Verify Docker image build completes on CI
-- [ ] Verify Docker Hub image is updated: `docker pull nullc0d30/hunterx:latest`
-- [ ] Verify PyPI package is published: `pip install hunterx==X.Y.Z`
-- [ ] Update GitHub Pages docs site if needed
-- [ ] Post announcement in GitHub Discussions
+- [ ] Build artifacts: `python -m build`
+- [ ] Twine check: `twine check dist/*`
+- [ ] Tag the release: `git tag -a vX.Y.Z -m "HunterX vX.Y.Z"`
+- [ ] Publish to PyPI: `twine upload dist/*`
+- [ ] Publish Docker image: `docker buildx build --push -t nullc0d30/hunterx:latest .`
+- [ ] Update the GitHub release with release notes
 
 ## Post-Release
 
-- [ ] Create a new milestone for the next version
-- [ ] Move unresolved issues from the released milestone to the next
-- [ ] Update `ROADMAP.md` if milestones shifted
-- [ ] Close the release milestone on GitHub
-- [ ] Monitor for bug reports and regression issues in the first 72 hours
-
-## Hotfix Release
-
-For critical security fixes or regressions:
-
-- [ ] Branch from the release tag: `git checkout -b hotfix/vX.Y.Z+1 vX.Y.Z`
-- [ ] Apply fix commits
-- [ ] Bump patch version
-- [ ] Follow standard release process from "Release" section
+- [ ] Verify the PyPI install: `pip install "hunterx[api,db]" && hunterx version`
+- [ ] Verify the Docker image: `docker run nullc0d30/hunterx:latest version`
+- [ ] Mark release complete in `CHANGELOG.md`

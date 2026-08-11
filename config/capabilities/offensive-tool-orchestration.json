@@ -1,0 +1,162 @@
+{
+  "capability": "offensive-tool-orchestration-and-full-mission-execution",
+  "version": "1.0.0",
+  "sprint": 20,
+  "wave": 14,
+  "status": "ratified",
+  "summary": "The orchestration layer that turns authorized security missions into complete adaptive execution graphs: mission lifecycle (created → scoping → planning → ready → running → paused → waiting → replanning → blocked → completed | partial | failed | cancelled), capability-driven planning, scope enforcement before every task, safety/execution policy enforcement before every task, tool selection and chaining, dependency-graph execution with sequential/parallel/conditional/fan-out/fan-in semantics, retry/fallback/dedup/rate-limit engines, checkpoints and resume, persistent target mission memory, adaptive replanning that never expands scope, correlation feedback, coverage and mission quality scoring, canonical mission events, TIDB persistence and knowledge-graph updates. Never executes unrestricted exploitation; every task passes scope, safety and rate-limit gates before execution.",
+  "inputs": {
+    "mission": "mission_id, mission_type, objective, scope (roots/includes/excludes), exclusions, authorization, priority, policies (execution/safety/tool/retry/rate-limit), target_set, analysis_version",
+    "target_intelligence": [
+      "discovered assets (hostnames, IPs, CIDRs, URLs)",
+      "known technologies (product:version)",
+      "known services (http, https, dns, ...)",
+      "known endpoints (web, api, js, cloud)",
+      "cloud providers and resources",
+      "authentication/authorization surfaces",
+      "API surface"
+    ],
+    "vulnerability_intelligence": [
+      "potential vulnerabilities (technology → CVE matches)",
+      "CVSS/EPSS/KEV context",
+      "risk assessments"
+    ],
+    "tool_capabilities": "TIP registry capabilities, target types, safety classes, installed state, reliability/health/performance",
+    "scope_policy": "authorized roots, includes, excludes, follow_subdomains, follow_redirects",
+    "mission_policies": "execution_policy, safety_policy, tool_policy, retry_policy, rate_limit_policy"
+  },
+  "outputs": {
+    "missions": "canonical offensive missions with lifecycle state",
+    "execution_plans": "phases (PHASE 0-12), steps, capabilities, dependencies, conditions, tools",
+    "tool_selections": "capability-driven tool selections with scores, reasons and fallback chains",
+    "step_outcomes": "canonical normalized step results (never raw stdout)",
+    "coverage": "scope/asset/port/protocol/technology/endpoint/vulnerability/validation/tool/evidence coverage metrics",
+    "quality": "explainable mission quality score with factor breakdown",
+    "checkpoints": "persisted mission checkpoints for pause/resume/crash recovery",
+    "target_memory": "persistent per-target mission memory",
+    "replan_decisions": "adaptive replanning with in-scope/out-of-scope asset classification",
+    "failure_reports": "classified failures (transient/rate-limit/timeout/network/tool-crash/parser/permanent) with management strategy",
+    "events": "mission.* orchestration event stream",
+    "graph_updates": "mission → plan → step relationships in the knowledge graph",
+    "queries": [
+      "missions", "mission by id", "plans", "plan by id",
+      "missions by state", "target memory", "checkpoints"
+    ]
+  },
+  "mission_types": [
+    "bug-bounty", "web-pentest", "api-pentest", "external-assessment",
+    "internal-assessment", "red-team-recon", "cloud-assessment",
+    "continuous-attack-surface-monitoring", "vulnerability-assessment"
+  ],
+  "mission_lifecycle": [
+    "created", "scoping", "planning", "ready", "running", "paused",
+    "waiting", "replanning", "blocked", "completed", "partial",
+    "failed", "cancelled"
+  ],
+  "phases": [
+    "scope", "reconnaissance", "asset-discovery", "service-discovery",
+    "technology-discovery", "attack-surface-mapping",
+    "vulnerability-intelligence", "vulnerability-hypothesis",
+    "safe-validation", "correlation", "risk-prioritization",
+    "evidence-consolidation", "reporting"
+  ],
+  "execution_policies": [
+    "passive-only", "safe-active", "standard-assessment", "authorized-red-team"
+  ],
+  "entities": [
+    "MissionPlanRecord", "MissionPhaseRecord", "MissionStepRecord",
+    "ExecutionDependency", "ExecutionCheckpoint", "ExecutionPolicyDecision",
+    "ToolSelectionRecord", "ToolFallback", "MissionReplan",
+    "MissionCoverage", "MissionQuality", "MissionFailure", "MissionTaskHistory"
+  ],
+  "tools": {
+    "selection": "capability-driven via the Tool Intelligence Platform + registered execution adapters",
+    "fallback": "capability-equivalent fallback selection preserving input/output contracts",
+    "chaining": "tool A normalized output → tool B canonical input (never raw stdout cross-parsing)",
+    "categories": [
+      "reconnaissance", "dns", "subdomain-discovery", "http-discovery",
+      "port-discovery", "service-enumeration", "web-crawling",
+      "url-discovery", "technology-detection", "javascript-analysis",
+      "api-discovery", "parameter-discovery", "content-discovery",
+      "vulnerability-scanning", "tls-analysis", "cloud-enumeration",
+      "container-intelligence", "dependency-intelligence", "secret-detection",
+      "osint", "passive-intelligence", "attack-surface-management"
+    ]
+  },
+  "events": [
+    "mission.scoping.started", "mission.scoping.completed",
+    "mission.planning.started", "mission.plan.created",
+    "mission.phase.started", "mission.phase.completed",
+    "mission.step.started", "mission.step.completed",
+    "mission.step.failed", "mission.step.blocked",
+    "mission.tool.selected", "mission.tool.started",
+    "mission.tool.completed", "mission.tool.failed",
+    "mission.tool.fallback", "mission.result.created",
+    "mission.intelligence.updated", "mission.replanning.started",
+    "mission.replanned", "mission.checkpoint.created",
+    "mission.resumed", "mission.blocked", "mission.partial",
+    "mission.quality.computed", "mission.coverage.computed"
+  ],
+  "tidb": {
+    "tables": [
+      "tidb_mission_plan_records", "tidb_mission_phase_records",
+      "tidb_mission_step_records", "tidb_execution_dependencies",
+      "tidb_execution_checkpoints", "tidb_execution_policy_decisions",
+      "tidb_tool_selection_records", "tidb_tool_fallbacks",
+      "tidb_mission_replans", "tidb_mission_coverages",
+      "tidb_mission_qualities", "tidb_mission_failures",
+      "tidb_mission_task_history"
+    ],
+    "migration": "c7d3e9f1a4b8_offensive_orchestration_tables",
+    "schema_gap_policy": "STOP, document, extend via Alembic migration",
+    "no_memory_only_intelligence": true,
+    "no_second_mission_database": true
+  },
+  "scope_enforcement": [
+    "scope_guard_before_every_task",
+    "out_of_scope_discovered_assets_blocked",
+    "redirect_targets_must_be_in_scope",
+    "requires_authorization_never_auto",
+    "replanning_never_expands_scope",
+    "exclusions_always_win"
+  ],
+  "safety_enforcement": [
+    "safety_policy_checked_before_every_task",
+    "forbidden_actions_always_refused",
+    "forbidden_parameter_markers_always_refused",
+    "destructive_behavior_never_permitted",
+    "no_unrestricted_exploitation"
+  ],
+  "architecture_constraints": [
+    "no_second_scheduler",
+    "no_second_queue",
+    "no_second_workflow_engine",
+    "no_second_execution_engine",
+    "no_second_tool_registry",
+    "no_second_scope_engine",
+    "no_second_evidence_system",
+    "no_second_target_database",
+    "no_second_intelligence_framework",
+    "no_second_reporting_engine",
+    "no_raw_output_reasoning",
+    "no_bypass_tool_sdk",
+    "no_bypass_tidb",
+    "no_scope_escalation",
+    "no_unsafe_execution_bypass"
+  ],
+  "source_paths": [
+    "src/hunterx/domain/orchestration/",
+    "src/hunterx/domain/ports/orchestration.py",
+    "src/hunterx/domain/exceptions/orchestration.py",
+    "src/hunterx/engines/orchestration/",
+    "src/hunterx/application/orchestration.py",
+    "src/hunterx/domain/entities/tidb/orchestration.py",
+    "src/hunterx/infrastructure/db/sql/tidb_models/orchestration_models.py",
+    "src/hunterx/infrastructure/memory/orchestration.py",
+    "src/hunterx/domain/events/catalog.py",
+    "src/hunterx/domain/events/types.py",
+    "alembic/versions/c7d3e9f1a4b8_offensive_orchestration_tables.py",
+    "tests/golden/orchestration/"
+  ],
+  "documentation": "docs/v7-offensive-tool-orchestration.md"
+}

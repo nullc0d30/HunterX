@@ -1,0 +1,4 @@
+{"ip":"1.2.3.4","timestamp":"1735689600","ports":[{"port":22,"proto":"tcp","status":"open","reason":"syn-ack","ttl":64},{"port":443,"proto":"tcp","status":"open","reason":"syn-ack","ttl":64}]}
+{"ip":"1.2.3.4","timestamp":"1735689601","ports":[{"port":8080,"proto":"tcp","status":"closed","reason":"reset","ttl":64}]}
+{"ip":"9.9.9.9","timestamp":"1735689601","ports":[{"port":53,"proto":"udp","status":"open","reason":"icmp-unreach","ttl":64}]}
+{"ip":"10.0.0.5","timestamp":"1735689602","ports":[{"port":65536,"proto":"tcp","status":"open","reason":"syn-ack","ttl":64}]}

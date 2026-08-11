@@ -1,0 +1,2 @@
+[*] Saving schema to schema.graphql
+[+] Successfully generated the introspection schema

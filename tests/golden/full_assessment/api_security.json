@@ -1,0 +1,67 @@
+{
+  "name": "api_security_golden",
+  "description": "Golden dataset for the Sprint 033 API security mission: GraphQL introspection and BOLA validated, a single-tool schema-exposure claim rejected, a hidden admin endpoint discovered via Kiterunner.",
+  "objective": "api_assessment",
+  "target": "https://api.example.com",
+  "assets": [
+    "api.example.com",
+    "api.example.com/v1/users",
+    "api.example.com/v1/orders/42",
+    "api.example.com/graphql",
+    "api.example.com/admin/users"
+  ],
+  "tool_outputs": {
+    "httpx": ["GET /v1/users/{id}", "POST /v1/orders", "GET /v1/products"],
+    "kiterunner": ["/admin/users", "/internal/health", "/v1/export"],
+    "arjun": ["id", "include"],
+    "katana": ["/v1/users?id=", "/v1/orders?userId="],
+    "inql": {"schema": true, "introspection": true},
+    "graphqlmap": {"confirmed": true, "introspection": true},
+    "nuclei": {"confirmed": true, "method": "GET"}
+  },
+  "script": [
+    {"action": "ingest", "tool": "httpx", "asset": "api.example.com", "capability": "api_mapping", "raw": {"observation_type": "api", "content": {"operations": ["GET /v1/users/{id}", "POST /v1/orders"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "kiterunner", "asset": "api.example.com", "capability": "endpoint_enumeration", "raw": {"observation_type": "endpoint", "content": {"endpoints": ["/admin/users", "/internal/health", "/v1/export"]}, "confidence": 0.8}},
+    {"action": "ingest", "tool": "arjun", "asset": "api.example.com/v1/users", "capability": "parameter_discovery", "raw": {"observation_type": "parameter", "content": {"parameters": ["id", "include"]}, "confidence": 0.85}},
+    {"action": "ingest", "tool": "inql", "asset": "api.example.com/graphql", "capability": "graphql_enumeration", "raw": {"observation_type": "graphql", "content": {"schema": true, "introspection": true}, "confidence": 0.9}},
+    {"action": "hypothesis", "statement": "GraphQL introspection is enabled and exposes the full schema", "category": "misconfiguration", "priority": 0.85},
+    {"action": "support_hypothesis", "statement": "GraphQL introspection is enabled and exposes the full schema", "category": "misconfiguration", "priority": 0.85, "supporting": ["ev-graphql-introspect", "ev-graphql-types"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-API-1", "vulnerability_class": "graphql_introspection", "asset_key": "api.example.com/graphql", "severity": "medium", "tool": "graphqlmap", "stage": "proven", "confidence": 0.88, "evidence_refs": ["ev-graphql-introspect", "ev-graphql-types"]},
+    {"action": "proof_coverage", "asset": "api.example.com/graphql", "capability": "graphql_security", "tool": "graphqlmap"},
+    {"action": "hypothesis", "statement": "BOLA: /v1/orders/{id} returns another tenant's order without authorization", "category": "idor", "priority": 0.9},
+    {"action": "support_hypothesis", "statement": "BOLA: /v1/orders/{id} returns another tenant's order without authorization", "category": "idor", "priority": 0.9, "supporting": ["ev-bola-1", "ev-bola-2"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-API-2", "vulnerability_class": "bola", "asset_key": "api.example.com/v1/orders/42", "severity": "high", "tool": "nuclei", "stage": "proven", "confidence": 0.91, "evidence_refs": ["ev-bola-1", "ev-bola-2"]},
+    {"action": "proof_coverage", "asset": "api.example.com/v1/orders/42", "capability": "api_security", "tool": "nuclei"},
+    {"action": "negative", "asset": "api.example.com/v1/export", "capability": "api_security", "kind": "not_vulnerable", "tool": "manual-probe", "outcome": "schema endpoint not reachable; single-tool claim not corroborated"},
+    {"action": "cascade"}
+  ],
+  "expected_observations": [
+    {"tool_id": "inql", "observation_type": "graphql", "min_count": 1}
+  ],
+  "expected_correlations": [
+    {"key": "api.example.com", "tools": ["httpx", "kiterunner"], "deduplicated": true}
+  ],
+  "expected_hypotheses": [
+    {"category": "idor", "state": "validated"}
+  ],
+  "expected_findings": [
+    {"vulnerability_class": "graphql_introspection", "stage": "proven"},
+    {"vulnerability_class": "bola", "stage": "proven"}
+  ],
+  "expected_pocs": [
+    {"vulnerability_class": "bola", "proof_capability": "api_security"}
+  ],
+  "expected_attack_paths": [
+    {"source": "api", "chain": ["endpoint", "api", "authorization weakness"]}
+  ],
+  "expected_final_state": {
+    "phase": "reporting",
+    "findings_validated_gte": 2,
+    "validated_classes": ["graphql_introspection", "bola"],
+    "rejected_classes": ["schema_exposure"],
+    "hypotheses_gte": 2,
+    "negative_evidence_gte": 1,
+    "impact_analyses_gte": 2,
+    "proof_cells_gte": 2
+  }
+}

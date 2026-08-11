@@ -1,6 +1,6 @@
 ---
 layout: default
-title: OpenSSF Readiness — HunterX v6.0.0
+title: OpenSSF Readiness — HunterX v7
 description: >-
   HunterX readiness assessment for Open Source Security Foundation (OpenSSF)
   best practices, including Scorecard, Best Practices Badge, SBOM, SLSA,

@@ -1,0 +1,41 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Dependency Review.
+#
+# Uses GitHub's dependency-review-action to flag dependency changes that are
+# vulnerable, have license conflicts, or exceed a security risk threshold.
+# Runs on every PR that touches `pyproject.toml` or lockfiles.
+
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "pyproject.toml"
+      - "requirements.txt"
+      - "requirements.lock"
+      - "**/requirements*.txt"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime,development
+          allow-licenses: |
+            Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, PSF-2.0,
+            Python-2.0, Unlicense, MPL-2.0, LGPL-2.1-or-later, LGPL-3.0-or-later
+          comment-summary-in-pr: true

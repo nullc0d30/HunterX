@@ -1,0 +1,58 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Dependabot configuration.
+# Supported managers: pip (pyproject.toml), github-actions, docker.
+# All dependency PRs are gated by the quality/security CI pipeline.
+
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      runtime-dependencies:
+        patterns: ["pydantic", "pyyaml", "jsonschema", "rich", "networkx", "urllib3", "dataclasses-json"]
+      dev-toolchain:
+        patterns: ["pytest*", "ruff", "mypy", "build", "twine", "vulture", "bandit", "pip-audit", "safety"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "ci"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "docker"
+      - "dependencies"
+    commit-message:
+      prefix: "docker"
+      include: "scope"

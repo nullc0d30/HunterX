@@ -1,0 +1,64 @@
+{
+  "name": "cloud_saas_golden",
+  "description": "Golden dataset for the Sprint 033 cloud/SaaS mission: Azure provider detection, public blob exposure validated, insecure webhook validated, and a fake secret decoy rejected.",
+  "objective": "cloud_assessment",
+  "target": "acme-org",
+  "assets": [
+    "acme-org",
+    "storage:acme-storage",
+    "saas:acme-jira",
+    "saas:acme-slack",
+    "cloud:acme-app"
+  ],
+  "tool_outputs": {
+    "cloud-analysis": {
+      "provider": "azure",
+      "account": "acme-prod",
+      "resources": [{"name": "acme-storage", "type": "blob_container", "exposure": "public"}],
+      "saas": [{"name": "acme-jira", "integration": "webhook"}]
+    },
+    "trufflehog": {"secrets": [{"kind": "fake_key", "live": false}]}
+  },
+  "script": [
+    {"action": "ingest", "tool": "cloud-analysis", "asset": "acme-org", "capability": "cloud_ownership_mapping", "raw": {"observation_type": "cloud", "content": {"provider": "azure", "resources": [{"name": "acme-storage", "type": "blob_container", "exposure": "public"}], "saas": [{"name": "acme-jira", "integration": "webhook"}]}, "confidence": 0.92}},
+    {"action": "hypothesis", "statement": "Public blob container acme-storage exposes customer data", "category": "misconfiguration", "priority": 0.88},
+    {"action": "support_hypothesis", "statement": "Public blob container acme-storage exposes customer data", "category": "misconfiguration", "priority": 0.88, "supporting": ["ev-blob-1", "ev-blob-2"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-CL-1", "vulnerability_class": "cloud_exposure", "asset_key": "storage:acme-storage", "severity": "high", "tool": "cloud-analysis", "stage": "proven", "confidence": 0.9, "evidence_refs": ["ev-blob-1", "ev-blob-2"]},
+    {"action": "proof_coverage", "asset": "storage:acme-storage", "capability": "cloud_ownership_mapping", "tool": "cloud-analysis"},
+    {"action": "hypothesis", "statement": "Insecure webhook on acme-app accepts unsigned deliveries", "category": "misconfiguration", "priority": 0.82},
+    {"action": "support_hypothesis", "statement": "Insecure webhook on acme-app accepts unsigned deliveries", "category": "misconfiguration", "priority": 0.82, "supporting": ["ev-webhook-unsigned"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-CL-2", "vulnerability_class": "webhook_weakness", "asset_key": "saas:acme-jira", "severity": "medium", "tool": "cloud-analysis", "stage": "proven", "confidence": 0.85, "evidence_refs": ["ev-webhook-unsigned"]},
+    {"action": "proof_coverage", "asset": "saas:acme-jira", "capability": "saas_analysis", "tool": "cloud-analysis"},
+    {"action": "negative", "asset": "storage:acme-storage", "capability": "secret_detection", "kind": "not_vulnerable", "tool": "trufflehog", "outcome": "fake secret decoy; not a live credential"},
+    {"action": "cascade"}
+  ],
+  "expected_observations": [
+    {"tool_id": "cloud-analysis", "observation_type": "cloud", "min_count": 1}
+  ],
+  "expected_correlations": [
+    {"key": "acme-org", "tools": ["cloud-analysis"], "deduplicated": true}
+  ],
+  "expected_hypotheses": [
+    {"category": "misconfiguration", "state": "validated"}
+  ],
+  "expected_findings": [
+    {"vulnerability_class": "cloud_exposure", "stage": "proven"},
+    {"vulnerability_class": "webhook_weakness", "stage": "proven"}
+  ],
+  "expected_pocs": [
+    {"vulnerability_class": "webhook_weakness", "proof_capability": "saas_analysis"}
+  ],
+  "expected_attack_paths": [
+    {"source": "cloud", "chain": ["cloud account", "resource", "storage exposure"]}
+  ],
+  "expected_final_state": {
+    "phase": "reporting",
+    "findings_validated_gte": 2,
+    "validated_classes": ["cloud_exposure", "webhook_weakness"],
+    "rejected_classes": ["secret_exposure"],
+    "hypotheses_gte": 2,
+    "negative_evidence_gte": 1,
+    "impact_analyses_gte": 2,
+    "proof_cells_gte": 2
+  }
+}

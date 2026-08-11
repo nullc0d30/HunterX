@@ -1,0 +1,58 @@
+{
+  "url": "https://acme.com/admin/users/42",
+  "status_code": 200,
+  "headers": {
+    "X-Tenant-Id": "tenant1",
+    "X-Organization-Id": "org-123",
+    "Content-Type": "application/json"
+  },
+  "html": "<html><body><h1>User management</h1><form><input name=\"owner_id\"><input name=\"user_id\"><input name=\"is_admin\"></form><p>Manage users, roles, permissions, projects, organizations, workspaces</p></body></html>",
+  "scripts": [
+    {
+      "url": "https://acme.com/static/admin.js",
+      "content": "const roles=['admin','viewer']; const userRoles=['editor']; window.permissions=['users.read','users.write','projects.manage','billing.admin','reports.export']; window.scopes=['users:read','users:write']; if(isAdmin){can('projects.manage')}; if(hasPermission('users.write')){}; if(hasRole('admin')){}; window.config={role:'admin', groups:['platform-team','security'], memberOf:['dev'], tenantId:'tenant1', claims:['roles','permissions','tenant_id','user_id']}; path:'/admin/users', meta:{requires:'admin'}; path:'/billing', meta:{requires:'billing.admin'}; @requires_role('admin'); authorize(permission); require_permission('users.write'); require_role('admin'); const User = class { role; permissions; owner_id; is_admin; account_type; }; const TenantConfig = class { tenant_id; owner_id; is_admin; };"
+    }
+  ],
+  "api_schemes": [
+    {
+      "name": "oauth2",
+      "type": "oauth2",
+      "flows": {"clientCredentials": {"scopes": {"users:read": "read users", "users:write": "write users"}}}
+    }
+  ],
+  "api_operations": [
+    {"method": "GET", "path": "/api/v1/users", "roles": ["admin", "viewer"], "scopes": ["users:read"], "documented": true},
+    {"method": "GET", "path": "/api/v1/users/{id}", "roles": ["admin", "viewer"], "scopes": ["users:read"], "permissions": ["users.read"], "documented": true},
+    {"method": "PATCH", "path": "/api/v1/users/{id}", "roles": ["admin"], "permissions": ["users.write"], "documented": true},
+    {"method": "DELETE", "path": "/api/v1/users/{id}", "roles": ["admin"], "permissions": ["users.delete"], "documented": true},
+    {"method": "POST", "path": "/api/v1/projects/{id}/members", "roles": ["admin", "project.manager"], "documented": true},
+    {"method": "GET", "path": "/api/v1/billing", "roles": ["billing.admin"], "documented": true}
+  ],
+  "documents": [
+    {"policy_model": "rbac", "subjects": ["svc-billing-worker"], "service_accounts": ["svc-billing-worker"], "claims": ["roles", "permissions"], "name": "default-policy"}
+  ],
+  "observed_urls": [
+    "https://acme.com/login",
+    "https://acme.com/admin",
+    "https://acme.com/admin/users",
+    "https://acme.com/admin/roles",
+    "https://acme.com/admin/permissions",
+    "https://acme.com/admin/api-keys",
+    "https://acme.com/admin/audit",
+    "https://acme.com/billing",
+    "https://acme.com/api/v1/users",
+    "https://acme.com/api/v1/users/42",
+    "https://acme.com/api/v1/projects/42/members",
+    "https://acme.com/api/v1/organizations/1/workspaces/2/projects",
+    "https://acme.com/export",
+    "https://acme.com/integrations",
+    "https://acme.com/security",
+    "wss://acme.com/realtime"
+  ],
+  "graphql": [
+    {"subject": "query", "name": "users", "directive": "@auth", "restricted_fields": ["email", "is_admin"]},
+    {"subject": "mutation", "name": "updateUser", "directive": "@hasRole(role: \"admin\")"},
+    {"subject": "field", "name": "user.email", "directive": "@auth"},
+    {"subject": "field", "name": "user.billing", "directive": "@requires(permission: \"billing.read\")"}
+  ]
+}

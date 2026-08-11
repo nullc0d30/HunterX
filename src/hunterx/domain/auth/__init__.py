@@ -1,0 +1,138 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+
+"""Authentication, session & identity intelligence domain.
+
+Pure-domain contracts and deterministic analysis for the Wave 9
+authentication intelligence capability: canonical observation models, the
+static/observable detection engine, classification, confidence scoring,
+correlation, conflict resolution, historical diffing, scope enforcement and
+collection strategy. No I/O and no execution in this package.
+"""
+
+from __future__ import annotations
+
+from hunterx.domain.auth.analyzer import AuthAnalysis, AuthAnalyzer
+from hunterx.domain.auth.classification import AuthClassifier
+from hunterx.domain.auth.confidence import AuthConfidenceEngine, AuthConfidencePolicy
+from hunterx.domain.auth.correlator import AuthCorrelationResult, AuthCorrelator
+from hunterx.domain.auth.history import AuthHistory, AuthHistoryComparison
+from hunterx.domain.auth.models import (
+    FINDINGS_KEY,
+    AuthAccessState,
+    AuthBatch,
+    AuthChange,
+    AuthConflict,
+    AuthCookieObservation,
+    AuthEndpointKind,
+    AuthEndpointObservation,
+    AuthEvidence,
+    AuthExecutionSummary,
+    AuthFlowObservation,
+    AuthInput,
+    AuthObservation,
+    AuthObservationKind,
+    AuthSchemeObservation,
+    AuthSchemeType,
+    AuthSurfaceKind,
+    AuthSurfaceObservation,
+    AuthTarget,
+    ChangeType,
+    CORSObservation,
+    CSRFKind,
+    CSRFObservation,
+    EvidenceStrength,
+    EvidenceType,
+    FlowKind,
+    IdPKind,
+    IdPObservation,
+    JWTIndicatorObservation,
+    MFAKind,
+    MFAObservation,
+    OAuthObservation,
+    OIDCObservation,
+    PermissionObservation,
+    RoleObservation,
+    SAMLIndicatorObservation,
+    ScopeObservation,
+    SessionState,
+    TenantObservation,
+    TokenStorageObservation,
+    TokenStorageType,
+    WebAuthnObservation,
+    infer_asset_type,
+    make_evidence,
+    observations_from_payload,
+    origin_of,
+    record_to_dict,
+    record_type_of,
+)
+from hunterx.domain.auth.scope import AuthScopeEnforcer, AuthScopePolicy, ScopeDecision
+from hunterx.domain.auth.strategy import AuthStrategy, AuthStrategyBuilder
+from hunterx.domain.auth.validator import AuthValidator
+
+__all__ = [
+    "AuthAccessState",
+    "AuthAnalysis",
+    "AuthAnalyzer",
+    "AuthBatch",
+    "AuthChange",
+    "AuthClassifier",
+    "AuthConfidenceEngine",
+    "AuthConfidencePolicy",
+    "AuthConflict",
+    "AuthCookieObservation",
+    "AuthCorrelationResult",
+    "AuthCorrelator",
+    "AuthEndpointKind",
+    "AuthEndpointObservation",
+    "AuthEvidence",
+    "AuthExecutionSummary",
+    "AuthFlowObservation",
+    "AuthHistory",
+    "AuthHistoryComparison",
+    "AuthInput",
+    "AuthObservation",
+    "AuthObservationKind",
+    "AuthSchemeObservation",
+    "AuthSchemeType",
+    "AuthScopeEnforcer",
+    "AuthScopePolicy",
+    "AuthStrategy",
+    "AuthStrategyBuilder",
+    "AuthSurfaceKind",
+    "AuthSurfaceObservation",
+    "AuthTarget",
+    "AuthValidator",
+    "CORSObservation",
+    "CSRFKind",
+    "CSRFObservation",
+    "ChangeType",
+    "EvidenceStrength",
+    "EvidenceType",
+    "FINDINGS_KEY",
+    "FlowKind",
+    "IdPKind",
+    "IdPObservation",
+    "JWTIndicatorObservation",
+    "MFAKind",
+    "MFAObservation",
+    "OAuthObservation",
+    "OIDCObservation",
+    "PermissionObservation",
+    "RoleObservation",
+    "SAMLIndicatorObservation",
+    "ScopeDecision",
+    "ScopeObservation",
+    "SessionState",
+    "TenantObservation",
+    "TokenStorageObservation",
+    "TokenStorageType",
+    "WebAuthnObservation",
+    "infer_asset_type",
+    "make_evidence",
+    "observations_from_payload",
+    "origin_of",
+    "record_to_dict",
+    "record_type_of",
+]

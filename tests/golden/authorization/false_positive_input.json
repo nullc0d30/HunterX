@@ -1,0 +1,16 @@
+{
+  "url": "https://plain.example.com/",
+  "status_code": 200,
+  "headers": {
+    "Content-Type": "text/html"
+  },
+  "html": "<html><body><h1>Company homepage</h1><p>Welcome to our static marketing site.</p><a href=\"/blog\">Blog</a></body></html>",
+  "scripts": [],
+  "api_schemes": [],
+  "api_operations": [],
+  "documents": [],
+  "observed_urls": [
+    "https://plain.example.com/blog",
+    "https://plain.example.com/about"
+  ]
+}

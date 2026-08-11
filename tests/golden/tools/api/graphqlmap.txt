@@ -1,0 +1,3 @@
+[+] Introspection query executed successfully
+[+] Found type: User
+[+] Found field: email

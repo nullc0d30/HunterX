@@ -1,0 +1,173 @@
+{
+  "capability": "adaptive-target-intelligence",
+  "name": "Adaptive Target Intelligence & Attack-Surface Graph",
+  "version": "1.0.0",
+  "wave": 26,
+  "status": "ratified",
+  "description": "The Target Intelligence layer that evolves HunterX from a tool runner into an adaptive security reasoning system. Every target is represented as a continuously evolving attack-surface graph backed by immutable observations, explicit coverage, explicit uncertainty, hypotheses to validate, an explainable next-action engine that selects the smallest justified tool set, and full replayability from stored artifacts. It extends Sprint 017 topology, Sprint 021/022 proof & validation, Sprint 023 tool intelligence and Sprint 025 tool mastery without redesigning them.",
+  "inputs": [
+    "IntelligenceTarget (canonical target entity, never a bare hostname)",
+    "scope / tenant / mission isolation context",
+    "Observation stream (immutable, provenance-carrying) from tool parsers and SDK executions",
+    "IntelligenceAsset graph nodes and topology relationships",
+    "Evidence records (WHAT/WHERE/WHEN/HOW/SOURCE/WHY_TRUST/REPRODUCIBILITY)",
+    "mission objective, safety ceiling and authorization status",
+    "available tools, tool capabilities, cost, risk and previous executions (Sprint 023/025)",
+    "known-vulnerability and technology knowledge (CVE/CWE where available)"
+  ],
+  "outputs": [
+    "AttackSurfaceGraph (assets + typed relationships + change hints)",
+    "CoverageMatrix (Target x Asset x Capability x Tool x State)",
+    "InformationGap list (explicit uncertainty, never negative knowledge)",
+    "Hypothesis list (conjectures to validate, including UNKNOWN_BEHAVIOR/NOVEL_VARIANT)",
+    "ranked, explainable IntelligenceAction list with stop conditions and fallbacks",
+    "IntelligenceDecision (rationale, alternatives, policies applied)",
+    "TargetHistoryEntry / IntelligenceChange (NEW/REMOVED/CHANGED/REAPPEARED/EXPIRED/RECLASSIFIED/CORROBORATED/CONFLICTED)",
+    "NegativeResult (carefully scoped, capability + tool + conditions + coverage)",
+    "IntelligenceConflict (preserved, never averaged)",
+    "IntelligenceScore (explainable multi-dimension, never a single opaque number)",
+    "ReplayRun (artifact -> observation -> correlation -> hypothesis -> action, no re-execution)"
+  ],
+  "engines": [
+    "TargetIntelligenceEngine",
+    "AttackSurfaceGraph",
+    "CoverageEngine",
+    "UnknownsEngine",
+    "HypothesisEngine",
+    "NextActionEngine",
+    "IntelligenceCorrelationEngine",
+    "IntelligenceConflictDetector / IntelligenceConflictManager",
+    "TargetChangeDetector",
+    "TargetHistory",
+    "TargetIntelligenceStateAssembler / IntelligenceScoreEngine",
+    "IntelligenceReplayRunner",
+    "TargetIntelligenceScopeEnforcer"
+  ],
+  "entity_kinds": [
+    "organization", "program", "target", "domain", "subdomain", "hostname", "ip", "cidr",
+    "asn", "port", "service", "certificate", "dns_record", "url", "api_endpoint",
+    "graphql_endpoint", "websocket_endpoint", "auth_surface", "auth_endpoint",
+    "admin_surface", "authorization_endpoint", "javascript", "technology",
+    "cloud_resource", "cloud_endpoint", "saas_integration", "webhook",
+    "storage_resource", "compute_resource", "kubernetes_resource", "asset",
+    "repository", "vulnerability", "cve", "cwe"
+  ],
+  "relationship_kinds": [
+    "owns", "contains", "resolves_to", "hosts", "serves", "uses", "runs", "exposes",
+    "connects_to", "redirects_to", "calls", "references", "discovers", "authenticates",
+    "authorizes", "depends_on", "related_to", "affects", "vulnerable_to",
+    "evidence_for", "proved_by", "observed_by", "discovered_by", "corroborated_by",
+    "conflicts_with", "derived_from"
+  ],
+  "observation_types": [
+    "asset", "host", "port", "service", "technology", "url", "endpoint", "parameter",
+    "api", "graphql", "javascript", "cloud_resource", "saas", "certificate",
+    "dns_record", "repository", "secret", "authentication_surface",
+    "authorization_surface", "vulnerability", "finding", "evidence", "proof",
+    "cve", "cwe", "relationship", "negative", "other"
+  ],
+  "coverage_states": [
+    "unknown", "not_assessed", "candidate", "tested", "validated", "proved", "not_applicable"
+  ],
+  "coverage_capabilities": [
+    "asset_discovery", "subdomain_enumeration", "port_discovery", "service_detection",
+    "technology_fingerprint", "content_discovery", "parameter_discovery",
+    "endpoint_enumeration", "api_mapping", "graphql_enumeration", "javascript_analysis",
+    "dns_enumeration", "certificate_enumeration", "authentication_analysis",
+    "authorization_analysis", "cloud_ownership_mapping", "vulnerability_scanning",
+    "sql_injection", "xss", "ssrf", "ssti", "xxe", "lfi", "rce", "idor", "api_security",
+    "graphql_security", "secret_detection", "dependency_check", "proof_validation", "replay"
+  ],
+  "information_gap_categories": [
+    "asset_discovery", "subdomain_enumeration", "port_discovery", "service_detection",
+    "technology_fingerprint", "content_discovery", "parameter_discovery",
+    "endpoint_mapping", "api_mapping", "graphql_schema", "javascript_analysis",
+    "authentication_mapping", "authorization_mapping", "cloud_ownership",
+    "vulnerability_testing", "proof_validation", "replay"
+  ],
+  "hypothesis_types": [
+    "known_vulnerability", "misconfiguration", "authentication_issue",
+    "authorization_issue", "injection", "xss", "ssrf", "ssti", "xxe", "lfi", "rfi",
+    "rce", "idor", "business_logic", "api_security", "graphql_security",
+    "cloud_exposure", "secret_exposure", "dependency_vulnerability",
+    "unknown_behavior", "novel_variant"
+  ],
+  "hypothesis_statuses": [
+    "proposed", "supported", "contradicted", "validated", "proven", "inconclusive", "dismissed"
+  ],
+  "action_types": [
+    "discover", "enumerate", "fingerprint", "map", "analyze", "test", "validate", "prove", "monitor", "reassess", "stop"
+  ],
+  "action_statuses": [
+    "proposed", "scheduled", "running", "completed", "failed", "blocked", "skipped", "superseded"
+  ],
+  "change_kinds": [
+    "new", "removed", "changed", "reappeared", "expired", "reclassified", "corroborated", "conflicted"
+  ],
+  "intelligence_dimensions": [
+    "asset_coverage", "service_coverage", "web_coverage", "api_coverage",
+    "cloud_coverage", "vulnerability_coverage", "evidence_quality", "proof_coverage",
+    "historical_coverage", "unknown_ratio"
+  ],
+  "decision_policies": [
+    "priority = information_gain + hypothesis_relevance + coverage_gap + evidence_value + proof_value - execution_cost - risk - redundancy",
+    "weights are configurable via RankingWeights and recorded on IntelligenceDecision (target-intelligence/ranking/1.0.0)",
+    "negative results are scoped: tested_capability + tool + scope + conditions + coverage, never global 'not vulnerable'",
+    "conflicting tool results are preserved and escalated, never averaged",
+    "tool selection delegates to the Sprint 025 mission-aware selector; selection never widens scope or authorization",
+    "missing information is UNKNOWN/NOT_ASSESSED, never negative",
+    "novel behavior enters hypotheses without requiring a CVE or signature",
+    "every action carries stop conditions and a fallback",
+    "AI output is advisory; scope/authorization/safety/proof policy always override",
+    "all decisions preserve provenance and are replayable from stored artifacts"
+  ],
+  "guardrails": [
+    "tenant/mission/scope isolation enforced on every ingestion (TargetIntelligenceScopeEnforcer)",
+    "observations are immutable; corrections are new observations that supersede",
+    "actions exceeding the safety ceiling are blocked or re-tooled",
+    "no hardcoded universal tool sequence; the next-action engine ranks from intelligence state",
+    "no black-box action selection; every decision carries rationale, alternatives and policy",
+    "scores are never a single opaque number; each dimension is reported with its weight",
+    "proof integration follows Sprint 021/022: DISCOVER -> VALIDATE -> PROVE, avoiding redundant discovery"
+  ],
+  "persistence": {
+    "store": "TIDB normalized entities (never a JSON dump of the whole graph)",
+    "entities": [
+      "IntelligenceTargetRecord", "IntelligenceAssetRecord", "ObservationRecord",
+      "IntelligenceEvidenceRecord", "TargetHistoryRecord", "IntelligenceChangeRecord",
+      "CoverageRecord", "InformationGapRecord", "HypothesisRecord",
+      "IntelligenceActionRecord", "IntelligenceDecisionRecord", "NegativeResultRecord",
+      "IntelligenceConflictRecord", "IntelligenceScoreRecord"
+    ],
+    "migration": "alembic/versions/f7aed8a3dfc0_adaptive_target_intelligence_tables.py",
+    "orm": "hunterx.infrastructure.db.sql.tidb_models.target_intelligence_models"
+  },
+  "testing": [
+    "unit: tests/unit/test_target_intelligence_domain.py",
+    "unit: tests/unit/test_target_intelligence_engine.py",
+    "component: tests/component/test_target_intelligence_service.py",
+    "acceptance: tests/acceptance/test_target_intelligence_acceptance.py",
+    "architecture: tests/architecture/test_target_intelligence_architecture.py",
+    "security: tests/security/test_target_intelligence_security.py",
+    "performance: tests/performance/test_target_intelligence_benchmarks.py",
+    "golden: tests/golden/test_target_intelligence_golden.py",
+    "integration: tests/integration/test_target_intelligence_platform.py",
+    "replay: artifact -> parser -> observation -> correlation -> hypothesis -> action without re-execution"
+  ],
+  "never_executes": [
+    "tools without an intelligence-state justification",
+    "actions above the safety ceiling without authorization",
+    "observations outside tenant/mission/scope isolation",
+    "findings confirmed solely by scanner output (validation + proof required)",
+    "redundant discovery once proof is justified"
+  ],
+  "analysis_version": "1.0.0",
+  "architecture": {
+    "domain": "hunterx.domain.target_intelligence",
+    "engines": "hunterx.engines.target_intelligence.engine.TargetIntelligenceEngine",
+    "application": "hunterx.application.target_intelligence",
+    "persistence": "hunterx.domain.entities.tidb.target_intelligence",
+    "facade": "hunterx.platform.assembler (wired into Platform and CoreEngine)",
+    "documentation": "docs/v7-adaptive-target-intelligence.md"
+  }
+}

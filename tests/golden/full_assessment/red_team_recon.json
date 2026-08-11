@@ -1,0 +1,60 @@
+{
+  "name": "red_team_recon_golden",
+  "description": "Golden dataset for the Sprint 033 red-team recon and validation mission: multi-step attack path from discovered subdomain through exposed service, hardcoded secret, authenticated API to an authorization weakness validated with impact.",
+  "objective": "red_team_assessment",
+  "target": "victim.example.com",
+  "assets": [
+    "victim.example.com",
+    "internal.victim.example.com",
+    "internal.victim.example.com:8080",
+    "internal.victim.example.com/api/admin/users"
+  ],
+  "tool_outputs": {
+    "subfinder": ["internal.victim.example.com"],
+    "nmap": [8080],
+    "httpx": {"status": 200, "server": "jetty", "title": "Admin console"},
+    "secretfinder": {"secrets": [{"kind": "api_key", "name": "ADMIN_API_KEY"}]},
+    "manual-probe": {"confirmed": true, "method": "GET", "role": "user"}
+  },
+  "script": [
+    {"action": "ingest", "tool": "subfinder", "asset": "victim.example.com", "capability": "subdomain_enumeration", "raw": {"observation_type": "asset", "content": {"subdomains": ["internal.victim.example.com"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "nmap", "asset": "internal.victim.example.com", "capability": "port_discovery", "raw": {"observation_type": "port", "content": {"ports": [8080]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "httpx", "asset": "internal.victim.example.com", "capability": "service_detection", "raw": {"observation_type": "service", "content": {"status": 200, "server": "jetty", "title": "Admin console"}, "confidence": 0.95}},
+    {"action": "ingest", "tool": "secretfinder", "asset": "internal.victim.example.com", "capability": "secret_detection", "raw": {"observation_type": "secret", "content": {"secrets": [{"kind": "api_key", "name": "ADMIN_API_KEY", "path": "/assets/app.js"}]}, "confidence": 0.85}},
+    {"action": "hypothesis", "statement": "Hardcoded API key in admin console JS grants API access", "category": "secret_exposure", "priority": 0.85},
+    {"action": "hypothesis", "statement": "Authorization weakness: user token can read /api/admin/users", "category": "auth_bypass", "priority": 0.9},
+    {"action": "support_hypothesis", "statement": "Authorization weakness: user token can read /api/admin/users", "category": "auth_bypass", "priority": 0.9, "supporting": ["ev-admin-200", "ev-token-role"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-RT-1", "vulnerability_class": "authorization_bypass", "asset_key": "internal.victim.example.com/api/admin/users", "severity": "critical", "tool": "manual-probe", "stage": "proven", "confidence": 0.92, "evidence_refs": ["ev-admin-200", "ev-token-role"]},
+    {"action": "proof_coverage", "asset": "internal.victim.example.com/api/admin/users", "capability": "authorization_analysis", "tool": "manual-probe"},
+    {"action": "cascade"}
+  ],
+  "expected_observations": [
+    {"tool_id": "secretfinder", "observation_type": "secret", "min_count": 1}
+  ],
+  "expected_correlations": [
+    {"key": "internal.victim.example.com", "tools": ["nmap", "httpx"], "deduplicated": true}
+  ],
+  "expected_hypotheses": [
+    {"category": "auth_bypass", "state": "validated"}
+  ],
+  "expected_findings": [
+    {"vulnerability_class": "authorization_bypass", "stage": "proven"}
+  ],
+  "expected_pocs": [
+    {"vulnerability_class": "authorization_bypass", "proof_capability": "authorization_analysis"}
+  ],
+  "expected_attack_paths": [
+    {"source": "recon", "chain": ["subdomain", "service", "application", "secret", "authenticated API", "authorization weakness"]}
+  ],
+  "expected_final_state": {
+    "phase": "reporting",
+    "findings_validated_gte": 1,
+    "validated_classes": ["authorization_bypass"],
+    "rejected_classes": [],
+    "hypotheses_gte": 2,
+    "negative_evidence_gte": 0,
+    "impact_analyses_gte": 1,
+    "proof_cells_gte": 1,
+    "follow_on_hypotheses_gte": 1
+  }
+}

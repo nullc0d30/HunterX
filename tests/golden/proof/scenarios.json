@@ -1,0 +1,721 @@
+{
+  "description": "Golden deterministic scenarios for the Wave 15 vulnerability proof & PoC validation engine.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "name": "confirmed_sql_injection_behavior",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_sql_abc",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "marker reflected differently",
+            "confidence": 0.9,
+            "metadata": {"expected": "marker reflected differently"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "marker reflected differently", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "marker reflected differently", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "non_vulnerable_sql_behavior",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_sql_abc",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "no behavioral difference",
+            "confidence": 0.5,
+            "metadata": {"expected": "marker reflected differently"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "no behavioral difference", "confidence": 0.5}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "no behavioral difference", "confidence": 0.5}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "xss_reflection_candidate",
+      "class": "xss",
+      "expected_result": "hx_xss_marker reflected",
+      "inputs": {
+        "target": "https://app.example.com/search?q=test",
+        "marker": "hx_xss_marker",
+        "expected": "hx_xss_marker reflected"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "reflection",
+            "value": "hx_xss_marker reflected",
+            "confidence": 0.85,
+            "metadata": {"expected": "hx_xss_marker reflected"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_xss_marker reflected", "confidence": 0.85}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_xss_marker reflected", "confidence": 0.85}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "confirmed_controlled_xss_proof",
+      "class": "xss",
+      "expected_result": "hx_xss_confirm reflected unescaped",
+      "inputs": {
+        "target": "https://app.example.com/search?q=test",
+        "marker": "hx_xss_confirm",
+        "expected": "hx_xss_confirm reflected unescaped"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "reflection",
+            "value": "hx_xss_confirm reflected unescaped",
+            "confidence": 0.95,
+            "metadata": {"expected": "hx_xss_confirm reflected unescaped"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_xss_confirm reflected unescaped", "confidence": 0.95}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_xss_confirm reflected unescaped", "confidence": 0.95}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "ssrf_controlled_callback",
+      "class": "ssrf",
+      "expected_result": "callback correlation token matched",
+      "inputs": {
+        "target": "https://app.example.com/fetch?url=https://callback.example.com/hx_ssrf_abc",
+        "marker": "hx_ssrf_abc",
+        "expected": "callback correlation token matched"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "controlled_callback",
+            "value": "callback correlation token matched",
+            "confidence": 0.9,
+            "metadata": {"expected": "callback correlation token matched"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "controlled_callback", "value": "callback correlation token matched", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "controlled_callback", "value": "callback correlation token matched", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "ssrf_false_positive",
+      "class": "ssrf",
+      "expected_result": "callback correlation token matched",
+      "inputs": {
+        "target": "https://app.example.com/fetch?url=https://callback.example.com/hx_ssrf_fp",
+        "marker": "hx_ssrf_fp",
+        "expected": "callback correlation token matched"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "controlled_callback",
+            "value": "no callback received",
+            "confidence": 0.4,
+            "metadata": {"expected": "callback correlation token matched"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "controlled_callback", "value": "no callback received", "confidence": 0.4}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "controlled_callback", "value": "no callback received", "confidence": 0.4}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "idor_controlled_identity_comparison",
+      "class": "broken_access_control",
+      "expected_result": "subject b accessed controlled resource",
+      "inputs": {
+        "target": "https://app.example.com/api/resource/42",
+        "subject_b": "user-b",
+        "expected": "subject b accessed controlled resource"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "access_control",
+            "value": "subject b accessed controlled resource",
+            "confidence": 0.9,
+            "metadata": {"expected": "subject b accessed controlled resource"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "access_control", "value": "subject b accessed controlled resource", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "access_control", "value": "subject b accessed controlled resource", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "authorization_false_positive",
+      "class": "broken_access_control",
+      "expected_result": "subject b accessed controlled resource",
+      "inputs": {
+        "target": "https://app.example.com/api/resource/42",
+        "subject_b": "user-b",
+        "expected": "subject b accessed controlled resource"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "access_control",
+            "value": "authorization enforced",
+            "confidence": 0.9,
+            "metadata": {"expected": "subject b accessed controlled resource"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "access_control", "value": "authorization enforced", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "access_control", "value": "authorization enforced", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "path_traversal_candidate",
+      "class": "path_traversal",
+      "expected_result": "hx_path_marker reached controlled resource",
+      "inputs": {
+        "target": "https://app.example.com/download?file=report.txt",
+        "marker": "hx_path_marker",
+        "expected": "hx_path_marker reached controlled resource"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "hx_path_marker reached controlled resource",
+            "confidence": 0.8,
+            "metadata": {"expected": "hx_path_marker reached controlled resource"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "hx_path_marker reached controlled resource", "confidence": 0.8}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "hx_path_marker reached controlled resource", "confidence": 0.8}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "known_fixed_dependency",
+      "class": "dependency_vulnerability",
+      "expected_result": "dependency version affected",
+      "inputs": {
+        "target": "app.example.com",
+        "component": "libfoo",
+        "version": "1.9.0",
+        "expected": "1.9.0"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "dependency",
+            "value": "1.9.0",
+            "confidence": 0.9,
+            "metadata": {"expected": "1.9.0"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "dependency", "value": "1.9.0", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "dependency", "value": "1.9.0", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "known_vulnerable_dependency",
+      "class": "dependency_vulnerability",
+      "expected_result": "dependency version affected",
+      "inputs": {
+        "target": "app.example.com",
+        "component": "libfoo",
+        "version": "1.7.0",
+        "expected": "1.7.0"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "dependency",
+            "value": "1.7.0",
+            "confidence": 0.9,
+            "metadata": {"expected": "1.7.0"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "dependency", "value": "1.7.0", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "dependency", "value": "1.7.0", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "authentication_bypass_candidate",
+      "class": "authentication",
+      "expected_result": "protected operation reachable unauthenticated",
+      "inputs": {
+        "target": "https://app.example.com/admin",
+        "expected": "protected operation reachable unauthenticated"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "authentication",
+            "value": "protected operation reachable unauthenticated",
+            "confidence": 0.85,
+            "metadata": {"expected": "protected operation reachable unauthenticated"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "authentication", "value": "protected operation reachable unauthenticated", "confidence": 0.85}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "authentication", "value": "protected operation reachable unauthenticated", "confidence": 0.85}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "insufficient_evidence",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_insufficient",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": []
+      },
+      "replay_outputs": [],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "conflicting_evidence",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_conflict",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "marker reflected differently",
+            "confidence": 0.9,
+            "metadata": {"expected": "marker reflected differently"}
+          },
+          {
+            "kind": "behavioral_differential",
+            "value": "no behavioral difference",
+            "confidence": 0.9,
+            "metadata": {"expected": "marker reflected differently"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "marker reflected differently", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "no behavioral difference", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "partial",
+      "expected_report_ready": false
+    },
+    {
+      "name": "replay_success",
+      "class": "xss",
+      "expected_result": "hx_replay marker reflected",
+      "inputs": {
+        "target": "https://app.example.com/search?q=test",
+        "marker": "hx_replay",
+        "expected": "hx_replay marker reflected"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "reflection",
+            "value": "hx_replay marker reflected",
+            "confidence": 0.9,
+            "metadata": {"expected": "hx_replay marker reflected"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_replay marker reflected", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_replay marker reflected", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "replay_failure",
+      "class": "xss",
+      "expected_result": "hx_replayfail marker reflected",
+      "inputs": {
+        "target": "https://app.example.com/search?q=test",
+        "marker": "hx_replayfail",
+        "expected": "hx_replayfail marker reflected"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "reflection",
+            "value": "hx_replayfail marker reflected",
+            "confidence": 0.9,
+            "metadata": {"expected": "hx_replayfail marker reflected"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "reflection", "value": "no reflection", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "reflection", "value": "no reflection", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "target_changed",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_changed",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "marker reflected differently",
+            "confidence": 0.9,
+            "metadata": {"expected": "marker reflected differently"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "no marker", "confidence": 0.5}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "no marker", "confidence": 0.5}
+          ]
+        }
+      ],
+      "expected_proof_state": "inconclusive",
+      "expected_reproducibility": "not_reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "poc_invalidated",
+      "class": "xss",
+      "expected_result": "hx_invalid marker reflected",
+      "inputs": {
+        "target": "https://app.example.com/search?q=test",
+        "marker": "hx_invalid",
+        "expected": "hx_invalid marker reflected"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "reflection",
+            "value": "hx_invalid marker reflected",
+            "confidence": 0.9,
+            "metadata": {"expected": "hx_invalid marker reflected"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_invalid marker reflected", "confidence": 0.9}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "reflection", "value": "hx_invalid marker reflected", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": true
+    },
+    {
+      "name": "novel_behavior_candidate",
+      "class": "unknown_behavior",
+      "expected_result": "unexpected behavior reproducible",
+      "inputs": {
+        "target": "https://app.example.com/weird",
+        "marker": "hx_novel",
+        "expected": "unexpected behavior reproducible"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "unexpected behavior reproducible",
+            "confidence": 0.85,
+            "metadata": {"expected": "unexpected behavior reproducible"}
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "unexpected behavior reproducible", "confidence": 0.85}
+          ]
+        },
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "unexpected behavior reproducible", "confidence": 0.85}
+          ]
+        }
+      ],
+      "expected_proof_state": "validated",
+      "expected_reproducibility": "reproducible",
+      "expected_report_ready": false
+    },
+    {
+      "name": "scope_blocked_proof",
+      "class": "sql_injection",
+      "target": "evil.example.com",
+      "expected_result": "marker reflected differently",
+      "inputs": {
+        "target": "https://evil.example.com/endpoint?id=1",
+        "marker": "hx_outofscope",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "marker reflected differently",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "marker reflected differently", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "blocked",
+      "expected_reproducibility": "not_assessed",
+      "expected_report_ready": false
+    },
+    {
+      "name": "safety_blocked_proof",
+      "class": "sql_injection",
+      "expected_result": "marker reflected differently",
+      "dangerous_inputs": {"param": "1; rm -rf /"},
+      "inputs": {
+        "target": "https://app.example.com/endpoint?id=1",
+        "marker": "hx_safe",
+        "expected": "marker reflected differently"
+      },
+      "tool_output": {
+        "observations": [
+          {
+            "kind": "behavioral_differential",
+            "value": "marker reflected differently",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "replay_outputs": [
+        {
+          "observations": [
+            {"kind": "behavioral_differential", "value": "marker reflected differently", "confidence": 0.9}
+          ]
+        }
+      ],
+      "expected_proof_state": "blocked",
+      "expected_reproducibility": "not_assessed",
+      "expected_report_ready": false
+    }
+  ]
+}
+

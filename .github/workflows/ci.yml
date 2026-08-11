@@ -1,0 +1,104 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Quality Gate CI (mandatory merge blocker).
+#
+# Runs the full engineering quality-gate suite through the `eng` platform:
+# ruff, mypy, pytest, coverage, architecture, deadcode, dependencies, docs,
+# security, performance, compliance and hygiene. A failure on any mandatory
+# gate fails this workflow and blocks the pull request.
+#
+# See docs/v7-cicd-architecture.md and docs/v7-quality-gates.md.
+
+name: CI Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+concurrency:
+  group: ci-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  quality-gates:
+    name: Quality Gates (blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.lock
+
+      - name: Install project + quality toolchain
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,report]"
+          pip install mypy vulture bandit pip-audit safety semgrep twine cyclonedx-py pip-licenses
+
+      - name: Run mandatory quality gates
+        id: gates
+        run: python -m eng gates --json
+        continue-on-error: true
+
+      - name: Upload gate reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-gate-reports
+          path: |
+            artifacts/coverage.xml
+            artifacts/docs-report.json
+            artifacts/security-report.json
+            artifacts/readiness.json
+            artifacts/benchmarks/
+            artifacts/security/
+          if-no-files-found: ignore
+
+      - name: Enforce gates (fail workflow on block)
+        if: steps.gates.outcome == 'failure'
+        run: |
+          echo "::error::Mandatory quality gates failed — see the 'Quality Gates (blocking)' step output."
+          exit 1
+
+      - name: Comment gate summary on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            let body = "### Quality Gates Summary\n";
+            try {
+              const report = JSON.parse(fs.readFileSync("artifacts/gates-report.json", "utf8"));
+              body += `**Blocked:** ${report.blocked}\n`;
+              body += `**Passed:** ${report.passed} / **Failed:** ${report.failed} / **Errors:** ${report.errors} / **Skipped:** ${report.skipped}\n\n`;
+              for (const r of report.results) {
+                body += `- [${r.status.toUpperCase()}] **${r.name}** — ${r.detail}\n`;
+              }
+            } catch {
+              body += "Gate report not available for this run.";
+            }
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });

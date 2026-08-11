@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":automergeDisabled"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements", "poetry", "pep621"],
+      "groupName": "runtime dependencies",
+      "matchPackagePatterns": ["pydantic", "pyyaml", "jsonschema", "rich", "networkx", "urllib3", "dataclasses-json"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker base images"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": false
+  },
+  "dependencyDashboard": true,
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "semanticCommitScope": "deps"
+}

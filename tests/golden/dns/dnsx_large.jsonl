@@ -1,0 +1,8 @@
+{"host":"example.com","type":"A","ttl":300,"resp":["93.184.216.34"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"AAAA","ttl":300,"resp":["2606:2800:220:1:248:1893:25c8:1946"],"resolver":"1.1.1.1"}
+{"host":"www.example.com","type":"A","ttl":300,"resp":["93.184.216.34"],"resolver":"1.1.1.1"}
+{"host":"www.example.com","type":"CNAME","ttl":3600,"resp":["example.com"],"resolver":"1.1.1.1"}
+{"host":"mail.example.com","type":"MX","ttl":3600,"resp":["10 mailserver.example.com"],"resolver":"1.1.1.1"}
+{"host":"vpn.example.com","type":"A","ttl":300,"resp":["198.51.100.12"],"resolver":"1.1.1.1"}
+{"host":"intra.example.com","type":"A","ttl":300,"resp":["10.0.0.8"],"resolver":"1.1.1.1"}
+{"host":"db.example.com","type":"A","ttl":300,"resp":["172.16.5.25"],"resolver":"1.1.1.1"}

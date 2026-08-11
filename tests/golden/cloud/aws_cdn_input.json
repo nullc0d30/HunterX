@@ -1,0 +1,38 @@
+{
+  "target": "acme.com",
+  "domain": "acme.com",
+  "records": [
+    {"name": "acme.com", "type": "A", "value": "203.0.113.10"},
+    {"name": "www.acme.com", "type": "CNAME", "cname_target": "d3k2j9h4x1c7y8.cloudfront.net"},
+    {"name": "assets.acme.com", "type": "CNAME", "cname_target": "acme-assets.s3.us-east-1.amazonaws.com"},
+    {"name": "cdn.acme.com", "type": "CNAME", "cname_target": "d5h6k1l2.cloudfront.net"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Amazon",
+      "issuer_org": "Amazon",
+      "common_name": "www.acme.com",
+      "san": ["www.acme.com", "assets.acme.com", "acme-assets.s3.us-east-1.amazonaws.com"]
+    }
+  ],
+  "headers": {
+    "Server": "AmazonS3",
+    "Via": "1.1 8b2d3f4e.cloudfront.net (CloudFront)",
+    "X-Cache": "Hit from cloudfront"
+  },
+  "html": "<html><head><title>Acme</title></head><body><img src=\"https://assets.acme.com/logo.png\"></body></html>",
+  "scripts": [],
+  "technologies": [
+    {"name": "Amazon CloudFront", "category": "cdn"},
+    {"name": "Amazon S3", "category": "storage"}
+  ],
+  "observed_urls": [
+    "https://acme.com/",
+    "https://www.acme.com/",
+    "https://assets.acme.com/logo.png",
+    "https://acme-assets.s3.us-east-1.amazonaws.com/index.html"
+  ],
+  "documents": [
+    {"text": "production assets are served from Amazon S3 in us-east-1 behind CloudFront."}
+  ]
+}

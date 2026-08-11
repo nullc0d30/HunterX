@@ -1,0 +1,131 @@
+{
+  "description": "Golden deterministic mission fixtures for the Wave 14 offensive tool orchestration & full mission execution capability. Each scenario supplies a mission type, objective, scope, and expected orchestration outcome (final mission state, planned phase kinds, and coverage signal). The orchestration outcome is deterministic given the fixture.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "name": "simple_web_target",
+      "mission_type": "web-pentest",
+      "objective": "assess app.example.com",
+      "targets": ["app.example.com"],
+      "scope_roots": ["app.example.com"],
+      "endpoints": ["web", "http"],
+      "expected_state": "completed",
+      "expected_phases": ["reconnaissance", "technology-discovery", "attack-surface-mapping", "reporting"]
+    },
+    {
+      "name": "multi_domain_target",
+      "mission_type": "external-assessment",
+      "objective": "assess example.com and example.org",
+      "targets": ["example.com", "example.org"],
+      "scope_roots": ["example.com", "example.org"],
+      "endpoints": ["http"],
+      "expected_state": "completed",
+      "expected_phases": ["reconnaissance", "asset-discovery", "service-discovery"]
+    },
+    {
+      "name": "api_target",
+      "mission_type": "api-pentest",
+      "objective": "assess the public API surface",
+      "targets": ["api.example.com"],
+      "scope_roots": ["api.example.com"],
+      "endpoints": ["web", "api"],
+      "expected_state": "completed",
+      "expected_capabilities": ["api-discovery"]
+    },
+    {
+      "name": "javascript_application",
+      "mission_type": "web-pentest",
+      "objective": "assess the javascript application",
+      "targets": ["app.example.com"],
+      "scope_roots": ["app.example.com"],
+      "endpoints": ["web", "js"],
+      "expected_state": "completed",
+      "expected_capabilities": ["javascript-analysis"]
+    },
+    {
+      "name": "cloud_target",
+      "mission_type": "cloud-assessment",
+      "objective": "assess cloud attack surface",
+      "targets": ["cloud.example.com"],
+      "scope_roots": ["cloud.example.com"],
+      "providers": ["aws"],
+      "endpoints": ["web", "cloud"],
+      "expected_state": "completed",
+      "expected_capabilities": ["cloud-enumeration"]
+    },
+    {
+      "name": "mixed_web_api_cloud",
+      "mission_type": "external-assessment",
+      "objective": "assess mixed web/api/cloud surface",
+      "targets": ["example.com"],
+      "scope_roots": ["example.com"],
+      "providers": ["gcp"],
+      "endpoints": ["web", "api", "js", "cloud"],
+      "expected_state": "completed",
+      "expected_capabilities": ["web-crawling", "api-discovery", "javascript-analysis", "cloud-enumeration"]
+    },
+    {
+      "name": "vulnerable_technology",
+      "mission_type": "vulnerability-assessment",
+      "objective": "assess vulnerable technology",
+      "targets": ["example.com"],
+      "scope_roots": ["example.com"],
+      "technologies": ["nginx:1.24.0"],
+      "vulnerabilities": ["CVE-2024-9999"],
+      "expected_state": "completed",
+      "expected_phases": ["vulnerability-intelligence", "vulnerability-hypothesis", "safe-validation"]
+    },
+    {
+      "name": "multiple_vulnerabilities",
+      "mission_type": "vulnerability-assessment",
+      "objective": "assess multiple vulnerabilities",
+      "targets": ["example.com"],
+      "scope_roots": ["example.com"],
+      "technologies": ["apache:2.4.0", "nginx:1.18.0"],
+      "vulnerabilities": ["CVE-2024-1111", "CVE-2024-2222"],
+      "expected_state": "completed",
+      "expected_phases": ["vulnerability-intelligence", "safe-validation"]
+    },
+    {
+      "name": "false_positive_heavy_target",
+      "mission_type": "bug-bounty",
+      "objective": "assess false-positive-heavy target",
+      "targets": ["example.com"],
+      "scope_roots": ["example.com"],
+      "endpoints": ["web"],
+      "expected_state": "completed",
+      "expected_phases": ["reporting"]
+    },
+    {
+      "name": "scope_expansion_attempt",
+      "mission_type": "web-pentest",
+      "objective": "assess in-scope target only",
+      "targets": ["example.com", "admin.example.com"],
+      "scope_roots": ["example.com"],
+      "excludes": ["admin.example.com"],
+      "endpoints": ["web"],
+      "expected_state": "partial",
+      "expected_blocked": true
+    },
+    {
+      "name": "large_target",
+      "mission_type": "external-assessment",
+      "objective": "assess a large target set",
+      "targets": ["a.example.com", "b.example.com", "c.example.com"],
+      "scope_roots": ["example.com"],
+      "endpoints": ["web"],
+      "expected_state": "completed",
+      "expected_steps_gte": 6
+    },
+    {
+      "name": "parallel_discovery",
+      "mission_type": "bug-bounty",
+      "objective": "parallel discovery over multiple targets",
+      "targets": ["a.example.com", "b.example.com"],
+      "scope_roots": ["example.com"],
+      "endpoints": ["web"],
+      "expected_state": "completed",
+      "expected_parallel": true
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "capability": "authentication-session-and-identity-intelligence",
+  "version": "1.0.0",
+  "sprint": 15,
+  "wave": 9,
+  "status": "ratified",
+  "summary": "Persistent, evidence-backed identity & authentication intelligence for authorized targets: authentication surfaces and endpoints, modeled flows, identity providers, OAuth 2.x / OIDC / SAML configurations, JWT indicators, authentication schemes, cookie security metadata, token storage, CSRF and CORS protections, MFA/WebAuthn mechanisms, roles/scopes/permissions/tenants, public-vs-authenticated classification and historical change detection. Intelligence only; never authenticates, never validates discovered secrets.",
+  "inputs": {
+    "targets": [
+      "hostname", "domain", "ip", "url", "http-snapshot", "script"
+    ],
+    "mission": "mission_id, target, mode (passive | active | hybrid), tools, parameters, min_confidence",
+    "static_material": [
+      "HTTP response snapshots (status, headers, cookies, html, redirects)",
+      "JavaScript script content (auth config, storage usage, WebAuthn)",
+      "API security schemes (OpenAPI securitySchemes)",
+      "OIDC discovery documents and SAML metadata",
+      "observed URLs (login/registration/reset/callback/token/authorize paths)"
+    ],
+    "existing_intelligence": [
+      "previously persisted TIDB auth records (surfaces, endpoints, cookies, schemes, IdP, OAuth/OIDC/SAML, storage, CSRF, CORS, MFA, roles, scopes, permissions, tenants)",
+      "web crawl authentication boundaries",
+      "JavaScript auth/storage hints"
+    ],
+    "historical": "auth observation list for deterministic change detection",
+    "scope_policy": "authorized domains, CIDRs, IPs, excluded names/cidrs/ips, excluded URL patterns"
+  },
+  "outputs": {
+    "auth_surfaces": "authentication surfaces with kind, access state (public/auth-required/authenticated-only) and evidence",
+    "auth_endpoints": "login/logout/registration/reset/mfa/callback/token/authorization/... endpoints",
+    "auth_flows": "modeled stateful flows (traditional login, OAuth2, OIDC, SAML)",
+    "identity_providers": "evidence-backed identity provider detections",
+    "oauth_configs": "OAuth 2.x metadata (endpoints, issuer, client ids, scopes, grants, PKCE)",
+    "oidc_configs": "OIDC discovery metadata (issuer, endpoints, scopes, claims, algs)",
+    "saml_configs": "SAML indicators (entity id, SSO/ACS, metadata, relay-state)",
+    "auth_schemes": "authentication schemes (basic/bearer/apikey/digest/dpop/oauth2/oidc/session/cookie)",
+    "auth_cookies": "cookie security metadata (Secure, HttpOnly, SameSite, Prefix, session vs persistent)",
+    "token_storage_indicators": "client-side token storage locations (localStorage/sessionStorage/IndexedDB/cookie/memory)",
+    "csrf_mechanisms": "CSRF protection indicators (synchronizer token, double-submit cookie, same-site, custom header)",
+    "cors_policies": "CORS configuration indicators",
+    "mfa_mechanisms": "MFA mechanisms (TOTP, SMS/email OTP, push, WebAuthn, recovery codes)",
+    "webauthn_indicators": "WebAuthn/passkey API usage",
+    "role_scope_permission_tenants": "evidence-backed role/scope/permission/tenant indicators",
+    "auth_observations": "generic observations (headers, JWT indicators, session state, password policy, account lifecycle, claims)",
+    "auth_changes": "historical added/removed/changed events",
+    "auth_runs": "observability run records",
+    "topology_relationships": "origin->auth surface/endpoint/scheme/identity-provider edges persisted into the existing TIDB topology",
+    "queries": [
+      "surfaces", "endpoints", "flows", "identity_providers", "oauth", "oidc",
+      "saml", "cookies", "token_storage", "csrf", "cors", "mfa", "webauthn",
+      "roles", "scopes", "permissions", "tenants", "observations", "schemes",
+      "changes", "runs", "summary"
+    ]
+  },
+  "entities": [
+    "AuthRun", "AuthSurface", "AuthEndpoint", "AuthFlow", "IdentityProvider",
+    "OAuthConfig", "OIDCConfig", "SAMLConfig", "AuthScheme", "AuthCookie",
+    "TokenStorageIndicator", "CSRFMechanism", "CORSPolicy", "MFAMechanism",
+    "WebAuthnIndicator", "RoleIndicator", "ScopeIndicator", "PermissionIndicator",
+    "TenantIndicator", "AuthObservation", "AuthEvidence", "AuthChange"
+  ],
+  "tools": {
+    "auth-analysis": {
+      "version": "1.0.0",
+      "capabilities": ["authentication-intelligence", "identity-intelligence", "session-intelligence"],
+      "execution": "in-process domain analyzer over supplied static material",
+      "output": "canonical auth observations under the 'auth' payload key"
+    }
+  },
+  "evidence_types": [
+    "http-header", "cookie", "html", "http-status", "url-pattern", "location",
+    "javascript", "openid-discovery", "saml-metadata", "openapi-security",
+    "js-indicator", "tidb-intelligence", "tool-output", "known-signature", "other"
+  ],
+  "events": [
+    "auth.discovery.started",
+    "auth.phase.started",
+    "auth.login_surface.discovered",
+    "auth.endpoint.discovered",
+    "auth.identity_provider.discovered",
+    "auth.oauth.discovered",
+    "auth.oidc.discovered",
+    "auth.saml.discovered",
+    "auth.mfa.discovered",
+    "auth.session_cookie.discovered",
+    "auth.token_storage.discovered",
+    "auth.csrf.discovered",
+    "auth.cors.discovered",
+    "auth.role.discovered",
+    "auth.permission.discovered",
+    "auth.tenant.discovered",
+    "auth.change.detected",
+    "auth.conflict.detected",
+    "auth.correlation.completed",
+    "auth.discovery.completed",
+    "auth.discovery.failed"
+  ],
+  "permissions": ["none"],
+  "scope_requirements": {
+    "authorized_target_only": "target must pass the scope policy before any analysis runs",
+    "per_observation_filter": "out-of-scope observations are never persisted",
+    "no_scope_expansion": "discovered authentication intelligence never expands mission scope",
+    "no_external_provider_requests": "identity-provider endpoints are recorded as metadata; nothing is requested",
+    "deny_by_default": false,
+    "fail_open_empty_policy": true
+  },
+  "sensitive_data_protection": {
+    "never_persist": [
+      "passwords", "session cookie values", "access tokens", "refresh tokens",
+      "API secrets", "private keys", "authorization header values", "OTP values",
+      "recovery codes", "PII"
+    ],
+    "masking": "shared.masking mask_value / mask_secret applied to any retained sensitive context",
+    "metadata_only": "cookies store attributes only; tokens store indicators only"
+  },
+  "tridb_requirements": {
+    "system_of_record": "TIDB",
+    "tables": [
+      "tidb_auth_runs", "tidb_auth_surfaces", "tidb_auth_endpoints",
+      "tidb_auth_flows", "tidb_identity_providers", "tidb_oauth_configs",
+      "tidb_oidc_configs", "tidb_saml_configs", "tidb_auth_schemes",
+      "tidb_auth_cookies", "tidb_token_storage_indicators",
+      "tidb_csrf_mechanisms", "tidb_cors_policies", "tidb_mfa_mechanisms",
+      "tidb_webauthn_indicators", "tidb_role_indicators",
+      "tidb_scope_indicators", "tidb_permission_indicators",
+      "tidb_tenant_indicators", "tidb_auth_observations",
+      "tidb_auth_evidence", "tidb_auth_changes"
+    ],
+    "migration": "4a9c1d5f3e82_authentication_intelligence_tables",
+    "schema_gap_policy": "STOP, document, extend via Alembic migration",
+    "no_memory_only_intelligence": true,
+    "no_separate_authentication_database": true
+  },
+  "performance": {
+    "analyze_snapshot": "single HTTP/JS snapshot analysis sub-millisecond",
+    "correlate_1k_observations": "well under 100ms (benchmarked)",
+    "run_query": "under 50ms against 1k persisted auth records (benchmarked)"
+  },
+  "architecture_constraints": [
+    "no_bypass_tool_sdk",
+    "no_bypass_tidb",
+    "no_second_database",
+    "no_separate_graph",
+    "no_duplicate_repositories",
+    "no_duplicate_caches",
+    "no_duplicate_event_bus",
+    "no_credential_attacks",
+    "no_password_attacks",
+    "no_mfa_bypass",
+    "no_token_replay",
+    "no_oauth_abuse",
+    "no_saml_manipulation",
+    "no_jwt_exploitation",
+    "no_authorization_bypass",
+    "no_token_validation",
+    "no_credential_or_token_storage"
+  ],
+  "source_paths": [
+    "src/hunterx/domain/auth/",
+    "src/hunterx/application/auth.py",
+    "src/hunterx/tools/auth/",
+    "src/hunterx/domain/entities/tidb/auth_intelligence.py",
+    "src/hunterx/infrastructure/db/sql/tidb_models/auth_intelligence_models.py",
+    "src/hunterx/domain/events/enums.py",
+    "src/hunterx/domain/events/catalog.py",
+    "src/hunterx/domain/events/types.py",
+    "src/hunterx/domain/topology/enums.py",
+    "tests/golden/auth/"
+  ],
+  "documentation": "docs/v7-authentication-intelligence.md"
+}

@@ -1,21 +1,68 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-reports/
-logs/
-.env
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
 .venv
 env/
 venv/
+
+# IDE / editors
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# OS
 .DS_Store
 Thumbs.db
 Screenshot*.png
-*.egg-info/
-dist/
-build/
+
+# Test / tooling caches
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.benchmarks/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.coverage
+
+# Runtime databases, caches and generated artifacts
+*.db
+*.sqlite
+*.sqlite3
+hunterx.db
+/data/
+/artifacts/
+/reports/
+/logs/
+*.log
+massdns-*.txt
+shuffledns-*.txt
+.obfuscator*
+
+# Secrets (never commit)
+*.key
+*.pem
+*.cert
+*.crt
+credentials.json
+.env
+.env.*
+!.env.example
+
+# Docs build output
+_site/
+.jekyll-cache/

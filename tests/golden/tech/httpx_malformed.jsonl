@@ -1,0 +1,4 @@
+[not valid json
+{"url":"https://broken.example.com","host":"broken.example.com","status_code":200,"webserver":"nginx","tech":["React"]}
+{"url":"https://ok.example.com","status_code":200,"tech":["Django"]}
+  {"url":"https://no-tech.example.com","status_code":200,"webserver":"nginx"}

@@ -1,0 +1,2 @@
+https://example.com/api/secret
+/scripts/main.js

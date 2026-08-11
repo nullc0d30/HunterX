@@ -1,0 +1,4 @@
+{"host":"example.com","type":"DS","ttl":3600,"resp":["12345 8 2 123456789ABCDEF"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"DNSKEY","ttl":3600,"resp":["257 3 8 AwEAAagAIKlVZrpC6Ia7gEzahOR+9W29euxhJhVVLOyQbSEW0O8gcCjFFVQUTf6v58fLjwBd0YI0EzrAcQqBGCzh/RStIoO8g0NfnfL2MTJRkxoXbfDaUeVNQu7hS"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"RRSIG","ttl":3600,"resp":["A 8 2 3600 20260701000000 20260601000000 12345 example.com. sig=="],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"NSEC3","ttl":3600,"resp":["ABCDEF1234567890 NS SOA RRSIG DNSKEY"],"resolver":"1.1.1.1"}

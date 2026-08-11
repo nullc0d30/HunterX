@@ -1,0 +1,85 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Security Tests & Security Pipeline.
+#
+# Runs the SAST/SCA/secret-scanning pipeline (bandit, semgrep, pip-audit,
+# safety, trivy, gitleaks) plus the security test suite. Findings fail the PR
+# and full reports are uploaded for review.
+
+name: Security Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * *" # nightly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: security-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Security Pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.lock
+
+      - name: Install project + security toolchain
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install bandit pip-audit safety semgrep
+
+      - name: Install Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ""
+        continue-on-error: true
+
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          version: latest
+        continue-on-error: true
+
+      - name: Run security pipeline
+        run: python -m eng security --json
+
+      - name: Run security test suite
+        run: pytest -q tests/security -v
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: artifacts/security/
+          if-no-files-found: ignore
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: artifacts/security/
+          category: semgrep

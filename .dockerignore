@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+
 # Version Control
 .git
 .gitignore
@@ -29,6 +32,28 @@ venv/
 reports/
 logs/
 *.log
+*.db
+*.sqlite
+*.sqlite3
+hunterx.db
+data/
+artifacts/
+.benchmarks/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Legacy v6 flat package, payload corpus and non-runtime trees (not packaged)
+hunterx/
+payloads/
+core/
+api/
+plugins/
+awesome-pentest/
+alembic/
+eng/
+capabilities/
+config/
 
 # Tests & Docs (not needed in runtime image)
 tests/

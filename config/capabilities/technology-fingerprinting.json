@@ -1,0 +1,138 @@
+{
+  "capability": "technology-fingerprinting-and-stack-intelligence",
+  "version": "1.0.0",
+  "sprint": 11,
+  "status": "ratified",
+  "summary": "Determines, correlates, validates and historically tracks the technologies exposed by authorized assets: operating systems, web/application servers, frameworks, languages, CMS platforms, CDN/WAF infrastructure, proxies, load balancers, hosting providers, cloud indicators, security products and evidence-backed versions. Non-destructive and evidence-backed; intelligence is persisted to the TIDB and projected into the existing attack-surface topology.",
+  "inputs": {
+    "targets": [
+      "hostname", "domain", "ip", "url"
+    ],
+    "mission": "mission_id, target, mode (passive | active | hybrid), tools, parameters, categories, min_confidence",
+    "existing_intelligence": [
+      "live service fingerprints (product/version from nmap -sV)",
+      "TLS certificate observations (issuer/subject hosting hints)",
+      "previously persisted TIDB TechnologyObservation records"
+    ],
+    "historical": "TechnologyObservation list for change detection",
+    "scope_policy": "authorized domains, CIDRs, IPs, excluded names/cidrs/ips, excluded URL patterns"
+  },
+  "outputs": {
+    "technology_observations": "correlated canonical technology detections with evidence, confidence, first/last seen",
+    "technology_versions": "evidence-backed version specs (confirmed/probable/range/unknown)",
+    "technology_evidence": "per-detection evidence fragments (header, cookie, html, meta, TLS, banner, signature, tool)",
+    "technology_conflicts": "preserved version/identity disagreements with resolution reason",
+    "technology_changes": "historical added/removed/changed events",
+    "technology_runs": "observability run records",
+    "topology_relationships": "asset USES technology edges persisted into the existing TIDB topology",
+    "queries": [
+      "inventory", "stack", "by_category", "versions", "cms", "frameworks",
+      "servers", "cdn_waf", "cloud_hosting", "conflicts", "changes"
+    ]
+  },
+  "technology_categories": [
+    "web-server", "application-server", "cms", "framework", "javascript",
+    "frontend", "backend", "database", "cdn", "waf", "proxy",
+    "load-balancer", "cloud", "hosting", "analytics", "authentication",
+    "security", "monitoring", "programming-language", "runtime", "protocol",
+    "infrastructure", "operating-system", "other"
+  ],
+  "entities": [
+    "TechnologyCategory", "TechnologyFamily", "TechnologyDefinition",
+    "TechnologyObservation", "TechnologyVersion", "TechnologyEvidence",
+    "TechnologyConflict", "TechnologyChange", "TechnologyRun"
+  ],
+  "tools": {
+    "httpx": {
+      "version": "1.3.9",
+      "capabilities": ["technology-fingerprinting", "http-metadata"],
+      "parser": "tools/tech/httpx.py",
+      "output": "JSONL tech[]/webserver/cdn_name -> TechnologyObservation"
+    },
+    "whatweb": {
+      "version": "0.5.5",
+      "capabilities": ["technology-fingerprinting"],
+      "parser": "tools/tech/whatweb.py",
+      "output": "plugin certainty/version JSON -> TechnologyObservation"
+    },
+    "signature": {
+      "version": "1.0.0",
+      "capabilities": ["technology-fingerprinting"],
+      "execution": "in-process FetchFn seam + SignatureDetector over curated signatures",
+      "output": "HTTP evidence -> TechnologyObservation"
+    }
+  },
+  "evidence_types": [
+    "http-header", "response-header", "cookie", "html", "meta", "dom",
+    "tls-certificate", "service-banner", "http-status", "url-pattern",
+    "javascript", "known-signature", "tool-output", "tidb-intelligence", "cpe"
+  ],
+  "events": [
+    "technology.fingerprinting.started",
+    "technology.phase.started",
+    "technology.detected",
+    "technology.updated",
+    "technology.version.detected",
+    "technology.version.changed",
+    "technology.conflict",
+    "technology.removed",
+    "technology.fingerprinting.completed",
+    "technology.fingerprinting.failed"
+  ],
+  "permissions": ["network"],
+  "scope_requirements": {
+    "authorized_target_only": "target must pass the scope policy before any tool runs",
+    "per_observation_filter": "out-of-scope observations are never persisted",
+    "no_scope_expansion": "discovered technology intelligence never expands mission scope",
+    "deny_by_default": false,
+    "fail_open_empty_policy": true
+  },
+  "tridb_requirements": {
+    "system_of_record": "TIDB",
+    "tables": [
+      "tidb_technology_categories",
+      "tidb_technology_families",
+      "tidb_technology_definitions",
+      "tidb_technology_observations",
+      "tidb_technology_versions",
+      "tidb_technology_evidence",
+      "tidb_technology_conflicts",
+      "tidb_technology_changes",
+      "tidb_technology_runs"
+    ],
+    "migration": "7ab1a304e8bb_technology_intelligence_tables",
+    "schema_gap_policy": "STOP, document, extend via Alembic migration",
+    "no_memory_only_intelligence": true
+  },
+  "performance": {
+    "correlate_1k_observations": "well under 100ms",
+    "detector_throughput": "single evidence bundle detection sub-millisecond",
+    "version/extract/normalize": "benchmarked in tests/performance/test_technology_benchmarks.py"
+  },
+  "architecture_constraints": [
+    "no_bypass_tool_sdk",
+    "no_direct_subprocess",
+    "no_duplicate_repositories",
+    "no_duplicate_caches",
+    "no_duplicate_event_systems",
+    "no_separate_technology_database",
+    "no_separate_technology_graph",
+    "no_exploitation",
+    "no_credential_attacks",
+    "no_web_crawling",
+    "no_javascript_crawling",
+    "no_vulnerability_scanning"
+  ],
+  "source_paths": [
+    "src/hunterx/domain/technology/",
+    "src/hunterx/application/technology.py",
+    "src/hunterx/tools/tech/",
+    "src/hunterx/domain/entities/tidb/technology.py",
+    "src/hunterx/infrastructure/db/sql/tidb_models/technology_models.py",
+    "src/hunterx/domain/topology/enums.py",
+    "src/hunterx/domain/topology/models.py",
+    "src/hunterx/domain/topology/deriver.py",
+    "tests/golden/tech/"
+  ],
+  "documentation": "docs/v7-technology-fingerprinting.md"
+}

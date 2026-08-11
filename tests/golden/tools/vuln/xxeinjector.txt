@@ -1,0 +1,2 @@
+[+] Possible XXE detected in the request
+[+] File found: /etc/passwd

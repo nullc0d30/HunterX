@@ -1,0 +1,173 @@
+{
+  "capability": "target-memory-campaign-intelligence",
+  "name": "Target Memory & Campaign Intelligence Engine",
+  "version": "1.0.0",
+  "wave": 15,
+  "sprint": 30,
+  "status": "ratified",
+  "description": "The historical intelligence capability that makes HunterX remember what it already knows, understand what changed, understand what was already tested, understand what failed, understand what remains unknown, and use that memory to plan the next authorized mission. It maintains a persistent, queryable historical understanding of every authorized target by referencing canonical entities (Target Intelligence, TIDB, Finding, Evidence, Mission, Knowledge, Correlation, PoC) - never duplicating them. Memory is treated as untrusted input: confidence, corroboration, freshness, source reliability and contradiction handling always gate what memory is allowed to redefine.",
+  "inputs": [
+    "immutable observations from Target Intelligence / tools",
+    "targets, assets, domains, subdomains, IPs, ports, services, URLs, endpoints, parameters, technologies, APIs, auth surfaces, cloud resources, identities, secrets",
+    "findings, evidence, PoCs, attack paths, missions (referenced by id)",
+    "coverage matrix and knowledge from Target Intelligence",
+    "TIDB repository factory",
+    "event bus",
+    "cache port"
+  ],
+  "outputs": [
+    "TargetMemory aggregate (observations, coverage, findings, gaps, contradictions, recommendations)",
+    "memory observations with first_seen / last_seen / observation_count / first_mission / last_mission / first_source / last_source / current_state",
+    "reproducible TargetSnapshot (state_hash) and deterministic TargetDiff",
+    "change significance classification (informational/low/medium/high/critical)",
+    "MissionMemory records",
+    "HypothesisMemory records (failed and successful, with reusable success patterns)",
+    "ToolObservation provenance records",
+    "TargetRiskEntry history (append-only, never overwritten)",
+    "FindingMemory lifecycle records and FindingRecurrence detections",
+    "Campaign and CampaignIntelligence answers",
+    "CoverageGap records",
+    "RevalidationPlan and revalidation items",
+    "AttackPathMemory records",
+    "preserved MemoryContradiction records",
+    "NextActionRecommendation records (advisory only)",
+    "PlannerContext for memory-aware mission planning"
+  ],
+  "memory_observation_states": [
+    "known_current",
+    "known_stale",
+    "known_changed",
+    "unknown",
+    "contradicted",
+    "needs_revalidation"
+  ],
+  "freshness_states": [
+    "fresh",
+    "aging",
+    "stale",
+    "expired",
+    "unknown"
+  ],
+  "change_significance_levels": [
+    "informational",
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "diff_change_kinds": [
+    "added",
+    "removed",
+    "changed",
+    "unchanged",
+    "reappeared",
+    "disappeared",
+    "reopened",
+    "remediated"
+  ],
+  "coverage_gap_kinds": [
+    "discovered_untested",
+    "untested_parameters",
+    "untested_technology",
+    "unvalidated_config",
+    "untested_auth",
+    "new_asset",
+    "stale_observation",
+    "blocked"
+  ],
+  "hypothesis_outcomes": [
+    "failed",
+    "succeeded",
+    "inconclusive"
+  ],
+  "recurrence_kinds": [
+    "same_location",
+    "new_location",
+    "root_cause_regression"
+  ],
+  "campaign_states": [
+    "planned",
+    "active",
+    "paused",
+    "completed",
+    "cancelled"
+  ],
+  "risk_levels": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "events": [
+    "target.memory.updated",
+    "target.snapshot.created",
+    "target.diff.created",
+    "target.change.detected",
+    "target.observation.stale",
+    "target.revalidation.required",
+    "campaign.created",
+    "campaign.updated",
+    "campaign.completed",
+    "coverage.updated",
+    "coverage.gap.detected",
+    "hypothesis.recorded",
+    "hypothesis.failed",
+    "hypothesis.succeeded",
+    "risk.changed",
+    "finding.recurred"
+  ],
+  "persistence": {
+    "entities": [
+      "MemoryObservationRecord",
+      "TargetSnapshotRecord",
+      "TargetDiffRecord",
+      "MissionMemoryRecord",
+      "HypothesisMemoryRecord",
+      "ToolObservationRecord",
+      "TargetRiskRecord",
+      "FindingMemoryRecord",
+      "FindingRecurrenceRecord",
+      "CampaignRecord",
+      "CoverageGapRecord",
+      "RevalidationRecord",
+      "AttackPathMemoryRecord",
+      "MemoryContradictionRecord",
+      "NextActionRecord"
+    ],
+    "alembic_revision": "fc52d0b58c3f"
+  },
+  "api": [
+    "GET /targets/{target_id}/memory",
+    "GET /targets/{target_id}/snapshots",
+    "GET /targets/snapshots/{snapshot_id}",
+    "GET /targets/snapshots/{snapshot_a}/compare/{snapshot_b}",
+    "GET /targets/{target_id}/changes",
+    "GET /targets/{target_id}/history",
+    "GET /targets/{target_id}/coverage",
+    "GET /targets/{target_id}/gaps",
+    "GET /targets/{target_id}/risk",
+    "GET /targets/{target_id}/revalidate",
+    "GET /targets/{target_id}/hypotheses",
+    "GET /targets/{target_id}/findings",
+    "GET /targets/{target_id}/attack-paths",
+    "GET /targets/campaigns",
+    "GET /targets/campaigns/{campaign_id}",
+    "GET /targets/campaigns/{campaign_id}/intelligence",
+    "POST /targets/campaigns",
+    "POST /targets/campaigns/{campaign_id}/complete"
+  ],
+  "cli": [
+    "hunterx target memory",
+    "hunterx target snapshot",
+    "hunterx target diff",
+    "hunterx target changes",
+    "hunterx target history",
+    "hunterx target coverage",
+    "hunterx target gaps",
+    "hunterx target risk",
+    "hunterx target revalidate",
+    "hunterx campaign list",
+    "hunterx campaign show",
+    "hunterx campaign intelligence"
+  ]
+}

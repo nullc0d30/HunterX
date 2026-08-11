@@ -1,0 +1,59 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Architecture Tests.
+#
+# Enforces the Clean Architecture dependency matrix (`config/architecture.yaml`)
+# with `hunterx-arch lint` plus the architecture test suite. Architecture
+# violations block the merge.
+
+name: Architecture Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: architecture-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  architecture:
+    name: Architecture Enforcement
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run architecture linter
+        run: |
+          hunterx-arch lint --root . || python -m hunterx.architecture lint --root .
+
+      - name: Run architecture test suite
+        run: pytest -q tests/architecture -v
+
+      - name: Upload architecture report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-reports
+          path: artifacts/
+          if-no-files-found: ignore

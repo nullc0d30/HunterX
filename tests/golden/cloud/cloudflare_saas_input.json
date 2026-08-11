@@ -1,0 +1,52 @@
+{
+  "target": "shop.example.org",
+  "domain": "example.org",
+  "records": [
+    {"name": "shop.example.org", "type": "A", "value": "104.21.1.1"},
+    {"name": "www.shop.example.org", "type": "CNAME", "cname_target": "shop.example.org"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Cloudflare, Inc.",
+      "issuer_org": "Google Trust Services LLC",
+      "common_name": "shop.example.org",
+      "san": ["shop.example.org", "www.shop.example.org"]
+    }
+  ],
+  "headers": {
+    "cf-ray": "6f2a9c4e1b8d4f6a-DFW",
+    "cf-cache-status": "DYNAMIC",
+    "Server": "cloudflare"
+  },
+  "html": "<html><head><script async src=\"https://www.googletagmanager.com/gtag/js?id=G-XYZ1234\"></script></head><body><div id=\"stripe-payment\"></div></body></html>",
+  "scripts": [
+    {
+      "url": "https://shop.example.org/checkout.js",
+      "content": "const stripe = Stripe('pk_live_51ABCdefGHIjklMNOpqrSTUvWXyz1234'); stripe.redirectToCheckout({ sessionId: 'cs_test_abc123' });"
+    },
+    {
+      "url": "https://js.stripe.com/v3/",
+      "content": ""
+    },
+    {
+      "url": "https://browser.sentry-cdn.com/7.0.0/bundle.min.js",
+      "content": "Sentry.init({ dsn: 'https://public@sentry.io/12345' });"
+    }
+  ],
+  "technologies": [
+    {"name": "Cloudflare", "category": "cdn"},
+    {"name": "Sentry", "category": "error-tracking"},
+    {"name": "Stripe", "category": "payment"},
+    {"name": "Next.js", "category": "web framework"}
+  ],
+  "observed_urls": [
+    "https://shop.example.org/",
+    "https://hooks.slack.com/services/T00000000/B00000000/abcdefghijklmnopqrstuvwx",
+    "https://shop.example.org/webhooks/payment"
+  ],
+  "documents": [
+    {
+      "text": "Stripe webhook endpoint at /webhooks/payment verifies signatures with WEBHOOK_SECRET. Deploys run via Vercel (preview-abc123.vercel.app)."
+    }
+  ]
+}

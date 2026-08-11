@@ -1,0 +1,38 @@
+{
+  "url": "https://api.example.com/v1/users",
+  "status_code": 401,
+  "headers": {
+    "WWW-Authenticate": "Bearer realm=\"api\", error=\"invalid_token\"",
+    "Set-Cookie": "session=expired; Path=/; HttpOnly; Secure; SameSite=Lax",
+    "X-API-Key-Required": "true"
+  },
+  "html": "",
+  "scripts": [
+    {
+      "url": "https://api.example.com/static/auth.js",
+      "content": "async function refresh() { const t = await axios.post('/oauth/token', {grant_type: 'refresh_token'}); localStorage.setItem('access_token', t.data.access_token); } if (navigator.credentials) { navigator.credentials.get({publicKey: {challenge: new Uint8Array(32)}}); } window.config = {tenant_id: 'tenant-42', roles: ['admin'], permissions: ['users:read'], claims: ['sub', 'tenant_id']};"
+    }
+  ],
+  "api_schemes": [
+    {
+      "scheme_type": "bearer",
+      "name": "bearerAuth",
+      "token_location": "header",
+      "documented": true,
+      "source": "openapi"
+    },
+    {
+      "scheme_type": "oauth2",
+      "name": "oauth2",
+      "token_location": "header",
+      "flows": ["client_credentials"],
+      "scopes": ["users:read", "users:write"],
+      "documented": true,
+      "source": "openapi"
+    }
+  ],
+  "observed_urls": [
+    "https://api.example.com/oauth/token",
+    "https://api.example.com/v1/users"
+  ]
+}

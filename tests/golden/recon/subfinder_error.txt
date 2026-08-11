@@ -1,0 +1,3 @@
+[INF] [subfinder] Enumerating subdomains for example.com
+[ERR] could not connect to source: crt.sh
+[ERR] timeout after 30s

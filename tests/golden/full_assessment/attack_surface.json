@@ -1,0 +1,67 @@
+{
+  "name": "attack_surface_golden",
+  "description": "Golden dataset for the Sprint 033 external attack-surface mission: unified graph across domains, hosts, IPs, ports, services, cloud, storage, SaaS and CDN, with a cloud exposure validated and a webhook ambiguity retained as inconclusive.",
+  "objective": "external_attack_surface",
+  "target": "corp.example.com",
+  "assets": [
+    "domain:corp.example.com",
+    "hostname:api.corp.example.com",
+    "ip:203.0.113.30",
+    "port:203.0.113.30:443",
+    "url:https://api.corp.example.com",
+    "storage:corp-backup",
+    "cloud:corp-lb",
+    "saas:corp-saas"
+  ],
+  "tool_outputs": {
+    "subfinder": ["api.corp.example.com", "admin.corp.example.com", "cdn.corp.example.com"],
+    "dnsx": ["api.corp.example.com -> 203.0.113.30"],
+    "naabu": [443, 8443],
+    "httpx": {"status": 200, "server": "nginx"},
+    "cloud-analysis": {
+      "provider": "aws",
+      "resources": [{"name": "corp-lb", "type": "load_balancer", "exposure": "internet"}, {"name": "corp-backup", "type": "s3_bucket", "exposure": "public"}]
+    }
+  },
+  "script": [
+    {"action": "ingest", "tool": "subfinder", "asset": "corp.example.com", "capability": "subdomain_enumeration", "raw": {"observation_type": "asset", "content": {"subdomains": ["api.corp.example.com", "admin.corp.example.com", "cdn.corp.example.com"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "dnsx", "asset": "api.corp.example.com", "capability": "dns_enumeration", "raw": {"observation_type": "dns_record", "content": {"records": ["api.corp.example.com -> 203.0.113.30"]}, "confidence": 0.95}},
+    {"action": "ingest", "tool": "naabu", "asset": "203.0.113.30", "capability": "port_discovery", "raw": {"observation_type": "port", "content": {"ports": [443, 8443]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "httpx", "asset": "api.corp.example.com", "capability": "service_detection", "raw": {"observation_type": "service", "content": {"status": 200, "server": "nginx"}, "confidence": 0.95}},
+    {"action": "ingest", "tool": "cloud-analysis", "asset": "corp.example.com", "capability": "cloud_ownership_mapping", "raw": {"observation_type": "cloud", "content": {"provider": "aws", "resources": [{"name": "corp-lb", "type": "load_balancer", "exposure": "internet"}, {"name": "corp-backup", "type": "s3_bucket", "exposure": "public"}]}, "confidence": 0.9}},
+    {"action": "hypothesis", "statement": "Public S3 bucket corp-backup exposes sensitive data", "category": "misconfiguration", "priority": 0.85},
+    {"action": "support_hypothesis", "statement": "Public S3 bucket corp-backup exposes sensitive data", "category": "misconfiguration", "priority": 0.85, "supporting": ["ev-bucket-listing", "ev-bucket-acl"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-AS-1", "vulnerability_class": "cloud_exposure", "asset_key": "storage:corp-backup", "severity": "high", "tool": "cloud-analysis", "stage": "proven", "confidence": 0.9, "evidence_refs": ["ev-bucket-listing", "ev-bucket-acl"]},
+    {"action": "proof_coverage", "asset": "storage:corp-backup", "capability": "cloud_ownership_mapping", "tool": "cloud-analysis"},
+    {"action": "negative", "asset": "saas:corp-saas", "capability": "cloud_ownership_mapping", "kind": "inconclusive", "tool": "manual-probe", "outcome": "webhook signature not verifiable; ambiguous — retained not reported"},
+    {"action": "cascade"}
+  ],
+  "expected_observations": [
+    {"tool_id": "cloud-analysis", "observation_type": "cloud", "min_count": 1}
+  ],
+  "expected_correlations": [
+    {"key": "api.corp.example.com", "tools": ["dnsx", "httpx"], "deduplicated": true}
+  ],
+  "expected_hypotheses": [
+    {"category": "misconfiguration", "state": "validated"}
+  ],
+  "expected_findings": [
+    {"vulnerability_class": "cloud_exposure", "stage": "proven"}
+  ],
+  "expected_pocs": [
+    {"vulnerability_class": "cloud_exposure", "proof_capability": "cloud_ownership_mapping"}
+  ],
+  "expected_attack_paths": [
+    {"source": "surface", "chain": ["subdomain", "service", "cloud resource", "storage exposure"]}
+  ],
+  "expected_final_state": {
+    "phase": "reporting",
+    "findings_validated_gte": 1,
+    "validated_classes": ["cloud_exposure"],
+    "rejected_classes": ["webhook_weakness"],
+    "hypotheses_gte": 1,
+    "negative_evidence_gte": 1,
+    "impact_analyses_gte": 1,
+    "proof_cells_gte": 1
+  }
+}

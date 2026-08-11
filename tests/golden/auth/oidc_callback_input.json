@@ -1,0 +1,46 @@
+{
+  "url": "https://acme.com/oauth/callback",
+  "status_code": 302,
+  "final_url": "https://acme.com/dashboard",
+  "headers": {
+    "Location": "https://acme.com/dashboard",
+    "Set-Cookie": "session=xyz789; Path=/; HttpOnly; Secure; SameSite=None"
+  },
+  "html": "",
+  "scripts": [],
+  "documents": [
+    {
+      "kind": "openid-discovery",
+      "url": "https://auth.acme.com/.well-known/openid-configuration",
+      "content": {
+        "issuer": "https://auth.acme.com",
+        "authorization_endpoint": "https://auth.acme.com/authorize",
+        "token_endpoint": "https://auth.acme.com/oauth/token",
+        "userinfo_endpoint": "https://auth.acme.com/userinfo",
+        "jwks_uri": "https://auth.acme.com/.well-known/jwks.json",
+        "scopes_supported": ["openid", "profile", "email"],
+        "claims_supported": ["sub", "iss", "aud", "exp"],
+        "response_types_supported": ["code", "id_token"],
+        "subject_types_supported": ["public"],
+        "id_token_signing_alg_values_supported": ["RS256"],
+        "code_challenge_methods_supported": ["S256"]
+      }
+    }
+  ],
+  "api_schemes": [
+    {
+      "scheme_type": "oauth2",
+      "name": "oauth2_auth",
+      "token_location": "header",
+      "flows": ["authorization_code"],
+      "scopes": ["read", "write"],
+      "documented": true,
+      "source": "openapi"
+    }
+  ],
+  "observed_urls": [
+    "https://acme.com/authorize",
+    "https://acme.com/oauth/token",
+    "https://acme.com/userinfo"
+  ]
+}

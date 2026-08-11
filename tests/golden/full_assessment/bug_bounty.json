@@ -1,0 +1,78 @@
+{
+  "name": "bug_bounty_golden",
+  "description": "Golden dataset for the Sprint 033 bug-bounty full-spectrum mission: an intentional SQLi validated and proven, an XSS false positive rejected, and a tool failure recovered.",
+  "objective": "bug_bounty_hunt",
+  "target": "shop.example.com",
+  "assets": [
+    "shop.example.com",
+    "api.shop.example.com",
+    "admin.shop.example.com",
+    "cdn.shop.example.com",
+    "api.shop.example.com/search",
+    "api.shop.example.com/internal-status"
+  ],
+  "tool_outputs": {
+    "subfinder": ["api.shop.example.com", "admin.shop.example.com", "cdn.shop.example.com"],
+    "amass": {"error": "tool crashed (exit 2)"},
+    "assetfinder": ["api.shop.example.com", "admin.shop.example.com"],
+    "dnsx": ["api.shop.example.com -> 203.0.113.10"],
+    "nmap": [80, 443, 8080],
+    "httpx": {"status": 200, "server": "nginx"},
+    "whatweb": ["python", "flask", "nginx"],
+    "katana": ["/search?q=", "/internal-status", "/v1/users?id="],
+    "arjun": ["q", "page"],
+    "linkfinder": ["/api/v1/users", "/api/v1/internal/status"],
+    "nuclei": [{"template": "sql-injection", "severity": "high"}, {"template": "xss", "severity": "medium"}],
+    "sqlmap": {"confirmed": true, "parameter": "q"},
+    "dalfox": {"confirmed": false}
+  },
+  "script": [
+    {"action": "ingest", "tool": "subfinder", "asset": "shop.example.com", "capability": "subdomain_enumeration", "raw": {"observation_type": "asset", "content": {"subdomains": ["api.shop.example.com", "admin.shop.example.com", "cdn.shop.example.com"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "amass", "asset": "shop.example.com", "capability": "subdomain_enumeration", "raw": {"observation_type": "error", "content": {"error": "tool crashed"}, "confidence": 0.0}},
+    {"action": "ingest", "tool": "assetfinder", "asset": "shop.example.com", "capability": "subdomain_enumeration", "raw": {"observation_type": "asset", "content": {"subdomains": ["api.shop.example.com", "admin.shop.example.com"]}, "confidence": 0.8}},
+    {"action": "ingest", "tool": "nmap", "asset": "api.shop.example.com", "capability": "port_discovery", "raw": {"observation_type": "port", "content": {"ports": [80, 443, 8080]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "httpx", "asset": "api.shop.example.com", "capability": "service_detection", "raw": {"observation_type": "service", "content": {"status": 200, "server": "nginx"}, "confidence": 0.95}},
+    {"action": "ingest", "tool": "whatweb", "asset": "api.shop.example.com", "capability": "technology_fingerprint", "raw": {"observation_type": "technology", "content": {"technologies": ["python", "flask", "nginx"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "katana", "asset": "api.shop.example.com", "capability": "endpoint_enumeration", "raw": {"observation_type": "endpoint", "content": {"endpoints": ["/search?q=", "/internal-status", "/v1/users?id="]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "arjun", "asset": "api.shop.example.com/search", "capability": "parameter_discovery", "raw": {"observation_type": "parameter", "content": {"parameters": ["q", "page"]}, "confidence": 0.8}},
+    {"action": "ingest", "tool": "linkfinder", "asset": "api.shop.example.com", "capability": "javascript_analysis", "raw": {"observation_type": "javascript", "content": {"routes": ["/api/v1/internal/status"]}, "confidence": 0.9}},
+    {"action": "ingest", "tool": "nuclei", "asset": "api.shop.example.com/search", "capability": "vulnerability_scanning", "raw": {"observation_type": "vulnerability", "content": [{"template": "sql-injection", "severity": "high"}, {"template": "xss", "severity": "medium"}], "confidence": 0.6}},
+    {"action": "hypothesis", "statement": "SQLi on /search?q may allow database access", "category": "injection", "priority": 0.9},
+    {"action": "support_hypothesis", "statement": "SQLi on /search?q may allow database access", "category": "injection", "priority": 0.9, "supporting": ["ev-sqli-1", "ev-sqli-diff"], "verify": true},
+    {"action": "finding", "finding_id": "F-G-BB-1", "vulnerability_class": "sql_injection", "asset_key": "api.shop.example.com/search", "severity": "high", "tool": "sqlmap", "stage": "proven", "confidence": 0.93, "evidence_refs": ["ev-sqli-1", "ev-sqli-diff"]},
+    {"action": "proof_coverage", "asset": "api.shop.example.com/search", "capability": "sql_injection", "tool": "sqlmap"},
+    {"action": "negative", "asset": "api.shop.example.com/search", "capability": "xss", "kind": "not_vulnerable", "tool": "dalfox", "outcome": "payload reflected but not executed; no XSS"},
+    {"action": "cascade"},
+    {"action": "proof_coverage", "asset": "api.shop.example.com/internal-status", "capability": "endpoint_enumeration", "tool": "linkfinder"}
+  ],
+  "expected_observations": [
+    {"tool_id": "subfinder", "observation_type": "asset", "min_count": 1},
+    {"tool_id": "sqlmap", "observation_type": "vulnerability", "min_count": 1}
+  ],
+  "expected_correlations": [
+    {"key": "api.shop.example.com", "tools": ["subfinder", "assetfinder"], "deduplicated": true}
+  ],
+  "expected_hypotheses": [
+    {"category": "injection", "state": "validated"}
+  ],
+  "expected_findings": [
+    {"vulnerability_class": "sql_injection", "stage": "proven"}
+  ],
+  "expected_pocs": [
+    {"vulnerability_class": "sql_injection", "proof_capability": "sql_injection"}
+  ],
+  "expected_attack_paths": [
+    {"source": "subdomain", "chain": ["subdomain", "service", "application", "validated weakness"]}
+  ],
+  "expected_final_state": {
+    "phase": "reporting",
+    "findings_validated_gte": 1,
+    "validated_classes": ["sql_injection"],
+    "rejected_classes": ["xss"],
+    "hypotheses_gte": 2,
+    "negative_evidence_gte": 1,
+    "impact_analyses_gte": 1,
+    "proof_cells_gte": 1,
+    "follow_on_hypotheses_gte": 1
+  }
+}
