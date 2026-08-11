@@ -28,6 +28,7 @@ description: >-
     <a href="https://github.com/nullc0d30/HunterX/actions"><img src="https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?style=flat-square&label=tests" alt="Tests"></a>
     <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="License"></a>
     <a href="https://hub.docker.com/r/nullc0d30/hunterx"><img src="https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker" alt="Docker"></a>
+    <a href="https://owasp.org/www-community/Vulnerability_Scanning_Tools"><img src="https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp" alt="OWASP Community"></a>
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python" alt="Python"></a>
     <a href="https://github.com/nullc0d30/HunterX"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square" alt="Platform"></a>
   </div>
@@ -396,6 +397,10 @@ description: >-
       <a href="{{ '/changelog' | relative_url }}" class="lp-community-link">
         <span class="link-icon">&#128197;</span>
         <div><div class="link-text">Changelog</div><div class="link-desc">What&rsquo;s new in v7</div></div>
+      </a>
+      <a href="https://owasp.org/www-community/Vulnerability_Scanning_Tools" class="lp-community-link">
+        <span class="link-icon">&#128308;</span>
+        <div><div class="link-text">OWASP Community</div><div class="link-desc">Listed in the OWASP Vulnerability Scanning Tools catalog</div></div>
       </a>
     </div>
   </div>
