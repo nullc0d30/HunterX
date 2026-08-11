@@ -2,13 +2,42 @@
 layout: default
 title: Changelog — HunterX Release History
 description: >-
-  HunterX version history and changelog from v6.0.0 through earlier releases.
+  HunterX version history and changelog from v7.0.0 through earlier releases.
   Features, fixes, and breaking changes for each version.
 ---
 
 ## Changelog
 
 > Full changelog maintained at [CHANGELOG.md](https://github.com/nullc0d30/HunterX/blob/main/CHANGELOG.md).
+
+## v7.0.0 (2026-08-11)
+
+### Major Features
+- **Clean Architecture v7 core** (`src/hunterx`) — domain, application, infrastructure, engines, agents, tools, plugins, knowledge, reporting, config, CLI and API layers
+- **Autonomous mission orchestration** — create, run, checkpoint, resume and finalize full-spectrum security-assessment missions
+- **Adaptive mission planning** — attack-path planning, replanning and explainable next-best-action selection
+- **Toolchain intelligence layer** — 92 registered security tools with machine-readable contracts, structured execution, parsing/normalization and dependency-aware chaining
+- **Evidence-driven vulnerability validation** — hypothesis testing, validation verdicts, and controlled, safe proof/PoC engineering with replay verification
+- **Proof & PoC Validation Engine** — proof contracts, minimal safe proofs, replay, reproducibility, evidence-driven impact and confidence
+- **Target memory & campaign intelligence** — snapshots, diffs, coverage and revalidation planning
+- **Cloud & SaaS attack-surface intelligence** — provider detection, resource/exposure/environment classification and topology for AWS, Azure, GCP, OCI, Cloudflare and more
+- **Knowledge graph & correlation** — cross-tool evidence chains and attack-path analysis
+- **Professional reporting** — findings, evidence bundles, remediation plans and multi-format exports (Markdown, HTML, JSON, SARIF, PDF, package)
+- **TIDB persistence** — SQL storage with 21 linear Alembic migrations, events, audit and versioning
+- **`HUNTERX_*` environment-variable configuration overrides**
+- **Mission persistence** across CLI invocations and process restarts (restore path)
+- **Safe XML parsing** via `defusedxml` (XXE / entity-expansion hardened)
+- **`install.sh` v7 installer** (idempotent, database initialization, verified installation)
+
+### Fixed
+- Base installation no longer crashes without optional extras (SQLAlchemy now a base dependency)
+- `mission create` → `mission start` workflow works across separate CLI invocations
+- Harden `hunterx` base install and Docker image runtime
+- Ruff, dead-code (vulture) and bandit security gates green
+
+### Engineering Validation
+- **3479 tests passed, 8 skipped, 2 deselected, 0 failed**
+- Ruff, mypy, bandit, vulture, docs and package gates green
 
 ## v6.0.0 (2026-07-26)
 

@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Sprint 014 — API Intelligence: TIDB Gap Analysis — HunterX"
+permalink: /v7-api-intelligence-tidb-gap-analysis/
+---
+
 # Sprint 014 — API Intelligence: TIDB Gap Analysis
 
 - Capability: API Discovery & API Attack-Surface Intelligence

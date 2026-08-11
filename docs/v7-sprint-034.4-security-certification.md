@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.4 — Security & Tool Execution Certification — HunterX
+permalink: /v7-sprint-034-4-security-certification/
+---
+
 # HunterX v7 — Sprint 034.4 — Security & Tool Execution Certification
 
 **Phase:** Final Release Gate — Phase 4 (Security & Tool Execution)

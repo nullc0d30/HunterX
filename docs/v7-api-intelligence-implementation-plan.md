@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Sprint 014 — API Discovery & API Attack-Surface Intelligence: Implementation Plan — HunterX"
+permalink: /v7-api-intelligence-implementation-plan/
+---
+
 # Sprint 014 — API Discovery & API Attack-Surface Intelligence: Implementation Plan
 
 - Capability: API Discovery & API Attack-Surface Intelligence

@@ -1,18 +1,21 @@
-title: HunterX — AI-Powered Security Orchestration & Intelligence Platform
-tagline: Plans, orchestrates, executes, validates, correlates and reports authorized security assessments by integrating open-source security tools.
+title: HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine
+tagline: "Find it. Verify it. Prove it. Report it."
 description: >-
-  HunterX is an open-source, authorized cybersecurity testing and research
-  platform. It plans, orchestrates, executes, validates, correlates and reports
-  security assessments by integrating open-source security tools. HunterX v7
-  features autonomous mission orchestration, adaptive mission planning, a
-  toolchain intelligence layer with 100+ registered tools, evidence-driven
-  vulnerability validation, proof and PoC engineering, target memory and
-  campaign intelligence, professional reporting (6 export formats, SARIF), a
-  TIDB-backed persistence layer, and a Clean Architecture Python core. Apache
-  2.0.
+  HunterX is an open-source, AI-assisted vulnerability discovery, validation
+  and proof engine for authorized cybersecurity testing and research, created
+  and maintained by Ahmed Awad (AKA NullC0d3). It plans, orchestrates,
+  executes, validates, correlates and reports security assessments by
+  integrating open-source security tools. HunterX v7 features
+  autonomous mission orchestration, adaptive mission planning, a toolchain
+  intelligence layer with 92 registered tools, evidence-driven vulnerability
+  validation, proof and PoC engineering with replay and reproducibility,
+  target memory and campaign intelligence, cloud/SaaS attack-surface
+  intelligence, knowledge-graph correlation, professional reporting (Markdown,
+  HTML, JSON, SARIF, PDF, package), a TIDB-backed persistence layer, and a
+  Clean Architecture Python core. Apache 2.0.
 url: "https://nullc0d30.github.io"
 baseurl: "/HunterX"
-repository: nullc0d30
+repository: nullc0d30/HunterX
 logo: /assets/images/logo.png
 image: /assets/images/logo.png
 author:
@@ -25,6 +28,7 @@ twitter:
 social:
   name: HunterX
   links:
+    - https://github.com/nullc0d30/HunterX
     - https://github.com/nullc0d30
     - https://hub.docker.com/u/nullc0d30
 lang: en_US
@@ -32,13 +36,15 @@ timezone: UTC
 
 # SEO keywords
 keywords: >-
-  HunterX, Security Orchestration, Offensive Security, OSINT,
-  Attack Surface Management, Threat Intelligence, Cybersecurity, Penetration
-  Testing, Automation, Reconnaissance, Bug Bounty, Open Source Security,
-  security assessment platform, API security, web application security, cloud
-  security, security automation, mission orchestration, toolchain intelligence,
-  evidence-driven validation, PoC engineering, SARIF, MITRE ATT&CK, OWASP,
-  authorized security testing, red team platform
+  HunterX, HunterX v7, AI vulnerability scanner, AI penetration testing,
+  AI-assisted vulnerability discovery, vulnerability validation, PoC
+  generation, proof of concept security, bug bounty automation, bug bounty
+  tools, penetration testing tools, red team framework, offensive security
+  platform, open source vulnerability scanner, web application security, API
+  security, cloud security, security reconnaissance, security automation,
+  security testing, red team, OSINT, cybersecurity, security orchestration,
+  evidence-driven validation, PoC engineering, SARIF, authorized security
+  testing, vulnerability proof engine
 
 # SEO
 plugins:
@@ -69,15 +75,15 @@ defaults:
       layout: default
       author: Ahmed Awad (NullC0d3)
       image: /assets/images/logo.png
-- scope:
-       path: "_posts"
-     values:
-       layout: post
-       author: Ahmed Awad (NullC0d3)
-- scope:
-       path: "tutorials"
-     values:
-       layout: tutorial
+  - scope:
+      path: "_posts"
+    values:
+      layout: post
+      author: Ahmed Awad (NullC0d3)
+  - scope:
+      path: "tutorials"
+    values:
+      layout: tutorial
   - scope:
       path: "comparisons"
     values:

@@ -1,3 +1,13 @@
+---
+layout: default
+title: HunterX Development Bible
+description: >-
+  The HunterX Development Bible: the official engineering foundation and single
+  source of truth for every HunterX sprint — architecture, coding standards,
+  SDKs, schemas and development workflows.
+permalink: /bible/
+---
+
 # HunterX Development Bible
 
 **Status:** Ratified corpus

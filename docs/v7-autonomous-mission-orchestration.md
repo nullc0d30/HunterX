@@ -1,3 +1,9 @@
+---
+layout: default
+title: Autonomous Mission Orchestration Engine (Sprint 032) — HunterX
+permalink: /v7-autonomous-mission-orchestration/
+---
+
 # Autonomous Mission Orchestration Engine (Sprint 032)
 
 > **Status**: Ratified

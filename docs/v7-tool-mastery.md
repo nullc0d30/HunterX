@@ -1,3 +1,9 @@
+---
+layout: default
+title: Tool Mastery — Universal Security Arsenal — HunterX
+permalink: /v7-tool-mastery/
+---
+
 # Tool Mastery — Universal Security Arsenal
 
 Sprint 025 turns HunterX from "an orchestrator that can execute security tools"

@@ -1,0 +1,93 @@
+# HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine
+
+Full documentation index for HunterX. This file complements llms.txt with the
+complete sitemap of the documentation site and product pages.
+
+- Author / maintainer: Ahmed Awad (AKA NullC0d3)
+- Repository: https://github.com/nullc0d30/HunterX
+- Current version: 7.0.0 (released 2026-08-11)
+- License: Apache License 2.0
+- Language: Python 3.11+
+- Platforms: Linux, macOS, Windows (Docker supported)
+- Product site: https://nullc0d30.github.io/HunterX/
+- Identity: HunterX is created and maintained by Ahmed Awad (AKA NullC0d3); repository https://github.com/nullc0d30/HunterX. An unrelated Python project also uses the name hunterx on PyPI.
+
+## Product & Getting Started
+
+- Product home: https://nullc0d30.github.io/HunterX/
+- What's new in v7: https://nullc0d30.github.io/HunterX/v7-release/
+- Installation: https://nullc0d30.github.io/HunterX/installation/
+- Quickstart: https://nullc0d30.github.io/HunterX/quickstart/
+- Documentation hub: https://nullc0d30.github.io/HunterX/documentation/
+- Features: https://nullc0d30.github.io/HunterX/features/
+- CLI reference: https://nullc0d30.github.io/HunterX/cli/
+- Configuration: https://nullc0d30.github.io/HunterX/configuration/
+
+## Capability Guides
+
+- Core foundation: https://nullc0d30.github.io/HunterX/v7-foundation/
+- Autonomous mission orchestration: https://nullc0d30.github.io/HunterX/v7-autonomous-mission-orchestration/
+- Adaptive mission planning: https://nullc0d30.github.io/HunterX/v7-adaptive-mission-planning/
+- Full toolchain intelligence: https://nullc0d30.github.io/HunterX/v7-full-toolchain-intelligence/
+- Tool integration SDK: https://nullc0d30.github.io/HunterX/v7-tool-integration-sdk/
+- Vulnerability proof & PoC: https://nullc0d30.github.io/HunterX/v7-vulnerability-proof-and-poc/
+- Safe vulnerability validation: https://nullc0d30.github.io/HunterX/v7-safe-vulnerability-validation/
+- Professional finding intelligence & reporting: https://nullc0d30.github.io/HunterX/v7-professional-finding-intelligence-reporting/
+- Target memory & campaign intelligence: https://nullc0d30.github.io/HunterX/v7-target-memory-and-campaign-intelligence/
+- Cloud & SaaS intelligence: https://nullc0d30.github.io/HunterX/v7-cloud-saas-intelligence/
+- Network mapping / topology: https://nullc0d30.github.io/HunterX/v7-network-mapping/
+- Technology fingerprinting: https://nullc0d30.github.io/HunterX/v7-technology-fingerprinting/
+- DNS intelligence: https://nullc0d30.github.io/HunterX/v7-dns-intelligence/
+- Authentication intelligence: https://nullc0d30.github.io/HunterX/v7-authentication-intelligence/
+- Authorization intelligence: https://nullc0d30.github.io/HunterX/v7-authorization-intelligence/
+- Reconnaissance capability: https://nullc0d30.github.io/HunterX/v7-reconnaissance-capability/
+- Vulnerability intelligence: https://nullc0d30.github.io/HunterX/v7-vulnerability-intelligence/
+- TIDB persistence: https://nullc0d30.github.io/HunterX/v7-tidb/
+- Event bus & observability: https://nullc0d30.github.io/HunterX/v7-event-bus-observability/
+- Security pipeline: https://nullc0d30.github.io/HunterX/v7-security-pipeline/
+- Platform composition root: https://nullc0d30.github.io/HunterX/v7-platform-composition-root/
+- Offensive tool orchestration: https://nullc0d30.github.io/HunterX/v7-offensive-tool-orchestration/
+- DevSecOps: https://nullc0d30.github.io/HunterX/v7-devsecops/
+- CI/CD architecture: https://nullc0d30.github.io/HunterX/v7-cicd-architecture/
+- Full-spectrum validation matrix: https://nullc0d30.github.io/HunterX/v7-full-spectrum-validation-matrix/
+
+## Product Landing Pages
+
+- Tool ecosystem: https://nullc0d30.github.io/HunterX/tool-ecosystem/
+- PoC & validation: https://nullc0d30.github.io/HunterX/poc-validation/
+- AI penetration testing: https://nullc0d30.github.io/HunterX/ai-penetration-testing/
+- Bug bounty: https://nullc0d30.github.io/HunterX/bug-bounty/
+- Red team: https://nullc0d30.github.io/HunterX/red-team/
+- CI/CD security scanning: https://nullc0d30.github.io/HunterX/ci-cd-security-scanning/
+- Reasoning engine: https://nullc0d30.github.io/HunterX/reasoning-engine/
+- Benchmarks: https://nullc0d30.github.io/HunterX/benchmarks/
+- Glossary: https://nullc0d30.github.io/HunterX/glossary/
+- FAQ: https://nullc0d30.github.io/HunterX/faq/
+- Comparisons: https://nullc0d30.github.io/HunterX/comparisons/
+- Tutorials: https://nullc0d30.github.io/HunterX/tutorials/
+
+## Engineering & Project
+
+- Architecture: https://nullc0d30.github.io/HunterX/architecture/
+- Development Bible: https://nullc0d30.github.io/HunterX/bible/
+- Contributing: https://nullc0d30.github.io/HunterX/contributing/
+- Governance: https://nullc0d30.github.io/HunterX/governance/
+- Quality gates: https://nullc0d30.github.io/HunterX/v7-quality-gates/
+- Release guide: https://nullc0d30.github.io/HunterX/v7-release-guide/
+- Changelog: https://nullc0d30.github.io/HunterX/changelog/
+- About the author: https://nullc0d30.github.io/HunterX/about-author/
+- License: https://nullc0d30.github.io/HunterX/license/
+- Security policy: https://nullc0d30.github.io/HunterX/security/
+- Responsible use: https://nullc0d30.github.io/HunterX/responsible-use/
+- Support: https://nullc0d30.github.io/HunterX/support/
+
+## Blog
+
+- Blog index: https://nullc0d30.github.io/HunterX/blog/
+
+## Responsible Use
+
+HunterX is designed for use only against systems you own or are explicitly
+authorized to test. Obtain appropriate authorization before testing any system
+and comply with applicable laws and terms of service. The author is not
+responsible for misuse.

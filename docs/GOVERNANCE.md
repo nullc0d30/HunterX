@@ -26,13 +26,13 @@ HunterX operates under a **BDFL (Benevolent Dictator for Life)** model.
 
 ## License
 
-HunterX is released under the **Apache 2.0** license. All contributions are accepted under the same license. See [LICENSE](./LICENSE) for the full text.
+HunterX is released under the **Apache 2.0** license. All contributions are accepted under the same license. See [LICENSE](https://github.com/nullc0d30/HunterX/blob/main/LICENSE) for the full text.
 
 ---
 
 ## Developer Certificate of Origin
 
-All contributions must include a DCO sign-off (`Signed-off-by:` in commit messages). This certifies that the contributor has the right to submit the code under the Apache 2.0 license. See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+All contributions must include a DCO sign-off (`Signed-off-by:` in commit messages). This certifies that the contributor has the right to submit the code under the Apache 2.0 license. See [CONTRIBUTING.md](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md) for details.
 
 ---
 
@@ -111,4 +111,4 @@ HunterX follows **semantic versioning** (MAJOR.MINOR.PATCH):
 - Focus on the best interest of the project and its users
 - Follow the Code of Conduct
 
-See [CODE_OF_CONDUCT](/CODE_OF_CONDUCT/) for full details.
+See [CODE_OF_CONDUCT](https://github.com/nullc0d30/HunterX/blob/main/CODE_OF_CONDUCT.md) for full details.

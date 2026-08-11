@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Offensive Tool Orchestration & Full Mission Execution — HunterX
+permalink: /v7-offensive-tool-orchestration/
+---
+
 # HunterX v7 — Offensive Tool Orchestration & Full Mission Execution
 
 **Status:** Ratified (Sprint 020)

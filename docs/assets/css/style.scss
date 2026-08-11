@@ -1,9 +1,13 @@
 ---
 ---
 
-@import "{{ site.theme }}";
+/* HunterX custom styles.
+   Note: the site layouts use an inline <style> block for theming; this file
+   is retained as a shared base in case a page references it.
+*/
 
-/* Custom overrides for better readability */
+* { box-sizing: border-box; }
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }

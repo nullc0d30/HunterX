@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.1 — HunterX
+permalink: /v7-sprint-034-1-repository-integrity/
+---
+
 # HunterX v7 — Sprint 034.1
 # FINAL RELEASE GATE — Phase 1: Repository Integrity & V6/V7 Contamination Audit
 

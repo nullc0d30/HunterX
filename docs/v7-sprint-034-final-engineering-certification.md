@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.6 — Final Engineering Certification — HunterX
+permalink: /v7-sprint-034-final-engineering-certification/
+---
+
 # HunterX v7 — Sprint 034.6 — Final Engineering Certification
 
 **Phase:** Final engineering certification before Sprint 035
