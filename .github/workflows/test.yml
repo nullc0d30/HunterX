@@ -35,7 +35,7 @@ jobs:
           pip install pytest ruff mypy vulture bandit pip-audit safety
 
       - name: Run mandatory quality gates
-        run: python -m eng gates --gate ruff mypy architecture docs compliance hygiene
+        run: python -m eng gates --gate ruff --gate mypy --gate architecture --gate docs --gate compliance --gate hygiene
 
       - name: Architecture enforcement
         run: hunterx-arch lint --root . || python -m hunterx.architecture lint --root .
