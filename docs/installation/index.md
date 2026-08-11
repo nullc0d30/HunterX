@@ -4,7 +4,7 @@ title: Installation — HunterX v7
 keywords: HunterX Installation, Setup, Requirements
 description: >-
   Install HunterX v7 on Linux, macOS or Windows, from the installer script,
-  PyPI, source, or Docker.
+  source, or Docker.
 ---
 
 # Installation
@@ -26,14 +26,7 @@ curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | 
 
 Re-running the installer is safe (idempotent).
 
-## 2. PyPI
-
-```bash
-python -m pip install "hunterx[api,db]"   # full platform
-python -m pip install hunterx             # core
-```
-
-## 3. Source
+## 2. Source
 
 ```bash
 git clone https://github.com/nullc0d30/HunterX.git
@@ -41,7 +34,7 @@ cd HunterX
 python -m pip install -e ".[api,db,dev]"
 ```
 
-## 4. Docker
+## 3. Docker
 
 ```bash
 docker build -t nullc0d30/hunterx:7.0.0 .
@@ -78,12 +71,20 @@ sudo bash install.sh --uninstall
 bash install.sh --user --uninstall
 ```
 
+## Name note
+
+The GitHub repository [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
+is the canonical home of HunterX, created and maintained by Ahmed Awad (AKA
+NullC0d3). A different, unrelated Python project also uses the name `hunterx`
+on PyPI. Always install HunterX from this repository (or `install.sh`) to get
+the correct, current project.
+
 ## Troubleshooting
 
 - `hunterx: command not found` — the install location is not on `PATH`; the
   installer prints the required `export PATH=...`.
 - `ModuleNotFoundError: sqlalchemy` — install with the `db` extra:
-  `python -m pip install "hunterx[db]"`.
+  `python -m pip install -e ".[db]"` from the source tree.
 
 ## Next steps
 

@@ -25,9 +25,17 @@ authorized mission.
 # System install (Linux/macOS)
 curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
-# Or install the current package from source / PyPI
-python -m pip install "hunterx[api,db]"
+# Or install the current package from source
+git clone https://github.com/nullc0d30/HunterX.git
+cd HunterX
+python -m pip install -e ".[api,db,dev]"
 ```
+
+> **Name note.** The GitHub repository
+> [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
+> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). A
+> different, unrelated Python project also uses the name `hunterx` on PyPI.
+> Always install HunterX from this repository to get the correct project.
 
 Verify:
 

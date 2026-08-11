@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.3 — HunterX
+permalink: /v7-sprint-034-3-tidb-certification/
+---
+
 # HunterX v7 — Sprint 034.3
 # FINAL RELEASE GATE — Phase 3: TIDB, Persistence & Data Isolation Certification
 

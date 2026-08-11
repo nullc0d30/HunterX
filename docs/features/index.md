@@ -22,7 +22,7 @@ security assessments by integrating open-source security tools.
 - **Adaptive mission planning** — attack-path planning, replanning and
   explainable next-best-action selection. See
   [Adaptive Mission Planning](/v7-adaptive-mission-planning/).
-- **Toolchain intelligence** — 100+ registered security tools with machine-
+- **Toolchain intelligence** — 92 registered security tools with machine-
   readable contracts, structured execution, parsing/normalization and
   dependency-aware chaining. See
   [Toolchain Intelligence](/v7-full-toolchain-intelligence/).

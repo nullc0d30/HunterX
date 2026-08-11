@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.5 — Toolchain + Intelligence + Proof Certification — HunterX
+permalink: /v7-sprint-034-5-toolchain-certification/
+---
+
 # HunterX v7 — Sprint 034.5 — Toolchain + Intelligence + Proof Certification
 
 **Phase:** Final Release Gate — Phase 5 (Toolchain, Intelligence & Proof)

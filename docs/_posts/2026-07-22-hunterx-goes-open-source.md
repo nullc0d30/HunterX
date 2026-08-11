@@ -39,6 +39,9 @@ Apache 2.0 is the industry standard for security tools. It's used by OWASP ZAP, 
 
 ## What's Next
 
-The [roadmap]({{ '/roadmap' | relative_url }}) remains unchanged. v4.1 will focus on gRPC, OAuth2, Redis queue, and TUI. v5.0 will bring autonomous agent capabilities.
+HunterX continues to evolve. The current release line is v7 (AI-assisted
+vulnerability discovery, validation & proof engine). See the
+[What's New in v7]({{ '/v7-release' | relative_url }}) page and the
+[Changelog]({{ '/changelog' | relative_url }}).
 
 Thank you to everyone who has supported the project. This is just the beginning.

@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Sprint 033 — Engineering Report: Full-Spectrum Security Assessment Validation — HunterX"
+permalink: /v7-sprint-033-engineering-report/
+---
+
 # Sprint 033 — Engineering Report: Full-Spectrum Security Assessment Validation
 
 > **Sprint**: 033

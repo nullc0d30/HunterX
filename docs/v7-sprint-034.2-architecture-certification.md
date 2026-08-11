@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Sprint 034.2 — HunterX
+permalink: /v7-sprint-034-2-architecture-certification/
+---
+
 # HunterX v7 — Sprint 034.2
 # FINAL RELEASE GATE — Phase 2: Architecture Certification
 

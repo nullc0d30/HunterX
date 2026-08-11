@@ -12,25 +12,25 @@
   - LearningResource (for tutorials)
 {%- endcomment -%}
 
-{%- assign schema = site.data.schema | default: (site.github | default: {}) -%}%} -%}
+{%- assign site_root = site.url | append: site.baseurl -%}
 
 {%- comment -%}Organization{%- endcomment -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "{{ site.url }}{{ site.baseurl }}/#organization",
+  "@id": "{{ site_root }}/#organization",
   "name": "{{ site.title | escape }}",
   "description": "{{ site.description | escape }}",
-  "url": "{{ site.url }}{{ site.baseurl }}",
-  "logo": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
-  "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+  "url": "{{ site_root }}",
+  "logo": "{{ site_root }}/assets/images/logo.png",
+  "image": "{{ site_root }}/assets/images/logo.png",
   "sameAs": [
     "https://github.com/nullc0d30",
     "https://hub.docker.com/u/nullc0d30"
   ],
   "founder": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   }
 }
 </script>
@@ -40,22 +40,22 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "{{ site.url }}{{ site.baseurl }}/#website",
+  "@id": "{{ site_root }}/#website",
   "name": "{{ site.title | escape }}",
-  "url": "{{ site.url }}{{ site.baseurl }}",
+  "url": "{{ site_root }}",
   "description": "{{ site.description | escape }}",
   "inLanguage": "en-US",
   "author": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   },
   "publisher": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   },
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "{{ site.url }}{{ site.baseurl }}/?q={search_term_string}"
+      "urlTemplate": "{{ site_root }}/?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }
@@ -67,28 +67,28 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "@id": "{{ site.url }}{{ site.baseurl }}/#software",
+  "@id": "{{ site_root }}/#software",
   "name": "{{ site.title | escape }}",
   "description": "{{ site.description | escape }}",
   "applicationCategory": "SecurityApplication",
-  "applicationSubCategory": "SecurityFramework",
+  "applicationSubCategory": "VulnerabilityManagement",
   "operatingSystem": ["Linux", "macOS", "Windows"],
   "author": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   },
   "publisher": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   },
-  "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+  "image": "{{ site_root }}/assets/images/logo.png",
   "license": "https://www.apache.org/licenses/LICENSE-2.0",
-  "url": "{{ site.url }}{{ site.baseurl }}",
-  "version": "6.0.0",
+  "url": "https://github.com/nullc0d30/HunterX",
+  "version": "7.0.0",
   "programmingLanguage": "Python",
-  "softwareHelp": "{{ site.url }}{{ site.baseurl }}/quickstart/",
+  "softwareHelp": "{{ site_root }}/quickstart/",
   "downloadUrl": "https://github.com/nullc0d30/HunterX",
-  "releaseNotes": "https://github.com/nullc0d30/HunterX/releases",
-  "keywords": "HunterX, offensive security framework, penetration testing, red team, security assessment, open source security, attack surface analysis, multi-agent orchestration",
-  "featureList": "41 security skills, reasoning engine, multi-agent platform, AI provider abstraction, knowledge graph, threat modeling, payload intelligence, REST API, SARIF reporting, MITRE ATT&CK mapping",
+  "releaseNotes": "{{ site_root }}/changelog/",
+  "keywords": "HunterX, AI vulnerability scanner, AI-assisted vulnerability discovery, vulnerability validation, PoC generation, bug bounty, penetration testing, red team framework, offensive security platform, open source vulnerability scanner, web application security, API security, cloud security, security reconnaissance, security automation",
+  "featureList": "AI-assisted vulnerability discovery, validation and proof engine; autonomous mission orchestration; adaptive mission planning; toolchain intelligence with 92 integrated security tools; evidence-driven vulnerability validation; proof and PoC engineering with replay and reproducibility; target memory and campaign intelligence; cloud/SaaS attack-surface intelligence; knowledge-graph correlation; professional reporting (Markdown, HTML, JSON, SARIF, PDF, package); TIDB persistence; REST API; MITRE ATT&CK and OWASP alignment",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -102,10 +102,10 @@
 {
   "@context": "https://schema.org",
   "@type": "Person",
-  "@id": "{{ site.url }}{{ site.baseurl }}/#author",
+  "@id": "{{ site_root }}/#author",
   "name": "{{ site.author.name | escape }}",
-    "alternateName": "{{ site.author.alias | default: (site.author.name | split: ' ' | last) | escape }}",
-  "description": "Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. Creator of HunterX.",
+  "alternateName": "{{ site.author.alias | default: 'NullC0d3' | escape }}",
+  "description": "Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. Creator and maintainer of HunterX.",
   "url": "{{ site.author.url }}",
   "sameAs": [
     "https://github.com/nullc0d30",
@@ -125,20 +125,22 @@
   "description": "{{ page.description | default: site.description | escape }}",
   "url": "{{ page.url | absolute_url }}",
   "isPartOf": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#website"
+    "@id": "{{ site_root }}/#website"
   },
   "primaryImageOfPage": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   }
 }
 </script>
 
 {%- comment -%}BreadcrumbList{%- endcomment -%}
-{%- assign crumbs = page.url | split: '/' | where: \"item != ''\" -%}
-{%- assign crumb_count = crumbs | size -%}
-{%- if page.url == '/' -%}
-  {%- assign crumb_count = 0 -%}
-{%- endif -%}
+{%- assign parts = page.url | split: '/' -%}
+{%- assign crumbs = '' | split: ',' -%}
+{%- for part in parts -%}
+  {%- if part != '' -%}
+    {%- assign crumbs = crumbs | push: part -%}
+  {%- endif -%}
+{%- endfor -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -150,14 +152,14 @@
       "name": "Home",
       "item": "{{ '/' | absolute_url }}"
     }
-    {%- for i in (0..(crumb_count | minus: 1)) -%}
+    {%- for crumb in crumbs %}
     ,{
       "@type": "ListItem",
-      "position": {{ forloop.index | plus: 2 }},
-      "name": "{{ crumbs[i] | replace:'-',' ' | capitalize | escape }}",
-      "item": "{{ '/' | append: (cumbs[0..i] | join: '/') | absolute_url }}"
+      "position": {{ forloop.index | plus: 1 }},
+      "name": "{{ crumb | replace: '-', ' ' | capitalize | escape }}",
+      "item": "{{ crumbs | slice: 0, forloop.index | join: '/' | prepend: '/' | append: '/' | absolute_url }}"
     }
-    {%- endfor -%}
+    {%- endfor %}
   ]
 }
 </script>
@@ -173,10 +175,10 @@
   "headline": "{{ page.title | escape }}",
   "description": "{{ page.description | escape }}",
   "author": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   },
   "publisher": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   },
   "datePublished": "{{ page.date | date_to_xmlschema }}",
   "dateModified": "{{ page.date | date_to_xmlschema }}",
@@ -185,7 +187,7 @@
     "@id": "{{ page.url | absolute_url }}"
   },
   "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
-  "keywords": "{{ page.keywords | default: site.keywords | array_to_sentence_string }}"
+  "keywords": "{{ page.keywords | default: site.keywords | split: "\n" | join: ", " | strip_newlines | escape }}"
 }
 </script>
 {%- elsif page.layout == 'tutorial' -%}
@@ -198,10 +200,10 @@
   "name": "{{ page.title | escape }}",
   "description": "{{ page.description | escape }}",
   "author": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   },
   "publisher": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   },
   "dateCreated": "{{ page.date | date_to_xmlschema }}",
   "dateModified": "{{ page.date | date_to_xmlschema }}",
@@ -214,7 +216,7 @@
   }
 }
 </script>
-{%- elsif page.url contains '/documentation/' or page.url contains '/docs/' -%}
+{%- elsif page.url contains '/documentation/' or page.url contains '/docs/' or page.tech_article -%}
 {%- comment -%}TechArticle (for documentation){%- endcomment -%}
 <script type="application/ld+json">
 {
@@ -224,10 +226,10 @@
   "headline": "{{ page.title | escape }}",
   "description": "{{ page.description | escape }}",
   "author": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+    "@id": "{{ site_root }}/#author"
   },
   "publisher": {
-    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+    "@id": "{{ site_root }}/#organization"
   },
   "datePublished": "{{ page.date | date_to_xmlschema }}",
   "dateModified": "{{ page.date | date_to_xmlschema }}",
@@ -236,7 +238,7 @@
     "@id": "{{ page.url | absolute_url }}"
   },
   "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
-  "keywords": "{{ page.keywords | default: site.keywords | array_to_sentence_string }}",
+  "keywords": "{{ page.keywords | default: site.keywords | split: "\n" | join: ", " | strip_newlines | escape }}",
   "articleSection": "Documentation"
 }
 </script>

@@ -1,11 +1,12 @@
 ---
 layout: default
 title: Frequently Asked Questions — HunterX
-keywords: FAQ, troubleshooting, bug bounty, open source security
+keywords: FAQ, troubleshooting, bug bounty, open source security, HunterX v7, vulnerability validation, PoC
 description: >-
-  Comprehensive FAQ covering HunterX offensive security framework: licensing,
-  features, architecture, usage, Docker, API, plugins, comparisons, and
-  troubleshooting. Apache 2.0 open-source.
+  Comprehensive FAQ covering HunterX v7: what it is, who it is for, how it
+  differs from traditional scanners, licensing, features, architecture, usage,
+  Docker, API, tool ecosystem, proof and PoC, and troubleshooting. Apache 2.0
+  open-source.
 faq_page: true
 ---
 
@@ -15,109 +16,109 @@ faq_page: true
 {% capture faq_items %}
 
 1. **What is HunterX?**
-   HunterX is an open-source, AI-assisted vulnerability assessment and penetration testing framework. It uses a 4-stage reasoning pipeline — Observe, Hypothesize, Probe, Verify — to identify security vulnerabilities in web applications and APIs. Licensed under Apache 2.0.
+   HunterX v7 is an AI-assisted vulnerability discovery, validation and proof engine. It plans, orchestrates, executes, validates, correlates and reports authorized security assessments by integrating open-source security tools. It does not stop at candidate detections — it validates findings with evidence, engineers and replays proofs and PoCs, and produces report-ready output. Licensed under Apache 2.0.
 
 2. **Who should use HunterX?**
-   HunterX is designed for professional Red Team operators, penetration testers, bug bounty hunters, security researchers, and DevOps engineers who need an automated, context-aware vulnerability scanner with safety-by-design guardrails.
+   HunterX is designed for bug bounty hunters, penetration testers, red teams, security researchers, application security engineers, and DevSecOps / security engineering teams who need authorized, evidence-driven security assessment with safety-by-design guardrails.
 
 3. **Is HunterX open source?**
    Yes. HunterX is fully open source under the Apache License 2.0. You can view, fork, modify, and distribute the code in accordance with the license terms.
 
 4. **Why Apache 2.0?**
-   Apache 2.0 is a permissive open-source license that allows forking, modification, and redistribution while requiring attribution. It is the industry standard for security tools and is used by OWASP ZAP, Kubernetes, and many other projects.
+   Apache 2.0 is a permissive open-source license that allows forking, modification, and redistribution while requiring attribution. It is a common choice for security tooling.
 
 5. **How is HunterX different from traditional scanners?**
-   Traditional scanners rely on brute-force payload matching. HunterX uses a reasoning engine that builds a baseline fingerprint, analyzes response differentials, considers authentication state, operator profile, and contextual signals before increasing confidence in a finding. It is safer, more accurate, and more explainable.
+   Traditional scanners emit candidates ("Possible SQL Injection — Confidence 87%"). HunterX carries each candidate through the full investigation: DISCOVER → REASON → TEST → VERIFY → PROVE → GENERATE PoC → VALIDATE → REPORT. A finding becomes report-ready only when it carries evidence, reproducibility, impact, PoC and confidence. HunterX also orchestrates the open-source security-tool ecosystem rather than replacing it.
 
-6. **How does the 4-stage pipeline work?**
-   Stage 1 (Observe) gathers target context from headers and detects WAF, WebSocket endpoints, and GraphQL. Stage 2 (Hypothesize) forms security hypotheses based on observed attack surface. Stage 3 (Probe) executes targeted tests via 41 security skills. Stage 4 (Verify) validates findings and eliminates false positives.
+6. **How does the HunterX workflow work?**
+   HunterX organizes work as missions. The workflow is DISCOVER → FINGERPRINT → REASON → HYPOTHESIZE → PROBE → VERIFY → PROVE → POC → REPLAY → CORRELATE → REPORT. Findings move through a lifecycle: DETECTED → SUSPECTED → VALIDATING → VALIDATED → PROVEN → CONFIRMED → REPORT_READY.
 
-7. **Does HunterX support Docker?**
-    Yes. HunterX provides a multi-stage Docker image available on Docker Hub at `nullc0d30/hunterx`. The container runs as a non-root user, supports linux/amd64 and linux/arm64, and follows security best practices.
+7. **What is the Proof & PoC Validation Engine?**
+   It is the v7 capability that transforms a validated hypothesis into a report-ready finding using proof contracts, minimal safe proofs, replay, reproducibility, evidence-driven impact and confidence. PoCs are structured artifacts (never arbitrary executable scripts). See [PoC & Validation](/poc-validation/).
 
-8. **Can I run HunterX as an API server?**
-   Yes. HunterX includes a built-in FastAPI REST server. Start it with `hunterx api --port 8443`. Submit scan jobs via `POST /scan`, poll results via `GET /scan/{id}`, check health via `GET /health`.
+8. **Does HunterX support Docker?**
+   Yes. HunterX provides a multi-stage Docker image available on Docker Hub at `nullc0d30/hunterx`. The container runs as a non-root user and follows security best practices.
 
-9. **Does HunterX support authenticated scanning?**
-   Yes. HunterX supports Basic Auth, Bearer Token, Cookie Jar (from JSON file), Form Login, and JWT authentication. Configure via CLI flags or the `hunterx.yaml` configuration file.
+9. **Can I run HunterX as an API server?**
+   Yes. HunterX v7 includes a FastAPI REST application (`hunterx.api.app:create_app`). Install the `api` extra, run with uvicorn, and use optional API-key authentication (admin/read-only roles).
 
-10. **What vulnerability types can HunterX detect?**
-    HunterX detects 200+ vulnerability signatures including LFI/Path Traversal, RCE/Command Injection, SQL Injection, SSTI, SSRF, XSS, Open Redirect, and XXE.
+10. **What does HunterX integrate with?**
+    HunterX integrates with 92 registered open-source security tools across recon, scanning, crawling, fuzzing, parameters, validation, secrets, SAST, proxies, exploitation and knowledge resources. Each tool's integration status is documented — never overclaimed. See [Tool Ecosystem](/tool-ecosystem/).
 
-11. **Does HunterX support WebSocket testing?**
-    Yes. HunterX can detect WebSocket endpoints from page content, test connections, and send test messages. Custom WebSocket fuzzing can be implemented via the plugin system.
+11. **What vulnerability types does HunterX cover?**
+    Discovery, validation and proof across classes including SQL/NoSQL injection, XSS, SSRF, path traversal/LFI, RCE indicators, IDOR/BOLA, SSTI, XXE, authentication and authorization, API/GraphQL, open redirect, CORS, sensitive information exposure, misconfiguration, known vulnerable components, dependency vulnerabilities, cloud exposure and novel/unknown behavior.
 
-12. **Does HunterX support GraphQL testing?**
-    Yes. HunterX performs GraphQL introspection queries, batch attack testing, and depth-limit testing.
+12. **Does HunterX use AI or machine learning?**
+    Yes. AI-assisted reasoning flows through a decoupled AI provider layer. Reasoning is grounded in canonical observations and evidence — a high AI confidence score is never a substitute for evidence.
 
-13. **Can I develop custom plugins for HunterX?**
-    Yes. HunterX has a decorator-based plugin system supporting detector plugins, reporter plugins, and post-scan hook plugins. Plugins are auto-discovered from the `plugins/` directory.
+13. **What is OOB detection / validation?**
+    Out-of-band (OOB) callbacks (e.g., via Interactsh) support validation of blind vulnerabilities such as SSRF and XXE using controlled callback infrastructure and correlation tokens.
 
-14. **Does HunterX use AI or machine learning?**
-    Yes, optionally. HunterX integrates with Ollama for LLM-based automated finding analysis and remediation suggestions, and scikit-learn for DBSCAN anomaly clustering. Both features are gracefully disabled when dependencies are unavailable.
+14. **What reporting formats are supported?**
+    Markdown (human-readable), JSON (machine-parsable), SARIF 2.1 (VS Code / GitHub CodeQL integration), HTML (visual dashboard), PDF, and package (ZIP evidence bundles).
 
-15. **What is OOB detection?**
-    Out-of-band (OOB) detection identifies blind XXE, SSRF, and RCE vulnerabilities by sending payloads that trigger external callbacks to a collaborator server. HunterX supports configurable collaborator URLs.
+15. **Can I use HunterX in CI/CD pipelines?**
+    Yes. HunterX runs in Docker and can be integrated into GitHub Actions, GitLab CI, Jenkins, or any CI/CD platform. SARIF output integrates with GitHub CodeQL, and a REST API supports programmatic orchestration.
 
-16. **What is time-based detection?**
-    Time-based detection identifies blind SQL injection and NoSQL injection vulnerabilities by measuring response delays. HunterX sends payloads with known delay functions and compares actual vs expected response times.
+16. **What Python versions are supported?**
+    Python 3.11 and later are supported (`requires-python = ">=3.11"`), including 3.12, 3.13 and 3.14.
 
-17. **Does HunterX have WAF evasion?**
-    Yes. HunterX includes 50+ WAF detection signatures, auto-abort on WAF detection, and a payload mutation engine that generates encoding, SQL, and LFI variants for evasion.
+17. **How is HunterX licensed for commercial use?**
+    HunterX is Apache 2.0 licensed, which permits commercial use. If your organization uses it commercially, please consider supporting the project.
 
-18. **What reporting formats are supported?**
-    Markdown (human-readable), JSON (machine-parsable), SARIF 2.1 (VS Code/GitHub CodeQL integration), HTML (visual dashboard), attack graphs, purple team detection rules, and ZIP (evidence package).
+18. **Can I contribute to HunterX?**
+    Yes. Contributions are welcome. See the [Contributing Guide](/contributing/) for fork workflow, commit conventions, and the DCO (Developer Certificate of Origin) requirement.
 
-19. **Can I use HunterX in CI/CD pipelines?**
-    Yes. HunterX runs in Docker and can be integrated into GitHub Actions, GitLab CI, Jenkins, or any CI/CD platform. SARIF output integrates natively with GitHub CodeQL.
+19. **How do I report a security vulnerability in HunterX?**
+    Use GitHub Private Vulnerability Reporting (Security tab) or the process described in [SECURITY.md](/security/).
 
-20. **What Python versions are supported?**
-    Python 3.11, 3.12, and 3.13 are officially supported and tested in CI.
+20. **Does HunterX require external services?**
+    No. HunterX works offline. AI providers are optional; OOB callback infrastructure (e.g., Interactsh) is used only when configured.
 
-21. **How is HunterX licensed for commercial use?**
-    HunterX is Apache 2.0 licensed, which permits commercial use. If your organization uses it commercially, please consider supporting the project via GitHub Sponsors.
+21. **Can I run HunterX on Windows?**
+    Yes. HunterX runs on Linux, macOS and Windows. Docker is recommended for consistent behavior.
 
-22. **Can I contribute to HunterX?**
-    Yes. Contributions are welcome. See the [Contributing Guide]({{ '/contributing' | relative_url }}) for fork workflow, commit conventions, and the DCO (Developer Certificate of Origin) requirement.
+22. **Does HunterX enforce safety?**
+    Yes. HunterX enforces scope and authorization guards, a safety policy, sandboxing, evidence-gated confidence, secret masking and hardened XML parsing. The proof engine is not a weaponization engine — data destruction, persistence, reverse shells, DoS and mass data extraction are never scheduled.
 
-23. **How do I report a security vulnerability in HunterX?**
-    Use GitHub Private Vulnerability Reporting (Security tab) or open a regular issue requesting a secure communication channel.
+23. **What is the finding lifecycle?**
+    DETECTED → SUSPECTED → VALIDATING → VALIDATED → PROVEN → CONFIRMED → REPORT_READY, with FALSE_POSITIVE and INCONCLUSIVE branches. A detection is never automatically a validated finding.
 
-24. **Does HunterX have a roadmap?**
-    Yes. See the [Roadmap]({{ '/roadmap' | relative_url }}) for planned features including community skill repository, additional AI providers, CI/CD integrations, and enterprise features.
+24. **What is reproducibility in HunterX?**
+    Reproducibility is measured over repeated replays of a proof/PoC. REPRODUCIBLE requires at least two successful replays with no failures. A single "executed once" is never "reproducible."
 
 25. **How does HunterX compare to Nuclei?**
-    Nuclei is a fast template-based scanner using YAML templates. HunterX is a reasoning-driven framework with a 4-stage pipeline, response differential analysis, and context-aware scoring. Both are complementary — Nuclei excels at template-based checks, HunterX excels at depth and reasoning.
+    Nuclei is a fast template-based scanner. HunterX is an AI-assisted discovery, validation and proof engine that integrates Nuclei as a fully-supported tool and adds evidence-driven validation, proof/PoC engineering and report generation. See [HunterX vs Nuclei](/comparisons/vs-nuclei/).
 
 26. **How does HunterX compare to OWASP ZAP?**
-    OWASP ZAP is a mature GUI-based intercepting proxy with a broad feature set. HunterX is a CLI/API-first framework designed for automation and Red Team ops. HunterX's reasoning pipeline and safety-by-design approach are unique differentiators.
+    OWASP ZAP is a GUI-based intercepting proxy and scanner. HunterX is a CLI/API/Docker-first orchestration and proof engine that integrates ZAP as a proxy/web-security tool. See [HunterX vs OWASP ZAP](/comparisons/vs-zap/).
 
-27. **Can I run HunterX on Windows?**
-    Yes. HunterX is written in Python and runs on Windows, macOS, and Linux. Docker is recommended for Windows for consistent behavior.
+27. **How does HunterX compare to Burp Suite?**
+    Burp Suite is a commercial, GUI-centric web testing platform. HunterX is open source (Apache 2.0), automation-first, and centered on evidence-driven validation and proof. See [HunterX vs Burp Suite](/comparisons/vs-burp/).
 
-28. **Does HunterX require external services?**
-    No. HunterX works fully offline. AI/ML features (Ollama, scikit-learn) and OOB detection (collaborator URL) are optional and disabled by default.
+28. **How does HunterX compare to OpenVAS?**
+    OpenVAS is a signature-driven network vulnerability scanner. HunterX is an AI-assisted discovery, validation and proof engine; OpenVAS is registered in the toolchain manifest as a known resource. See [HunterX vs OpenVAS](/comparisons/vs-openvas/).
 
-29. **What is the maximum number of targets I can scan?**
-    HunterX supports single-target (`hunterx target.com`) and API-driven scanning. Limits are governed by the operator profile (e.g., Bounty: 500 requests, Gov: 100 requests).
+29. **Does HunterX claim guaranteed discovery of zero-days?**
+    No. HunterX supports hypothesis-driven discovery and investigation of unknown or application-specific behaviors, but it does not claim guaranteed autonomous discovery of zero-days.
 
 30. **How do I cite HunterX in academic research?**
-    Use the CITATION.cff file or the BibTeX entry in the README. Example: `@software{hunterx2026, author = {Ahmed Awad (NullC0d3)}, title = {HunterX: AI-Assisted Vulnerability Hunter}, version = {6.0.0}, year = {2026}, license = {Apache-2.0}, url = {https://github.com/nullc0d30/HunterX} }`
+    Use the CITATION.cff file in the repository, which provides the recommended citation metadata for HunterX.
 
-31. **What is the plugin API?**
-    HunterX plugins use decorators: `@detector(name)` for response analysis, `@reporter(name)` for output formats, and `@hook(event)` for scan lifecycle callbacks. Plugins are auto-discovered from the `plugins/` directory.
+31. **What is the Tool Integration SDK?**
+    It is the v7 SDK that defines how tool adapters register, execute and produce canonical observations through guarded execution — proof code never invokes subprocess directly. See [Tool Integration SDK](/v7-tool-integration-sdk/).
 
-32. **Does HunterX support rate limiting?**
-    Yes. HunterX uses a token-bucket algorithm for rate limiting. The maximum requests per second (`max_rps`) is configurable via YAML, CLI, or the `HX_MAX_RPS` environment variable.
+32. **What is TIDB?**
+    TIDB is the v7 persistence layer: SQL storage (SQLite default, PostgreSQL supported) with Alembic migrations, events, audit and versioning. See [Persistence (TIDB)](/v7-tidb/).
 
-33. **Can I run HunterX in passive mode?**
-    Use the `--dry-run` flag for logic verification without sending any requests, or `--passive-only` for Stage 0 reconnaissance.
+33. **Does HunterX maintain its own payload database?**
+    HunterX integrates community-maintained knowledge resources such as [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings), SecLists and FuzzDB as payload/wordlist resources in the toolchain. It documents these as third-party knowledge sources.
 
-34. **What is the destructive payload blocklist?**
-    HunterX includes a hard-coded, non-bypassable blocklist of destructive payloads including `rm -rf`, `mkfs`, `dd if=`, fork bombs, reverse shells, and SQL write statements. These are blocked at the code level before any request is sent.
+34. **What Python architectures are supported?**
+    Linux, macOS and Windows. See [SUPPORTED_PLATFORMS.md](https://github.com/nullc0d30/HunterX/blob/main/SUPPORTED_PLATFORMS.md) in the repository.
 
-35. **Does HunterX maintain its own payload database?**
-    No. HunterX leverages the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base as its payload source. Content is synchronized with `hunterx payload sync` (shallow git clone or latest GitHub release archive), indexed locally with `hunterx payload index`, and each payload records provenance (source repository, commit, release tag, checksum). A set of community-maintained payload files also ships in the `payloads/` directory. HunterX integrates these payloads but does not maintain an independent payload collection.
+35. **Is there a responsible-use policy?**
+    Yes. HunterX is an authorized cybersecurity testing and research platform. You are responsible for obtaining appropriate authorization before testing any system and for complying with applicable laws and terms of service. See [Responsible Use](/responsible-use/).
 
 {% endcapture %}
 

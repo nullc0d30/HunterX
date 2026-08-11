@@ -18,7 +18,7 @@ This document describes the support channels available for HunterX.
 
 Comprehensive documentation is available in the repository and wiki:
 
-- [README](/README/) — Overview, installation, and quick start
+- [README](https://github.com/nullc0d30/HunterX/blob/main/README.md) - Overview, installation, and quick start
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — Guide for contributors
 - [SECURITY.md](./SECURITY.md) — Security vulnerability reporting
 - [Documentation Hub](./documentation.md) — v7 documentation index

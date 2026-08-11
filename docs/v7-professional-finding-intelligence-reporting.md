@@ -1,3 +1,9 @@
+---
+layout: default
+title: HunterX v7 — Professional Finding Intelligence & Reporting — HunterX
+permalink: /v7-professional-finding-intelligence-reporting/
+---
+
 # HunterX v7 — Professional Finding Intelligence & Reporting
 
 Sprint 029 (Wave 14) capability. This document describes the professional

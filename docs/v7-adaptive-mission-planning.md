@@ -1,3 +1,9 @@
+---
+layout: default
+title: Adaptive Mission & Attack-Path Planning (Sprint 027) — HunterX
+permalink: /v7-adaptive-mission-planning/
+---
+
 # Adaptive Mission & Attack-Path Planning (Sprint 027)
 
 > **Status**: Ratified

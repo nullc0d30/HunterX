@@ -1,3 +1,9 @@
+---
+layout: default
+title: Full-Spectrum Security Assessment Validation Matrix (Sprint 033) — HunterX
+permalink: /v7-full-spectrum-validation-matrix/
+---
+
 # Full-Spectrum Security Assessment Validation Matrix (Sprint 033)
 
 > **Status**: Ratified

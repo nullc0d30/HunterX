@@ -24,17 +24,23 @@ active architecture.
 
 - [Installation](/installation/) — Install HunterX v7 (see also `install.sh` in the repository)
 - [Quickstart](/quickstart/) — Run your first mission in minutes
+- [What's New in v7](/v7-release/) — the v7 release highlights
 - [CLI Reference](/cli/) — Command-line interface reference
 - [Architecture](/architecture/) — v7 architecture guides
 - [Configuration](/configuration/) — v7 configuration reference
 - [Features](/features/) — Platform capabilities and use cases
+
+## Product
+
+- [Tool Ecosystem](/tool-ecosystem/) — the open-source tools HunterX integrates with
+- [PoC & Validation](/poc-validation/) — the proof and PoC engine
 
 ## Platform Guides
 
 - [Foundation](/v7-foundation/) — v7 Clean Architecture foundation
 - [Mission Orchestration](/v7-autonomous-mission-orchestration/) — autonomous full-spectrum missions
 - [Adaptive Mission Planning](/v7-adaptive-mission-planning/) — attack-path planning engine
-- [Toolchain Intelligence](/v7-full-toolchain-intelligence/) — 100+ integrated security tools
+- [Toolchain Intelligence](/v7-full-toolchain-intelligence/) — 92 integrated security tools
 - [Vulnerability Proof & PoC](/v7-vulnerability-proof-and-poc/) — evidence-driven validation and proof
 - [Professional Reporting](/v7-professional-finding-intelligence-reporting/) — findings, intelligence and reports
 - [Target Memory & Campaign Intelligence](/v7-target-memory-and-campaign-intelligence/) — campaign state
@@ -52,4 +58,4 @@ active architecture.
 
 ## Archive
 
-- [v6 Archive](/archive/v6/) — retired HunterX v6.0.0 material (historical reference only)
+- [v6 Archive](https://github.com/nullc0d30/HunterX/tree/main/docs/archive/v6) - retired HunterX v6.0.0 material (historical reference only)
