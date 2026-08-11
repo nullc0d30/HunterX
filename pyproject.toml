@@ -59,13 +59,13 @@ dependencies = [
     # SQL persistence (TIDB stores + Alembic migrations) is the default v7
     # persistence layer (SQLite by default), so SQLAlchemy is a base
     # dependency — the base install and Docker image must run the CLI.
-    "sqlalchemy>=2.0",
+    "sqlalchemy>=2.0.51",
     "alembic>=1.13.0",
 ]
 
 [project.optional-dependencies]
 api = ["fastapi>=0.115.0", "uvicorn>=0.30.0"]
-db = ["sqlalchemy>=2.0", "alembic>=1.13.0"]
+db = ["sqlalchemy>=2.0.51", "alembic>=1.13.0"]
 queue = ["aio-pika>=9.4.0"]
 cache = ["redis>=5.0.0"]
 graph = ["neo4j>=5.0.0"]
