@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2026 Ahmed Awad (NullC0d3). SPDX-License-Identifier: Apache-2.0. -->
+
 # Changelog
 
 All notable changes to HunterX are documented in this file.
@@ -6,6 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+
+## [7.0.0] — 2026-08-11
+
+### Added
+- Clean Architecture v7 core (`src/hunterx`): domain, application, infrastructure, engines, agents, tools, plugins, knowledge, reporting, config, CLI and API layers
+- Autonomous mission orchestration — create, run, checkpoint, resume and finalize full-spectrum security-assessment missions
+- Adaptive mission planning — attack-path planning, replanning and explainable next-best-action selection
+- Toolchain intelligence layer — 100+ registered security tools with machine-readable contracts, structured execution, parsing/normalization and dependency-aware chaining
+- Evidence-driven vulnerability validation — hypothesis testing, validation verdicts, and controlled, safe proof/PoC engineering with replay verification
+- Professional reporting — findings, evidence bundles, remediation plans and multi-format exports (markdown, HTML, JSON, SARIF, PDF, package)
+- Target memory & campaign intelligence — snapshots, diffs, coverage and revalidation planning
+- TIDB persistence — SQL storage with 21 linear Alembic migrations, events, audit and versioning
+- `HUNTERX_*` environment-variable configuration overrides
+- Mission persistence across CLI invocations and process restarts (restore path)
+- Safe XML parsing via `defusedxml` (XXE / entity-expansion hardened)
+- `install.sh` v7 installer (idempotent, database initialization, verified installation)
+
+### Fixed
+- Base installation no longer crashes without optional extras (SQLAlchemy now a base dependency)
+- `mission create` → `mission start` workflow works across separate CLI invocations
+- Harden `hunterx` base install and Docker image runtime
+- Ruff, dead-code (vulture) and bandit security gates green
 
 ## [6.0.0] — 2026-07-30
 

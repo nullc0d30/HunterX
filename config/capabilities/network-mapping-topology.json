@@ -1,0 +1,112 @@
+{
+  "capability": "network-mapping-and-attack-surface-topology",
+  "version": "1.0.0",
+  "sprint": 10,
+  "status": "ratified",
+  "summary": "Transforms individual asset observations into a unified, queryable, historical attack-surface topology derived from the canonical TIDB. No second database, cache or event system.",
+  "inputs": {
+    "tridb_entities": [
+      "Domain", "Subdomain", "Hostname", "IPAddress", "CIDR", "ASN",
+      "Port", "Service", "Certificate", "Nameserver", "MXRecord", "DNSRecord",
+      "HostObservation", "ServiceObservation", "Target"
+    ],
+    "mission": "mission_id, target_key, target_id",
+    "scope_policy": "authorized domains, CIDRs, IPs, target ids, allow_third_party",
+    "tools": ["traceroute"],
+    "mode": "full | incremental"
+  },
+  "outputs": {
+    "topology_relationships": "canonical correlated edges (persisted to TIDB)",
+    "topology_conflicts": "preserved contradictions",
+    "topology_changes": "temporal new/removed/changed events",
+    "topology_clusters": "shared-infrastructure clusters",
+    "topology_builds": "observability run records",
+    "views": [
+      "asset_inventory_graph", "network_graph", "dns_graph", "service_graph",
+      "certificate_graph", "organization_graph", "external_attack_surface",
+      "shared_infrastructure", "asset_clusters", "historical"
+    ],
+    "queries": [
+      "neighbors", "ancestors", "descendants", "shortest_path",
+      "related_assets", "shared_infrastructure", "asset_cluster",
+      "service_cluster", "certificate_relationships",
+      "network_relationships", "historical_relationships", "analysis"
+    ]
+  },
+  "entities": [
+    "TopologyRelationship", "TopologyConflict", "TopologyChange",
+    "TopologyCluster", "TopologyBuild"
+  ],
+  "relationships": [
+    "resolves_to", "points_to", "hosted_on", "belongs_to", "part_of",
+    "routes_to", "announced_by", "uses", "exposes", "serves",
+    "certificate_for", "signed_by", "delegated_to", "mails_to", "related_to",
+    "discovered_by", "observed_with", "shares_infrastructure_with",
+    "shares_certificate_with", "shares_ip_with", "shares_nameserver_with"
+  ],
+  "tools": {
+    "traceroute": {
+      "version": "2.1.0",
+      "capabilities": ["route-mapping", "network-topology"],
+      "parser": "tools/topology/traceroute.py",
+      "output": "RouteRecord routes -> routes_to relationships"
+    }
+  },
+  "events": [
+    "topology.build.started",
+    "topology.relationship.discovered",
+    "topology.relationship.updated",
+    "topology.relationship.removed",
+    "topology.entity.correlated",
+    "topology.conflict.detected",
+    "topology.cluster.created",
+    "topology.analysis.started",
+    "topology.analysis.completed",
+    "topology.build.completed",
+    "topology.build.failed"
+  ],
+  "permissions": ["network"],
+  "scope_requirements": {
+    "deny_by_default": true,
+    "no_scope_expansion": true,
+    "allow_third_party_flag": "retains out-of-scope endpoints as reference-only when true; excludes them entirely when false",
+    "discovered_infrastructure_not_authorized_scan_scope": true
+  },
+  "tridb_requirements": {
+    "system_of_record": "TIDB",
+    "tables": [
+      "tidb_topology_relationships",
+      "tidb_topology_conflicts",
+      "tidb_topology_changes",
+      "tidb_topology_clusters",
+      "tidb_topology_builds"
+    ],
+    "migration": "7f1c9a2b0e4d_topology_tables",
+    "schema_gap_policy": "STOP, document, extend via Alembic migration"
+  },
+  "performance": {
+    "correlation_benchmark": "10k observations ~= 40ms",
+    "graph_query": "neighbor lookups on 1000-node graphs sub-millisecond",
+    "scale_target": "thousands of assets, hundreds of thousands of relationships",
+    "incremental_updates": true
+  },
+  "architecture_constraints": [
+    "no_second_database",
+    "no_bypass_tridb",
+    "no_separate_graph_truth",
+    "no_bypass_tool_sdk",
+    "no_duplicate_event_system",
+    "no_duplicate_cache_system",
+    "no_silent_scope_expansion",
+    "no_exploitation",
+    "no_vulnerability_scanning"
+  ],
+  "source_paths": [
+    "src/hunterx/domain/topology/",
+    "src/hunterx/application/topology.py",
+    "src/hunterx/tools/topology/",
+    "src/hunterx/domain/entities/tidb/topology.py",
+    "src/hunterx/infrastructure/db/sql/tidb_models/topology_models.py"
+  ],
+  "documentation": "docs/v7-network-mapping.md"
+}

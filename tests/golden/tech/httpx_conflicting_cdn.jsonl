@@ -1,0 +1,2 @@
+{"url":"https://cdn.example.com","host":"cdn.example.com","port":443,"scheme":"https","status_code":200,"webserver":"nginx","tech":[],"cdn_name":"cloudflare","title":"Edge","tls":{"subject_cn":"cdn.example.com","issuer_cn":"Cloudflare Inc ECC CA-3"}}
+{"url":"https://cdn.example.com","host":"cdn.example.com","port":443,"scheme":"https","status_code":200,"webserver":"awselb","tech":["React"],"title":"AWS","tls":{"subject_cn":"cdn.example.com","issuer_cn":"Amazon"}}

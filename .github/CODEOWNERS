@@ -1,0 +1,35 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX CODEOWNERS — required reviewers for every path.
+# See https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything not matched below.
+* @nullc0d30
+
+# Foundation: domain, application, infrastructure, engines.
+/src/hunterx/domain/       @nullc0d30
+/src/hunterx/application/  @nullc0d30
+/src/hunterx/infrastructure/ @nullc0d30
+/src/hunterx/engines/      @nullc0d30
+
+# Public SDKs and plugin surface.
+/src/hunterx/plugins/      @nullc0d30
+/src/hunterx/tools/        @nullc0d30
+
+# Engineering platform (DevSecOps, quality gates, CI/CD).
+/eng/                      @nullc0d30
+/.github/workflows/        @nullc0d30
+/.github/CODEOWNERS        @nullc0d30
+
+# Tests must always be reviewed alongside the code they cover.
+/tests/                    @nullc0d30
+
+# Security-sensitive files require explicit sign-off.
+/SECURITY.md               @nullc0d30
+/config/                   @nullc0d30
+/requirements.lock         @nullc0d30
+
+# Documentation.
+/docs/                     @nullc0d30
+/README.md                 @nullc0d30

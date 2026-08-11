@@ -1,20 +1,20 @@
 ---
 layout: default
-title: HunterX — AI-Assisted Offensive Security Framework
-keywords: HunterX, Red Team Framework, Offensive Security, vulnerability scanner, penetration testing, AI-assisted security, attack surface analysis, PayloadsAllTheThings, payload library, payload knowledge base, DAST, SARIF, OWASP, OWASP Community, Security Scanner, Web Application Security, API Security
+title: HunterX — AI-Powered Security Orchestration & Intelligence Platform
+keywords: HunterX, Security Orchestration, Offensive Security, penetration testing, security assessment platform, API security, Web Application Security, SARIF, OWASP, Security Scanner, mission orchestration, toolchain intelligence
 description: >-
-  HunterX is an AI-assisted offensive security framework combining intelligent
-  reconnaissance, adaptive vulnerability discovery, payload orchestration, and
-  explainable reasoning. Observe · Hypothesize · Probe · Verify.
+  HunterX is an authorized cybersecurity testing and research platform that
+  plans, orchestrates, executes, validates, correlates and reports security
+  assessments by integrating open-source security tools.
 ---
 
 <!-- ===== HERO ===== -->
 <div class="lp-hero">
   <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" class="lp-hero-logo">
   <h1>HunterX</h1>
-  <div class="subtitle">AI-Assisted Offensive Security Framework</div>
-  <div class="pipeline"><span>Observe</span> &rarr; <span>Hypothesize</span> &rarr; <span>Probe</span> &rarr; <span>Verify</span></div>
-  <p>HunterX combines intelligent reconnaissance, adaptive vulnerability discovery, payload orchestration, and explainable security reasoning into a single modular platform. No external scanners required.</p>
+  <div class="subtitle">AI-Powered Security Orchestration &amp; Intelligence Platform</div>
+  <div class="pipeline"><span>Plan</span> &rarr; <span>Orchestrate</span> &rarr; <span>Execute</span> &rarr; <span>Validate</span> &rarr; <span>Report</span></div>
+  <p>HunterX v7 plans, orchestrates, executes, validates, correlates and reports authorized security assessments by integrating open-source security tools.</p>
   <div class="lp-hero-actions">
     <a href="{{ '/installation' | relative_url }}" class="primary">Install HunterX</a>
     <a href="{{ '/quickstart' | relative_url }}" class="secondary">Quickstart</a>
@@ -38,7 +38,7 @@ description: >-
 <div class="lp-section fade-in">
   <div class="lp-section-header">
     <h2>Why HunterX?</h2>
-    <p>Traditional scanners rely on payload volume and signature matching. HunterX reasons about what vulnerabilities <em>might</em> exist before probing, then verifies with evidence.</p>
+    <p>HunterX v7 integrates open-source security tools behind a mission orchestration and intelligence platform: it plans, executes, validates and reports authorized assessments with evidence-driven confidence.</p>
   </div>
   <div class="lp-compare-table">
     <table>

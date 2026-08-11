@@ -1,0 +1,6180 @@
+{
+  "hunterx": {
+    "__author__": {
+      "kind": "constant",
+      "signature": []
+    },
+    "__license__": {
+      "kind": "constant",
+      "signature": []
+    },
+    "__version__": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.agents": {
+    "AgentCapability": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentContext": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentMemory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentMessage": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentOrchestrator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AgentState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecurityAgent": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.api": {
+    "ApiRouter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ErrorResponse": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RouteSpec": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.application": {
+    "CreateFindingRequest": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CreateMissionRequest": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CreateReportRequest": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanningService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolFactoryService": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.architecture": {
+    "__version__": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.cache": {
+    "CacheManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CachePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MemoryCache": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NullCache": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.cli": {
+    "CliApplication": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CommandRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OutputRenderer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "main": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.config": {
+    "ApiSettings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CacheSettings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfigurationManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DatabaseSettings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueueSettings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Settings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "load_default_settings": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain": {
+    "entities": {
+      "kind": "constant",
+      "signature": []
+    },
+    "events": {
+      "kind": "constant",
+      "signature": []
+    },
+    "exceptions": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ports": {
+      "kind": "constant",
+      "signature": []
+    },
+    "services": {
+      "kind": "constant",
+      "signature": []
+    },
+    "value_objects": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.api": {
+    "APIHostObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APISpecObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiAuthObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiClassifier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiFilterObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiHistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiOperationObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiPaginationObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiParameterObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiRateLimitObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Classification": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceStrength": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FINDINGS_KEY": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_host_observation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_operation_observation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "normalize_path": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "operation_hash": {
+      "kind": "constant",
+      "signature": []
+    },
+    "origin_of": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.api.parsers": {
+    "GraphQLParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphQLParser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HintsParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HintsParser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OpenAPIParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OpenAPIParser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PostmanParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PostmanParser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SoapParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SoapParser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketParseResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketParser": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.auth": {
+    "AuthAccessState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthAnalysis": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthClassifier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthCookieObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEndpointKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEndpointObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthFlowObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthHistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthInput": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthObservationKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSchemeObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSchemeType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSurfaceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSurfaceObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CORSObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CSRFKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CSRFObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ChangeType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceStrength": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FINDINGS_KEY": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FlowKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IdPKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IdPObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JWTIndicatorObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MFAKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MFAObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OAuthObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OIDCObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PermissionObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RoleObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SAMLIndicatorObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SessionState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TenantObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TokenStorageObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TokenStorageType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAuthnObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "infer_asset_type": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_evidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "origin_of": {
+      "kind": "constant",
+      "signature": []
+    },
+    "record_to_dict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "record_type_of": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.authorization": {
+    "ActionKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AdminSurfaceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAnalysis": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationClassifier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationHistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationInput": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzAccessControlObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzActionObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzAdminSurfaceObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzApiCorrelationObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzBackendObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzClaimObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzDecisionObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzEvidenceType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzFieldLevelObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzFrontendObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzFunctionLevelObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzGraphQLObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzGroupObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzMassAssignmentObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzObjectLevelObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzObservationKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzOwnershipObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzPermissionObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzPolicyObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzResourceIdentifierObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzResourceObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzRoleObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzScopeObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzServiceObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzSubjectObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzTenantObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthzWebSocketObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ChangeType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DecisionKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceStrength": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FINDINGS_KEY": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IdentifierKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OwnershipKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PolicyModelKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResourceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SubjectKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TenantKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "infer_asset_type": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_evidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "origin_of": {
+      "kind": "constant",
+      "signature": []
+    },
+    "record_to_dict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "record_type_of": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.dns": {
+    "DNSDelegation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSResolution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSSECFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSSECInfo": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSZone": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsRecordType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsValidationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnssecAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MailAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MailInfrastructure": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MailInfrastructureFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Nameserver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Resolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WildcardDetector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WildcardFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "correlate_records": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.dns.conflicts": {
+    "DnsConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsConflictResolver": {
+      "kind": "class",
+      "signature": []
+    }
+  },
+  "hunterx.domain.entities": {
+    "Asset": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Evidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Finding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Mission": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPriority": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Report": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Scan": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScanStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Target": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TargetKind": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.entities.tidb": {
+    "API": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIAuthentication": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIAuthorization": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIClient": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIFilter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIHost": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIKey": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIOperation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIPagination": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIParameter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIRateLimit": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIRun": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APISchema": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APISpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIVersion": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASN": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AssetGroup": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuditEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuditLog": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthCookie": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthFlow": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthRun": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthScheme": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSurface": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthenticationScheme": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAccessControl": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAction": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAdminSurface": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationApiCorrelation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationBackend": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationClaim": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFieldLevel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFrontend": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFunctionLevel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationGraphQL": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationGroup": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationIdentifier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationMassAssignment": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationObjectLevel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationOwnership": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationPermission": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationPolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationResource": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationRole": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationRun": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationScope": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationSubject": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationTenant": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationWebSocket": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CAARecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CAPEC": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CIDR": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CMS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CORSPolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CSRFMechanism": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CVE": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CWE": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Certificate": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CertificatePrivateKey": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ChangeHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CheckpointRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfidenceLevel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Cookie": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlExecution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Credential": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSDelegation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSResolution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSSECRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSZone": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Directory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DiscoveryConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsRecordType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Domain": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EPSS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Endpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceAttachment": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Execution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionLog": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionStep": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExploitReference": {
+      "kind": "constant",
+      "signature": []
+    },
+    "File": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Form": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Framework": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphQLEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Header": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HostObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Hostname": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IPAddress": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IdentityProvider": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceAsset": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceAuth": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceConfiguration": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceDependency": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceDomain": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceImport": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceRoute": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceRun": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceSecret": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceSecurity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceStorage": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceTechnology": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceWasm": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceWorker": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JWT": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScript": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MFAMechanism": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITREGroup": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITRETactic": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITRETechnique": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MXRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionExecution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Nameserver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OAuthConfig": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OIDCConfig": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OperatingSystem": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Organization": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PTRRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Parameter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Permission": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PermissionIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Port": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Program": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProgramStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProgrammingLanguage": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Protocol": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RESTEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RPCService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Recommendation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Reference": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportAttachment": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportConsumption": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportExport": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportSection": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Resolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RiskRating": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Role": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RoleIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Route": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SAMLConfig": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SOAPEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SOARecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Screenshot": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Secret": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SensitiveFile": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Service": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Session": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SeverityBand": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Subdomain": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TXTRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Tag": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Team": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Technology": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyDefinition": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyFamily": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyRun": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyVersion": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TenantIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TidbEntity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TimelineEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Token": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TokenStorageIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolExecution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyBuild": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyCluster": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyRelationship": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URL": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URLObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "User": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Validation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Verification": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WHOISRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAPIEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAuthenticationBoundary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAuthnIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebGraphQLEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebOrigin": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebRedirect": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebServer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketEndpoint": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.events": {
+    "DomainEvent": {
+      "kind": "class",
+      "signature": []
+    },
+    "EventCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventSeverity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventSpec": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.exceptions": {
+    "AuthenticationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CacheError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CheckpointNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfigurationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainValidationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DuplicatePackError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DuplicateRegistrationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GeneratorNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HunterXError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HunterXErrorCode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InfrastructureConnectionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InfrastructureError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidFindingError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidMissionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidMissionPlanError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidMissionRequestError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidStateTransitionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidTargetError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InvalidToolPackSpecError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionAlreadyRunningError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanValidationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanningError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionProfileNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionTemplateNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OperationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackGenerationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackValidationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackagingError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PersistenceError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginExecutionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginLoadError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProfileNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueueError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RegistrationNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportRenderError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SandboxError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScheduleConflictError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecretResolutionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TemplateNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TemplateRenderError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolCancellationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolDependencyError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolExecutionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolFactoryError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolHealthError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolInstallationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolLockError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackNotFoundError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolQueueError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolRegistrationError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolRetryableError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolSelectionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolStateTransitionError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolTimeoutError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationConfigError": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.javascript": {
+    "AnalyzeContext": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AnalyzerSet": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthReferenceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthenticationAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ChangeType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfidenceTier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfigurationAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfigurationKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConflictResolution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DEFAULT_RULES": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainRelation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DynamicImportAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EndpointAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EndpointKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FINDINGS_KEY": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSAcquisition": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSAssetAnalysis": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSAssetKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSAuthenticationReference": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSConfigurationIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSDependency": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSDependencyDetector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSDynamicImport": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSExternalDomain": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSHistorySnapshot": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSMode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSRoute": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSRule": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSRuleRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSSecretIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSSecretScanner": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSSecurityIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSSourceMap": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSStorageIndicator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSTechnologyDetector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSTechnologyEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSThirdPartyService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSToken": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSTokenType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSTokenizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSWasmReference": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSWorker": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NormalizedUrl": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParseStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RouteAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RouteFramework": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RuleCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RuleMatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecretClassification": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecurityAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecurityApiKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "StorageAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "StorageType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyDetection": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyEvidenceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ThirdPartyCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WasmAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WasmReferenceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkerAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkerKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "findings_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_mode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_target": {
+      "kind": "constant",
+      "signature": []
+    },
+    "mask_template": {
+      "kind": "constant",
+      "signature": []
+    },
+    "normalize_domain": {
+      "kind": "constant",
+      "signature": []
+    },
+    "normalize_url": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.livehost": {
+    "DEFAULT_TOP_PORTS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DiscoveryConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HostState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HttpFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveHistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveHost": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveValidationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortState": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReachabilityMethod": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReachabilityResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TlsFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TransportProtocol": {
+      "kind": "constant",
+      "signature": []
+    },
+    "correlate_observations": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_host": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_http": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_port": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_service": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_tls": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.livehost.conflicts": {
+    "DiscoveryConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveConflictResolver": {
+      "kind": "class",
+      "signature": []
+    }
+  },
+  "hunterx.domain.ports": {
+    "AIPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AssetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CachePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CheckpointRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventBusPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceStore": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "KnowledgeGraphPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionProfileRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionTemplateRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionTimelineRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ObjectStorePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackTemplateRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginRegistryPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueuePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SandboxPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScanRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecretsPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TargetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TelemetryPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntelligencePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolRegistryPort": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.recon": {
+    "ConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DiscoveryKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DiscoveryRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconMode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "infer_ip_version": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.services": {
+    "CorrelationGroup": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CorrelatorService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DeduplicatorService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Plan": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PlannedStep": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PlannerService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RiskScorerService": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.technology": {
+    "ASSET_DOMAIN": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASSET_HOSTNAME": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASSET_IP": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASSET_SERVICE": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASSET_URL": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConflictResolution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceStrength": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HttpEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NormalizedName": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Resolution": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SIGNATURES": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SignatureDetector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SignatureMatchMode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TECHNOLOGY_CATALOG": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechDefinition": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechSignature": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyConfidencePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyCorrelationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyFamily": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyHistoryComparison": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyValidationResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationIssue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionConfidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionExtraction": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionSpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "all_signatures": {
+      "kind": "constant",
+      "signature": []
+    },
+    "catalog_by_name": {
+      "kind": "constant",
+      "signature": []
+    },
+    "infer_asset_type": {
+      "kind": "constant",
+      "signature": []
+    },
+    "make_observation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "signatures_for": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.topology": {
+    "ChangeType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ClusterType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConflictType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EntityKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EntityResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphRelationship": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RelationshipDeriver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RelationshipObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RelationshipType": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyAnalysis": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyCluster": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyConflict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyConflictResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyEntity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyGraph": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyMode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyPathFinder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologySourceData": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyViewBuilder": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.value_objects": {
+    "AssetIdentifier": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainName": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Hostname": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IPAddress": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Port": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Protocol": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RiskScore": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Scope": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Service": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Severity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URL": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.domain.web": {
+    "APIEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthenticationBoundary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlEvidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlExecutionSummary": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlPayload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlPolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlStrategy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlStrategyBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlTarget": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphQLEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HTTPMethod": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParsedURL": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Redirect": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URLNormalizer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URLObservation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WEB_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebConfidenceEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlBatch": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlChange": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlCorrelation": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlDiff": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlHistory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebCrawlMode": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebScopeDecision": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebScopeEnforcer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebScopePolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketEndpoint": {
+      "kind": "constant",
+      "signature": []
+    },
+    "observations_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "query_to_pairs": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.engines": {
+    "CheckpointManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfigurationResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CoreEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DefaultRiskScorer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DeterministicPlanner": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionGraphBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanTransition": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanner": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanningAPI": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPlanningEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionProfileEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionStateMachine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionTimeline": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TargetCorrelator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntegrationFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkflowDefinition": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkflowEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkflowStep": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.events": {
+    "DomainEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventBus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingCreatedEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryEventBus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionCompletedEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionFailedEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionStartedEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginLoadedEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolExecutedEvent": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.exceptions": {
+    "HunterXError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HunterXErrorCode": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.infrastructure": {
+    "ai": {
+      "kind": "constant",
+      "signature": []
+    },
+    "cache": {
+      "kind": "constant",
+      "signature": []
+    },
+    "db": {
+      "kind": "constant",
+      "signature": []
+    },
+    "event_bus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "logging": {
+      "kind": "constant",
+      "signature": []
+    },
+    "queue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "sandbox": {
+      "kind": "constant",
+      "signature": []
+    },
+    "secrets": {
+      "kind": "constant",
+      "signature": []
+    },
+    "telemetry": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.infrastructure.db": {
+    "graph": {
+      "kind": "constant",
+      "signature": []
+    },
+    "object_store": {
+      "kind": "constant",
+      "signature": []
+    },
+    "search": {
+      "kind": "constant",
+      "signature": []
+    },
+    "sql": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.infrastructure.db.sql": {
+    "SessionFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlAssetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlFindingRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlMissionRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlReportRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlScanRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SqlTargetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "create_engine_from_settings": {
+      "kind": "constant",
+      "signature": []
+    },
+    "get_base": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.infrastructure.db.sql.registry": {
+    "ENTITY_TO_MODEL": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MODEL_TO_ENTITY": {
+      "kind": "constant",
+      "signature": []
+    },
+    "all_entities": {
+      "kind": "function",
+      "signature": []
+    },
+    "entity_class": {
+      "kind": "function",
+      "signature": [
+        "entity_or_class"
+      ]
+    },
+    "model_class": {
+      "kind": "function",
+      "signature": [
+        "entity_or_class"
+      ]
+    }
+  },
+  "hunterx.infrastructure.db.sql.tidb_models": {
+    "APIAuthenticationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIAuthorizationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIClientModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIEvidenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIFilterModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIHostModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIKeyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIOperationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIPaginationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIParameterModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIRateLimitModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIRunModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APISchemaModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APISpecModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "APIVersionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ASNModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AssetGroupModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuditEventModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuditLogModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthCookieModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthEvidenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthFlowModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthRunModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSchemeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthSurfaceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthenticationSchemeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAccessControlModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationActionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAdminSurfaceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationApiCorrelationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationBackendModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationClaimModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationDecisionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationEvidenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFieldLevelModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFrontendModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationFunctionLevelModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationGraphQLModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationGroupModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationIdentifierModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationMassAssignmentModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationModelModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationObjectLevelModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationOwnershipModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationPermissionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationPolicyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationResourceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationRoleModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationRunModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationScopeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationServiceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationSubjectModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationTenantModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationWebSocketModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Base": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CAARecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CAPECModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CIDRModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CMSModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CORSPolicyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CSRFMechanismModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CVEModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CWEModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CertificateModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CertificatePrivateKeyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ChangeHistoryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CheckpointRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ConfidenceLevelModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CookieModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlEvidenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlExecutionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CredentialModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSDelegationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSResolutionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSSECRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DNSZoneModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DirectoryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DiscoveryConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EPSSModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceAttachmentModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEventModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionLogModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionStepModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExploitReferenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FileModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingHistoryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FormModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FrameworkModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphQLEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HeaderModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HostObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HostnameModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IPAddressModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IdentityProviderModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceAssetModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceAuthModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceConfigurationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceDependencyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceDomainModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceImportModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceRouteModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceRunModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceSecretModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceSecurityModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceServiceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceStorageModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceTechnologyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceWasmModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JSIntelligenceWorkerModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JWTModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MFAMechanismModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITREGroupModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITRETacticModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MITRETechniqueModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MXRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionExecutionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NameserverModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OAuthConfigModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OIDCConfigModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OperatingSystemModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OrganizationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PTRRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParameterModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PermissionIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PermissionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PortObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProgramModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProgrammingLanguageModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ProtocolModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RESTEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RPCServiceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RecommendationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReferenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportAttachmentModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportConsumptionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportExportModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportSectionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResolverModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RiskRatingModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RoleIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RoleModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RouteModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SAMLConfigModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SOAPEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SOARecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopeIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScopePolicyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScreenshotModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecretModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SensitiveFileModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ServiceObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SessionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SeverityBandModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SubdomainModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TXTRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TagModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TeamModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyCategoryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyDefinitionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyEvidenceModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyFamilyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyRunModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechnologyVersionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TenantIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TidbModelMixin": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TimelineEventModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TokenModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TokenStorageIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolExecutionModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyBuildModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyChangeModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyClusterModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyConflictModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyRelationshipModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URLModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "URLObservationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "UserModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VerificationModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionHistoryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WHOISRecordModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAPIEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAuthenticationBoundaryModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebAuthnIndicatorModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebGraphQLEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebOriginModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebRedirectModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebServerModel": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketEndpointModel": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.infrastructure.memory": {
+    "InMemoryAssetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryCheckpointRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryFindingRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMissionPlanRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMissionProfileRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMissionRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMissionTemplateRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMissionTimelineRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryPackTemplateRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryReportRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryScanRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryTargetRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryToolPackRepository": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_in_memory_factory_repositories": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_in_memory_planning_repositories": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_in_memory_repositories": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.knowledge": {
+    "KnowledgeEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "KnowledgeGraph": {
+      "kind": "constant",
+      "signature": []
+    },
+    "KnowledgeRegistry": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.logging": {
+    "JsonFormatter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LoggingManager": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.models": {
+    "Asset": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Evidence": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EvidenceKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Finding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "IPAddress": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Mission": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionPriority": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Port": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Report": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Scan": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScanStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Scope": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Service": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Severity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Target": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TargetKind": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.observability": {
+    "AuditEventFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DeadLetterQueuePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DomainEvent": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventCategory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventFilter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventHandler": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventPriority": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventSeverity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventSpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EventStorePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HealthProbe": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HealthProbePort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HealthRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HealthRegistryPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryDeadLetterQueue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryEventBus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryEventStore": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryMetrics": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemoryTracer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MemoryTelemetryProvider": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MetricsPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ObservabilityEventBusPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ObservabilityService": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PrometheusTelemetryProvider": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TelemetryProviderPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TracerPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_provider": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_registry": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.platform": {
+    "Platform": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_platform": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.plugins": {
+    "PermissionFlag": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginKind": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginLoader": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginManifest": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "resolve_load_order": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.plugins.sdk": {
+    "EvidenceResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "FindingResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginContext": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginResultTypes": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PluginSession": {
+      "kind": "constant",
+      "signature": []
+    },
+    "emit": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.queue": {
+    "MemoryQueue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NullQueue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueueManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueuePort": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.reporting": {
+    "FindingView": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JsonRenderer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MarkdownRenderer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionView": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Renderer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReportView": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.scheduler": {
+    "Job": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JobStatus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Schedule": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SchedulerService": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.security": {
+    "Actor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EnvironmentSecrets": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InMemorySecrets": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PermissionDeniedError": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecretsPort": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecurityManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SecurityPolicy": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.shared": {
+    "Failure": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MaskConfig": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Result": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Success": {
+      "kind": "constant",
+      "signature": []
+    },
+    "generate_content_id": {
+      "kind": "constant",
+      "signature": []
+    },
+    "generate_id": {
+      "kind": "constant",
+      "signature": []
+    },
+    "is_ulid": {
+      "kind": "constant",
+      "signature": []
+    },
+    "mask_secret": {
+      "kind": "constant",
+      "signature": []
+    },
+    "mask_value": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.telemetry": {
+    "MemoryTelemetry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TelemetryPort": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools": {
+    "AnalyzerTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "BaseTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CapabilityEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CrawlerTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DependencyEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "EnumeratorTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionContextBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEventBus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionMonitor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionPipeline": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionSandbox": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionSession": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NormalizerEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OutputCollector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackTemplateStore": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Parser": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParserEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReporterTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResourceManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ScannerTool": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolAIInterface": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolContext": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolDiscovery": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolDocumentationGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolExecutor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolHealthMonitor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntegrationFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntelligenceAPI": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntelligenceRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolLifecycleManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolLockManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolOutput": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackGeneratorEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPerformanceAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolQueue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolRecommendationEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolSandboxPolicy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolSelectionEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolStateMachine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolTaxonomy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolValidationFramework": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "default_generators": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.adapter": {
+    "BaseTool": {
+      "kind": "class",
+      "signature": [
+        "ABC"
+      ]
+    },
+    "ToolContext": {
+      "kind": "class",
+      "signature": []
+    },
+    "ToolOutput": {
+      "kind": "class",
+      "signature": []
+    }
+  },
+  "hunterx.tools.api": {
+    "APIAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "API_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiHintsAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ApiToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GraphQLDiscoveryAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OpenAPIDiscoveryAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SoapDiscoveryAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SwaggerDiscoveryAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebSocketDiscoveryAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "api_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_api_adapters": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.auth": {
+    "AUTH_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "auth_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "auth_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_auth_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_auth_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.authorization": {
+    "AUTHORIZATION_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "AuthorizationToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "authorization_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "authorization_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_authorization_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_authorization_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.dns": {
+    "DNS_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnspythonAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DnsxAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResolverClient": {
+      "kind": "constant",
+      "signature": []
+    },
+    "dns_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_dns_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_dns_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.factory": {
+    "BUILTIN_TEMPLATE": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "GENERATOR_VERSION": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HUNTERX_VERSION": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PACK_LAYOUT": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PACK_STRUCTURE_VERSION": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackTemplateStore": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QUALITY_GATES": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SDK_VERSION": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TemplateRenderer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntegrationFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackGeneratorEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPackValidator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "default_generators": {
+      "kind": "constant",
+      "signature": []
+    },
+    "quality_gate_files": {
+      "kind": "constant",
+      "signature": []
+    },
+    "render_context": {
+      "kind": "constant",
+      "signature": []
+    },
+    "required_files": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.factory.generators": {
+    "AdapterGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "BoilerplateGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DatabaseMappingGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DocumentationGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ErrorHandlingGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionRulesGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InstallationGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "KnowledgeFileGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LoggingGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MetadataGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MissionRulesGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NormalizerGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackContext": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PackagingGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParserGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SchemaGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TelemetryGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TestGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionMetadataGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WorkflowRulesGenerator": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.intelligence": {
+    "CapabilityEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "CompatibilityResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DependencyEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolAIAnswer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolAIInterface": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolDocumentationGenerator": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolHealthMonitor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntelligenceAPI": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolIntelligenceRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolLifecycleManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolPerformanceAnalyzer": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolRecommendationEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolSelectionEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolStateMachine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolTaxonomy": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolValidationFramework": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationFinding": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationReport": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ValidationSeverity": {
+      "kind": "constant",
+      "signature": []
+    },
+    "build_recommendation_prompt": {
+      "kind": "constant",
+      "signature": []
+    },
+    "compatibility_from_dict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "knowledge_from_dict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "load_knowledge_file": {
+      "kind": "constant",
+      "signature": []
+    },
+    "metadata_from_dict": {
+      "kind": "constant",
+      "signature": []
+    },
+    "metadata_to_dict": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.javascript": {
+    "JS_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptAnalyzerAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "JavaScriptToolSpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "javascript_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "javascript_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_javascript_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_javascript_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.livehost": {
+    "LIVE_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LiveToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "MasscanAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NaabuAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "NmapAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TcpConnectAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "live_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_live_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_live_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.recon": {
+    "RECON_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ReconToolSpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "recon_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "recon_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_recon_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_recon_tools": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.sdk": {
+    "AdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DependencyResolver": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionArtifact": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionCache": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionCapabilityRegistry": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionContextBuilder": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEngine": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionEventBus": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionIDFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionMonitor": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionPipeline": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionPluginManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionSandbox": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ExecutionSession": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HealthChecker": {
+      "kind": "constant",
+      "signature": []
+    },
+    "InstallationManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LegacyToolBridge": {
+      "kind": "constant",
+      "signature": []
+    },
+    "LoadedPlugin": {
+      "kind": "constant",
+      "signature": []
+    },
+    "OutputCollector": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ParallelExecutionManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "PipelineResult": {
+      "kind": "constant",
+      "signature": []
+    },
+    "QueueItem": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResourceManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ResourceUsage": {
+      "kind": "constant",
+      "signature": []
+    },
+    "RetryManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TaskScheduler": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TimeoutManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolLockManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "ToolQueue": {
+      "kind": "constant",
+      "signature": []
+    },
+    "VersionManager": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.tech": {
+    "FetchFn": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HttpFetcher": {
+      "kind": "constant",
+      "signature": []
+    },
+    "HttpxAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "SignatureAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TECH_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TechToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WhatWebAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_tech_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_tech_tools": {
+      "kind": "constant",
+      "signature": []
+    },
+    "tech_adapters": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.topology": {
+    "RouteRecord": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TOPOLOGY_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyAdapterFactory": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TopologyToolSpec": {
+      "kind": "constant",
+      "signature": []
+    },
+    "TracerouteAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_topology_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_topology_tools": {
+      "kind": "constant",
+      "signature": []
+    },
+    "routes_from_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "routes_to_payload": {
+      "kind": "constant",
+      "signature": []
+    },
+    "topology_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "topology_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.tools.web": {
+    "CrawlerAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "KatanaAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WEB_TOOL_IDS": {
+      "kind": "constant",
+      "signature": []
+    },
+    "WebToolAdapter": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_web_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "register_web_tools": {
+      "kind": "constant",
+      "signature": []
+    },
+    "web_adapters": {
+      "kind": "constant",
+      "signature": []
+    },
+    "web_tool_specs": {
+      "kind": "constant",
+      "signature": []
+    }
+  },
+  "hunterx.utils": {
+    "Container": {
+      "kind": "constant",
+      "signature": []
+    },
+    "DependencyManager": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Failure": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Result": {
+      "kind": "constant",
+      "signature": []
+    },
+    "Success": {
+      "kind": "constant",
+      "signature": []
+    },
+    "generate_content_id": {
+      "kind": "constant",
+      "signature": []
+    },
+    "generate_id": {
+      "kind": "constant",
+      "signature": []
+    },
+    "is_ulid": {
+      "kind": "constant",
+      "signature": []
+    },
+    "mask_secret": {
+      "kind": "constant",
+      "signature": []
+    },
+    "mask_value": {
+      "kind": "constant",
+      "signature": []
+    },
+    "utcnow": {
+      "kind": "constant",
+      "signature": []
+    },
+    "utcnow_iso": {
+      "kind": "constant",
+      "signature": []
+    }
+  }
+}

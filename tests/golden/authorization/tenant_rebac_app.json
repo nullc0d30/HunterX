@@ -1,0 +1,48 @@
+{
+  "url": "https://saas.example.com",
+  "status_code": 403,
+  "headers": {
+    "X-Tenant-Id": "tenant-abc",
+    "X-Account-Id": "acct-99",
+    "X-Workspace-Id": "ws-7"
+  },
+  "html": "<html><body><h1>Workspace settings</h1><form><input name=\"tenant_id\"><input name=\"workspace_id\"><input name=\"owner_id\"><input name=\"created_by\"></form></body></html>",
+  "scripts": [
+    {
+      "url": "https://saas.example.com/static/app.js",
+      "content": "const roles=['admin','manager','editor','viewer','guest']; const userGroups=['org-eng','security-team']; window.permissions=['project.read','project.manage','reports.export','reports.view']; const TenantConfig = class { tenant_id; owner_id; workspace_id; account_id; is_admin; role; permissions; status; }; if(isAdmin){}; if(can('project.manage')){}; if(checkAccess('reports.export')){};"
+    }
+  ],
+  "api_schemes": [
+    {
+      "name": "oauth2",
+      "type": "oauth2",
+      "flows": {"authorizationCode": {"scopes": {"project:read": "read projects", "project:manage": "manage projects"}}}
+    }
+  ],
+  "api_operations": [
+    {"method": "GET", "path": "/api/v1/tenants/{tenant_id}/workspaces/{workspace_id}/projects", "roles": ["member"], "scopes": ["project:read"], "tenant": "tenant-abc", "documented": true},
+    {"method": "POST", "path": "/api/v1/tenants/{tenant_id}/workspaces/{workspace_id}/projects/{project_id}/members", "roles": ["manager", "admin"], "scopes": ["project:manage"], "documented": true},
+    {"method": "GET", "path": "/api/v1/tenants/{tenant_id}/reports/export", "roles": ["admin"], "privileged": true, "documented": false}
+  ],
+  "documents": [
+    {"policy_model": "rebac", "name": "relationship-policy", "subjects": ["svc-ingestion"], "api_clients": ["client-123"]}
+  ],
+  "observed_urls": [
+    "https://saas.example.com/login",
+    "https://saas.example.com/admin",
+    "https://saas.example.com/admin/workspaces",
+    "https://saas.example.com/manage/tenants",
+    "https://saas.example.com/api/v1/tenants/1/workspaces/2/projects/3",
+    "https://saas.example.com/api/v1/tenants/1/workspaces/2/projects/3/members",
+    "https://saas.example.com/billing/invoices",
+    "https://saas.example.com/security"
+  ],
+  "websockets": [
+    {"endpoint": "wss://saas.example.com/realtime", "channel": "project:{project_id}", "mechanism": "channel-auth"}
+  ],
+  "graphql": [
+    {"subject": "type", "name": "Project", "restricted_fields": ["owner_id", "tenant_id"]},
+    {"subject": "field", "name": "Project.members", "directive": "@auth"}
+  ]
+}

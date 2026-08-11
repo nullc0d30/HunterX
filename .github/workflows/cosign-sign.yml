@@ -1,0 +1,74 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Artifact Signing (Cosign / Sigstore).
+#
+# Signs release artifacts, SBOMs and the container image with keyless Sigstore
+# signatures (OIDC via GitHub Actions). Signatures are stored in the public
+# transparency log and can be verified with:
+#
+#   cosign verify-blob --signature <sig> --certificate <cert> <artifact>
+#
+# This workflow runs on release tags; the Docker image is signed in
+# docker-publish.yml via actions/attest-build-provenance.
+
+name: Cosign Sign
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  sign:
+    name: Sign Release Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+          python -m build
+          python -m eng sbom --format cyclonedx
+          python -m eng sbom --format spdx
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.6.0
+        with:
+          cosign-release: v2.4.1
+
+      - name: Sign distributions and SBOMs
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/signatures
+          cd artifacts
+          for f in ../dist/* ../artifacts/hunterx.sbom.json ../artifacts/hunterx.spdx.json; do
+            [ -f "$f" ] || continue
+            base=$(basename "$f")
+            cosign sign-blob --yes "$f" \
+              --bundle "signatures/${base}.bundle" \
+              --output-signature "signatures/${base}.sig" \
+              --output-certificate "signatures/${base}.crt"
+          done
+          cd ..
+
+      - name: Upload signatures
+        uses: actions/upload-artifact@v4
+        with:
+          name: signatures
+          path: artifacts/signatures/
+          if-no-files-found: error

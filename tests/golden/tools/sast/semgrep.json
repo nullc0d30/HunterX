@@ -1,0 +1,1 @@
+{"results":[{"check_id":"python.lang.security.audit.eval","path":"app.py","start":{"line":12},"extra":{"message":"Avoid using eval()","severity":"WARNING"}}],"errors":[]}

@@ -1,0 +1,9 @@
+{"host":"example.com","type":"A","ttl":300,"resp":["93.184.216.34"]}
+{"host":"broken-line-without-json-brace","type":"A"}
+{"host":"example.com","type":"TXT","ttl":60,"resp":["v=DMARC1; p=quarantine"]}
+not a json line at all
+{"host":"","type":"A","resp":["1.2.3.4"]}
+{"host":"weird.example.com","type":"BOGUS","ttl":5,"resp":["x"]}
+{"host":"example.com","type":"TXT","ttl":60,"resp":["v=spf1 include:_spf.example.com ~all"]}
+{"host":"_dmarc.example.com","type":"TXT","ttl":60,"resp":["v=DMARC1; p=reject; rua=mailto:dmarc@example.com"]}
+{"host":"google._domainkey.example.com","type":"TXT","ttl":60,"resp":["v=DKIM1; k=rsa; p=MIGfMA0G"]}

@@ -1,0 +1,24 @@
+# {{ report.title }}
+
+Generated at {{ report.generated_at }}.
+
+## Executive Summary
+
+{{ report.summary }}
+
+## Findings ({{ report.findings | length }})
+
+{% for finding in report.findings %}
+### [{{ finding.severity }}] {{ finding.title }}
+
+- **Target:** {{ finding.target }}
+- **Tool:** {{ finding.tool }}
+
+{{ finding.description }}
+{% endfor %}
+
+## Correlation
+
+{% for group in report.correlation_groups %}
+- {{ group.narrative }}
+{% endfor %}

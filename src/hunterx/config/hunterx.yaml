@@ -1,0 +1,34 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Default configuration profile shipped with the package.
+# Values here are safe for development. Production deployments override them
+# via HUNTERX_* environment variables or a user profile file.
+
+app_name: HunterX
+environment: production
+log_level: INFO
+
+database:
+  url: "sqlite:///hunterx.db"
+  echo: false
+  pool_size: 10
+  pool_timeout: 30
+
+cache:
+  backend: memory
+  ttl_seconds: 300
+
+queue:
+  backend: memory
+  prefetch: 8
+
+security:
+  sandbox_enabled: true
+  sandbox_timeout_seconds: 30.0
+
+api:
+  host: "127.0.0.1"
+  port: 8080
+
+telemetry_enabled: true

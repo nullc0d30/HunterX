@@ -1,0 +1,243 @@
+{%- comment -%}
+  SEO and Structured Data for HunterX
+  Generates JSON-LD for:
+  - Organization
+  - WebSite
+  - SoftwareApplication
+  - Person (author)
+  - WebPage
+  - BreadcrumbList
+  - Article (for posts)
+  - TechArticle (for documentation pages)
+  - LearningResource (for tutorials)
+{%- endcomment -%}
+
+{%- assign schema = site.data.schema | default: (site.github | default: {}) -%}%} -%}
+
+{%- comment -%}Organization{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "{{ site.url }}{{ site.baseurl }}/#organization",
+  "name": "{{ site.title | escape }}",
+  "description": "{{ site.description | escape }}",
+  "url": "{{ site.url }}{{ site.baseurl }}",
+  "logo": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+  "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+  "sameAs": [
+    "https://github.com/nullc0d30",
+    "https://hub.docker.com/u/nullc0d30"
+  ],
+  "founder": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  }
+}
+</script>
+
+{%- comment -%}WebSite{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "{{ site.url }}{{ site.baseurl }}/#website",
+  "name": "{{ site.title | escape }}",
+  "url": "{{ site.url }}{{ site.baseurl }}",
+  "description": "{{ site.description | escape }}",
+  "inLanguage": "en-US",
+  "author": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  },
+  "publisher": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ site.url }}{{ site.baseurl }}/?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+{%- comment -%}SoftwareApplication{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "{{ site.url }}{{ site.baseurl }}/#software",
+  "name": "{{ site.title | escape }}",
+  "description": "{{ site.description | escape }}",
+  "applicationCategory": "SecurityApplication",
+  "applicationSubCategory": "SecurityFramework",
+  "operatingSystem": ["Linux", "macOS", "Windows"],
+  "author": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  },
+  "publisher": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  },
+  "image": "{{ site.url }}{{ site.baseurl }}/assets/images/logo.png",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "url": "{{ site.url }}{{ site.baseurl }}",
+  "version": "6.0.0",
+  "programmingLanguage": "Python",
+  "softwareHelp": "{{ site.url }}{{ site.baseurl }}/quickstart/",
+  "downloadUrl": "https://github.com/nullc0d30/HunterX",
+  "releaseNotes": "https://github.com/nullc0d30/HunterX/releases",
+  "keywords": "HunterX, offensive security framework, penetration testing, red team, security assessment, open source security, attack surface analysis, multi-agent orchestration",
+  "featureList": "41 security skills, reasoning engine, multi-agent platform, AI provider abstraction, knowledge graph, threat modeling, payload intelligence, REST API, SARIF reporting, MITRE ATT&CK mapping",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+{%- comment -%}Person (Author){%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "{{ site.url }}{{ site.baseurl }}/#author",
+  "name": "{{ site.author.name | escape }}",
+    "alternateName": "{{ site.author.alias | default: (site.author.name | split: ' ' | last) | escape }}",
+  "description": "Cybersecurity Threat Intelligence Analyst, open-source developer, and security researcher. Creator of HunterX.",
+  "url": "{{ site.author.url }}",
+  "sameAs": [
+    "https://github.com/nullc0d30",
+    "https://hub.docker.com/u/nullc0d30",
+    "https://www.linkedin.com/in/nullc0d3"
+  ]
+}
+</script>
+
+{%- comment -%}WebPage{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "{{ page.url | absolute_url }}",
+  "name": "{{ page.title | default: site.title | escape }}",
+  "description": "{{ page.description | default: site.description | escape }}",
+  "url": "{{ page.url | absolute_url }}",
+  "isPartOf": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#website"
+  },
+  "primaryImageOfPage": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  }
+}
+</script>
+
+{%- comment -%}BreadcrumbList{%- endcomment -%}
+{%- assign crumbs = page.url | split: '/' | where: \"item != ''\" -%}
+{%- assign crumb_count = crumbs | size -%}
+{%- if page.url == '/' -%}
+  {%- assign crumb_count = 0 -%}
+{%- endif -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ '/' | absolute_url }}"
+    }
+    {%- for i in (0..(crumb_count | minus: 1)) -%}
+    ,{
+      "@type": "ListItem",
+      "position": {{ forloop.index | plus: 2 }},
+      "name": "{{ crumbs[i] | replace:'-',' ' | capitalize | escape }}",
+      "item": "{{ '/' | append: (cumbs[0..i] | join: '/') | absolute_url }}"
+    }
+    {%- endfor -%}
+  ]
+}
+</script>
+
+{%- comment -%}Conditional Schemas based on page type{%- endcomment -%}
+{%- if page.layout == 'post' -%}
+{%- comment -%}Article (for blog posts){%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "{{ page.url | absolute_url }}",
+  "headline": "{{ page.title | escape }}",
+  "description": "{{ page.description | escape }}",
+  "author": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  },
+  "publisher": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  },
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.date | date_to_xmlschema }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
+  "keywords": "{{ page.keywords | default: site.keywords | array_to_sentence_string }}"
+}
+</script>
+{%- elsif page.layout == 'tutorial' -%}
+{%- comment -%}LearningResource (for tutorials){%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "@id": "{{ page.url | absolute_url }}",
+  "name": "{{ page.title | escape }}",
+  "description": "{{ page.description | escape }}",
+  "author": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  },
+  "publisher": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  },
+  "dateCreated": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.date | date_to_xmlschema }}",
+  "typicalAgeRange": "18+",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial",
+  "url": "{{ page.url | absolute_url }}",
+  "isBasedOn": {
+    "@id": "https://github.com/nullc0d30/HunterX"
+  }
+}
+</script>
+{%- elsif page.url contains '/documentation/' or page.url contains '/docs/' -%}
+{%- comment -%}TechArticle (for documentation){%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "@id": "{{ page.url | absolute_url }}",
+  "headline": "{{ page.title | escape }}",
+  "description": "{{ page.description | escape }}",
+  "author": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#author"
+  },
+  "publisher": {
+    "@id": "{{ site.url }}{{ site.baseurl }}/#organization"
+  },
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.date | date_to_xmlschema }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
+  "keywords": "{{ page.keywords | default: site.keywords | array_to_sentence_string }}",
+  "articleSection": "Documentation"
+}
+</script>
+{%- endif -%}

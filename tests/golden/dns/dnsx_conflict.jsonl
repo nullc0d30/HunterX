@@ -1,0 +1,5 @@
+{"host":"example.com","type":"A","ttl":300,"resp":["93.184.216.34"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"A","ttl":300,"resp":["93.184.216.35"],"resolver":"8.8.8.8"}
+{"host":"www.example.com","type":"A","ttl":300,"resp":["93.184.216.34"],"resolver":"1.1.1.1"}
+{"host":"www.example.com","type":"A","ttl":300,"resp":["203.0.113.77"],"resolver":"8.8.8.8"}
+{"host":"mail.example.com","type":"A","ttl":300,"resp":["192.0.2.55"],"resolver":"1.1.1.1"}

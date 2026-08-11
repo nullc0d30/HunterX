@@ -1,104 +1,55 @@
 ---
 layout: default
-title: Documentation Hub — HunterX v6.0.0
-keywords: documentation, HunterX guide, cybersecurity tool documentation, OWASP, OWASP Community, Vulnerability Scanner
+title: Documentation — HunterX v7
+keywords: HunterX Documentation, User Guide, Reference Manual
 description: >-
-  Central documentation hub for HunterX v6.0.0 open-source offensive security
-  framework. Browse getting started guides, CLI reference, REST API docs,
-  architecture, agent platform, skills framework, and community resources for
-  cybersecurity automation and penetration testing.
-permalink: /documentation/
+  The central hub for HunterX v7 technical documentation. Navigate to
+  installation, architecture, CLI, API, configuration, and capability guides.
 ---
 
-## Documentation Hub
+# Documentation
 
-Welcome to the HunterX v6.0.0 documentation hub. Use this page to navigate all available documentation resources.
+Welcome to the HunterX v7 documentation. This hub is the central entry point
+for all technical documentation, guides, and references for the current
+architecture. HunterX v6 material is archived separately and is no longer the
+active architecture.
 
----
+> **Responsible use.** HunterX is an authorized cybersecurity testing and
+> research platform. You are responsible for obtaining appropriate
+> authorization before testing any system. See
+> [Responsible Use & Legal Notice](/responsible-use/) and
+> [Security Policy](/security/).
 
 ## Getting Started
 
-| Resource | Description |
-|---|---|
-| [Installation]({{ '/installation' | relative_url }}) | Install via pip, pipx, install.sh, Docker, or from source. |
-| [Quickstart]({{ '/quickstart' | relative_url }}) | Install and run HunterX in 5 minutes. |
-| [Features & Architecture]({{ '/features' | relative_url }}) | Complete feature breakdown and system overview. |
-| [Documentation Hub]({{ '/documentation' | relative_url }}) | You are here. |
+- [Installation](/installation/) — Install HunterX v7 (see also `install.sh` in the repository)
+- [Quickstart](/quickstart/) — Run your first mission in minutes
+- [CLI Reference](/cli/) — Command-line interface reference
+- [Architecture](/architecture/) — v7 architecture guides
+- [Configuration](/configuration/) — v7 configuration reference
+- [Features](/features/) — Platform capabilities and use cases
+
+## Platform Guides
+
+- [Foundation](/v7-foundation/) — v7 Clean Architecture foundation
+- [Mission Orchestration](/v7-autonomous-mission-orchestration/) — autonomous full-spectrum missions
+- [Adaptive Mission Planning](/v7-adaptive-mission-planning/) — attack-path planning engine
+- [Toolchain Intelligence](/v7-full-toolchain-intelligence/) — 100+ integrated security tools
+- [Vulnerability Proof & PoC](/v7-vulnerability-proof-and-poc/) — evidence-driven validation and proof
+- [Professional Reporting](/v7-professional-finding-intelligence-reporting/) — findings, intelligence and reports
+- [Target Memory & Campaign Intelligence](/v7-target-memory-and-campaign-intelligence/) — campaign state
+- [TIDB Persistence](/v7-tidb/) — database and migrations
+- [Security Pipeline](/v7-security-pipeline/) — security model
+- [Release Guide](/v7-release-guide/) — building and releasing
 
 ## Reference
 
-| Resource | Description |
-|---|---|
-| [CLI Reference]({{ '/cli' | relative_url }}) | Complete CLI commands, flags, and subcommands. |
-| [Modules]({{ '/modules' | relative_url }}) | Available scan modules and usage. |
-| [REST API]({{ '/api' | relative_url }}) | Full REST API reference for the built-in server. |
-| [Configuration Guide]({{ '/configuration' | relative_url }}) | Configuration file reference (YAML). |
-| [Docker Guide]({{ '/Docker_Guide' | relative_url }}) | Docker deployment and container usage. |
-| [Architecture]({{ '/arch' | relative_url }}) | System architecture and design overview. |
-| [Operator Profiles]({{ '/profiles' | relative_url }}) | Internal, bounty, and government profiles. |
-| [Authentication]({{ '/authentication' | relative_url }}) | Authentication methods for scanning. |
+- [Development Bible](/bible/) — engineering standards
+- [Contributing](/contributing/) — developing for HunterX
+- [Changelog](/changelog/) — release history
+- [About the Author](/about-author/) — Ahmed Awad (NullC0d3)
+- [License](/license/) — Apache 2.0
 
-## Platform
+## Archive
 
-| Resource | Description |
-|---|---|
-| [Security Skills Framework]({{ '/security-skills-framework' | relative_url }}) | 41 security skills and capabilities. |
-| [Reasoning Engine]({{ '/reasoning-engine' | relative_url }}) | Multi-stage AI reasoning pipeline. |
-| [Multi-Agent Platform]({{ '/agents' | relative_url }}) | Autonomous agent architecture (10 agents). |
-| [AI Provider Guide]({{ '/ai-provider-guide' | relative_url }}) | AI provider configuration and management. |
-| [Skill SDK]({{ '/skill-sdk' | relative_url }}) | Build custom skills with the SDK. |
-
-## Development
-
-| Resource | Description |
-|---|---|
-| [Plugin Development]({{ '/plugin-development' | relative_url }}) | Guide to writing HunterX plugins. |
-| [Contributing]({{ '/contributing' | relative_url }}) | How to contribute to HunterX. |
-| [Design Decisions]({{ '/design-decisions' | relative_url }}) | Architectural decisions and rationale. |
-| [Governance]({{ '/governance' | relative_url }}) | Project governance and contribution model. |
-
-## Guides
-
-| Resource | Description |
-|---|---|
-| [Tutorials]({{ '/tutorials' | relative_url }}) | Step-by-step walkthroughs. |
-| [Examples]({{ '/examples' | relative_url }}) | Usage examples and templates. |
-| [Benchmarks]({{ '/benchmarks' | relative_url }}) | Performance benchmarks and comparisons. |
-| [FAQ]({{ '/faq' | relative_url }}) | Frequently asked questions. |
-| [Support Guide]({{ '/support' | relative_url }}) | How to get help and report issues. |
-
-## Comparisons
-
-| Resource | Description |
-|---|---|
-| [vs Burp Suite]({{ '/comparisons/vs-burp' | relative_url }}) | Feature comparison with Burp Suite Professional. |
-| [vs OWASP ZAP]({{ '/comparisons/vs-zap' | relative_url }}) | Feature comparison with OWASP ZAP. |
-| [vs Nuclei]({{ '/comparisons/vs-nuclei' | relative_url }}) | Feature comparison with ProjectDiscovery Nuclei. |
-| [vs OpenVAS]({{ '/comparisons/vs-openvas' | relative_url }}) | Feature comparison with Greenbone OpenVAS. |
-| [vs PayloadsAllTheThings]({{ '/comparisons/vs-payloadsallthethings' | relative_url }}) | How HunterX integrates the PayloadsAllTheThings payload knowledge base. |
-
-## Community
-
-| Resource | Description |
-|---|---|
-| [OWASP Community – Vulnerability Scanning Tools](https://owasp.org/www-community/Vulnerability_Scanning_Tools) | Listed in the OWASP Community Vulnerability Scanning Tools catalog. |
-| [Blog]({{ '/blog' | relative_url }}) | Project news, updates, and technical posts. |
-| [Roadmap]({{ '/roadmap' | relative_url }}) | Upcoming features and development plans. |
-| [Changelog]({{ '/changelog' | relative_url }}) | Full version history. |
-| [Discussions](https://github.com/nullc0d30/HunterX/discussions) | Join the community discussion. |
-| [Issues](https://github.com/nullc0d30/HunterX/issues) | Report bugs and request features. |
-| [Responsible Use]({{ '/responsible-use' | relative_url }}) | Legal notice and acceptable use policy. |
-| [GitHub](https://github.com/nullc0d30/HunterX) | Source code repository. |
-
-## About
-
-| Resource | Description |
-|---|---|
-| [About the Author]({{ '/about-author' | relative_url }}) | About the creator, Ahmed Awad (NullC0d3). |
-| [License]({{ '/license' | relative_url }}) | Apache 2.0 License. |
-| [Security Policy]({{ '/security' | relative_url }}) | Vulnerability disclosure and security policy. |
-| [Release Notes]({{ '/releases' | relative_url }}) | What's new in HunterX v6.0.0. |
-
----
-
-*This documentation hub evolves with each release. Check back for updates.*
+- [v6 Archive](/archive/v6/) — retired HunterX v6.0.0 material (historical reference only)

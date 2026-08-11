@@ -1,0 +1,6996 @@
+{
+  "manifest_version": "1.0.0",
+  "schema": "universal-security-arsenal",
+  "tools": {
+    "amass": {
+      "display_name": "Amass",
+      "vendor": "OWASP",
+      "project_url": "https://github.com/owasp-amass/amass",
+      "license": "Apache-2.0",
+      "version": "4.2.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asn-enumeration",
+        "org-enumeration",
+        "asset-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "recon-json",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.amass:AmassAdapter",
+      "version_constraints": [
+        ">=4.0.0"
+      ],
+      "alternative_tools": [
+        "subfinder",
+        "findomain",
+        "assetfinder"
+      ],
+      "complementary_tools": [
+        "nuclei",
+        "httpx"
+      ],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx",
+        "nuclei"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "subfinder": {
+      "display_name": "Subfinder",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/subfinder",
+      "license": "MIT",
+      "version": "2.14.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asset-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https",
+        "dns"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "recon-json",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.subfinder:SubfinderAdapter",
+      "version_constraints": [
+        ">=2.0.0"
+      ],
+      "alternative_tools": [
+        "amass",
+        "findomain",
+        "assetfinder"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx",
+        "nuclei"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "assetfinder": {
+      "display_name": "Assetfinder",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/assetfinder",
+      "license": "MIT",
+      "version": "0.4.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "recon-text",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.assetfinder:AssetfinderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "subfinder",
+        "findomain"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "findomain": {
+      "display_name": "Findomain",
+      "vendor": "Findomain",
+      "project_url": "https://github.com/Findomain/Findomain",
+      "license": "GPL-3.0",
+      "version": "9.0.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "certificate-enumeration",
+        "dns-intelligence"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "recon-json",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.findomain:FindomainAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "subfinder",
+        "amass"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "theharvester": {
+      "display_name": "theHarvester",
+      "vendor": "Sekaia",
+      "project_url": "https://github.com/laramies/theHarvester",
+      "license": "GPL-2.0",
+      "version": "4.3.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "osint",
+        "org-enumeration",
+        "asset-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "recon-json",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.theharvester:TheHarvesterAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "subfinder",
+        "findomain"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "bbot": {
+      "display_name": "BBOT",
+      "vendor": "Black Lantern Security",
+      "project_url": "https://github.com/blacklanternsecurity/bbot",
+      "license": "GPL-3.0",
+      "version": "2.3.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "subdomain-enumeration",
+        "asset-discovery",
+        "osint"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "recon-json",
+      "normalizer_id": "recon-normalizer",
+      "adapter_id": "hunterx.tools.recon.bbot:BBOTAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "amass",
+        "subfinder"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx",
+        "nuclei"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "spiderfoot": {
+      "display_name": "SpiderFoot",
+      "vendor": "SpiderFoot",
+      "project_url": "https://github.com/smicallef/spiderfoot",
+      "license": "MIT",
+      "version": "4.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "osint",
+        "asset-discovery",
+        "org-enumeration",
+        "asn-enumeration"
+      ],
+      "supported_targets": [
+        "domain",
+        "ip",
+        "org"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "csv"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "dnsrecon": {
+      "display_name": "DNSrecon",
+      "vendor": "darkoperator",
+      "project_url": "https://github.com/darkoperator/dnsrecon",
+      "license": "GPL-2.0",
+      "version": "1.0.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "dns-enumeration",
+        "brute-force-dns",
+        "record-enumeration"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns"
+      ],
+      "output_formats": [
+        "json",
+        "xml"
+      ],
+      "structured_output_formats": [
+        "json",
+        "xml"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "dns"
+      }
+    },
+    "crt-sh": {
+      "display_name": "crt.sh Certificate Transparency",
+      "vendor": "crt.sh",
+      "project_url": "https://crt.sh",
+      "license": "CC0-1.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "certificate-enumeration",
+        "subdomain-enumeration"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "dnsx": {
+      "display_name": "DNSx",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/dnsx",
+      "license": "MIT",
+      "version": "1.2.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "dns-resolution",
+        "record-enumeration",
+        "wildcard-detection"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "dnsx-jsonl",
+      "normalizer_id": "dns-normalizer",
+      "adapter_id": "hunterx.tools.dns.dnsx:DnsxAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "dig",
+        "dnsrecon"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "dns"
+      }
+    },
+    "massdns": {
+      "display_name": "MassDNS",
+      "vendor": "blechschmidt",
+      "project_url": "https://github.com/blechschmidt/massdns",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dns-resolution"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "dns-json",
+      "normalizer_id": "dns-normalizer",
+      "adapter_id": "hunterx.tools.dns.massdns:MassdnsAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "dns"
+      }
+    },
+    "shuffledns": {
+      "display_name": "Shuffledns",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/shuffledns",
+      "license": "MIT",
+      "version": "1.0.9",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dns-resolution",
+        "brute-force-dns"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "dns-json",
+      "normalizer_id": "dns-normalizer",
+      "adapter_id": "hunterx.tools.dns.shuffledns:ShufflednsAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "dns"
+      }
+    },
+    "dnspython": {
+      "display_name": "dnspython",
+      "vendor": "dnspython",
+      "project_url": "https://github.com/rthalley/dnspython",
+      "license": "ISC",
+      "version": "2.6.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "dns-resolution",
+        "record-enumeration"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "dns"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "json",
+      "normalizer_id": "dns-normalizer",
+      "adapter_id": "hunterx.tools.dns.dnspython:DnspythonAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "dig"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "dns"
+      }
+    },
+    "naabu": {
+      "display_name": "Naabu",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/naabu",
+      "license": "MIT",
+      "version": "2.3.1",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery",
+        "host-discovery"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "naabu-jsonl",
+      "normalizer_id": "port-normalizer",
+      "adapter_id": "hunterx.tools.livehost.naabu:NaabuAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nmap",
+        "masscan",
+        "rustscan"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nmap"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "nmap": {
+      "display_name": "Nmap",
+      "vendor": "Nmap Project",
+      "project_url": "https://github.com/nmap/nmap",
+      "license": "Nmap Public Source License",
+      "version": "7.94",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery",
+        "service-discovery",
+        "version-detection",
+        "os-detection",
+        "network-discovery"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "cidr",
+        "network"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp",
+        "icmp",
+        "sctp"
+      ],
+      "output_formats": [
+        "xml",
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "xml"
+      ],
+      "parser_id": "nmap-xml",
+      "normalizer_id": "port-normalizer",
+      "adapter_id": "hunterx.tools.livehost.nmap:NmapAdapter",
+      "version_constraints": [
+        ">=7.0"
+      ],
+      "alternative_tools": [
+        "masscan",
+        "naabu",
+        "rustscan"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "vulners",
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "masscan": {
+      "display_name": "Masscan",
+      "vendor": "robertdavidgraham",
+      "project_url": "https://github.com/robertdavidgraham/masscan",
+      "license": "Apache-2.0",
+      "version": "1.3.2",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "supported_targets": [
+        "ip",
+        "cidr",
+        "network"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "masscan-json",
+      "normalizer_id": "port-normalizer",
+      "adapter_id": "hunterx.tools.livehost.masscan:MasscanAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nmap",
+        "naabu"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nmap"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "rustscan": {
+      "display_name": "RustScan",
+      "vendor": "RustScan",
+      "project_url": "https://github.com/RustScan/RustScan",
+      "license": "MIT",
+      "version": "2.1.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "supported_protocols": [
+        "tcp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "live-observations",
+      "normalizer_id": "live-normalizer",
+      "adapter_id": "hunterx.tools.livehost.rustscan:RustScanAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nmap",
+        "naabu"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nmap"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "unicornscan": {
+      "display_name": "Unicornscan",
+      "vendor": "Unicornscan",
+      "project_url": "https://github.com/curetheplague/Unicornscan",
+      "license": "GPL-2.0",
+      "version": "0.4.7",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "port-discovery"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "arp-scan": {
+      "display_name": "arp-scan",
+      "vendor": "royhills",
+      "project_url": "https://github.com/royhills/arp-scan",
+      "license": "GPL-3.0",
+      "version": "1.10.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "host-discovery",
+        "network-discovery"
+      ],
+      "supported_targets": [
+        "network"
+      ],
+      "supported_protocols": [
+        "arp"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "fping": {
+      "display_name": "fping",
+      "vendor": "fping",
+      "project_url": "https://github.com/schweikert/fping",
+      "license": "Apache-2.0",
+      "version": "5.1.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "host-discovery"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "cidr"
+      ],
+      "supported_protocols": [
+        "icmp"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "network"
+      }
+    },
+    "httpx": {
+      "display_name": "HTTPx",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/httpx",
+      "license": "MIT",
+      "version": "1.6.5",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "http-probing",
+        "technology-detection",
+        "http-configuration-analysis"
+      ],
+      "supported_targets": [
+        "url",
+        "host",
+        "ip"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "httpx-jsonl",
+      "normalizer_id": "tech-normalizer",
+      "adapter_id": "hunterx.tools.tech.httpx:HttpxAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "whatweb",
+        "curl"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "katana",
+        "nuclei"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "whatweb": {
+      "display_name": "WhatWeb",
+      "vendor": "urbanadventurer",
+      "project_url": "https://github.com/urbanadventurer/WhatWeb",
+      "license": "GPL-2.0",
+      "version": "0.5.5",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "technology-detection",
+        "web-server-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "whatweb-json",
+      "normalizer_id": "tech-normalizer",
+      "adapter_id": "hunterx.tools.tech.whatweb:WhatWebAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "httpx",
+        "wappalyzer"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei",
+        "katana"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "wafw00f": {
+      "display_name": "Wafw00f",
+      "vendor": "EnableSecurity",
+      "project_url": "https://github.com/EnableSecurity/wafw00f",
+      "license": "BSD-3-Clause",
+      "version": "2.2.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "waf-detection"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nuclei-waf-templates"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "nikto": {
+      "display_name": "Nikto",
+      "vendor": "sullo",
+      "project_url": "https://github.com/sullo/nikto",
+      "license": "GPL-2.0",
+      "version": "2.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "web-server-analysis",
+        "http-configuration-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "xml",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "xml"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nuclei",
+        "zap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "testssl.sh": {
+      "display_name": "testssl.sh",
+      "vendor": "drwetter",
+      "project_url": "https://github.com/drwetter/testssl.sh",
+      "license": "GPL-2.0",
+      "version": "3.2.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "tls-analysis",
+        "http-configuration-analysis"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "url"
+      ],
+      "supported_protocols": [
+        "tls"
+      ],
+      "output_formats": [
+        "json",
+        "csv",
+        "html"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "sslscan": {
+      "display_name": "SSLScan",
+      "vendor": "rbsec",
+      "project_url": "https://github.com/rbsec/sslscan",
+      "license": "GPL-3.0",
+      "version": "2.1.3",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "tls-analysis"
+      ],
+      "supported_targets": [
+        "host",
+        "ip"
+      ],
+      "supported_protocols": [
+        "tls"
+      ],
+      "output_formats": [
+        "text",
+        "xml"
+      ],
+      "structured_output_formats": [
+        "xml"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "testssl.sh"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "testssl.sh"
+      ],
+      "safety_class": "read-only",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "web"
+      }
+    },
+    "katana": {
+      "display_name": "Katana",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/katana",
+      "license": "MIT",
+      "version": "1.1.2",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "crawling",
+        "url-discovery",
+        "endpoint-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "katana-jsonl",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.katana:KatanaAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gospider",
+        "hakrawler"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "arjun",
+        "linkfinder",
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "gospider": {
+      "display_name": "Gospider",
+      "vendor": "jaeles-project",
+      "project_url": "https://github.com/jaeles-project/gospider",
+      "license": "MIT",
+      "version": "1.1.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "crawling",
+        "url-discovery",
+        "javascript-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "url-jsonl",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.url_discovery:GospiderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "katana",
+        "hakrawler"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "linkfinder",
+        "arjun"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "hakrawler": {
+      "display_name": "Hakrawler",
+      "vendor": "hakluke",
+      "project_url": "https://github.com/hakluke/hakrawler",
+      "license": "GPL-3.0",
+      "version": "2.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "crawling",
+        "url-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "url-text",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.url_discovery:HakrawlerAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "katana",
+        "gospider"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "linkfinder"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "gau": {
+      "display_name": "GAU",
+      "vendor": "lc",
+      "project_url": "https://github.com/lc/gau",
+      "license": "MIT",
+      "version": "2.0.9",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "url-text",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.url_discovery:GauAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "waybackurls",
+        "gauplus"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx",
+        "katana"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "waybackurls": {
+      "display_name": "Waybackurls",
+      "vendor": "tomnomnom",
+      "project_url": "https://github.com/tomnomnom/waybackurls",
+      "license": "MIT",
+      "version": "0.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "url-text",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.url_discovery:WaybackurlsAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gau",
+        "gauplus"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "urlfinder": {
+      "display_name": "URLFinder",
+      "vendor": "codingo",
+      "project_url": "https://github.com/codingo/URLFinder",
+      "license": "MIT",
+      "version": "1.0.2",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "supported_targets": [
+        "domain",
+        "url"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "url-text",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.web.url_discovery:UrlfinderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gau",
+        "waybackurls"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "crobat": {
+      "display_name": "Crobat",
+      "vendor": "Cgboal",
+      "project_url": "https://github.com/Cgboal/SonarSearch",
+      "license": "GPL-3.0",
+      "version": "1.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "subdomain-enumeration",
+        "historical-url-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "subfinder",
+        "amass"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "recon"
+      }
+    },
+    "gauplus": {
+      "display_name": "gauplus",
+      "vendor": "bp0lr",
+      "project_url": "https://github.com/bp0lr/gauplus",
+      "license": "MIT",
+      "version": "1.0.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "historical-url-discovery",
+        "url-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gau",
+        "waybackurls"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "httpx"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "crawl"
+      }
+    },
+    "ffuf": {
+      "display_name": "FFUF",
+      "vendor": "ffuf",
+      "project_url": "https://github.com/ffuf/ffuf",
+      "license": "MIT",
+      "version": "2.1.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "content-discovery",
+        "directory-enumeration",
+        "file-enumeration",
+        "vhost-enumeration"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "ffuf-json",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "hunterx.tools.content.ffuf:FfufAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gobuster",
+        "feroxbuster",
+        "dirsearch"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "content"
+      }
+    },
+    "feroxbuster": {
+      "display_name": "Feroxbuster",
+      "vendor": "epi052",
+      "project_url": "https://github.com/epi052/feroxbuster",
+      "license": "MIT",
+      "version": "2.11.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "content-discovery",
+        "directory-enumeration",
+        "file-enumeration"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "content-jsonl",
+      "normalizer_id": "content-normalizer",
+      "adapter_id": "hunterx.tools.content.bruteforcers:FeroxbusterAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "ffuf",
+        "gobuster",
+        "dirsearch"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "content"
+      }
+    },
+    "gobuster": {
+      "display_name": "Gobuster",
+      "vendor": "OJ",
+      "project_url": "https://github.com/OJ/gobuster",
+      "license": "Apache-2.0",
+      "version": "3.6.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "directory-enumeration",
+        "file-enumeration",
+        "vhost-enumeration"
+      ],
+      "supported_targets": [
+        "url",
+        "domain"
+      ],
+      "supported_protocols": [
+        "http",
+        "https",
+        "dns"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "content-jsonl",
+      "normalizer_id": "content-normalizer",
+      "adapter_id": "hunterx.tools.content.bruteforcers:GobusterAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "ffuf",
+        "feroxbuster",
+        "dirsearch"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "content"
+      }
+    },
+    "dirsearch": {
+      "display_name": "Dirsearch",
+      "vendor": "maurosoria",
+      "project_url": "https://github.com/maurosoria/dirsearch",
+      "license": "GPL-2.0",
+      "version": "0.4.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "directory-enumeration",
+        "file-enumeration"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "content-json",
+      "normalizer_id": "content-normalizer",
+      "adapter_id": "hunterx.tools.content.bruteforcers:DirsearchAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "ffuf",
+        "gobuster",
+        "feroxbuster"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "content"
+      }
+    },
+    "arjun": {
+      "display_name": "Arjun",
+      "vendor": "s0md3v",
+      "project_url": "https://github.com/s0md3v/Arjun",
+      "license": "GPL-3.0",
+      "version": "2.2.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "parameter-discovery",
+        "get-parameter-discovery",
+        "post-parameter-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "parameter-json",
+      "normalizer_id": "parameter-normalizer",
+      "adapter_id": "hunterx.tools.parameter.adapters:ArjunAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "paramspider"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "sqlmap",
+        "dalfox",
+        "nuclei"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "parameter"
+      }
+    },
+    "paramspider": {
+      "display_name": "ParamSpider",
+      "vendor": "devanshbatham",
+      "project_url": "https://github.com/devanshbatham/ParamSpider",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "parameter-discovery",
+        "historical-parameter-discovery"
+      ],
+      "supported_targets": [
+        "domain"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "parameter-text",
+      "normalizer_id": "parameter-normalizer",
+      "adapter_id": "hunterx.tools.parameter.adapters:ParamspiderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "arjun"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "sqlmap",
+        "dalfox"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "parameter"
+      }
+    },
+    "kiterunner": {
+      "display_name": "Kiterunner",
+      "vendor": "assetnote",
+      "project_url": "https://github.com/assetnote/kiterunner",
+      "license": "Apache-2.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "api-discovery",
+        "content-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "parameter-jsonl",
+      "normalizer_id": "parameter-normalizer",
+      "adapter_id": "hunterx.tools.parameter.adapters:KiterunnerAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "graphqlmap",
+        "inql"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "graphqlmap": {
+      "display_name": "GraphQLmap",
+      "vendor": "swisskyrepo",
+      "project_url": "https://github.com/swisskyrepo/GraphQLmap",
+      "license": "MIT",
+      "version": "1.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "graphql-analysis",
+        "graphql-introspection",
+        "query-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "graphql-text",
+      "normalizer_id": "api-normalizer",
+      "adapter_id": "hunterx.tools.api.graphql_binaries:GraphQLmapAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "inql"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "jwt-tool"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "inql": {
+      "display_name": "InQL",
+      "vendor": "doyensec",
+      "project_url": "https://github.com/doyensec/inql",
+      "license": "GPL-3.0",
+      "version": "6.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "graphql-analysis",
+        "graphql-introspection",
+        "query-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "graphql-text",
+      "normalizer_id": "api-normalizer",
+      "adapter_id": "hunterx.tools.api.graphql_binaries:InQLAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "graphqlmap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "jwt-tool"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "jwt-tool": {
+      "display_name": "jwt_tool",
+      "vendor": "ticarpi",
+      "project_url": "https://github.com/ticarpi/jwt_tool",
+      "license": "GPL-3.0",
+      "version": "2.2.6",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "jwt-analysis",
+        "authentication-analysis"
+      ],
+      "supported_targets": [
+        "token",
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "openapi-parser": {
+      "display_name": "OpenAPI / Swagger parser",
+      "vendor": "HunterX",
+      "project_url": "",
+      "license": "Apache-2.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "openapi-analysis",
+        "api-discovery",
+        "api-parameter-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "openapi-parser",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "postman-parser": {
+      "display_name": "Postman collection parser",
+      "vendor": "HunterX",
+      "project_url": "",
+      "license": "Apache-2.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "api-discovery",
+        "api-parameter-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "postman-parser",
+      "normalizer_id": "url-normalizer",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "api"
+      }
+    },
+    "linkfinder": {
+      "display_name": "LinkFinder",
+      "vendor": "GerbenJavado",
+      "project_url": "https://github.com/GerbenJavado/LinkFinder",
+      "license": "GPL-3.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "js-endpoints",
+      "normalizer_id": "js-normalizer",
+      "adapter_id": "hunterx.tools.javascript.external:LinkFinderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "xnlinkfinder",
+        "jsluice"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "secretfinder",
+        "arjun"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "javascript"
+      }
+    },
+    "secretfinder": {
+      "display_name": "SecretFinder",
+      "vendor": "m4ll0k",
+      "project_url": "https://github.com/m4ll0k/SecretFinder",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "secret-indicator-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "js-secrets",
+      "normalizer_id": "js-normalizer",
+      "adapter_id": "hunterx.tools.javascript.external:SecretFinderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "jsluice"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "trufflehog",
+        "detect-secrets"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "javascript"
+      }
+    },
+    "xnlinkfinder": {
+      "display_name": "xnLinkFinder",
+      "vendor": "xnl-h4ck3r",
+      "project_url": "https://github.com/xnl-h4ck3r/xnLinkFinder",
+      "license": "GPL-3.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction",
+        "parameter-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "js-endpoints",
+      "normalizer_id": "js-normalizer",
+      "adapter_id": "hunterx.tools.javascript.external:XnLinkFinderAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "linkfinder",
+        "jsluice"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "secretfinder"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "javascript"
+      }
+    },
+    "jsluice": {
+      "display_name": "JSluice",
+      "vendor": "bishopfox",
+      "project_url": "https://github.com/BishopFox/jsluice",
+      "license": "MIT",
+      "version": "0.1.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "javascript-analysis",
+        "endpoint-extraction",
+        "secret-indicator-discovery",
+        "source-map-discovery"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "linkfinder",
+        "xnlinkfinder"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "secretfinder"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "javascript"
+      }
+    },
+    "nuclei": {
+      "display_name": "Nuclei",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/nuclei",
+      "license": "MIT",
+      "version": "3.2.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "cve-detection",
+        "misconfiguration-detection",
+        "web-vulnerability-detection",
+        "exposure-detection"
+      ],
+      "supported_targets": [
+        "url",
+        "host",
+        "domain",
+        "ip"
+      ],
+      "supported_protocols": [
+        "http",
+        "https",
+        "dns",
+        "tcp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "nuclei-jsonl",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.nuclei:NucleiAdapter",
+      "version_constraints": [
+        ">=3.0.0"
+      ],
+      "alternative_tools": [
+        "nikto",
+        "zap",
+        "openvas"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh",
+        "sqlmap",
+        "dalfox"
+      ],
+      "safety_class": "low-impact-active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "vulnerability"
+      }
+    },
+    "openvas": {
+      "display_name": "OpenVAS / Greenbone",
+      "vendor": "Greenbone",
+      "project_url": "https://github.com/greenbone/openvas-scanner",
+      "license": "AGPL-3.0",
+      "version": "23.0.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "cve-detection",
+        "misconfiguration-detection",
+        "network-vulnerability-detection"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp"
+      ],
+      "output_formats": [
+        "xml",
+        "json"
+      ],
+      "structured_output_formats": [
+        "xml"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nuclei"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "vulnerability"
+      }
+    },
+    "wapiti": {
+      "display_name": "Wapiti",
+      "vendor": "IFSIC",
+      "project_url": "https://github.com/wapiti-scanner/wapiti",
+      "license": "Apache-2.0",
+      "version": "3.1.7",
+      "support_level": "partial-support",
+      "capabilities": [
+        "web-vulnerability-detection"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "html",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "nuclei"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "vulnerability"
+      }
+    },
+    "dalfox": {
+      "display_name": "Dalfox",
+      "vendor": "hahwul",
+      "project_url": "https://github.com/hahwul/dalfox",
+      "license": "MIT",
+      "version": "2.9.3",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xss-discovery",
+        "reflection-analysis",
+        "parameter-analysis",
+        "xss-validation"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "candidate-json",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:DalfoxAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "xssstrike"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "xssstrike": {
+      "display_name": "XSStrike",
+      "vendor": "s0md3v",
+      "project_url": "https://github.com/s0md3v/XSStrike",
+      "license": "GPL-3.0",
+      "version": "3.1.5",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xss-discovery",
+        "dom-analysis",
+        "reflection-analysis"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:XSStrikeAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "dalfox"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "sqlmap": {
+      "display_name": "SQLmap",
+      "vendor": "sqlmapproject",
+      "project_url": "https://github.com/sqlmapproject/sqlmap",
+      "license": "GPL-2.0",
+      "version": "1.8.6",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sql-injection-detection",
+        "sql-injection-validation",
+        "database-fingerprinting"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:SQLmapAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "ghauri"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "ghauri": {
+      "display_name": "Ghauri",
+      "vendor": "rwxdot",
+      "project_url": "https://github.com/rwxdot/ghauri",
+      "license": "MIT",
+      "version": "2.0.4",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sql-injection-detection",
+        "sql-injection-validation",
+        "database-fingerprinting"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:GhauriAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "sqlmap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "commix": {
+      "display_name": "Commix",
+      "vendor": "commixproject",
+      "project_url": "https://github.com/commixproject/commix",
+      "license": "GPL-3.0",
+      "version": "3.9.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "command-injection-detection",
+        "command-injection-validation"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:CommixAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh",
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "tplmap": {
+      "display_name": "Tplmap",
+      "vendor": "epinna",
+      "project_url": "https://github.com/epinna/tplmap",
+      "license": "GPL-3.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "ssti-detection",
+        "template-engine-identification"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:TplmapAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "sstimap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh",
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "sstimap": {
+      "display_name": "SSTImap",
+      "vendor": "vladris",
+      "project_url": "https://github.com/vladris/sstimap",
+      "license": "MIT",
+      "version": "1.2.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "ssti-detection",
+        "ssti-validation",
+        "template-engine-identification"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:SSTImapAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "tplmap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh",
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "xxeinjector": {
+      "display_name": "XXEinjector",
+      "vendor": "enjoiz",
+      "project_url": "https://github.com/enjoiz/XXEinjector",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "xxe-detection",
+        "xxe-validation",
+        "oob-xml-interaction"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:XXEinjectorAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "interactsh",
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "injection"
+      }
+    },
+    "interactsh": {
+      "display_name": "Interactsh",
+      "vendor": "ProjectDiscovery",
+      "project_url": "https://github.com/projectdiscovery/interactsh",
+      "license": "MIT",
+      "version": "1.2.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "oob-callback",
+        "dns-callback",
+        "http-callback",
+        "smtp-callback",
+        "interaction-correlation"
+      ],
+      "supported_targets": [
+        "callback"
+      ],
+      "supported_protocols": [
+        "dns",
+        "http",
+        "https",
+        "smtp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "candidate-text",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.vuln.injection:InteractshAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "oob"
+      }
+    },
+    "gitleaks": {
+      "display_name": "Gitleaks",
+      "vendor": "gitleaks",
+      "project_url": "https://github.com/gitleaks/gitleaks",
+      "license": "MIT",
+      "version": "8.18.4",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery",
+        "key-discovery"
+      ],
+      "supported_targets": [
+        "repository",
+        "directory",
+        "file"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "gitleaks-json",
+      "normalizer_id": "secret-normalizer",
+      "adapter_id": "hunterx.tools.secrets.gitleaks:GitleaksAdapter",
+      "version_constraints": [
+        ">=8.0.0"
+      ],
+      "alternative_tools": [
+        "trufflehog",
+        "detect-secrets"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "redaction"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "secrets"
+      }
+    },
+    "trufflehog": {
+      "display_name": "TruffleHog",
+      "vendor": "Truffle Security",
+      "project_url": "https://github.com/trufflesecurity/trufflehog",
+      "license": "AGPL-3.0",
+      "version": "3.80.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery"
+      ],
+      "supported_targets": [
+        "repository",
+        "directory",
+        "url"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "secrets-jsonl",
+      "normalizer_id": "secret-normalizer",
+      "adapter_id": "hunterx.tools.secrets.trufflehog:TrufflehogAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gitleaks",
+        "detect-secrets"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "redaction"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "secrets"
+      }
+    },
+    "detect-secrets": {
+      "display_name": "detect-secrets",
+      "vendor": "Yelp",
+      "project_url": "https://github.com/Yelp/detect-secrets",
+      "license": "Apache-2.0",
+      "version": "1.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "secret-discovery",
+        "credential-discovery",
+        "token-discovery"
+      ],
+      "supported_targets": [
+        "repository",
+        "directory",
+        "file"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "gitleaks",
+        "trufflehog"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "redaction"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "secrets"
+      }
+    },
+    "semgrep": {
+      "display_name": "Semgrep",
+      "vendor": "Semgrep",
+      "project_url": "https://github.com/semgrep/semgrep",
+      "license": "LGPL-2.1",
+      "version": "1.82.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sast",
+        "code-pattern-analysis",
+        "vulnerability-pattern-detection"
+      ],
+      "supported_targets": [
+        "directory",
+        "repository",
+        "file"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "sarif",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "sarif"
+      ],
+      "parser_id": "candidate-json",
+      "normalizer_id": "vulnerability-candidate-normalizer",
+      "adapter_id": "hunterx.tools.sast.semgrep:SemgrepAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "codeql"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "sast"
+      }
+    },
+    "codeql": {
+      "display_name": "CodeQL CLI",
+      "vendor": "GitHub",
+      "project_url": "https://github.com/github/codeql-cli-binaries",
+      "license": "Commercial / available where licensing permits",
+      "version": "2.17.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "sast",
+        "code-flow-analysis",
+        "taint-analysis",
+        "vulnerability-pattern-detection"
+      ],
+      "supported_targets": [
+        "directory",
+        "repository"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "sarif",
+        "text"
+      ],
+      "structured_output_formats": [
+        "sarif"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "semgrep"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "sast"
+      }
+    },
+    "zap": {
+      "display_name": "OWASP ZAP",
+      "vendor": "OWASP",
+      "project_url": "https://github.com/zaproxy/zaproxy",
+      "license": "Apache-2.0",
+      "version": "2.15.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "http-interception",
+        "request-replay",
+        "response-analysis",
+        "active-testing"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "xml",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "xml"
+      ],
+      "parser_id": "proxy-text",
+      "normalizer_id": "proxy-normalizer",
+      "adapter_id": "hunterx.tools.proxy.adapters:ZapAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "mitmproxy"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "proxy"
+      }
+    },
+    "mitmproxy": {
+      "display_name": "mitmproxy",
+      "vendor": "mitmproxy",
+      "project_url": "https://github.com/mitmproxy/mitmproxy",
+      "license": "MIT",
+      "version": "10.4.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "http-interception",
+        "request-replay",
+        "response-analysis",
+        "traffic-capture"
+      ],
+      "supported_targets": [
+        "traffic"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "proxy-text",
+      "normalizer_id": "proxy-normalizer",
+      "adapter_id": "hunterx.tools.proxy.adapters:MitmproxyAdapter",
+      "version_constraints": [],
+      "alternative_tools": [
+        "zap"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "proxy"
+      }
+    },
+    "proof-replay": {
+      "display_name": "Proof Replay",
+      "vendor": "HunterX",
+      "project_url": "",
+      "license": "Apache-2.0",
+      "version": "1.0.0",
+      "support_level": "fully-supported",
+      "capabilities": [
+        "safe-validation",
+        "proof-replay",
+        "impact-statement"
+      ],
+      "supported_targets": [
+        "url",
+        "host",
+        "domain",
+        "ip",
+        "service"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "json",
+      "normalizer_id": "proof-replay-normalizer",
+      "adapter_id": "hunterx.tools.proof_replay.adapters:ProofReplayAdapter",
+      "version_constraints": [
+        ">=1.0.0"
+      ],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [
+        "interactsh",
+        "sqlmap",
+        "dalfox",
+        "sstimap",
+        "xxeinjector"
+      ],
+      "recommended_successors": [],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "proof"
+      }
+    },
+    "netexec": {
+      "display_name": "NetExec",
+      "vendor": "Pennyw0rth",
+      "project_url": "https://github.com/Pennyw0rth/NetExec",
+      "license": "BSD-2-Clause",
+      "version": "1.1.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration",
+        "ldap-enumeration",
+        "domain-enumeration"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "supported_protocols": [
+        "smb",
+        "ldap",
+        "winrm",
+        "mssql",
+        "rdp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "impacket",
+        "enum4linux-ng"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "ldapsearch"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "enterprise"
+      }
+    },
+    "impacket": {
+      "display_name": "Impacket",
+      "vendor": "fortra",
+      "project_url": "https://github.com/fortra/impacket",
+      "license": "Apache-2.0",
+      "version": "0.12.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "kerberos-enumeration",
+        "domain-enumeration"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "domain"
+      ],
+      "supported_protocols": [
+        "smb",
+        "ldap",
+        "kerberos",
+        "winrm",
+        "mssql"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "netexec"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "ldapsearch"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "enterprise"
+      }
+    },
+    "enum4linux-ng": {
+      "display_name": "enum4linux-ng",
+      "vendor": "cdsheets",
+      "project_url": "https://github.com/cddmp/enum4linux-ng",
+      "license": "GPL-2.0",
+      "version": "1.3.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration",
+        "domain-enumeration"
+      ],
+      "supported_targets": [
+        "host",
+        "ip"
+      ],
+      "supported_protocols": [
+        "smb",
+        "netbios",
+        "rpc"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "netexec",
+        "impacket"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "ldapsearch"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "enterprise"
+      }
+    },
+    "ldapsearch": {
+      "display_name": "ldapsearch",
+      "vendor": "OpenLDAP",
+      "project_url": "https://www.openldap.org/software/man.cgi?query=ldapsearch",
+      "license": "OpenLDAP Public License",
+      "version": "2.6.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "ldap-enumeration",
+        "active-directory-intelligence"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "domain"
+      ],
+      "supported_protocols": [
+        "ldap",
+        "ldaps"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "enterprise"
+      }
+    },
+    "rpcclient": {
+      "display_name": "rpcclient",
+      "vendor": "Samba",
+      "project_url": "https://www.samba.org/samba/docs/current/man-html/rpcclient.1.html",
+      "license": "GPL-3.0",
+      "version": "4.20.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "smb-enumeration",
+        "windows-enumeration"
+      ],
+      "supported_targets": [
+        "host",
+        "ip"
+      ],
+      "supported_protocols": [
+        "smb",
+        "msrpc"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "active",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "enterprise"
+      }
+    },
+    "snmpwalk": {
+      "display_name": "snmpwalk",
+      "vendor": "NET-SNMP",
+      "project_url": "https://github.com/net-snmp/net-snmp",
+      "license": "BSD-3-Clause",
+      "version": "5.9.4",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "snmp-enumeration",
+        "network-device-enumeration"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "network"
+      ],
+      "supported_protocols": [
+        "udp",
+        "snmp"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "snmp"
+      }
+    },
+    "prowler": {
+      "display_name": "Prowler",
+      "vendor": "Prowler",
+      "project_url": "https://github.com/prowler-cloud/prowler",
+      "license": "Apache-2.0",
+      "version": "4.5.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "aws-security",
+        "azure-security",
+        "gcp-security",
+        "cloud-asset-discovery",
+        "cloud-misconfiguration"
+      ],
+      "supported_targets": [
+        "cloud"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "csv",
+        "html",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "scoutsuite"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "cloud"
+      }
+    },
+    "scoutsuite": {
+      "display_name": "ScoutSuite",
+      "vendor": "nccgroup",
+      "project_url": "https://github.com/nccgroup/ScoutSuite",
+      "license": "GPL-2.0",
+      "version": "5.14.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "aws-security",
+        "azure-security",
+        "gcp-security",
+        "cloud-misconfiguration"
+      ],
+      "supported_targets": [
+        "cloud"
+      ],
+      "supported_protocols": [
+        "https"
+      ],
+      "output_formats": [
+        "json",
+        "html"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [
+        "prowler"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "cloud"
+      }
+    },
+    "trivy": {
+      "display_name": "Trivy",
+      "vendor": "Aqua Security",
+      "project_url": "https://github.com/aquasecurity/trivy",
+      "license": "Apache-2.0",
+      "version": "0.54.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "container-analysis",
+        "image-analysis",
+        "sbom",
+        "dependency-analysis"
+      ],
+      "supported_targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "supported_protocols": [
+        "oci",
+        "container"
+      ],
+      "output_formats": [
+        "json",
+        "table",
+        "sarif",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "sarif"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "container"
+      }
+    },
+    "syft": {
+      "display_name": "Syft",
+      "vendor": "Anchore",
+      "project_url": "https://github.com/anchore/syft",
+      "license": "Apache-2.0",
+      "version": "1.9.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "sbom-generation",
+        "container-analysis",
+        "dependency-analysis"
+      ],
+      "supported_targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "cyclonedx",
+        "spdx",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "cyclonedx",
+        "spdx"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "trivy",
+        "grype"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "container"
+      }
+    },
+    "grype": {
+      "display_name": "Grype",
+      "vendor": "Anchore",
+      "project_url": "https://github.com/anchore/grype",
+      "license": "Apache-2.0",
+      "version": "0.80.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "container-analysis",
+        "cve-analysis",
+        "dependency-analysis"
+      ],
+      "supported_targets": [
+        "image",
+        "directory",
+        "filesystem"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "table",
+        "sarif",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json",
+        "sarif"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [
+        "syft"
+      ],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "container"
+      }
+    },
+    "kube-bench": {
+      "display_name": "kube-bench",
+      "vendor": "Aqua Security",
+      "project_url": "https://github.com/aquasecurity/kube-bench",
+      "license": "Apache-2.0",
+      "version": "0.9.3",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "kubernetes-security",
+        "k8s-configuration-analysis"
+      ],
+      "supported_targets": [
+        "kubernetes"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "container"
+      }
+    },
+    "osv-scanner": {
+      "display_name": "OSV-Scanner",
+      "vendor": "google",
+      "project_url": "https://github.com/google/osv-scanner",
+      "license": "Apache-2.0",
+      "version": "1.8.4",
+      "support_level": "partial-support",
+      "capabilities": [
+        "dependency-analysis",
+        "vulnerability-mapping"
+      ],
+      "supported_targets": [
+        "lockfile",
+        "directory",
+        "filesystem"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "validation"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "composition"
+      }
+    },
+    "metasploit": {
+      "display_name": "Metasploit Framework",
+      "vendor": "Rapid7",
+      "project_url": "https://github.com/rapid7/metasploit-framework",
+      "license": "BSD-3-Clause",
+      "version": "6.4.0",
+      "support_level": "execution-only",
+      "capabilities": [
+        "exploit-validation",
+        "service-validation",
+        "payload-capability",
+        "session-management"
+      ],
+      "supported_targets": [
+        "host",
+        "ip",
+        "service"
+      ],
+      "supported_protocols": [
+        "tcp",
+        "udp",
+        "http",
+        "smb",
+        "rdp"
+      ],
+      "output_formats": [
+        "json",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "exploit-text",
+      "normalizer_id": "exploit-normalizer",
+      "adapter_id": "hunterx.tools.exploit.adapters:MetasploitAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "proof-replay"
+      ],
+      "safety_class": "high-impact",
+      "destructive": true,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "exploit"
+      }
+    },
+    "searchsploit": {
+      "display_name": "SearchSploit / ExploitDB",
+      "vendor": "Exploit-DB",
+      "project_url": "https://gitlab.com/exploit-database/exploitdb",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "exploit-research",
+        "cve-research",
+        "version-mapping"
+      ],
+      "supported_targets": [
+        "software",
+        "service"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "exploit-json",
+      "normalizer_id": "exploit-normalizer",
+      "adapter_id": "hunterx.tools.exploit.adapters:SearchsploitAdapter",
+      "version_constraints": [
+        ">=1.0.0"
+      ],
+      "alternative_tools": [
+        "exploitdb"
+      ],
+      "complementary_tools": [],
+      "recommended_predecessors": [
+        "nmap",
+        "nuclei"
+      ],
+      "recommended_successors": [
+        "metasploit"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "exploit"
+      }
+    },
+    "exploitdb": {
+      "display_name": "ExploitDB",
+      "vendor": "Exploit-DB",
+      "project_url": "https://gitlab.com/exploit-database/exploitdb",
+      "license": "MIT",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "exploit-research",
+        "cve-research",
+        "version-mapping"
+      ],
+      "supported_targets": [
+        "software",
+        "service"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "exploit-json",
+      "normalizer_id": "exploit-normalizer",
+      "adapter_id": "hunterx.tools.exploit.adapters:ExploitdbAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [
+        "searchsploit"
+      ],
+      "recommended_successors": [
+        "metasploit"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "exploit"
+      }
+    },
+    "cewl": {
+      "display_name": "CeWL",
+      "vendor": "digininja",
+      "project_url": "https://github.com/digininja/CeWL",
+      "license": "GPL-3.0",
+      "version": "6.2.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "wordlist-generation",
+        "content-discovery-aid",
+        "custom-wordlists"
+      ],
+      "supported_targets": [
+        "url"
+      ],
+      "supported_protocols": [
+        "http",
+        "https"
+      ],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "payload"
+      }
+    },
+    "hashcat": {
+      "display_name": "Hashcat",
+      "vendor": "hashcat",
+      "project_url": "https://github.com/hashcat/hashcat",
+      "license": "MIT",
+      "version": "6.2.6",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "password-cracking",
+        "hash-analysis",
+        "hash-modes"
+      ],
+      "supported_targets": [
+        "hash"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "payload"
+      }
+    },
+    "john": {
+      "display_name": "John the Ripper",
+      "vendor": "Openwall",
+      "project_url": "https://github.com/openwall/john",
+      "license": "GPL-2.0",
+      "version": "1.9.0",
+      "support_level": "knowledge-only",
+      "capabilities": [
+        "password-cracking",
+        "hash-analysis"
+      ],
+      "supported_targets": [
+        "hash"
+      ],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "",
+      "normalizer_id": "",
+      "adapter_id": "",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "analysis"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "payload"
+      }
+    },
+    "payloadsallthethings": {
+      "display_name": "PayloadsAllTheThings",
+      "vendor": "swisskyrepo",
+      "project_url": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "license": "MIT",
+      "version": "2025.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "payload-intelligence",
+        "payload-generation",
+        "vulnerability-class-payloads"
+      ],
+      "supported_targets": [],
+      "supported_protocols": [],
+      "output_formats": [
+        "markdown",
+        "text"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "dataset-json",
+      "normalizer_id": "dataset-normalizer",
+      "adapter_id": "hunterx.tools.knowledge.adapters:PayloadsAllTheThingsAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "dalfox",
+        "sqlmap",
+        "ghauri",
+        "commix",
+        "sstimap",
+        "xxeinjector"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "knowledge"
+      }
+    },
+    "seclists": {
+      "display_name": "SecLists",
+      "vendor": "danielmiessler",
+      "project_url": "https://github.com/danielmiessler/SecLists",
+      "license": "MIT",
+      "version": "2025.1",
+      "support_level": "partial-support",
+      "capabilities": [
+        "wordlist-provider",
+        "content-discovery-aid",
+        "dns-bruteforce-aid",
+        "password-audit-aid"
+      ],
+      "supported_targets": [],
+      "supported_protocols": [],
+      "output_formats": [
+        "text"
+      ],
+      "structured_output_formats": [],
+      "parser_id": "dataset-json",
+      "normalizer_id": "dataset-normalizer",
+      "adapter_id": "hunterx.tools.knowledge.adapters:SeclistsAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "ffuf",
+        "gobuster",
+        "feroxbuster",
+        "dirsearch",
+        "massdns",
+        "shuffledns"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "knowledge"
+      }
+    },
+    "fuzzdb": {
+      "display_name": "FuzzDB",
+      "vendor": "fuzzdb-project",
+      "project_url": "https://github.com/fuzzdb-project/fuzzdb",
+      "license": "CC0-1.0",
+      "version": "1.0.0",
+      "support_level": "partial-support",
+      "capabilities": [
+        "attack-patterns",
+        "payload-intelligence",
+        "response-patterns",
+        "discovery-dictionaries"
+      ],
+      "supported_targets": [],
+      "supported_protocols": [],
+      "output_formats": [
+        "text",
+        "json"
+      ],
+      "structured_output_formats": [
+        "json"
+      ],
+      "parser_id": "dataset-json",
+      "normalizer_id": "dataset-normalizer",
+      "adapter_id": "hunterx.tools.knowledge.adapters:FuzzdbAdapter",
+      "version_constraints": [],
+      "alternative_tools": [],
+      "complementary_tools": [],
+      "recommended_predecessors": [],
+      "recommended_successors": [
+        "ffuf",
+        "dalfox",
+        "sqlmap",
+        "commix",
+        "sstimap"
+      ],
+      "safety_class": "passive",
+      "destructive": false,
+      "provenance": {
+        "source": "sprint-025",
+        "category": "knowledge"
+      }
+    }
+  },
+  "capabilities": {
+    "active-directory-intelligence": {
+      "tools": [
+        "ldapsearch"
+      ]
+    },
+    "active-testing": {
+      "tools": [
+        "zap"
+      ]
+    },
+    "api-discovery": {
+      "tools": [
+        "kiterunner",
+        "openapi-parser",
+        "postman-parser"
+      ]
+    },
+    "api-parameter-analysis": {
+      "tools": [
+        "openapi-parser",
+        "postman-parser"
+      ]
+    },
+    "asn-enumeration": {
+      "tools": [
+        "amass",
+        "spiderfoot"
+      ]
+    },
+    "asset-discovery": {
+      "tools": [
+        "amass",
+        "bbot",
+        "spiderfoot",
+        "subfinder",
+        "theharvester"
+      ]
+    },
+    "attack-patterns": {
+      "tools": [
+        "fuzzdb"
+      ]
+    },
+    "authentication-analysis": {
+      "tools": [
+        "jwt-tool"
+      ]
+    },
+    "aws-security": {
+      "tools": [
+        "prowler",
+        "scoutsuite"
+      ]
+    },
+    "azure-security": {
+      "tools": [
+        "prowler",
+        "scoutsuite"
+      ]
+    },
+    "brute-force-dns": {
+      "tools": [
+        "dnsrecon",
+        "shuffledns"
+      ]
+    },
+    "certificate-enumeration": {
+      "tools": [
+        "crt-sh",
+        "findomain"
+      ]
+    },
+    "cloud-asset-discovery": {
+      "tools": [
+        "prowler"
+      ]
+    },
+    "cloud-misconfiguration": {
+      "tools": [
+        "prowler",
+        "scoutsuite"
+      ]
+    },
+    "code-flow-analysis": {
+      "tools": [
+        "codeql"
+      ]
+    },
+    "code-pattern-analysis": {
+      "tools": [
+        "semgrep"
+      ]
+    },
+    "command-injection-detection": {
+      "tools": [
+        "commix"
+      ]
+    },
+    "command-injection-validation": {
+      "tools": [
+        "commix"
+      ]
+    },
+    "container-analysis": {
+      "tools": [
+        "grype",
+        "syft",
+        "trivy"
+      ]
+    },
+    "content-discovery": {
+      "tools": [
+        "feroxbuster",
+        "ffuf",
+        "kiterunner"
+      ]
+    },
+    "content-discovery-aid": {
+      "tools": [
+        "cewl",
+        "seclists"
+      ]
+    },
+    "crawling": {
+      "tools": [
+        "gospider",
+        "hakrawler",
+        "katana"
+      ]
+    },
+    "credential-discovery": {
+      "tools": [
+        "detect-secrets",
+        "gitleaks",
+        "trufflehog"
+      ]
+    },
+    "custom-wordlists": {
+      "tools": [
+        "cewl"
+      ]
+    },
+    "cve-analysis": {
+      "tools": [
+        "grype"
+      ]
+    },
+    "cve-detection": {
+      "tools": [
+        "nuclei",
+        "openvas"
+      ]
+    },
+    "cve-research": {
+      "tools": [
+        "exploitdb",
+        "searchsploit"
+      ]
+    },
+    "database-fingerprinting": {
+      "tools": [
+        "ghauri",
+        "sqlmap"
+      ]
+    },
+    "dependency-analysis": {
+      "tools": [
+        "grype",
+        "osv-scanner",
+        "syft",
+        "trivy"
+      ]
+    },
+    "directory-enumeration": {
+      "tools": [
+        "dirsearch",
+        "feroxbuster",
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "discovery-dictionaries": {
+      "tools": [
+        "fuzzdb"
+      ]
+    },
+    "dns-bruteforce-aid": {
+      "tools": [
+        "seclists"
+      ]
+    },
+    "dns-callback": {
+      "tools": [
+        "interactsh"
+      ]
+    },
+    "dns-enumeration": {
+      "tools": [
+        "dnsrecon"
+      ]
+    },
+    "dns-intelligence": {
+      "tools": [
+        "findomain"
+      ]
+    },
+    "dns-resolution": {
+      "tools": [
+        "dnspython",
+        "dnsx",
+        "massdns",
+        "shuffledns"
+      ]
+    },
+    "dom-analysis": {
+      "tools": [
+        "xssstrike"
+      ]
+    },
+    "domain-enumeration": {
+      "tools": [
+        "enum4linux-ng",
+        "impacket",
+        "netexec"
+      ]
+    },
+    "endpoint-discovery": {
+      "tools": [
+        "katana"
+      ]
+    },
+    "endpoint-extraction": {
+      "tools": [
+        "jsluice",
+        "linkfinder",
+        "xnlinkfinder"
+      ]
+    },
+    "exploit-research": {
+      "tools": [
+        "exploitdb",
+        "searchsploit"
+      ]
+    },
+    "exploit-validation": {
+      "tools": [
+        "metasploit"
+      ]
+    },
+    "exposure-detection": {
+      "tools": [
+        "nuclei"
+      ]
+    },
+    "file-enumeration": {
+      "tools": [
+        "dirsearch",
+        "feroxbuster",
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "gcp-security": {
+      "tools": [
+        "prowler",
+        "scoutsuite"
+      ]
+    },
+    "get-parameter-discovery": {
+      "tools": [
+        "arjun"
+      ]
+    },
+    "graphql-analysis": {
+      "tools": [
+        "graphqlmap",
+        "inql"
+      ]
+    },
+    "graphql-introspection": {
+      "tools": [
+        "graphqlmap",
+        "inql"
+      ]
+    },
+    "hash-analysis": {
+      "tools": [
+        "hashcat",
+        "john"
+      ]
+    },
+    "hash-modes": {
+      "tools": [
+        "hashcat"
+      ]
+    },
+    "historical-parameter-discovery": {
+      "tools": [
+        "paramspider"
+      ]
+    },
+    "historical-url-discovery": {
+      "tools": [
+        "crobat",
+        "gau",
+        "gauplus",
+        "urlfinder",
+        "waybackurls"
+      ]
+    },
+    "host-discovery": {
+      "tools": [
+        "arp-scan",
+        "fping",
+        "naabu"
+      ]
+    },
+    "http-callback": {
+      "tools": [
+        "interactsh"
+      ]
+    },
+    "http-configuration-analysis": {
+      "tools": [
+        "httpx",
+        "nikto",
+        "testssl.sh"
+      ]
+    },
+    "http-interception": {
+      "tools": [
+        "mitmproxy",
+        "zap"
+      ]
+    },
+    "http-probing": {
+      "tools": [
+        "httpx"
+      ]
+    },
+    "image-analysis": {
+      "tools": [
+        "trivy"
+      ]
+    },
+    "impact-statement": {
+      "tools": [
+        "proof-replay"
+      ]
+    },
+    "interaction-correlation": {
+      "tools": [
+        "interactsh"
+      ]
+    },
+    "javascript-analysis": {
+      "tools": [
+        "jsluice",
+        "linkfinder",
+        "secretfinder",
+        "xnlinkfinder"
+      ]
+    },
+    "javascript-discovery": {
+      "tools": [
+        "gospider"
+      ]
+    },
+    "jwt-analysis": {
+      "tools": [
+        "jwt-tool"
+      ]
+    },
+    "k8s-configuration-analysis": {
+      "tools": [
+        "kube-bench"
+      ]
+    },
+    "kerberos-enumeration": {
+      "tools": [
+        "impacket"
+      ]
+    },
+    "key-discovery": {
+      "tools": [
+        "gitleaks"
+      ]
+    },
+    "kubernetes-security": {
+      "tools": [
+        "kube-bench"
+      ]
+    },
+    "ldap-enumeration": {
+      "tools": [
+        "ldapsearch",
+        "netexec"
+      ]
+    },
+    "misconfiguration-detection": {
+      "tools": [
+        "nuclei",
+        "openvas"
+      ]
+    },
+    "network-device-enumeration": {
+      "tools": [
+        "snmpwalk"
+      ]
+    },
+    "network-discovery": {
+      "tools": [
+        "arp-scan",
+        "nmap"
+      ]
+    },
+    "network-vulnerability-detection": {
+      "tools": [
+        "openvas"
+      ]
+    },
+    "oob-callback": {
+      "tools": [
+        "interactsh"
+      ]
+    },
+    "oob-xml-interaction": {
+      "tools": [
+        "xxeinjector"
+      ]
+    },
+    "openapi-analysis": {
+      "tools": [
+        "openapi-parser"
+      ]
+    },
+    "org-enumeration": {
+      "tools": [
+        "amass",
+        "spiderfoot",
+        "theharvester"
+      ]
+    },
+    "os-detection": {
+      "tools": [
+        "nmap"
+      ]
+    },
+    "osint": {
+      "tools": [
+        "bbot",
+        "spiderfoot",
+        "theharvester"
+      ]
+    },
+    "parameter-analysis": {
+      "tools": [
+        "dalfox"
+      ]
+    },
+    "parameter-discovery": {
+      "tools": [
+        "arjun",
+        "paramspider",
+        "xnlinkfinder"
+      ]
+    },
+    "password-audit-aid": {
+      "tools": [
+        "seclists"
+      ]
+    },
+    "password-cracking": {
+      "tools": [
+        "hashcat",
+        "john"
+      ]
+    },
+    "payload-capability": {
+      "tools": [
+        "metasploit"
+      ]
+    },
+    "payload-generation": {
+      "tools": [
+        "payloadsallthethings"
+      ]
+    },
+    "payload-intelligence": {
+      "tools": [
+        "fuzzdb",
+        "payloadsallthethings"
+      ]
+    },
+    "port-discovery": {
+      "tools": [
+        "masscan",
+        "naabu",
+        "nmap",
+        "rustscan",
+        "unicornscan"
+      ]
+    },
+    "post-parameter-discovery": {
+      "tools": [
+        "arjun"
+      ]
+    },
+    "proof-replay": {
+      "tools": [
+        "proof-replay"
+      ]
+    },
+    "query-analysis": {
+      "tools": [
+        "graphqlmap",
+        "inql"
+      ]
+    },
+    "record-enumeration": {
+      "tools": [
+        "dnspython",
+        "dnsrecon",
+        "dnsx"
+      ]
+    },
+    "reflection-analysis": {
+      "tools": [
+        "dalfox",
+        "xssstrike"
+      ]
+    },
+    "request-replay": {
+      "tools": [
+        "mitmproxy",
+        "zap"
+      ]
+    },
+    "response-analysis": {
+      "tools": [
+        "mitmproxy",
+        "zap"
+      ]
+    },
+    "response-patterns": {
+      "tools": [
+        "fuzzdb"
+      ]
+    },
+    "safe-validation": {
+      "tools": [
+        "proof-replay"
+      ]
+    },
+    "sast": {
+      "tools": [
+        "codeql",
+        "semgrep"
+      ]
+    },
+    "sbom": {
+      "tools": [
+        "trivy"
+      ]
+    },
+    "sbom-generation": {
+      "tools": [
+        "syft"
+      ]
+    },
+    "secret-discovery": {
+      "tools": [
+        "detect-secrets",
+        "gitleaks",
+        "trufflehog"
+      ]
+    },
+    "secret-indicator-discovery": {
+      "tools": [
+        "jsluice",
+        "secretfinder"
+      ]
+    },
+    "service-discovery": {
+      "tools": [
+        "nmap"
+      ]
+    },
+    "service-validation": {
+      "tools": [
+        "metasploit"
+      ]
+    },
+    "session-management": {
+      "tools": [
+        "metasploit"
+      ]
+    },
+    "smb-enumeration": {
+      "tools": [
+        "enum4linux-ng",
+        "impacket",
+        "netexec",
+        "rpcclient"
+      ]
+    },
+    "smtp-callback": {
+      "tools": [
+        "interactsh"
+      ]
+    },
+    "snmp-enumeration": {
+      "tools": [
+        "snmpwalk"
+      ]
+    },
+    "source-map-discovery": {
+      "tools": [
+        "jsluice"
+      ]
+    },
+    "sql-injection-detection": {
+      "tools": [
+        "ghauri",
+        "sqlmap"
+      ]
+    },
+    "sql-injection-validation": {
+      "tools": [
+        "ghauri",
+        "sqlmap"
+      ]
+    },
+    "ssti-detection": {
+      "tools": [
+        "sstimap",
+        "tplmap"
+      ]
+    },
+    "ssti-validation": {
+      "tools": [
+        "sstimap"
+      ]
+    },
+    "subdomain-enumeration": {
+      "tools": [
+        "amass",
+        "assetfinder",
+        "bbot",
+        "crobat",
+        "crt-sh",
+        "findomain",
+        "subfinder",
+        "theharvester"
+      ]
+    },
+    "taint-analysis": {
+      "tools": [
+        "codeql"
+      ]
+    },
+    "technology-detection": {
+      "tools": [
+        "httpx",
+        "whatweb"
+      ]
+    },
+    "template-engine-identification": {
+      "tools": [
+        "sstimap",
+        "tplmap"
+      ]
+    },
+    "tls-analysis": {
+      "tools": [
+        "sslscan",
+        "testssl.sh"
+      ]
+    },
+    "token-discovery": {
+      "tools": [
+        "detect-secrets",
+        "gitleaks",
+        "trufflehog"
+      ]
+    },
+    "traffic-capture": {
+      "tools": [
+        "mitmproxy"
+      ]
+    },
+    "url-discovery": {
+      "tools": [
+        "gau",
+        "gauplus",
+        "gospider",
+        "hakrawler",
+        "katana",
+        "urlfinder"
+      ]
+    },
+    "version-detection": {
+      "tools": [
+        "nmap"
+      ]
+    },
+    "version-mapping": {
+      "tools": [
+        "exploitdb",
+        "searchsploit"
+      ]
+    },
+    "vhost-enumeration": {
+      "tools": [
+        "ffuf",
+        "gobuster"
+      ]
+    },
+    "vulnerability-class-payloads": {
+      "tools": [
+        "payloadsallthethings"
+      ]
+    },
+    "vulnerability-mapping": {
+      "tools": [
+        "osv-scanner"
+      ]
+    },
+    "vulnerability-pattern-detection": {
+      "tools": [
+        "codeql",
+        "semgrep"
+      ]
+    },
+    "waf-detection": {
+      "tools": [
+        "wafw00f"
+      ]
+    },
+    "web-server-analysis": {
+      "tools": [
+        "nikto",
+        "whatweb"
+      ]
+    },
+    "web-vulnerability-detection": {
+      "tools": [
+        "nuclei",
+        "wapiti"
+      ]
+    },
+    "wildcard-detection": {
+      "tools": [
+        "dnsx"
+      ]
+    },
+    "windows-enumeration": {
+      "tools": [
+        "enum4linux-ng",
+        "netexec",
+        "rpcclient"
+      ]
+    },
+    "wordlist-generation": {
+      "tools": [
+        "cewl"
+      ]
+    },
+    "wordlist-provider": {
+      "tools": [
+        "seclists"
+      ]
+    },
+    "xss-discovery": {
+      "tools": [
+        "dalfox",
+        "xssstrike"
+      ]
+    },
+    "xss-validation": {
+      "tools": [
+        "dalfox"
+      ]
+    },
+    "xxe-detection": {
+      "tools": [
+        "xxeinjector"
+      ]
+    },
+    "xxe-validation": {
+      "tools": [
+        "xxeinjector"
+      ]
+    }
+  },
+  "relationships": [
+    {
+      "source": "subfinder",
+      "target": "httpx",
+      "kind": "enables",
+      "capability": "http-probing",
+      "rationale": "Subdomains need live probing to be useful.",
+      "strength": 0.5
+    },
+    {
+      "source": "subfinder",
+      "target": "httpx",
+      "kind": "follows",
+      "capability": "http-probing",
+      "rationale": "Run httpx after subfinder.",
+      "strength": 0.5
+    },
+    {
+      "source": "httpx",
+      "target": "subfinder",
+      "kind": "precedes",
+      "capability": "http-probing",
+      "rationale": "Subfinder runs before httpx.",
+      "strength": 0.5
+    },
+    {
+      "source": "amass",
+      "target": "httpx",
+      "kind": "enables",
+      "capability": "http-probing",
+      "rationale": "Amass results feed probing.",
+      "strength": 0.5
+    },
+    {
+      "source": "assetfinder",
+      "target": "httpx",
+      "kind": "follows",
+      "capability": "http-probing",
+      "rationale": "Assetfinder output needs live probing.",
+      "strength": 0.5
+    },
+    {
+      "source": "findomain",
+      "target": "httpx",
+      "kind": "follows",
+      "capability": "http-probing",
+      "rationale": "Findomain output needs live probing.",
+      "strength": 0.5
+    },
+    {
+      "source": "bbot",
+      "target": "httpx",
+      "kind": "enables",
+      "capability": "http-probing",
+      "rationale": "BBOT discovered hosts should be probed.",
+      "strength": 0.5
+    },
+    {
+      "source": "crt-sh",
+      "target": "httpx",
+      "kind": "follows",
+      "capability": "http-probing",
+      "rationale": "CT-derived names need probing.",
+      "strength": 0.5
+    },
+    {
+      "source": "dnsx",
+      "target": "httpx",
+      "kind": "enables",
+      "capability": "http-probing",
+      "rationale": "Resolved hosts are probed with httpx.",
+      "strength": 0.5
+    },
+    {
+      "source": "httpx",
+      "target": "katana",
+      "kind": "enables",
+      "capability": "crawling",
+      "rationale": "Live hosts are crawled next.",
+      "strength": 0.5
+    },
+    {
+      "source": "httpx",
+      "target": "nuclei",
+      "kind": "enables",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Probed surface is scanned by nuclei.",
+      "strength": 0.5
+    },
+    {
+      "source": "httpx",
+      "target": "nuclei",
+      "kind": "follows",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Nuclei runs after probing.",
+      "strength": 0.5
+    },
+    {
+      "source": "httpx",
+      "target": "nuclei",
+      "kind": "precedes",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Probing precedes nuclei scanning.",
+      "strength": 0.5
+    },
+    {
+      "source": "katana",
+      "target": "arjun",
+      "kind": "enables",
+      "capability": "parameter-discovery",
+      "rationale": "Crawled endpoints feed parameter discovery.",
+      "strength": 0.5
+    },
+    {
+      "source": "gospider",
+      "target": "arjun",
+      "kind": "enables",
+      "capability": "parameter-discovery",
+      "rationale": "Spider output feeds parameter discovery.",
+      "strength": 0.5
+    },
+    {
+      "source": "katana",
+      "target": "linkfinder",
+      "kind": "enables",
+      "capability": "endpoint-extraction",
+      "rationale": "Crawl results feed JS analysis.",
+      "strength": 0.5
+    },
+    {
+      "source": "katana",
+      "target": "jsluice",
+      "kind": "enables",
+      "capability": "javascript-analysis",
+      "rationale": "Crawl results feed JS analysis.",
+      "strength": 0.5
+    },
+    {
+      "source": "linkfinder",
+      "target": "secretfinder",
+      "kind": "enables",
+      "capability": "secret-indicator-discovery",
+      "rationale": "Endpoints found in JS feed secret scanning.",
+      "strength": 0.5
+    },
+    {
+      "source": "linkfinder",
+      "target": "secretfinder",
+      "kind": "follows",
+      "capability": "secret-indicator-discovery",
+      "rationale": "SecretFinder runs after LinkFinder.",
+      "strength": 0.5
+    },
+    {
+      "source": "arjun",
+      "target": "sqlmap",
+      "kind": "enables",
+      "capability": "sql-injection-detection",
+      "rationale": "Hidden parameters are injection candidates.",
+      "strength": 0.5
+    },
+    {
+      "source": "arjun",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-discovery",
+      "rationale": "Hidden parameters are XSS candidates.",
+      "strength": 0.5
+    },
+    {
+      "source": "arjun",
+      "target": "nuclei",
+      "kind": "enables",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Hidden parameters expand scan surface.",
+      "strength": 0.5
+    },
+    {
+      "source": "naabu",
+      "target": "nmap",
+      "kind": "enables",
+      "capability": "service-discovery",
+      "rationale": "Open ports feed service detection.",
+      "strength": 0.5
+    },
+    {
+      "source": "naabu",
+      "target": "nmap",
+      "kind": "follows",
+      "capability": "service-discovery",
+      "rationale": "Nmap validates naabu open ports.",
+      "strength": 0.5
+    },
+    {
+      "source": "masscan",
+      "target": "nmap",
+      "kind": "enables",
+      "capability": "service-discovery",
+      "rationale": "Masscan results need Nmap service detection.",
+      "strength": 0.5
+    },
+    {
+      "source": "rustscan",
+      "target": "nmap",
+      "kind": "enables",
+      "capability": "service-discovery",
+      "rationale": "RustScan pipes into Nmap.",
+      "strength": 0.5
+    },
+    {
+      "source": "nmap",
+      "target": "nuclei",
+      "kind": "enables",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Detected services feed nuclei templates.",
+      "strength": 0.5
+    },
+    {
+      "source": "nmap",
+      "target": "nuclei",
+      "kind": "follows",
+      "capability": "web-vulnerability-detection",
+      "rationale": "Nuclei runs after service detection.",
+      "strength": 0.5
+    },
+    {
+      "source": "nmap",
+      "target": "searchsploit",
+      "kind": "enables",
+      "capability": "exploit-research",
+      "rationale": "Versions feed exploit research.",
+      "strength": 0.5
+    },
+    {
+      "source": "nmap",
+      "target": "searchsploit",
+      "kind": "follows",
+      "capability": "exploit-research",
+      "rationale": "Search exploits after version detection.",
+      "strength": 0.5
+    },
+    {
+      "source": "dnsx",
+      "target": "massdns",
+      "kind": "specializes",
+      "capability": "dns-resolution",
+      "rationale": "dnsx is higher-level than massdns.",
+      "strength": 0.5
+    },
+    {
+      "source": "dnspython",
+      "target": "dnsx",
+      "kind": "replaces",
+      "capability": "dns-resolution",
+      "rationale": "dnspython is an in-process alternative.",
+      "strength": 0.5
+    },
+    {
+      "source": "nuclei",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-validation",
+      "rationale": "Nuclei XSS candidates feed Dalfox validation.",
+      "strength": 0.5
+    },
+    {
+      "source": "nuclei",
+      "target": "sqlmap",
+      "kind": "enables",
+      "capability": "sql-injection-validation",
+      "rationale": "Nuclei SQLi candidates feed sqlmap validation.",
+      "strength": 0.5
+    },
+    {
+      "source": "nuclei",
+      "target": "interactsh",
+      "kind": "enables",
+      "capability": "oob-callback",
+      "rationale": "Blind findings need OOB correlation.",
+      "strength": 0.5
+    },
+    {
+      "source": "nuclei",
+      "target": "searchsploit",
+      "kind": "follows",
+      "capability": "exploit-research",
+      "rationale": "Research public exploits after template match.",
+      "strength": 0.5
+    },
+    {
+      "source": "zap",
+      "target": "nuclei",
+      "kind": "enables",
+      "capability": "web-vulnerability-detection",
+      "rationale": "ZAP observation feeds targeted scans.",
+      "strength": 0.5
+    },
+    {
+      "source": "zap",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-validation",
+      "rationale": "ZAP findings feed validation.",
+      "strength": 0.5
+    },
+    {
+      "source": "zap",
+      "target": "mitmproxy",
+      "kind": "replaces",
+      "capability": "http-interception",
+      "rationale": "Both intercept; choose by workflow.",
+      "strength": 0.5
+    },
+    {
+      "source": "wapiti",
+      "target": "sqlmap",
+      "kind": "enables",
+      "capability": "sql-injection-validation",
+      "rationale": "Wapiti candidates feed sqlmap.",
+      "strength": 0.5
+    },
+    {
+      "source": "wapiti",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-validation",
+      "rationale": "Wapiti candidates feed Dalfox.",
+      "strength": 0.5
+    },
+    {
+      "source": "sqlmap",
+      "target": "proof-replay",
+      "kind": "enables",
+      "capability": "impact-statement",
+      "rationale": "Validated SQLi feeds proof replay.",
+      "strength": 0.5
+    },
+    {
+      "source": "dalfox",
+      "target": "proof-replay",
+      "kind": "enables",
+      "capability": "impact-statement",
+      "rationale": "Validated XSS feeds proof replay.",
+      "strength": 0.5
+    },
+    {
+      "source": "interactsh",
+      "target": "proof-replay",
+      "kind": "enables",
+      "capability": "impact-statement",
+      "rationale": "Correlated OOB evidence feeds proof.",
+      "strength": 0.5
+    },
+    {
+      "source": "sqlmap",
+      "target": "ghauri",
+      "kind": "replaces",
+      "capability": "sql-injection-validation",
+      "rationale": "Ghauri is an alternative to sqlmap.",
+      "strength": 0.5
+    },
+    {
+      "source": "dalfox",
+      "target": "xssstrike",
+      "kind": "replaces",
+      "capability": "xss-validation",
+      "rationale": "XSStrike is an alternative to Dalfox.",
+      "strength": 0.5
+    },
+    {
+      "source": "sstimap",
+      "target": "tplmap",
+      "kind": "replaces",
+      "capability": "ssti-validation",
+      "rationale": "SSTImap is the maintained alternative.",
+      "strength": 0.5
+    },
+    {
+      "source": "commix",
+      "target": "interactsh",
+      "kind": "enables",
+      "capability": "oob-callback",
+      "rationale": "Command injection validation uses OOB callbacks.",
+      "strength": 0.5
+    },
+    {
+      "source": "gitleaks",
+      "target": "trufflehog",
+      "kind": "replaces",
+      "capability": "secret-discovery",
+      "rationale": "TruffleHog covers git history.",
+      "strength": 0.5
+    },
+    {
+      "source": "gitleaks",
+      "target": "detect-secrets",
+      "kind": "replaces",
+      "capability": "secret-discovery",
+      "rationale": "detect-secrets is a CI-friendly alternative.",
+      "strength": 0.5
+    },
+    {
+      "source": "secretfinder",
+      "target": "trufflehog",
+      "kind": "enables",
+      "capability": "credential-discovery",
+      "rationale": "JS secrets feed credential verification.",
+      "strength": 0.5
+    },
+    {
+      "source": "secretfinder",
+      "target": "trufflehog",
+      "kind": "follows",
+      "capability": "credential-discovery",
+      "rationale": "Verify discovered JS secrets.",
+      "strength": 0.5
+    },
+    {
+      "source": "prowler",
+      "target": "scoutsuite",
+      "kind": "replaces",
+      "capability": "cloud-misconfiguration",
+      "rationale": "Both audit cloud posture.",
+      "strength": 0.5
+    },
+    {
+      "source": "prowler",
+      "target": "nuclei",
+      "kind": "enables",
+      "capability": "cloud-exposure-detection",
+      "rationale": "Cloud findings feed exposure checks.",
+      "strength": 0.5
+    },
+    {
+      "source": "syft",
+      "target": "trivy",
+      "kind": "enables",
+      "capability": "cve-analysis",
+      "rationale": "SBOMs feed Trivy scans.",
+      "strength": 0.5
+    },
+    {
+      "source": "syft",
+      "target": "grype",
+      "kind": "enables",
+      "capability": "cve-analysis",
+      "rationale": "SBOMs feed Grype scans.",
+      "strength": 0.5
+    },
+    {
+      "source": "syft",
+      "target": "grype",
+      "kind": "follows",
+      "capability": "cve-analysis",
+      "rationale": "Grype consumes Syft SBOMs.",
+      "strength": 0.5
+    },
+    {
+      "source": "osv-scanner",
+      "target": "grype",
+      "kind": "replaces",
+      "capability": "dependency-analysis",
+      "rationale": "OSV-scanner maps to OSV advisories.",
+      "strength": 0.5
+    },
+    {
+      "source": "netexec",
+      "target": "impacket",
+      "kind": "enables",
+      "capability": "smb-enumeration",
+      "rationale": "NetExec uses Impacket protocol clients.",
+      "strength": 0.5
+    },
+    {
+      "source": "netexec",
+      "target": "ldapsearch",
+      "kind": "enables",
+      "capability": "active-directory-intelligence",
+      "rationale": "Enumerated hosts feed LDAP queries.",
+      "strength": 0.5
+    },
+    {
+      "source": "netexec",
+      "target": "enum4linux-ng",
+      "kind": "replaces",
+      "capability": "smb-enumeration",
+      "rationale": "Both enumerate SMB surfaces.",
+      "strength": 0.5
+    },
+    {
+      "source": "impacket",
+      "target": "rpcclient",
+      "kind": "replaces",
+      "capability": "smb-enumeration",
+      "rationale": "Both provide SMB/RPC clients.",
+      "strength": 0.5
+    },
+    {
+      "source": "enum4linux-ng",
+      "target": "rpcclient",
+      "kind": "enables",
+      "capability": "windows-enumeration",
+      "rationale": "rpcclient deepens enum4linux-ng results.",
+      "strength": 0.5
+    },
+    {
+      "source": "cewl",
+      "target": "ffuf",
+      "kind": "enables",
+      "capability": "content-discovery",
+      "rationale": "Custom wordlists feed ffuf.",
+      "strength": 0.5
+    },
+    {
+      "source": "cewl",
+      "target": "ffuf",
+      "kind": "follows",
+      "capability": "content-discovery",
+      "rationale": "Use generated wordlists in fuzzing.",
+      "strength": 0.5
+    },
+    {
+      "source": "cewl",
+      "target": "gobuster",
+      "kind": "enables",
+      "capability": "directory-enumeration",
+      "rationale": "Custom wordlists feed gobuster.",
+      "strength": 0.5
+    },
+    {
+      "source": "searchsploit",
+      "target": "metasploit",
+      "kind": "enables",
+      "capability": "exploit-validation",
+      "rationale": "Researched exploits feed validation.",
+      "strength": 0.5
+    },
+    {
+      "source": "searchsploit",
+      "target": "metasploit",
+      "kind": "follows",
+      "capability": "exploit-validation",
+      "rationale": "Validate researched exploits.",
+      "strength": 0.5
+    },
+    {
+      "source": "searchsploit",
+      "target": "exploitdb",
+      "kind": "replaces",
+      "capability": "exploit-research",
+      "rationale": "ExploitDB is the online reference.",
+      "strength": 0.5
+    },
+    {
+      "source": "semgrep",
+      "target": "codeql",
+      "kind": "replaces",
+      "capability": "sast",
+      "rationale": "Semgrep is a lighter SAST alternative.",
+      "strength": 0.5
+    },
+    {
+      "source": "payloadsallthethings",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-validation",
+      "rationale": "Payload library feeds XSS hypothesis generation.",
+      "strength": 0.5
+    },
+    {
+      "source": "payloadsallthethings",
+      "target": "sqlmap",
+      "kind": "enables",
+      "capability": "sql-injection-validation",
+      "rationale": "Payload library feeds SQLi hypotheses.",
+      "strength": 0.5
+    },
+    {
+      "source": "payloadsallthethings",
+      "target": "commix",
+      "kind": "enables",
+      "capability": "command-injection-validation",
+      "rationale": "Payload library feeds command injection hypotheses.",
+      "strength": 0.5
+    },
+    {
+      "source": "seclists",
+      "target": "ffuf",
+      "kind": "enables",
+      "capability": "content-discovery",
+      "rationale": "SecLists wordlists feed ffuf.",
+      "strength": 0.5
+    },
+    {
+      "source": "seclists",
+      "target": "ffuf",
+      "kind": "follows",
+      "capability": "content-discovery",
+      "rationale": "Use SecLists wordlists in fuzzing.",
+      "strength": 0.5
+    },
+    {
+      "source": "seclists",
+      "target": "gobuster",
+      "kind": "enables",
+      "capability": "directory-enumeration",
+      "rationale": "SecLists wordlists feed gobuster.",
+      "strength": 0.5
+    },
+    {
+      "source": "fuzzdb",
+      "target": "ffuf",
+      "kind": "enables",
+      "capability": "web-fuzzing",
+      "rationale": "FuzzDB attack patterns feed fuzzing.",
+      "strength": 0.5
+    },
+    {
+      "source": "fuzzdb",
+      "target": "dalfox",
+      "kind": "enables",
+      "capability": "xss-validation",
+      "rationale": "FuzzDB payloads feed XSS validation.",
+      "strength": 0.5
+    },
+    {
+      "source": "fuzzdb",
+      "target": "sqlmap",
+      "kind": "enables",
+      "capability": "sql-injection-validation",
+      "rationale": "FuzzDB payloads feed SQLi validation.",
+      "strength": 0.5
+    }
+  ],
+  "playbooks": [
+    {
+      "playbook_id": "web-initial-recon",
+      "name": "Web initial recon",
+      "category": "recon",
+      "objective": "Identify live web assets, technologies, WAFs and initial entry points.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment",
+        "vulnerability-research"
+      ],
+      "steps": [
+        {
+          "step_id": "web-recon-1",
+          "objective": "Enumerate subdomains and assets.",
+          "required_capabilities": [
+            "subdomain-enumeration"
+          ],
+          "preferred_tools": [
+            "subfinder",
+            "amass"
+          ],
+          "fallback_tools": [
+            "assetfinder",
+            "findomain",
+            "bbot"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "resolved-host",
+            "asset-type",
+            "discovery-source"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "web-recon-2",
+          "objective": "Probe live hosts and detect technology stacks.",
+          "required_capabilities": [
+            "http-probing",
+            "technology-detection"
+          ],
+          "preferred_tools": [
+            "httpx"
+          ],
+          "fallback_tools": [
+            "whatweb"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "status-code",
+            "technology-signature",
+            "tls-fingerprint"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "web-recon-3",
+          "objective": "Detect WAF and rate-limit behavior before active testing.",
+          "required_capabilities": [
+            "waf-detection"
+          ],
+          "preferred_tools": [
+            "wafw00f"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "waf-signature",
+            "blocking-behavior"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        }
+      ],
+      "stop_conditions": [
+        "targets exhausted",
+        "authorization ceiling reached"
+      ],
+      "version": "1.0.0",
+      "description": "Standard entry playbook for external web assessment."
+    },
+    {
+      "playbook_id": "api-discovery",
+      "name": "API endpoint discovery",
+      "category": "discovery",
+      "objective": "Discover API routes, schemas and parameters for later assessment.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "api-assessment",
+        "web-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "api-discovery-1",
+          "objective": "Crawl and extract endpoints from live traffic.",
+          "required_capabilities": [
+            "crawling",
+            "endpoint-discovery"
+          ],
+          "preferred_tools": [
+            "katana"
+          ],
+          "fallback_tools": [
+            "gospider",
+            "hakrawler"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "url",
+            "method",
+            "source"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "api-discovery-2",
+          "objective": "Extract endpoints and parameters from JavaScript.",
+          "required_capabilities": [
+            "javascript-analysis",
+            "endpoint-extraction"
+          ],
+          "preferred_tools": [
+            "jsluice"
+          ],
+          "fallback_tools": [
+            "linkfinder",
+            "xnlinkfinder"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "js-endpoint",
+            "parameter-name"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        },
+        {
+          "step_id": "api-discovery-3",
+          "objective": "Discover hidden API parameters.",
+          "required_capabilities": [
+            "parameter-discovery"
+          ],
+          "preferred_tools": [
+            "arjun"
+          ],
+          "fallback_tools": [
+            "paramspider"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "parameter-name",
+            "parameter-method"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "api-discovery-4",
+          "objective": "Parse OpenAPI/Postman schemas when available.",
+          "required_capabilities": [
+            "openapi-analysis"
+          ],
+          "preferred_tools": [
+            "openapi-parser"
+          ],
+          "fallback_tools": [
+            "postman-parser"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "endpoint",
+            "operation",
+            "schema"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        }
+      ],
+      "stop_conditions": [
+        "no new endpoints",
+        "schema fully parsed"
+      ],
+      "version": "1.0.0",
+      "description": "Discover API surface before focused assessment."
+    },
+    {
+      "playbook_id": "subdomain-enumeration",
+      "name": "Subdomain enumeration",
+      "category": "recon",
+      "objective": "Enumerate all in-scope subdomains through passive and active sources.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "vulnerability-research"
+      ],
+      "steps": [
+        {
+          "step_id": "sub-enum-1",
+          "objective": "Passive subdomain enumeration from public sources.",
+          "required_capabilities": [
+            "subdomain-enumeration",
+            "asset-discovery"
+          ],
+          "preferred_tools": [
+            "subfinder"
+          ],
+          "fallback_tools": [
+            "assetfinder",
+            "theharvester",
+            "crobat"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "subdomain",
+            "source"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "sub-enum-2",
+          "objective": "Certificate transparency log lookups.",
+          "required_capabilities": [
+            "certificate-enumeration"
+          ],
+          "preferred_tools": [
+            "crt-sh"
+          ],
+          "fallback_tools": [
+            "findomain"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "cert-subdomain",
+            "cert-serial"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "sub-enum-3",
+          "objective": "Resolve and deduplicate enumerated hostnames.",
+          "required_capabilities": [
+            "dns-resolution",
+            "record-enumeration"
+          ],
+          "preferred_tools": [
+            "dnsx"
+          ],
+          "fallback_tools": [
+            "dnspython"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "resolved-ip",
+            "record-type",
+            "wildcard-status"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        }
+      ],
+      "stop_conditions": [
+        "resolution returns no new hosts",
+        "source exhaustion"
+      ],
+      "version": "1.0.0",
+      "description": "Build the live subdomain set before probing."
+    },
+    {
+      "playbook_id": "network-recon",
+      "name": "Network recon and service discovery",
+      "category": "recon",
+      "objective": "Discover reachable hosts, open ports and running services on in-scope networks.",
+      "mission_types": [
+        "pentest",
+        "network-assessment",
+        "internal-assessment",
+        "red-team"
+      ],
+      "steps": [
+        {
+          "step_id": "net-recon-1",
+          "objective": "Discover live hosts on the target range.",
+          "required_capabilities": [
+            "host-discovery"
+          ],
+          "preferred_tools": [
+            "fping"
+          ],
+          "fallback_tools": [
+            "arp-scan"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "live-host",
+            "discovery-method"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "net-recon-2",
+          "objective": "Scan for open ports.",
+          "required_capabilities": [
+            "port-discovery"
+          ],
+          "preferred_tools": [
+            "nmap"
+          ],
+          "fallback_tools": [
+            "naabu",
+            "masscan",
+            "rustscan"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "open-port",
+            "protocol"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "net-recon-3",
+          "objective": "Identify services and versions on open ports.",
+          "required_capabilities": [
+            "service-discovery",
+            "version-detection"
+          ],
+          "preferred_tools": [
+            "nmap"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "service-name",
+            "service-version"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        }
+      ],
+      "stop_conditions": [
+        "all in-scope hosts scanned",
+        "scope limit reached"
+      ],
+      "version": "1.0.0",
+      "description": "Standard entry playbook for internal/network assessment."
+    },
+    {
+      "playbook_id": "web-content-discovery",
+      "name": "Web content and directory discovery",
+      "category": "discovery",
+      "objective": "Discover directories, files and virtual hosts on target web applications.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "content-discovery-1",
+          "objective": "Fuzz directories and files with tuned wordlists.",
+          "required_capabilities": [
+            "content-discovery",
+            "directory-enumeration",
+            "file-enumeration"
+          ],
+          "preferred_tools": [
+            "ffuf"
+          ],
+          "fallback_tools": [
+            "feroxbuster",
+            "gobuster",
+            "dirsearch"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "path",
+            "status-code",
+            "size"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "content-discovery-2",
+          "objective": "Discover virtual hosts.",
+          "required_capabilities": [
+            "vhost-enumeration"
+          ],
+          "preferred_tools": [
+            "ffuf"
+          ],
+          "fallback_tools": [
+            "gobuster"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "vhost",
+            "host-header",
+            "status-code"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "content-discovery-3",
+          "objective": "Generate target-specific wordlists.",
+          "required_capabilities": [
+            "wordlist-generation",
+            "custom-wordlists"
+          ],
+          "preferred_tools": [
+            "cewl"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "wordlist",
+            "source-url"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        }
+      ],
+      "stop_conditions": [
+        "no new content",
+        "rate limit enforced"
+      ],
+      "version": "1.0.0",
+      "description": "Locate hidden content that expands attack surface."
+    },
+    {
+      "playbook_id": "javascript-analysis",
+      "name": "JavaScript analysis",
+      "category": "analysis",
+      "objective": "Mine JavaScript assets for endpoints, secrets and hidden parameters.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "js-analysis-1",
+          "objective": "Extract endpoints and URLs from JavaScript.",
+          "required_capabilities": [
+            "javascript-analysis",
+            "endpoint-extraction"
+          ],
+          "preferred_tools": [
+            "jsluice"
+          ],
+          "fallback_tools": [
+            "linkfinder",
+            "xnlinkfinder"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "js-endpoint",
+            "js-source",
+            "source-map"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        },
+        {
+          "step_id": "js-analysis-2",
+          "objective": "Discover secret indicators inside JavaScript.",
+          "required_capabilities": [
+            "secret-indicator-discovery"
+          ],
+          "preferred_tools": [
+            "secretfinder"
+          ],
+          "fallback_tools": [
+            "jsluice"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "secret-indicator",
+            "js-source"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        }
+      ],
+      "stop_conditions": [
+        "no new endpoints or indicators"
+      ],
+      "version": "1.0.0",
+      "description": "Leverage client-side code for attack surface expansion."
+    },
+    {
+      "playbook_id": "secret-discovery",
+      "name": "Secret discovery",
+      "category": "discovery",
+      "objective": "Locate credentials, tokens and keys exposed in scope.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "vulnerability-research"
+      ],
+      "steps": [
+        {
+          "step_id": "secret-discovery-1",
+          "objective": "Scan git repositories and files for secrets.",
+          "required_capabilities": [
+            "secret-discovery",
+            "credential-discovery",
+            "token-discovery"
+          ],
+          "preferred_tools": [
+            "gitleaks"
+          ],
+          "fallback_tools": [
+            "trufflehog",
+            "detect-secrets"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "secret-type",
+            "secret-location",
+            "redacted-value"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "secret-discovery-2",
+          "objective": "Discover secret indicators inside JavaScript.",
+          "required_capabilities": [
+            "secret-indicator-discovery"
+          ],
+          "preferred_tools": [
+            "secretfinder"
+          ],
+          "fallback_tools": [
+            "jsluice"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "secret-indicator",
+            "js-source"
+          ],
+          "proof_requirements": [],
+          "safety_class": "read-only"
+        }
+      ],
+      "stop_conditions": [
+        "all in-scope repos scanned"
+      ],
+      "version": "1.0.0",
+      "description": "Find exposed secrets; never store raw credentials unredacted."
+    },
+    {
+      "playbook_id": "vulnerability-triage",
+      "name": "Vulnerability triage",
+      "category": "assessment",
+      "objective": "Prioritize candidate findings and decide what to validate and prove.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment",
+        "vulnerability-research"
+      ],
+      "steps": [
+        {
+          "step_id": "triage-1",
+          "objective": "Scan for candidate vulnerabilities from discovered surface.",
+          "required_capabilities": [
+            "web-vulnerability-detection",
+            "cve-detection",
+            "misconfiguration-detection"
+          ],
+          "preferred_tools": [
+            "nuclei"
+          ],
+          "fallback_tools": [
+            "wapiti",
+            "openvas"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "candidate-finding",
+            "template-id",
+            "severity"
+          ],
+          "proof_requirements": [],
+          "safety_class": "low-impact-active"
+        },
+        {
+          "step_id": "triage-2",
+          "objective": "Correlate findings with topology and technology context.",
+          "required_capabilities": [
+            "vulnerability-mapping",
+            "cve-research"
+          ],
+          "preferred_tools": [
+            "searchsploit"
+          ],
+          "fallback_tools": [
+            "exploitdb"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "cve",
+            "affected-version",
+            "exploit-path"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        }
+      ],
+      "stop_conditions": [
+        "all candidates correlated"
+      ],
+      "version": "1.0.0",
+      "description": "Candidates are not proof; this playbook feeds validation."
+    },
+    {
+      "playbook_id": "xss-validation",
+      "name": "XSS validation",
+      "category": "validation",
+      "objective": "Validate reflected, stored and DOM-based XSS candidates with execution evidence.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "xss-validation-1",
+          "objective": "Confirm reflection and context of candidate parameters.",
+          "required_capabilities": [
+            "reflection-analysis",
+            "parameter-analysis"
+          ],
+          "preferred_tools": [
+            "dalfox"
+          ],
+          "fallback_tools": [
+            "xssstrike"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "reflection-point",
+            "output-context"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "xss-validation-2",
+          "objective": "Confirm execution with a safe proof payload.",
+          "required_capabilities": [
+            "xss-validation"
+          ],
+          "preferred_tools": [
+            "dalfox"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "execution-evidence",
+            "payload",
+            "context"
+          ],
+          "proof_requirements": [
+            "execution-evidence",
+            "impact-statement"
+          ],
+          "safety_class": "active"
+        }
+      ],
+      "stop_conditions": [
+        "execution confirmed",
+        "candidate disproved"
+      ],
+      "version": "1.0.0",
+      "description": "A reflected parameter is NOT confirmed XSS without execution evidence."
+    },
+    {
+      "playbook_id": "sqli-validation",
+      "name": "SQL injection validation",
+      "category": "validation",
+      "objective": "Validate SQL injection candidates with differential behavior and safe DBMS identification.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "sqli-validation-1",
+          "objective": "Confirm injection point and DBMS family.",
+          "required_capabilities": [
+            "sql-injection-detection",
+            "database-fingerprinting"
+          ],
+          "preferred_tools": [
+            "sqlmap"
+          ],
+          "fallback_tools": [
+            "ghauri"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "injection-point",
+            "dbms-family",
+            "payload"
+          ],
+          "proof_requirements": [],
+          "safety_class": "high-impact"
+        },
+        {
+          "step_id": "sqli-validation-2",
+          "objective": "Prove impact through safe verification only.",
+          "required_capabilities": [
+            "sql-injection-validation"
+          ],
+          "preferred_tools": [
+            "sqlmap"
+          ],
+          "fallback_tools": [
+            "ghauri"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "differential-evidence",
+            "proof-payload"
+          ],
+          "proof_requirements": [
+            "differential-evidence",
+            "impact-statement"
+          ],
+          "safety_class": "high-impact"
+        }
+      ],
+      "stop_conditions": [
+        "impact proven safely",
+        "candidate disproved"
+      ],
+      "version": "1.0.0",
+      "description": "Never automatically execute high-impact database actions."
+    },
+    {
+      "playbook_id": "ssrf-validation",
+      "name": "SSRF validation",
+      "category": "validation",
+      "objective": "Validate SSRF candidates via out-of-band interaction correlation.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "ssrf-validation-1",
+          "objective": "Test candidate endpoints with OOB callback payloads.",
+          "required_capabilities": [
+            "oob-callback",
+            "http-callback",
+            "dns-callback"
+          ],
+          "preferred_tools": [
+            "interactsh"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "callback-token",
+            "interaction",
+            "timestamp"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "ssrf-validation-2",
+          "objective": "Correlate interactions back to mission, target and request.",
+          "required_capabilities": [
+            "interaction-correlation"
+          ],
+          "preferred_tools": [
+            "interactsh"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "mission-id",
+            "target",
+            "request",
+            "token"
+          ],
+          "proof_requirements": [
+            "correlated-interaction",
+            "impact-statement"
+          ],
+          "safety_class": "active"
+        }
+      ],
+      "stop_conditions": [
+        "interaction correlated",
+        "candidate disproved"
+      ],
+      "version": "1.0.0",
+      "description": "Every interaction must be correlated with mission, target, request and token."
+    },
+    {
+      "playbook_id": "ssti-validation",
+      "name": "SSTI validation",
+      "category": "validation",
+      "objective": "Identify template engine and validate SSTI with safe proof.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "ssti-validation-1",
+          "objective": "Detect template injection and identify the engine.",
+          "required_capabilities": [
+            "ssti-detection",
+            "template-engine-identification"
+          ],
+          "preferred_tools": [
+            "sstimap"
+          ],
+          "fallback_tools": [
+            "tplmap"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "template-engine",
+            "injection-point"
+          ],
+          "proof_requirements": [],
+          "safety_class": "high-impact"
+        },
+        {
+          "step_id": "ssti-validation-2",
+          "objective": "Confirm execution with a safe proof payload.",
+          "required_capabilities": [
+            "ssti-validation"
+          ],
+          "preferred_tools": [
+            "sstimap"
+          ],
+          "fallback_tools": [
+            "tplmap"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "execution-evidence",
+            "payload"
+          ],
+          "proof_requirements": [
+            "execution-evidence",
+            "impact-statement"
+          ],
+          "safety_class": "high-impact"
+        }
+      ],
+      "stop_conditions": [
+        "execution confirmed",
+        "candidate disproved"
+      ],
+      "version": "1.0.0",
+      "description": "Engine identification precedes exploitation."
+    },
+    {
+      "playbook_id": "xxe-validation",
+      "name": "XXE validation",
+      "category": "validation",
+      "objective": "Validate XXE candidates using direct and OOB XML interaction.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "web-assessment",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "xxe-validation-1",
+          "objective": "Detect XXE via safe external entity resolution.",
+          "required_capabilities": [
+            "xxe-detection",
+            "oob-xml-interaction"
+          ],
+          "preferred_tools": [
+            "xxeinjector"
+          ],
+          "fallback_tools": [
+            "interactsh"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "xml-interaction",
+            "entity-reflection"
+          ],
+          "proof_requirements": [],
+          "safety_class": "high-impact"
+        },
+        {
+          "step_id": "xxe-validation-2",
+          "objective": "Correlate OOB interactions and confirm impact.",
+          "required_capabilities": [
+            "interaction-correlation"
+          ],
+          "preferred_tools": [
+            "interactsh"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "correlated-interaction",
+            "token"
+          ],
+          "proof_requirements": [
+            "correlated-interaction",
+            "impact-statement"
+          ],
+          "safety_class": "high-impact"
+        }
+      ],
+      "stop_conditions": [
+        "interaction correlated",
+        "candidate disproved"
+      ],
+      "version": "1.0.0",
+      "description": "Pair XXE testing with an OOB callback server."
+    },
+    {
+      "playbook_id": "graphql-assessment",
+      "name": "GraphQL assessment",
+      "category": "assessment",
+      "objective": "Assess GraphQL endpoints for introspection, query abuse and authorization issues.",
+      "mission_types": [
+        "bug-bounty",
+        "pentest",
+        "api-assessment"
+      ],
+      "steps": [
+        {
+          "step_id": "graphql-1",
+          "objective": "Probe GraphQL schema and introspection status.",
+          "required_capabilities": [
+            "graphql-introspection",
+            "graphql-analysis"
+          ],
+          "preferred_tools": [
+            "graphqlmap"
+          ],
+          "fallback_tools": [
+            "inql"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "schema",
+            "introspection-status"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "graphql-2",
+          "objective": "Analyze queries for abuse and misconfiguration.",
+          "required_capabilities": [
+            "query-analysis"
+          ],
+          "preferred_tools": [
+            "graphqlmap"
+          ],
+          "fallback_tools": [
+            "inql"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "query",
+            "response"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        }
+      ],
+      "stop_conditions": [
+        "schema analyzed",
+        "scope reached"
+      ],
+      "version": "1.0.0",
+      "description": "Introspection must be explicitly permitted by scope."
+    },
+    {
+      "playbook_id": "cloud-assessment",
+      "name": "Cloud assessment",
+      "category": "assessment",
+      "objective": "Assess cloud posture, misconfigurations and exposed assets.",
+      "mission_types": [
+        "cloud-assessment",
+        "pentest"
+      ],
+      "steps": [
+        {
+          "step_id": "cloud-1",
+          "objective": "Audit cloud configuration against CIS-style frameworks.",
+          "required_capabilities": [
+            "cloud-misconfiguration",
+            "aws-security",
+            "azure-security",
+            "gcp-security"
+          ],
+          "preferred_tools": [
+            "prowler"
+          ],
+          "fallback_tools": [
+            "scoutsuite"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "control-id",
+            "resource",
+            "finding"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "cloud-2",
+          "objective": "Discover exposed cloud assets and storage.",
+          "required_capabilities": [
+            "cloud-asset-discovery",
+            "storage-analysis"
+          ],
+          "preferred_tools": [
+            "prowler"
+          ],
+          "fallback_tools": [
+            "scoutsuite"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "asset",
+            "exposure"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        }
+      ],
+      "stop_conditions": [
+        "all in-scope accounts audited"
+      ],
+      "version": "1.0.0",
+      "description": "Feeds Sprint 017 Cloud Intelligence as evidence provider."
+    },
+    {
+      "playbook_id": "container-assessment",
+      "name": "Container and supply-chain assessment",
+      "category": "assessment",
+      "objective": "Assess container images, dependencies and SBOMs for known vulnerabilities.",
+      "mission_types": [
+        "pentest",
+        "cloud-assessment",
+        "vulnerability-research"
+      ],
+      "steps": [
+        {
+          "step_id": "container-1",
+          "objective": "Generate SBOMs for in-scope images.",
+          "required_capabilities": [
+            "sbom-generation",
+            "container-analysis"
+          ],
+          "preferred_tools": [
+            "syft"
+          ],
+          "fallback_tools": [],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "sbom",
+            "package",
+            "version"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        },
+        {
+          "step_id": "container-2",
+          "objective": "Scan images and dependencies for CVEs.",
+          "required_capabilities": [
+            "container-analysis",
+            "cve-analysis",
+            "dependency-analysis"
+          ],
+          "preferred_tools": [
+            "trivy"
+          ],
+          "fallback_tools": [
+            "grype",
+            "osv-scanner"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "cve",
+            "package",
+            "affected-version"
+          ],
+          "proof_requirements": [],
+          "safety_class": "passive"
+        }
+      ],
+      "stop_conditions": [
+        "all images scanned"
+      ],
+      "version": "1.0.0",
+      "description": "Report-only supply-chain analysis; no destructive actions."
+    },
+    {
+      "playbook_id": "active-directory-assessment",
+      "name": "Active Directory assessment",
+      "category": "assessment",
+      "objective": "Assess AD/Windows infrastructure within an authorized internal scope.",
+      "mission_types": [
+        "internal-assessment",
+        "red-team",
+        "pentest"
+      ],
+      "steps": [
+        {
+          "step_id": "ad-1",
+          "objective": "Enumerate SMB, RPC and LDAP surfaces.",
+          "required_capabilities": [
+            "smb-enumeration",
+            "windows-enumeration",
+            "ldap-enumeration"
+          ],
+          "preferred_tools": [
+            "netexec"
+          ],
+          "fallback_tools": [
+            "impacket",
+            "enum4linux-ng",
+            "rpcclient"
+          ],
+          "preconditions": [
+            "explicit authorization granted"
+          ],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "share",
+            "user",
+            "rpc-endpoint"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        },
+        {
+          "step_id": "ad-2",
+          "objective": "Extract AD attributes and trust information.",
+          "required_capabilities": [
+            "active-directory-intelligence",
+            "domain-enumeration"
+          ],
+          "preferred_tools": [
+            "ldapsearch"
+          ],
+          "fallback_tools": [
+            "netexec",
+            "impacket"
+          ],
+          "preconditions": [],
+          "stop_conditions": [],
+          "evidence_requirements": [
+            "object",
+            "attribute",
+            "trust"
+          ],
+          "proof_requirements": [],
+          "safety_class": "active"
+        }
+      ],
+      "stop_conditions": [
+        "enumerated surface complete",
+        "scope reached"
+      ],
+      "version": "1.0.0",
+      "description": "Internal-network capability family, separate from web tooling."
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_id": "cewl-wordlists",
+      "name": "CeWL generated wordlists",
+      "version": "6.2.0",
+      "source": "https://github.com/digininja/CeWL",
+      "license": "GPL-3.0",
+      "category": "wordlist",
+      "purpose": "Target-specific wordlists generated by spidering target content.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "cewl",
+        "ffuf",
+        "gobuster"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "exploitdb",
+      "name": "ExploitDB Archive",
+      "version": "2025.1",
+      "source": "https://gitlab.com/exploit-database/exploitdb",
+      "license": "MIT",
+      "category": "database",
+      "purpose": "Public exploit references consumed by SearchSploit.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "searchsploit",
+        "metasploit"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "fuzzdb",
+      "name": "FuzzDB",
+      "version": "1.0.0",
+      "source": "https://github.com/lanmaster53/fuzzdb",
+      "license": "CC0-1.0",
+      "category": "payload",
+      "purpose": "Attack and detection payloads for injection, traversal and fuzzing.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "ffuf",
+        "dalfox",
+        "sqlmap",
+        "commix",
+        "sstimap"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "gitleaks-rules",
+      "name": "Gitleaks Rules",
+      "version": "8.18.4",
+      "source": "https://github.com/gitleaks/gitleaks",
+      "license": "MIT",
+      "category": "rules",
+      "purpose": "Secret-detection regex rules used by Gitleaks.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "gitleaks"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "grype-db",
+      "name": "Grype Vulnerability DB",
+      "version": "2025.1",
+      "source": "https://github.com/anchore/grype",
+      "license": "Apache-2.0",
+      "category": "database",
+      "purpose": "Vulnerability data consumed by Grype for image scanning.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "grype"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "interactsh-patterns",
+      "name": "Interactsh interaction patterns",
+      "version": "1.2.0",
+      "source": "https://github.com/projectdiscovery/interactsh",
+      "license": "MIT",
+      "category": "rules",
+      "purpose": "Correlation patterns for OOB interactions detected by Interactsh.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "interactsh"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "nuclei-technologies",
+      "name": "Nuclei Technology Detection Templates",
+      "version": "2025.1",
+      "source": "https://github.com/projectdiscovery/nuclei-templates",
+      "license": "MIT",
+      "category": "templates",
+      "purpose": "Technology fingerprint templates used for detection coverage.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "nuclei",
+        "httpx"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "nuclei-templates",
+      "name": "Nuclei Templates",
+      "version": "2025.1",
+      "source": "https://github.com/projectdiscovery/nuclei-templates",
+      "license": "MIT",
+      "category": "templates",
+      "purpose": "YAML templates for vulnerability and misconfiguration detection via Nuclei.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "nuclei"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "osv-advisories",
+      "name": "OSV Advisories",
+      "version": "2025.1",
+      "source": "https://osv.dev",
+      "license": "CC-BY-4.0",
+      "category": "database",
+      "purpose": "Open Source Vulnerability database consumed by OSV-Scanner.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "osv-scanner"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "payloadsallthethings",
+      "name": "PayloadsAllTheThings",
+      "version": "2025.1",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings",
+      "license": "MIT",
+      "category": "payload",
+      "purpose": "Curated payloads and methodology for a wide range of vulnerability classes.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "dalfox",
+        "sqlmap",
+        "commix",
+        "sstimap",
+        "xxeinjector",
+        "metasploit"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "seclists",
+      "name": "SecLists",
+      "version": "2025.1",
+      "source": "https://github.com/danielmiessler/SecLists",
+      "license": "MIT",
+      "category": "wordlist",
+      "purpose": "Wordlists for content discovery, credentials, fuzzing and payloads.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "ffuf",
+        "gobuster",
+        "feroxbuster",
+        "dirsearch",
+        "massdns",
+        "shuffledns",
+        "hashcat",
+        "john"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "semgrep-rules",
+      "name": "Semgrep Registry Rules",
+      "version": "2025.1",
+      "source": "https://github.com/semgrep/semgrep-rules",
+      "license": "LGPL-2.1",
+      "category": "rules",
+      "purpose": "Detection rules for Semgrep covering common vulnerability patterns.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "semgrep"
+      ],
+      "safety_classification": "safe"
+    },
+    {
+      "dataset_id": "trivy-db",
+      "name": "Trivy Vulnerability DB",
+      "version": "2025.1",
+      "source": "https://github.com/aquasecurity/trivy-db",
+      "license": "MIT",
+      "category": "database",
+      "purpose": "Vulnerability data consumed by Trivy for image and dependency scanning.",
+      "encoding": "utf-8",
+      "size_bytes": 0,
+      "checksum": "",
+      "update_timestamp": "",
+      "compatibility": [
+        "trivy"
+      ],
+      "safety_classification": "safe"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+SSTImap identified the following injection point:
+Parameter: name (POST)
+[+] Code execution

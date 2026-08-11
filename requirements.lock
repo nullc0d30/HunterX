@@ -1,0 +1,49 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX locked dependency set (direct runtime dependencies + pinned transitive
+# pins for reproducible builds). Regenerate with:
+#
+#   python -m pip freeze > requirements.lock   # after resolving env
+#   pip-compile pyproject.toml -o requirements.lock   # preferred (pip-tools)
+#
+# This file feeds the supply-chain gates: pip-audit, safety, SBOM generation
+# and the license allow-list check all read it.
+
+# --- core runtime (mirrors pyproject.toml [project.dependencies]) ---
+pydantic==2.13.4
+pydantic_core==2.46.4
+pyyaml==6.0.2
+jsonschema==4.23.0
+rich==13.7.1
+networkx==3.6.1
+urllib3==2.7.0
+dataclasses-json==0.6.7
+dnspython==2.8.0
+defusedxml==0.7.1
+sqlalchemy==2.0.51
+alembic==1.19.0
+
+# --- optional runtime extras (api/ai/report) ---
+fastapi==0.141.1
+uvicorn==0.52.1
+httpx==0.28.1
+jinja2==3.1.6
+
+# --- developer toolchain (dev extra + quality gates) ---
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-benchmark==5.2.3
+pytest-cov==7.1.0
+hypothesis==6.165.2
+ruff==0.15.22
+mypy==2.3.0
+vulture==2.16
+bandit==1.9.4
+pip-audit==2.10.1
+safety==3.8.1
+build==1.5.0
+twine==7.0.0
+pip-licenses==5.5.5
+types-PyYAML==6.0.12.20260724
+cyclonedx-python-lib==11.11.0

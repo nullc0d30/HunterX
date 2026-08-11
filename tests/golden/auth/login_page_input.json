@@ -1,0 +1,31 @@
+{
+  "url": "https://acme.com/login",
+  "status_code": 200,
+  "headers": {
+    "Server": "nginx/1.24.0",
+    "Content-Type": "text/html; charset=utf-8",
+    "Set-Cookie": [
+      "session=abc123; Path=/; HttpOnly; Secure; SameSite=Lax",
+      "csrftoken=deadbeef; Path=/; SameSite=Lax"
+    ],
+    "Access-Control-Allow-Origin": "https://acme.com",
+    "Access-Control-Allow-Credentials": "true",
+    "X-Frame-Options": "DENY"
+  },
+  "html": "<html><head><title>Sign in</title></head><body><form action=\"/login\" method=\"post\"><input type=\"text\" name=\"username\"><input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"_token\" value=\"abc\"></form><p>Sign in with Google</p><p>Two-factor authentication available</p></body></html>",
+  "scripts": [
+    {
+      "url": "https://acme.com/static/app.js",
+      "content": "localStorage.setItem('access_token', resp.accessToken); localStorage.setItem('refresh_token', resp.refreshToken); sessionStorage.setItem('authToken', t); window.config = {client_id: 'abc123', redirect_uri: 'https://acme.com/callback', scope: 'openid profile email', response_type: 'code', issuer: 'https://auth.acme.com'};"
+    }
+  ],
+  "api_schemes": [],
+  "observed_urls": [
+    "https://acme.com/login",
+    "https://acme.com/logout",
+    "https://acme.com/register",
+    "https://acme.com/reset-password",
+    "https://acme.com/oauth/callback",
+    "https://acme.com/.well-known/openid-configuration"
+  ]
+}

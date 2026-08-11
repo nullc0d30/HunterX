@@ -1,0 +1,2 @@
+Tplmap identified the injection point: {{7*7}}
+[+] Python code execution

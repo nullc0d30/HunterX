@@ -1,0 +1,105 @@
+{
+  "name": "ssrf_finding_cascade_golden",
+  "description": "Golden fixture: an SSRF finding cascades into internal-service-discovery follow-on hypotheses after reassessment.",
+  "objective": "bug_bounty_hunt",
+  "target": "https://shop.example.com",
+  "initial_knowledge": {
+    "assets": [
+      "https://shop.example.com"
+    ],
+    "endpoints": [
+      "https://shop.example.com/preview"
+    ],
+    "technologies": [
+      "nodejs"
+    ],
+    "services": [
+      "https"
+    ],
+    "parameters": [
+      "url"
+    ]
+  },
+  "script": [
+    {
+      "action": "ingest",
+      "tool": "nuclei",
+      "asset": "https://shop.example.com/preview",
+      "raw": {
+        "observation_type": "vulnerability",
+        "content": {
+          "template": "ssrf",
+          "parameter": "url",
+          "severity": "high"
+        },
+        "confidence": 0.7
+      }
+    },
+    {
+      "action": "hypothesis",
+      "statement": "SSRF on /preview?url= may reach internal services",
+      "category": "ssrf",
+      "priority": 0.85,
+      "validation_strategy": "controlled-callback-proof"
+    },
+    {
+      "action": "baseline",
+      "asset": "https://shop.example.com/preview",
+      "request_fingerprint": "GET /preview?url=https://example.com",
+      "status_code": 200,
+      "content_length": 500
+    },
+    {
+      "action": "differential",
+      "asset": "https://shop.example.com/preview",
+      "classification_hint": "ssrf",
+      "test_status": 200,
+      "test_length": 520,
+      "test_body": "callback received hunterxprobe"
+    },
+    {
+      "action": "hypothesis_update",
+      "statement": "SSRF on /preview?url= may reach internal services",
+      "supporting": [
+        "ev-ssrf-1",
+        "ev-ssrf-callback"
+      ],
+      "contradicting": [],
+      "verify": true
+    },
+    {
+      "action": "coverage",
+      "asset": "https://shop.example.com/preview",
+      "capability": "ssrf",
+      "state": "proved",
+      "tool": "interactsh",
+      "confidence": 0.93,
+      "evidence_refs": [
+        "ev-ssrf-1"
+      ]
+    },
+    {
+      "action": "finding",
+      "finding_id": "F-002",
+      "vulnerability_class": "ssrf",
+      "asset_key": "https://shop.example.com/preview",
+      "severity": "high",
+      "tool": "interactsh",
+      "stage": "proven",
+      "confidence": 0.93
+    },
+    {
+      "action": "cascade"
+    },
+    {
+      "action": "finalize"
+    }
+  ],
+  "expected_outcome": {
+    "phase": "reporting",
+    "findings_validated": 1,
+    "hypotheses_resolved": 1,
+    "follow_on_hypotheses_gt": 0,
+    "coverage_ratio_gt": 0.0
+  }
+}

@@ -1,0 +1,1 @@
+{"results":[{"type":"XSS","data":"reflected","param":"q","url":"https://example.com/?q=x","severity":"medium","evidence":"<script>alert(1)</script>"}]}

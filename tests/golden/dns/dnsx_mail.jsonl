@@ -1,0 +1,6 @@
+{"host":"example.com","type":"MX","ttl":3600,"resp":["10 mail.example.com"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"MX","ttl":3600,"resp":["20 mail2.example.com"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"TXT","ttl":3600,"resp":["v=spf1 ip4:192.0.2.0/24 include:_spf.google.com ~all"],"resolver":"1.1.1.1"}
+{"host":"_dmarc.example.com","type":"TXT","ttl":3600,"resp":["v=DMARC1; p=reject; rua=mailto:dmarc@example.com; pct=100"],"resolver":"1.1.1.1"}
+{"host":"google._domainkey.example.com","type":"TXT","ttl":3600,"resp":["v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4"],"resolver":"1.1.1.1"}
+{"host":"selector2._domainkey.example.com","type":"TXT","ttl":3600,"resp":["v=DKIM1; k=rsa; p=AwEAAQIDBAU="],"resolver":"1.1.1.1"}

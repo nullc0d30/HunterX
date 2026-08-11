@@ -1,0 +1,21 @@
+{
+  "url": "https://sso.example.com/saml/login",
+  "status_code": 200,
+  "headers": {
+    "Content-Type": "text/html"
+  },
+  "html": "<html><body><form action=\"/saml/acs\"><input type=\"hidden\" name=\"SAMLResponse\"><input type=\"hidden\" name=\"RelayState\" value=\"redirect:/app\"></form><p>Single Sign-On with SSO Portal</p></body></html>",
+  "scripts": [],
+  "documents": [
+    {
+      "kind": "saml-metadata",
+      "url": "https://sso.example.com/metadata.xml",
+      "content": "<md:EntityDescriptor entityID=\"https://sso.example.com/entity\"><md:IDPSSODescriptor><md:SingleSignOnService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"https://sso.example.com/saml/login\"/></md:IDPSSODescriptor></md:EntityDescriptor>"
+    }
+  ],
+  "observed_urls": [
+    "https://sso.example.com/saml/login",
+    "https://sso.example.com/saml/acs",
+    "https://sso.example.com/metadata.xml"
+  ]
+}

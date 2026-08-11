@@ -1,0 +1,209 @@
+{
+  "description": "Golden deterministic scenarios for the Wave 13 safe vulnerability discovery & validation engine. Each scenario supplies a vulnerability hypothesis class and a canonical tool-output mapping; the expected verdict is deterministic.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "name": "known_vulnerable_version",
+      "class": "known_vulnerable_software",
+      "expected_behavior": "Observed version falls inside an affected range.",
+      "confidence": 0.8,
+      "tool_output": {
+        "observations": [
+          {"kind": "version", "value": "1.24.0", "confidence": 1.0, "metadata": {"expected": "1.24.0"}}
+        ]
+      },
+      "expected_verdict": "confirmed"
+    },
+    {
+      "name": "known_fixed_version",
+      "class": "known_vulnerable_software",
+      "expected_behavior": "Observed version falls inside an affected range.",
+      "confidence": 0.8,
+      "tool_output": {
+        "observations": [
+          {"kind": "version", "value": "1.25.0", "confidence": 1.0, "metadata": {"expected": "1.24.0"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "unknown_version",
+      "class": "known_vulnerable_software",
+      "expected_behavior": "Observed version falls inside an affected range.",
+      "confidence": 0.8,
+      "tool_output": {
+        "observations": []
+      },
+      "expected_verdict": "inconclusive"
+    },
+    {
+      "name": "false_positive_technology",
+      "class": "known_vulnerable_software",
+      "expected_behavior": "Observed version falls inside an affected range.",
+      "confidence": 0.8,
+      "tool_output": {
+        "observations": [
+          {"kind": "version", "value": "2.0.0", "confidence": 1.0, "metadata": {"expected": "1.24.0"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "authentication_protected_endpoint",
+      "class": "authentication",
+      "expected_behavior": "Authentication boundary is missing or misconfigured.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "status_code", "value": "401", "confidence": 1.0, "metadata": {"expected": "200"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "authorization_protected_resource",
+      "class": "broken_access_control",
+      "expected_behavior": "Privileged resource observable without the required privilege.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "status_code", "value": "403", "confidence": 1.0, "metadata": {"expected": "200"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "expected_vulnerable_behavior",
+      "class": "sql_injection",
+      "expected_behavior": "Benign marker/error response indicates untrusted input handling.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "error_message", "value": "syntax error near marker", "confidence": 1.0, "metadata": {"expected": "marker"}}
+        ]
+      },
+      "expected_verdict": "validated"
+    },
+    {
+      "name": "expected_safe_behavior",
+      "class": "sql_injection",
+      "expected_behavior": "Benign marker/error response indicates untrusted input handling.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "body", "value": "200 OK", "confidence": 1.0, "metadata": {"expected": "marker"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "ambiguous_behavior",
+      "class": "sql_injection",
+      "expected_behavior": "Benign marker/error response indicates untrusted input handling.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "body", "value": "<html>ok</html>", "confidence": 0.5}
+        ]
+      },
+      "expected_verdict": "inconclusive"
+    },
+    {
+      "name": "waf_interference",
+      "class": "xss",
+      "expected_behavior": "Benign marker reflected unescaped in the response.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "body", "value": "request blocked by waf", "confidence": 1.0, "metadata": {"expected": "marker"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "proxy_interference",
+      "class": "xss",
+      "expected_behavior": "Benign marker reflected unescaped in the response.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "body", "value": "proxy filtered response", "confidence": 1.0, "metadata": {"expected": "marker"}}
+        ]
+      },
+      "expected_verdict": "false_positive"
+    },
+    {
+      "name": "cloud_exposure",
+      "class": "cloud_exposure",
+      "expected_behavior": "Cloud resource exposure confirmed from authorized metadata.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "cloud", "value": "storage-bucket-public", "confidence": 1.0, "metadata": {"expected": "storage-bucket-public"}}
+        ]
+      },
+      "expected_verdict": "confirmed"
+    },
+    {
+      "name": "api_authorization_condition",
+      "class": "api_authorization",
+      "expected_behavior": "Privileged API operation observable without privilege.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "status_code", "value": "200", "confidence": 1.0, "metadata": {"expected": "200"}}
+        ]
+      },
+      "expected_verdict": "validated"
+    },
+    {
+      "name": "dependency_vulnerability",
+      "class": "dependency_vulnerability",
+      "expected_behavior": "A dependency resolves to a known-vulnerable version.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "dependency", "value": "lodash", "confidence": 1.0, "metadata": {"expected": "lodash"}},
+          {"kind": "version", "value": "4.17.20", "confidence": 1.0, "metadata": {"expected": "4.17.20"}}
+        ]
+      },
+      "expected_verdict": "confirmed"
+    },
+    {
+      "name": "open_redirect",
+      "class": "open_redirect",
+      "expected_behavior": "Redirect reflects a controlled benign target.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "header", "value": "location: /next", "confidence": 1.0, "metadata": {"expected": "location: /next"}}
+        ]
+      },
+      "expected_verdict": "validated"
+    },
+    {
+      "name": "cors_misconfiguration",
+      "class": "cors",
+      "expected_behavior": "CORS headers reflect an overly permissive origin.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "header", "value": "access-control-allow-origin: *", "confidence": 1.0, "metadata": {"expected": "access-control-allow-origin: *"}}
+        ]
+      },
+      "expected_verdict": "confirmed"
+    },
+    {
+      "name": "tls_weak_cipher",
+      "class": "cryptographic_failure",
+      "expected_behavior": "Weak or absent TLS observed.",
+      "confidence": 0.7,
+      "tool_output": {
+        "observations": [
+          {"kind": "tls", "value": "TLSv1.0 detected", "confidence": 1.0, "metadata": {"expected": "TLSv1.0 detected"}}
+        ]
+      },
+      "expected_verdict": "confirmed"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+https://example.com/admin
+https://example.com/api/users?id=1
+https://example.com/login

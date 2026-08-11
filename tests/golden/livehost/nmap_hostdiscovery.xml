@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated as: nmap -oX - -sn 10.0.0.0/30 -->
+<nmaprun scanner="nmap" args="nmap -oX - -sn 10.0.0.0/30" start="1735689600" startstr="Tue Jan 01 00:00:00 2025" version="7.95" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="ip" numservices="1" services="1"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1735689600" endtime="1735689601">
+<status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<hostnames/>
+<ports>
+</ports>
+</host>
+<host starttime="1735689600" endtime="1735689601">
+<status state="down" reason="no-response" reason_ttl="0"/>
+<address addr="10.0.0.2" addrtype="ipv4"/>
+<hostnames/>
+<ports>
+</ports>
+</host>
+<runstats>
+<finished time="1735689601" timestr="Tue Jan 01 00:00:01 2025" elapsed="1.00" summary="Nmap done at Tue Jan 01 00:00:01 2025; 4 IP addresses (1 host up) scanned in 1.00 seconds" exit="success"/>
+<hosts up="1" down="1" total="2"/>
+</runstats>
+</nmaprun>

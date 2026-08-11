@@ -1,0 +1,192 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX Architecture Enforcement Framework — Dependency Policy
+# ==============================================================
+#
+# This file is the machine-readable dependency matrix. It is the single
+# source of truth for the import/layer rules enforced by `hunterx-arch`
+# (hunterx.architecture). See docs/architecture/dependency-matrix.md for the
+# human-readable explanation of every rule.
+#
+# Schema notes:
+#   * layers:        catalogue of layers (names are normative; the package
+#                    prefixes are defined in code and cannot be overridden).
+#   * rules:         dependency matrix. `layer -> [allowed layers]`. Every
+#                    edge NOT listed here is a violation (ARCH-001) unless it
+#                    matches a conditional_imports rule or a waiver.
+#   * conditional_imports: fine-grained module-level exceptions to the matrix.
+#   * forbidden_imports:   explicitly forbidden import patterns (ARCH-002).
+#   * blocked_prefixes:    target prefixes that shipping code must never import.
+#   * waivers:       documented, time-boxed known issues. They never fail CI
+#                    but appear in reports as known issues; expired waivers
+#                    fail CI (ARCH-011).
+#   * known_cycles:  documented benign wiring cycles (package __init__
+#                    re-exports). Any NEW cycle fails CI (ARCH-003).
+#   * shared_contracts / extension_points: contracts importable across layers.
+
+version: "1.0.0"
+package_root: "src"
+api_baseline: "config/api_baseline.json"
+
+layers:
+  - name: shared
+    description: Cross-cutting helpers importable by every layer.
+    owner: Architecture Council
+  - name: domain
+    description: Pure domain: entities, value objects, ports, services, events, exceptions.
+    owner: Architecture Council
+  - name: config
+    description: Configuration loading and typed settings.
+    owner: Platform Team
+  - name: security
+    description: Cross-cutting security services: policies, permissions, secret resolution.
+    owner: Security Team
+  - name: infrastructure
+    description: Adapters implementing domain ports (db, cache, queue, ai, sandbox, secrets).
+    owner: Platform Team
+  - name: application
+    description: Use-case services and DTOs.
+    owner: Application Team
+  - name: knowledge
+    description: Knowledge base runtime and knowledge graph client.
+    owner: Intelligence Team
+  - name: reporting
+    description: Report views, renderers and evidence packaging.
+    owner: Reporting Team
+  - name: scheduler
+    description: Mission scheduling and job definitions.
+    owner: Platform Team
+  - name: engines
+    description: Engine facades: mission, workflow, planner, reasoning, correlation, report.
+    owner: Engine Team
+  - name: tools
+    description: Tool runtime, Tool Integration Factory, Tool Intelligence and SDK.
+    owner: Tooling Team
+  - name: plugins
+    description: Plugin host, registry, loader and public plugin SDK.
+    owner: Plugin Team
+  - name: agents
+    description: Multi-agent platform.
+    owner: AI Team
+  - name: api
+    description: REST API framework (routing structure, middleware, schemas).
+    owner: API Team
+  - name: cli
+    description: CLI framework and command registry.
+    owner: CLI Team
+  - name: platform
+    description: Composition root: assembles and wires every subsystem.
+    owner: Architecture Council
+  - name: architecture
+    description: The architecture enforcement framework itself (leaf layer).
+    owner: Architecture Council
+  - name: facade
+    description: Convenience facade re-export modules at the package root.
+    owner: Architecture Council
+  - name: root
+    description: The hunterx package itself (side-effect-free).
+    owner: Architecture Council
+
+# Dependency matrix (source layer -> allowed target layers).
+# Dependency direction: lower layers are foundational; the matrix permits the
+# inward edges only (see docs/bible/03 - Folder Structure.md §7).
+rules:
+  shared: [shared]
+  domain: [domain, shared]
+  config: [config, domain, shared]
+  security: [security, domain, shared, infrastructure]
+  infrastructure: [infrastructure, domain, shared, config]
+  application: [application, domain, shared, engines, tools]
+  knowledge: [knowledge, domain, shared]
+  reporting: [reporting, domain, shared]
+  scheduler: [scheduler, domain, shared]
+  engines: [engines, domain, shared, tools, reporting, infrastructure, application]
+  tools: [tools, domain, shared, plugins]
+  plugins: [plugins, domain, shared]
+  agents: [agents, domain, shared]
+  api: [api, domain, shared, config, platform, application, engines]
+  cli: [cli, domain, shared, config, platform, application, engines]
+  platform: [platform, domain, shared, config, security, infrastructure, application, knowledge, reporting, scheduler, engines, tools, plugins, agents, api, cli, facade]
+  facade: [facade, domain, shared, infrastructure, managers, config, application]
+  architecture: [architecture]
+
+conditional_imports:
+  - source: "hunterx.shared.di"
+    target: "hunterx.domain.exceptions"
+    reason: >
+      The DI container raises domain exceptions for registration errors;
+      exceptions are the one shared contract the foundation may reference.
+
+forbidden_imports:
+  - source: "hunterx."
+    target: "core."
+    reason: The legacy v6 'core' package must not be imported by v7 code.
+  - source: "hunterx."
+    target: "scripts"
+    reason: "'scripts/' content must never be imported by shipping code (Bible §10)."
+
+blocked_prefixes:
+  - "core."
+  - "scripts."
+  - "temp_cli_apps."
+
+waivers:
+  - id: "ARCH-W-001"
+    code: "ARCH-001"
+    module: "hunterx.domain.execution"
+    target: "hunterx.plugins.sdk.results"
+    reason: >
+      The domain execution model references the SDK result types
+      FindingResult/EvidenceResult. The result contracts should move into the
+      domain layer; tracked as architectural debt for a dedicated refactor
+      sprint.
+
+known_cycles:
+  - id: "ARCH-W-002"
+    modules: ["hunterx.tools.sdk", "hunterx.tools.sdk.engine", "hunterx.tools.sdk.pipeline"]
+    reason: >
+      SDK package __init__ re-export wiring cycle. Harmless at runtime
+      (imports complete lazily) and internal to the SDK package.
+  - id: "ARCH-W-003"
+    modules: ["hunterx.cli", "hunterx.cli.app", "hunterx.cli.commands"]
+    reason: >
+      CLI package wiring cycle: __init__ re-exports app/main and commands
+      import the app. Resolve by moving main() into a leaf module in a later
+      sprint.
+
+shared_contracts:
+  - module: "hunterx.domain.ports"
+    purpose: Abstract ports implemented by infrastructure adapters.
+    consumers: [application, engines, infrastructure, tools, plugins, platform]
+  - module: "hunterx.domain.exceptions"
+    purpose: Exception hierarchy and error codes shared across all layers.
+  - module: "hunterx.shared"
+    purpose: Cross-cutting helpers (ids, masking, time, result, di).
+
+extension_points:
+  - module: "hunterx.plugins.sdk"
+    kind: extension
+    purpose: Public SDK for plugin authors.
+  - module: "hunterx.tools.sdk"
+    kind: extension
+    purpose: Public SDK for tool adapter authors.
+
+plugin_boundary:
+  - "hunterx.plugins.sdk"
+  - "hunterx.domain"
+  - "hunterx.shared"
+
+tool_boundary:
+  - "hunterx.tools.sdk"
+  - "hunterx.domain"
+  - "hunterx.shared"
+  - "hunterx.plugins.sdk"
+
+doc_requirements:
+  required: [docstring]
+  recommended: [responsibilities, dependencies, extension points]
+  section_keywords:
+    responsibilities: ["responsibilities", "responsible for"]
+    dependencies: ["dependencies", "depends on"]
+    extension points: ["extension", "extend", "plugin", "adapter"]

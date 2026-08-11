@@ -1,0 +1,8 @@
+{
+  "url": "https://acme.com/",
+  "status_code": 200,
+  "headers": {},
+  "html": "<html><body><p>Welcome to the ACME portal</p><p>Contact us at support@acme.com</p></body></html>",
+  "scripts": [],
+  "observed_urls": ["https://acme.com/about", "https://acme.com/pricing"]
+}

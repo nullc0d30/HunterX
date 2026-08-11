@@ -1,0 +1,39 @@
+{
+  "target": "globe.example.com",
+  "domain": "example.com",
+  "records": [
+    {"name": "app.example.com", "type": "CNAME", "cname_target": "app-globe-123456.ew.r.appspot.com"},
+    {"name": "api.example.com", "type": "CNAME", "cname_target": "globe-api-abcdef123456.us-central1.run.app"},
+    {"name": "assets.example.com", "type": "CNAME", "cname_target": "globe-assets.storage.googleapis.com"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Google Trust Services",
+      "issuer_org": "WE1",
+      "common_name": "app.example.com",
+      "san": ["app.example.com", "api.example.com"]
+    }
+  ],
+  "headers": {
+    "x-goog-request-id": "9f3c2a1e-4d5b-6c7e-8f9a-0b1c2d3e4f5a",
+    "Server": "Google Frontend"
+  },
+  "html": "<html><body>Globe app</body></html>",
+  "scripts": [
+    {
+      "url": "https://app.example.com/app.js",
+      "content": "import { initializeApp } from 'firebase/app'; const firebaseConfig = { apiKey: 'AIzaSyDummyFakeKeyForTestingOnly1234567890', projectId: 'globe-prod-42' };"
+    }
+  ],
+  "technologies": [
+    {"name": "Google Cloud", "category": "cloud"},
+    {"name": "Firebase", "category": "backend"}
+  ],
+  "observed_urls": [
+    "https://app.example.com/",
+    "https://globe-api-abcdef123456.us-central1.run.app/healthz"
+  ],
+  "documents": [
+    {"text": "deploy to projects/globe-prod-42 in us-central1 via Cloud Build."}
+  ]
+}

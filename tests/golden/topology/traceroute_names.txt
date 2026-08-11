@@ -1,0 +1,8 @@
+traceroute to example.com (93.184.216.34), 30 hops max, 60 byte packets
+ 1  gateway.example.net (192.168.1.1)  0.500 ms  0.490 ms  0.495 ms
+ 2  edge01.example.net (10.0.0.1)  2.100 ms  2.090 ms  2.095 ms
+ 3  provider-gw.example.net (172.16.0.1)  5.050 ms  5.040 ms  5.045 ms
+ 4  core1.example.net (209.85.252.1)  8.110 ms  8.100 ms  8.105 ms
+ 5  * * *
+ 6  edge02.example.net (74.125.37.194)  12.040 ms  12.030 ms  12.035 ms
+ 7  example.com (93.184.216.34)  13.500 ms  13.490 ms  13.495 ms

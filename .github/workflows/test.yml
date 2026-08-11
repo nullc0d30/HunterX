@@ -1,7 +1,13 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX — Test (legacy entry-point, superseded by the CI Quality Gates).
+#
+# Kept for the README badge and as a fast smoke check: installs the project and
+# runs the mandatory quality gates through the `eng` platform. The full CI
+# matrix lives in .github/workflows/{ci,unit-tests,integration-tests,
+# architecture-tests,performance-tests,security-tests,docs-validation,
+# packaging-validation}.yml.
 
 name: Test
 
@@ -12,39 +18,27 @@ on:
     branches: [main, master]
 
 jobs:
-  lint:
+  quality-gates:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[all]"
-          pip install pytest ruff
+          pip install pytest ruff mypy vulture bandit pip-audit safety
 
-      - name: Lint with ruff
-        run: ruff check hunterx/ tests/
+      - name: Run mandatory quality gates
+        run: python -m eng gates --gate ruff mypy architecture docs compliance hygiene
+
+      - name: Architecture enforcement
+        run: hunterx-arch lint --root . || python -m hunterx.architecture lint --root .
 
       - name: Test with pytest
-        run: python -m pytest tests/ -v
-
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t hunterx:test .
-
-      - name: Smoke test
-        run: docker run --rm hunterx:test --help
+        run: python -m pytest tests/unit tests/component tests/architecture -v -m "not tools"

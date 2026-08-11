@@ -1,0 +1,2 @@
+https://example.com/search?q=test&page=2
+https://example.com/filter?category=books

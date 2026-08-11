@@ -1,0 +1,55 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Performance Tests.
+#
+# Runs the pytest-benchmark performance suite and the performance quality gate
+# (benchmark drift + slow-test detection). The baseline is committed under
+# `artifacts/benchmarks/`; drift beyond the configured threshold blocks the PR.
+
+name: Performance Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance:
+    name: Performance Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run performance quality gate
+        run: python -m eng gates --gate performance
+
+      - name: Upload benchmark reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-reports
+          path: artifacts/benchmarks/
+          if-no-files-found: ignore

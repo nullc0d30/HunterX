@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: Deploying HunterX in Production with Docker
 description: >-
   Best practices for deploying HunterX in production Docker environments.

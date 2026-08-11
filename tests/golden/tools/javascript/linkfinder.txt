@@ -1,0 +1,2 @@
+https://example.com/api/endpoint
+/assets/js/config.js

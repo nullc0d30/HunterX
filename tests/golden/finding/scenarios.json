@@ -1,0 +1,516 @@
+{
+  "description": "Sprint 028 vulnerability validation & proof orchestration golden scenarios. Each scenario carries the initial observation, evidence, validation strategy, expected sufficiency, expected confidence level and expected final finding state.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "sqli_validated_with_differential",
+      "vulnerability_class": "sql_injection",
+      "observations": [
+        {
+          "kind": "detection_signature",
+          "value": "sqli-sig",
+          "quality": "high",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "differential_database_behavior",
+          "value": "db-differential",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "sql_injection",
+      "expected_sufficiency": {
+        "hypothesis": "sufficient_for_hypothesis",
+        "validation": "sufficient_for_validation",
+        "proof": "insufficient"
+      },
+      "expected_state": "validated",
+      "expected_confidence_level": "medium"
+    },
+    {
+      "id": "sqli_reflection_only_is_insufficient",
+      "vulnerability_class": "sql_injection",
+      "observations": [
+        {
+          "kind": "reflection",
+          "value": "quote-reflected",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [],
+      "strategy_family": "sql_injection",
+      "expected_sufficiency": {
+        "hypothesis": "sufficient_for_hypothesis",
+        "validation": "insufficient"
+      },
+      "expected_state": "supported",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "xss_reflection_without_execution",
+      "vulnerability_class": "xss",
+      "observations": [
+        {
+          "kind": "reflection",
+          "value": "payload-reflected",
+          "quality": "high",
+          "source": "dalfox"
+        }
+      ],
+      "evidence": [],
+      "strategy_family": "xss",
+      "expected_sufficiency": {
+        "validation": "insufficient"
+      },
+      "expected_state": "supported",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "xss_behaviorally_confirmed",
+      "vulnerability_class": "xss",
+      "observations": [
+        {
+          "kind": "detection_signature",
+          "value": "xss-sig",
+          "quality": "high",
+          "source": "dalfox"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "marker-evaluated",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "independent_reproduction",
+          "value": "reproduced",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "xss",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "report_ready",
+      "expected_confidence_level": "medium"
+    },
+    {
+      "id": "ssrf_controlled_callback",
+      "vulnerability_class": "ssrf",
+      "observations": [
+        {
+          "kind": "body",
+          "value": "url-parameter",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "value": "callback-correlated",
+          "quality": "high",
+          "source": "interactsh"
+        }
+      ],
+      "strategy_family": "ssrf",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation",
+        "proof": "sufficient_for_proof"
+      },
+      "expected_state": "report_ready",
+      "expected_confidence_level": "medium"
+    },
+    {
+      "id": "ssti_template_evaluation",
+      "vulnerability_class": "ssti",
+      "observations": [
+        {
+          "kind": "reflection",
+          "value": "template-marker",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "template-evaluated",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "ssti",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "validated",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "lfi_resource_access",
+      "vulnerability_class": "lfi",
+      "observations": [
+        {
+          "kind": "detection_signature",
+          "value": "traversal-sig",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "resource_access",
+          "value": "file-included",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "lfi",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "validated",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "rce_requires_controlled_proof",
+      "vulnerability_class": "rce",
+      "observations": [
+        {
+          "kind": "body",
+          "value": "command-marker",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "command-output-diff",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "controlled_proof",
+          "value": "benign-command-output",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "replay",
+          "value": "replayed",
+          "quality": "proof",
+          "source": "proof_replay"
+        }
+      ],
+      "strategy_family": "rce",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation",
+        "proof": "sufficient_for_proof"
+      },
+      "expected_state": "report_ready",
+      "expected_confidence_level": "high"
+    },
+    {
+      "id": "idor_authorization_comparison",
+      "vulnerability_class": "idor",
+      "observations": [
+        {
+          "kind": "api_response",
+          "value": "object-reachable",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "authorization_state_comparison",
+          "value": "actor-b-accessed",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "idor",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "proved",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "broken_access_control_state_comparison",
+      "vulnerability_class": "broken_access_control",
+      "observations": [
+        {
+          "kind": "api_response",
+          "value": "admin-endpoint",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "auth_state_comparison",
+          "value": "unauth-granted",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "authorization_state_comparison",
+          "value": "lowpriv-granted",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "broken_access_control",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "proved",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "graphql_authorization_flaw",
+      "vulnerability_class": "graphql_authorization",
+      "observations": [
+        {
+          "kind": "graphql_response",
+          "value": "introspection-enabled",
+          "quality": "medium",
+          "source": "inql"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "authorization_state_comparison",
+          "value": "cross-tenant-query",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "graphql_authorization",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "proved",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "cloud_exposure_misconfiguration",
+      "vulnerability_class": "cloud_exposure",
+      "observations": [
+        {
+          "kind": "cloud_exposure",
+          "value": "public-bucket",
+          "quality": "high",
+          "source": "prowler"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "resource_access",
+          "value": "anonymous-list",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "cloud_exposure",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "validated",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "secret_exposure_presence",
+      "vulnerability_class": "secret_exposure",
+      "observations": [
+        {
+          "kind": "secret",
+          "value": "ghp_xxxxx",
+          "quality": "high",
+          "source": "gitleaks"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "secret",
+          "value": "redacted-credential",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "secret_exposure",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "validated",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "known_cve_match_is_candidate",
+      "vulnerability_class": "known_cve",
+      "observations": [
+        {
+          "kind": "cve_match",
+          "value": "CVE-2024-1234",
+          "quality": "medium",
+          "source": "nuclei"
+        }
+      ],
+      "evidence": [],
+      "strategy_family": "known_cve",
+      "expected_sufficiency": {
+        "hypothesis": "sufficient_for_hypothesis",
+        "validation": "insufficient"
+      },
+      "expected_state": "supported",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "false_positive_generic_error",
+      "vulnerability_class": "sql_injection",
+      "observations": [
+        {
+          "kind": "error_message",
+          "value": "generic-500",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [],
+      "strategy_family": "sql_injection",
+      "expected_sufficiency": {
+        "validation": "insufficient"
+      },
+      "expected_state": "candidate",
+      "expected_confidence_level": "low",
+      "rejection_reason": "generic_error_response"
+    },
+    {
+      "id": "conflicting_evidence_scanner_vs_replay",
+      "vulnerability_class": "ssrf",
+      "observations": [
+        {
+          "kind": "detection_signature",
+          "value": "ssrf-sig",
+          "quality": "high",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "value": "callback",
+          "quality": "high",
+          "source": "interactsh",
+          "contradictory": true
+        }
+      ],
+      "strategy_family": "ssrf",
+      "expected_sufficiency": {
+        "validation": "insufficient"
+      },
+      "expected_state": "disputed",
+      "expected_confidence_level": "low"
+    },
+    {
+      "id": "duplicate_finding_same_signature",
+      "vulnerability_class": "xss",
+      "observations": [
+        {
+          "kind": "detection_signature",
+          "value": "xss-sig",
+          "quality": "high",
+          "source": "dalfox"
+        }
+      ],
+      "evidence": [],
+      "strategy_family": "xss",
+      "expected_sufficiency": {
+        "hypothesis": "sufficient_for_hypothesis"
+      },
+      "expected_state": "supported",
+      "expected_duplicate_relation": "same_finding"
+    },
+    {
+      "id": "unknown_behavior_classification",
+      "vulnerability_class": "unknown_behavior",
+      "observations": [
+        {
+          "kind": "unknown_observation",
+          "value": "unexpected state transition with callback",
+          "quality": "medium",
+          "source": "scanner"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "state-diff",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "controlled_callback",
+          "value": "callback",
+          "quality": "high",
+          "source": "interactsh"
+        },
+        {
+          "kind": "replay",
+          "value": "replayed",
+          "quality": "proof",
+          "source": "proof_replay"
+        }
+      ],
+      "strategy_family": "unknown_behavior",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation",
+        "proof": "sufficient_for_proof"
+      },
+      "expected_state": "report_ready",
+      "expected_classification": "novel_behavior"
+    },
+    {
+      "id": "business_logic_unauthorized_state_transition",
+      "vulnerability_class": "business_logic",
+      "observations": [
+        {
+          "kind": "business_state_transition",
+          "value": "unauthorized-transition",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "business_state_transition",
+          "value": "state-a-to-b",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "independent_reproduction",
+          "value": "reproduced",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "strategy_family": "business_logic",
+      "expected_sufficiency": {
+        "validation": "sufficient_for_validation"
+      },
+      "expected_state": "report_ready",
+      "expected_confidence_level": "medium"
+    }
+  ]
+}

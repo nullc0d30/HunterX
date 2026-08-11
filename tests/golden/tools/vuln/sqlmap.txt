@@ -1,0 +1,5 @@
+sqlmap identified the following injection point(s) with a total of 5 HTTP(s) requests:
+---
+Parameter: id (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause

@@ -1,0 +1,5 @@
+{"host":"api.example.com","type":"A","ttl":60,"resp":["192.0.2.10"],"resolver":"1.1.1.1"}
+{"host":"x7f3a9c.example.com","type":"A","ttl":60,"resp":["192.0.2.10"],"resolver":"1.1.1.1"}
+{"host":"k2b81d.example.com","type":"A","ttl":60,"resp":["192.0.2.10"],"resolver":"1.1.1.1"}
+{"host":"m0p5ee.example.com","type":"A","ttl":60,"resp":["192.0.2.10"],"resolver":"1.1.1.1"}
+{"host":"z8vq3n.example.com","type":"A","ttl":60,"resp":["192.0.2.10"],"resolver":"1.1.1.1"}

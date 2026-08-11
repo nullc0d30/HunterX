@@ -1,0 +1,76 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX — Production Readiness Assessment.
+#
+# Generates the final readiness report (architecture health, security health,
+# code quality, coverage, documentation score, dependency health, release
+# readiness, production-readiness score, technical debt) and publishes it as a
+# GitHub Pages artifact. The assessment itself does not block merges; the
+# per-gate workflows do.
+
+name: Readiness Assessment
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1" # weekly Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    name: Production Readiness
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.lock
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,report]"
+          pip install mypy vulture bandit pip-audit safety semgrep cyclonedx-py pip-licenses
+
+      - name: Run readiness assessment
+        run: python -m eng readiness --json || true
+
+      - name: Upload readiness report
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-report
+          path: artifacts/readiness.json
+          if-no-files-found: error
+
+      - name: Publish readiness report to Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/readiness.json
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

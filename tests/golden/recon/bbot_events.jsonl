@@ -1,0 +1,7 @@
+{"type":"DNS_NAME","data":"www.example.com","source":"crt.sh"}
+{"type":"DNS_NAME","data":"example.com","source":"certspotter"}
+{"type":"IP_ADDRESS","data":"93.184.216.34","source":"ipneighbor"}
+{"type":"IP_NETWORK","data":"93.184.216.0/24","source":"ipneighbor"}
+{"type":"ASN","data":"AS15133","source":"ipneighbor"}
+{"type":"ORG","data":"EdgeCast Networks, Inc","source":"ipneighbor"}
+{"type":"URL","data":"https://www.example.com/login","source":"wayback"}

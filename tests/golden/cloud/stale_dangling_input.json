@@ -1,0 +1,27 @@
+{
+  "target": "stale.example.dev",
+  "domain": "example.dev",
+  "records": [
+    {"name": "old-cdn.example.dev", "type": "CNAME", "cname_target": "dangling-stale-123.cloudfront.net"},
+    {"name": "legacy.example.dev", "type": "CNAME", "cname_target": "retired-app.azurewebsites.net"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Amazon",
+      "issuer_org": "Amazon",
+      "common_name": "old-cdn.example.dev",
+      "san": ["old-cdn.example.dev"]
+    }
+  ],
+  "headers": {},
+  "html": "",
+  "scripts": [],
+  "technologies": [],
+  "observed_urls": [
+    "https://old-cdn.example.dev/",
+    "https://retired-app.azurewebsites.net/"
+  ],
+  "documents": [
+    {"text": "The staging environment previously used a CloudFront distribution that was decommissioned in 2024."}
+  ]
+}

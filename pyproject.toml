@@ -1,7 +1,11 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Offensive Security Framework
+# HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
+#
+# Build config uses a src/ layout (see docs/bible/03 - Folder Structure.md).
+# The legacy v6 flat package (hunterx/) is intentionally NOT packaged; it is
+# preserved in-tree only.
 
 [build-system]
 requires = ["setuptools>=68.0"]
@@ -9,8 +13,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hunterx"
-version = "6.0.0"
-description = "AI-assisted offensive security framework featuring reasoning-driven reconnaissance, vulnerability assessment, attack surface analysis, threat intelligence, multi-agent orchestration, and multi-format reporting."
+version = "7.0.0"
+description = "Enterprise AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -18,13 +22,14 @@ authors = [
     {name = "Ahmed Awad (NullC0d3)"},
 ]
 keywords = [
-    "security", "red-team", "vulnerability", "penetration-testing",
-    "bug-bounty", "offensive-security", "ai", "vulnerability-scanner",
-    "osint", "reconnaissance", "web-security", "cloud-security",
-    "api-security", "mitre-attack", "owasp", "python",
+    "security", "red-team", "penetration-testing", "bug-bounty",
+    "offensive-security", "ai", "orchestration", "intelligence",
+    "web-security", "cloud-security", "api-security", "kubernetes-security",
+    "container-security", "mobile-security", "network-security",
+    "active-directory", "osint", "reconnaissance", "mitre-attack", "python",
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
@@ -35,31 +40,59 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Security",
-    "Topic :: Security :: Cryptography",
     "Topic :: Security :: Penetration Testing",
     "Typing :: Typed",
 ]
 
 dependencies = [
-    "requests>=2.32.0",
-    "rich>=13.0.0",
+    "pydantic>=2.0",
     "pyyaml>=6.0.0",
-    "websocket-client>=1.8.0",
-    "beautifulsoup4>=4.12.0",
-    "lxml>=5.0.0",
+    "jsonschema>=4.20.0",
+    "rich>=13.0.0",
     "networkx>=3.0",
     "urllib3>=2.0",
     "dataclasses-json>=0.6.0",
-    "jsonschema>=4.20.0",
+    "dnspython>=2.6.0",
+    "defusedxml>=0.7.1",
+    # SQL persistence (TIDB stores + Alembic migrations) is the default v7
+    # persistence layer (SQLite by default), so SQLAlchemy is a base
+    # dependency — the base install and Docker image must run the CLI.
+    "sqlalchemy>=2.0",
+    "alembic>=1.13.0",
 ]
 
 [project.optional-dependencies]
-api = ["fastapi>=0.115.0", "uvicorn>=0.30.0", "pydantic>=2.0"]
-browser = ["playwright>=1.40"]
-graphviz = ["graphviz>=0.20"]
-ml = ["scikit-learn>=1.3", "numpy>=1.24"]
-all = ["hunterx[api,browser,graphviz,ml]"]
+api = ["fastapi>=0.115.0", "uvicorn>=0.30.0"]
+db = ["sqlalchemy>=2.0", "alembic>=1.13.0"]
+queue = ["aio-pika>=9.4.0"]
+cache = ["redis>=5.0.0"]
+graph = ["neo4j>=5.0.0"]
+secrets = ["hvac>=2.0.0"]
+ai = ["httpx>=0.27.0"]
+telemetry = ["opentelemetry-api>=1.24.0", "opentelemetry-sdk>=1.24.0"]
+report = ["jinja2>=3.1.0", "weasyprint>=61.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-benchmark>=4.0",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10",
+    "vulture>=2.11",
+    "bandit>=1.7.9",
+    "pip-audit>=2.7",
+    "safety>=3.2",
+    "build>=1.2",
+    "twine>=5.0",
+    "pip-licenses>=4.4",
+    "types-PyYAML>=6.0",
+]
+all = [
+    "hunterx[api,db,queue,cache,graph,secrets,ai,telemetry,report,dev]",
+]
 
 [project.urls]
 Homepage = "https://github.com/nullc0d30/HunterX"
@@ -70,24 +103,93 @@ Issues = "https://github.com/nullc0d30/HunterX/issues"
 
 [project.scripts]
 hunterx = "hunterx.cli:main"
+hunterx-arch = "hunterx.architecture.cli:main"
 
 [tool.setuptools]
 license-files = ["LICENSE"]
 
 [tool.setuptools.package-data]
-hunterx = ["py.typed", "config/*.yaml", "assets/payloads/*", "assets/data/*"]
+hunterx = ["py.typed", "config/*.yaml", "reporting/templates/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hunterx*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = [
+    "tests/unit",
+    "tests/component",
+    "tests/architecture",
+    "tests/integration",
+    "tests/golden",
+    "tests/security",
+    "tests/acceptance",
+    "tests/performance",
+    "tests/engineering",
+]
 python_files = ["test_*.py"]
+pythonpath = ["src"]
+addopts = "-m 'not tools'"
+
+[tool.pytest.ini_options.markers]
+tools = "tests that integrate real external security tools (excluded by default)"
 
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+src = ["src"]
+# The legacy v6 flat test files at tests/ root must remain untouched; they are
+# excluded from linting and from the v7 test suite (which lives in tests/{unit,
+# component, integration, golden, security, acceptance, performance}).
+extend-exclude = [
+    "tests/__init__.py",
+    "tests/test_*.py",
+]
 
 [tool.ruff.lint]
-ignore = ["E501"]
+ignore = ["E501", "D105", "D107"]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "N", "D"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["hunterx*"]
+[tool.ruff.lint.per-file-ignores]
+# Test code: docstring rules and blind-exception assertions are noise here.
+"tests/**" = ["D", "B017", "B011"]
+# Abstract contract methods in the Tool Mastery port are self-documenting.
+"src/hunterx/domain/ports/tool_mastery.py" = ["D102"]
+# conftest.py must insert src/ ahead of the legacy v6 flat hunterx package on
+# sys.path before importing hunterx (E402 is intentional there).
+"tests/conftest.py" = ["E402"]
+# env.py imports the model packages after adjusting sys.path so the v7 package
+# shadows the legacy v6 flat hunterx package (E402 is intentional there).
+"alembic/env.py" = ["E402"]
+# Alembic-generated migrations are machine-written; style rules are noise.
+"alembic/versions/**" = ["D", "W291"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+files = ["src"]
+exclude = [
+    "src/hunterx/plugins/sdk/",
+]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+ignore_errors = true
+
+[tool.coverage.run]
+source = ["src/hunterx"]
+branch = true
+omit = [
+    "*/alembic/*",
+    "*/__main__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
+show_missing = true

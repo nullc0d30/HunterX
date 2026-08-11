@@ -1,0 +1,98 @@
+{
+  "capability": "tool-intelligence-layer",
+  "name": "Tool Intelligence Layer",
+  "version": "1.0.0",
+  "wave": 23,
+  "status": "ratified",
+  "description": "The safety-aware, deterministic capability that decides which tool, in what order, under what guardrails, and with what memory. Extends the Tool Intelligence Platform (TIP) knowledge plane with safety-ceiling-aware selection, dependency-aware planning, adaptive escalation bounded by authorization, pre-execution enforcement (safety, scope, inputs, resources, prompt-injection resistance), evidence correlation with confidence ceilings, target intelligence memory and tool reliability/availability tracking. The layer never executes a binary itself; reference adapters exercise the full flow in-process.",
+  "inputs": [
+    "ToolSelectionCriteria / mission objectives",
+    "ToolKnowledge with Sprint 023 contracts (invocation, safety, scope, resources)",
+    "ToolEvidenceMapping / ToolProofCapability / ToolConfidenceCeiling registrations",
+    "TargetIntelligenceStore memory (what has already been done)",
+    "authorization ceiling (ToolSafetyClass) and scope policy",
+    "CanonicalObservation stream from reference adapters or SDK executions",
+    "availability status and reliability feedback"
+  ],
+  "outputs": [
+    "ranked, explained ToolSelection list",
+    "dependency-aware ToolChain",
+    "EscalationDecision",
+    "validated input values (fully enforced)",
+    "CorrelatedEvidenceChain / ConflictingToolEvidence",
+    "ToolExecutionRecord",
+    "TargetIntelligenceSnapshot",
+    "ToolReliabilityStats / ToolAvailabilityReport"
+  ],
+  "safety_classes": [
+    "passive",
+    "read_only",
+    "low_impact_active",
+    "active",
+    "high_impact"
+  ],
+  "guardrails": [
+    "selection never exceeds the authorization ceiling",
+    "requires_authorization tools require authorization_granted",
+    "pre-execution enforcement is all-or-nothing (typed EnforcementViolation)",
+    "scope enforcement before any tool runs",
+    "prompt-injection pattern rejection",
+    "shell metacharacter rejection ([;&|`$<>]) in all string inputs",
+    "resource budget enforcement",
+    "confidence ceilings cap tool contribution to findings",
+    "conflicting evidence is preserved, never averaged"
+  ],
+  "engines": [
+    "ToolSelector",
+    "ToolSequencePlanner",
+    "EscalationEngine",
+    "ToolEnforcementEngine",
+    "EvidenceCorrelator",
+    "TargetIntelligenceStore",
+    "ToolReliabilityTracker",
+    "ParserRegistry / NormalizerRegistry / ToolRuntimeRegistry"
+  ],
+  "reference_adapters": [
+    "PortScannerAdapter (port observations)",
+    "WebProbeAdapter (url observations)",
+    "TechDetectorAdapter (technology observations)"
+  ],
+  "entities": [
+    "ToolInvocationContract",
+    "ToolInputField / ToolInputSchema",
+    "ToolSafetyProfile / ToolSafetyClass",
+    "ToolScopeProfile",
+    "ToolResourceRequirements / ToolRateLimitProfile",
+    "ToolEvidenceMapping",
+    "ToolProofCapability",
+    "ToolConfidenceCeiling",
+    "CanonicalObservation",
+    "ToolChain / ChainStep / ChainStatus / ChainStepState / ChainStepResult",
+    "ToolSelection / ToolSelectionCriteria",
+    "EscalationDecision / EscalationLevel",
+    "ToolExecutionRecord",
+    "TargetIntelligenceSnapshot",
+    "ToolReliabilityStats / ToolAvailabilityReport"
+  ],
+  "testing": [
+    "unit: tests/unit/test_tool_intelligence_layer.py",
+    "unit: tests/unit/test_tool_intelligence_adapters.py",
+    "acceptance: tests/acceptance/test_tool_intelligence_acceptance.py",
+    "architecture: layering and import-cycle validation"
+  ],
+  "never_executes": [
+    "external binaries on its own",
+    "unscoped targets",
+    "tools above the authorization ceiling",
+    "unvalidated inputs",
+    "prompt-injection or shell-metacharacter payloads"
+  ],
+  "analysis_version": "1.0.0",
+  "architecture": {
+    "domain": "hunterx.domain.tool_intelligence",
+    "tools": "hunterx.tools.intelligence",
+    "facade": "hunterx.tools.intelligence.api.ToolIntelligenceAPI + ToolIntelligenceLayer",
+    "reference_adapters": "hunterx.tools.intelligence.adapters",
+    "documentation": "docs/v7-tool-intelligence-layer.md"
+  }
+}

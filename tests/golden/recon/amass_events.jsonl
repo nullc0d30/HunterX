@@ -1,0 +1,4 @@
+{"name":"www.example.com","domain":"example.com","event_type":"subdomain","sources":["crt.sh"],"addresses":["93.184.216.34"]}
+{"name":"api.example.com","domain":"example.com","event_type":"subdomain","sources":["passive"]}
+{"event_type":"address","name":"93.184.216.34","domain":"example.com","addresses":["93.184.216.34"]}
+{"name":"203.0.113.0/24","event_type":"cidr","domain":"example.com"}

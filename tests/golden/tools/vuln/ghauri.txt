@@ -1,0 +1,4 @@
+ghauri identified the following injection point(s):
+---
+Parameter: id (GET)
+    Type: boolean-based blind

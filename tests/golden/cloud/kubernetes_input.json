@@ -1,0 +1,40 @@
+{
+  "target": "k8s.example.io",
+  "domain": "example.io",
+  "records": [
+    {"name": "k8s.example.io", "type": "A", "value": "10.0.0.12"},
+    {"name": "grafana.k8s.example.io", "type": "CNAME", "cname_target": "kube-ingress.example.io"},
+    {"name": "registry.example.io", "type": "CNAME", "cname_target": "registry-123456.azurecr.io"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Let's Encrypt",
+      "issuer_org": "R3",
+      "common_name": "*.k8s.example.io",
+      "san": ["*.k8s.example.io", "grafana.k8s.example.io"]
+    }
+  ],
+  "headers": {
+    "Server": "nginx-ingress-controller",
+    "X-Kubernetes-Pod-Name": "ingress-nginx-controller-6f4b5c9d7c-abcde"
+  },
+  "html": "<html><body>Kubernetes platform</body></html>",
+  "scripts": [
+    {
+      "url": "https://k8s.example.io/assets/deploy.js",
+      "content": "const images = ['registry-123456.azurecr.io/app/api:v1.2.3', 'nginx:1.25']; const namespace = 'production';"
+    }
+  ],
+  "technologies": [
+    {"name": "Kubernetes", "category": "container"},
+    {"name": "Docker", "category": "container"},
+    {"name": "Helm", "category": "package manager"}
+  ],
+  "observed_urls": [
+    "https://grafana.k8s.example.io/",
+    "https://k8s.example.io/"
+  ],
+  "documents": [
+    {"text": "EKS cluster with ingress-nginx, Helm charts, kube-apiserver on the control plane."}
+  ]
+}

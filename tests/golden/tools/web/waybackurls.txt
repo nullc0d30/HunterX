@@ -1,0 +1,2 @@
+https://example.com/old-path
+https://example.com/assets/app.js

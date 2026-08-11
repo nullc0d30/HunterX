@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: Optimizing Your Bug Bounty Workflow with HunterX
 description: >-
   A practical guide to using HunterX in bug bounty hunting. Profile selection,

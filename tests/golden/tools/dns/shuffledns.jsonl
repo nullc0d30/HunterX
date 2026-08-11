@@ -1,0 +1,2 @@
+{"host":"api.example.com","type":"A","ip":"1.2.3.4","source":"brute"}
+{"host":"dev.example.com","type":"A","ip":"5.6.7.8","source":"brute"}

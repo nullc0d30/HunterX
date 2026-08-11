@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: Plugin Development with HunterX — A Complete Walkthrough
 description: >-
   Complete guide to building custom plugins for HunterX. Detector plugins,

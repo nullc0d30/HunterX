@@ -1,0 +1,10 @@
+{"host":"example.com","type":"A","ttl":300,"resp":["93.184.216.34"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"AAAA","ttl":300,"resp":["2606:2800:220:1:248:1893:25c8:1946"],"resolver":"1.1.1.1"}
+{"host":"www.example.com","type":"CNAME","ttl":3600,"resp":["example.com"],"resolver":"8.8.8.8"}
+{"host":"example.com","type":"MX","ttl":3600,"resp":["10 mail.example.com"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"NS","ttl":172800,"resp":["a.iana-servers.net"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"TXT","ttl":3600,"resp":["v=spf1 -all"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"SOA","ttl":900,"resp":["ns.icann.org. noc.dns.icann.org. 2023060600 7200 3600 1209600 3600"],"resolver":"1.1.1.1"}
+{"host":"_sip._tcp.example.com","type":"SRV","ttl":60,"resp":["10 5 5060 sipserver.example.com"],"resolver":"1.1.1.1"}
+{"host":"example.com","type":"CAA","ttl":3600,"resp":["0 issue \"letsencrypt.org\""],"resolver":"1.1.1.1"}
+{"host":"_dmarc.example.com","type":"TXT","ttl":3600,"resp":["v=DMARC1; p=reject; rua=mailto:dmarc@example.com"],"resolver":"1.1.1.1"}

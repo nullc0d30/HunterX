@@ -1,0 +1,53 @@
+# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# SPDX-License-Identifier: Apache-2.0
+#
+# HunterX quality-gate configuration.
+#
+# Every gate listed here is mandatory by default: a failure blocks the merge
+# (raises eng.gates.GateBlockedError). Thresholds can be tuned per gate without
+# code changes. See docs/v7-devsecops.md for the quality-gate reference.
+
+gates:
+  - name: ruff
+    mandatory: true
+
+  - name: mypy
+    mandatory: true
+
+  - name: pytest
+    mandatory: true
+
+  - name: coverage
+    mandatory: true
+    threshold: 80.0
+
+  - name: architecture
+    mandatory: true
+
+  - name: deadcode
+    mandatory: true
+
+  - name: dependencies
+    mandatory: true
+
+  - name: docs
+    mandatory: true
+
+  - name: security
+    mandatory: true
+
+  - name: performance
+    mandatory: true
+    threshold: 20.0
+
+  - name: compliance
+    mandatory: true
+
+  - name: hygiene
+    mandatory: true
+
+  - name: packaging
+    mandatory: false
+
+  - name: git-diff
+    mandatory: false

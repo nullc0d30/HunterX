@@ -1,0 +1,7 @@
+{"host":"1.2.3.4","port":22,"protocol":"tcp","reason":"syn-ack"}
+{"host":"1.2.3.4","port":443,"protocol":"tcp","reason":"syn-ack"}
+{"host":"1.2.3.4","port":53,"protocol":"udp","reason":"port-open"}
+this is not a json line at all
+{"host":"5.6.7.8","port":99999,"protocol":"tcp","reason":"syn-ack"}
+{"host":"10.0.0.9","port":8080,"protocol":"tcp","reason":"syn-ack"}
+{"host":"","port":22,"protocol":"tcp","reason":"syn-ack"}

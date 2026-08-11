@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2026 Ahmed Awad (NullC0d3). SPDX-License-Identifier: Apache-2.0. -->
+
 # Contributing to HunterX
 
 Thank you for your interest in contributing to HunterX. This document outlines the process for contributing code, documentation, and other improvements.
@@ -168,8 +170,7 @@ For more information, see [developercertificate.org](https://developercertificat
 
 - [Documentation Site](https://nullc0d30.github.io/HunterX/)
 - [CLI Reference](https://nullc0d30.github.io/HunterX/cli/)
-- [REST API Reference](https://nullc0d30.github.io/HunterX/api/)
-- [Skill SDK](docs/SKILL_SDK.md)
-- [Plugin Development Guide](docs/PLUGIN_DEVELOPMENT.md)
+- [Development Bible](docs/bible/README.md)
+- [Architecture Enforcement](docs/architecture/README.md)
 - [Issue Tracker](https://github.com/nullc0d30/HunterX/issues)
 - [Discussions](https://github.com/nullc0d30/HunterX/discussions)

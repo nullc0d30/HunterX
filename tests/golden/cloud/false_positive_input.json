@@ -1,0 +1,34 @@
+{
+  "target": "plain.example.com",
+  "domain": "plain.example.com",
+  "records": [
+    {"name": "plain.example.com", "type": "A", "value": "192.0.2.55"}
+  ],
+  "certificates": [
+    {
+      "subject_org": "Example Org",
+      "issuer_org": "Example CA",
+      "common_name": "plain.example.com",
+      "san": ["plain.example.com"]
+    }
+  ],
+  "headers": {
+    "Server": "nginx/1.24.0"
+  },
+  "html": "<html><head><title>Plain Site</title></head><body><h1>Welcome</h1><p>This is a plain static site.</p></body></html>",
+  "scripts": [
+    {
+      "url": "https://plain.example.com/app.js",
+      "content": "console.log('hello world'); document.querySelector('#app').innerText = 'Home';"
+    }
+  ],
+  "technologies": [
+    {"name": "Nginx", "category": "web server"},
+    {"name": "JavaScript", "category": "language"}
+  ],
+  "observed_urls": [
+    "https://plain.example.com/",
+    "https://plain.example.com/about"
+  ],
+  "documents": []
+}

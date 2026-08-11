@@ -1,0 +1,206 @@
+{
+  "capability": "authorization-and-access-control-intelligence",
+  "version": "1.0.0",
+  "sprint": 16,
+  "wave": 10,
+  "status": "ratified",
+  "summary": "Persistent, evidence-backed authorization & access-control intelligence for authorized targets: authorization subjects, roles, groups, permissions, scopes, claims, policies (RBAC/ABAC/ACL/PBAC/ReBAC/custom), resources, actions, resource-identifier metadata, ownership relationships, tenant boundaries, administrative surfaces, function/object/field-level access-control indicators, frontend/backend authorization logic, API authorization correlation, GraphQL/WebSocket/service-to-service authorization, decision indicators, mass-assignment fields and historical change detection. Intelligence only; never tests authorization, never substitutes identifiers, never accesses another user's or tenant's resources.",
+  "inputs": {
+    "targets": [
+      "hostname", "domain", "ip", "url", "http-snapshot", "script"
+    ],
+    "mission": "mission_id, target, mode (passive | active | hybrid), tools, parameters, min_confidence",
+    "static_material": [
+      "HTTP response snapshots (status, headers, html)",
+      "JavaScript script content (roles, permissions, scopes, claims, route guards, admin routes)",
+      "API security schemes (OpenAPI securitySchemes scopes)",
+      "API operations (method, path, roles, scopes, permissions, policy)",
+      "GraphQL authorization metadata (types, fields, directives, restricted fields)",
+      "WebSocket endpoint records (channel, mechanism)",
+      "policy documents (policy_model, subjects, service accounts, claims)",
+      "observed URLs (admin surfaces, object-level endpoints, identifiers)"
+    ],
+    "existing_intelligence": [
+      "previously persisted TIDB authorization records",
+      "authentication intelligence (roles, scopes, permissions, tenants)",
+      "API intelligence operations",
+      "JavaScript intelligence auth/config hints"
+    ],
+    "historical": "authorization observation list for deterministic change detection",
+    "scope_policy": "authorized domains, CIDRs, IPs, excluded names/cidrs/ips, excluded URL patterns"
+  },
+  "outputs": {
+    "subjects": "evidence-backed authorization subjects (user, role, group, service account, api client, application, tenant, anonymous)",
+    "roles": "role identifiers with default/custom classification",
+    "groups": "group identifiers",
+    "permissions": "permission identifiers with normalized action/resource",
+    "scopes": "OAuth/OIDC/API scope identifiers",
+    "claims": "authorization claim references",
+    "policies": "policy models (RBAC/ABAC/ACL/PBAC/ReBAC/custom) and mechanisms",
+    "resources": "authorization resources with kind, identifier, parent",
+    "actions": "normalized actions preserving original terminology",
+    "identifiers": "resource-identifier metadata (numeric, uuid, ulid, slug, hash, opaque, path, query)",
+    "ownership": "ownership indicators (owner_id, created_by, author, principal, ...)",
+    "tenants": "tenant boundary indicators (header, claim, path, query)",
+    "admin_surfaces": "administrative surface inventory",
+    "function_level": "function-level access-control indicators",
+    "object_level": "object-level access-control indicators",
+    "field_level": "field-level access-control indicators",
+    "frontend": "frontend authorization logic (isAdmin, hasPermission, hasRole, route guards, feature flags)",
+    "backend": "backend authorization logic (middleware, decorators, guards, policy engines)",
+    "api_correlations": "API authorization matrix (endpoint -> method -> auth -> role -> scope -> permission -> resource -> action)",
+    "graphql": "GraphQL authorization indicators (queries, mutations, fields, directives)",
+    "websockets": "WebSocket authorization indicators (connection/channel/topic auth)",
+    "services": "service-to-service authorization indicators (service accounts, api clients, mTLS, client credentials)",
+    "decisions": "observed/documented authorization decision indicators (allow/deny/conditional)",
+    "mass_assignment": "models exposing authorization-sensitive fields (structural only)",
+    "access_control": "access-control relationships (subject -> role/permission/scope)",
+    "authorization_changes": "historical added/removed/changed events",
+    "authorization_runs": "observability run records",
+    "topology_relationships": "origin->admin surface/resource/role/permission/policy/tenant/endpoint edges persisted into the existing TIDB topology",
+    "queries": [
+      "subjects", "roles", "groups", "permissions", "scopes", "claims",
+      "policies", "resources", "actions", "identifiers", "ownership",
+      "tenants", "admin_surfaces", "function_level", "object_level",
+      "field_level", "frontend", "backend", "api_correlations", "graphql",
+      "websockets", "services", "decisions", "mass_assignment",
+      "access_control", "observations", "changes", "runs", "summary"
+    ]
+  },
+  "entities": [
+    "AuthorizationRun", "AuthorizationSubject", "AuthorizationRole",
+    "AuthorizationGroup", "AuthorizationPermission", "AuthorizationScope",
+    "AuthorizationClaim", "AuthorizationPolicy", "AuthorizationResource",
+    "AuthorizationAction", "AuthorizationIdentifier", "AuthorizationOwnership",
+    "AuthorizationTenant", "AuthorizationAdminSurface",
+    "AuthorizationFunctionLevel", "AuthorizationObjectLevel",
+    "AuthorizationFieldLevel", "AuthorizationFrontend", "AuthorizationBackend",
+    "AuthorizationApiCorrelation", "AuthorizationGraphQL",
+    "AuthorizationWebSocket", "AuthorizationService", "AuthorizationDecision",
+    "AuthorizationMassAssignment", "AuthorizationAccessControl",
+    "AuthorizationObservation", "AuthorizationEvidence", "AuthorizationChange"
+  ],
+  "tools": {
+    "authorization-analysis": {
+      "version": "1.0.0",
+      "capabilities": ["authorization-intelligence", "access-control-intelligence", "permission-intelligence"],
+      "execution": "in-process domain analyzer over supplied static material",
+      "output": "canonical authorization observations under the 'authorization' payload key"
+    }
+  },
+  "evidence_types": [
+    "http-header", "http-status", "html", "url-pattern", "javascript",
+    "openapi-security", "api-operation", "graphql", "websocket",
+    "policy-config", "js-indicator", "documentation", "response",
+    "tidb-intelligence", "tool-output", "known-signature", "other"
+  ],
+  "events": [
+    "authorization.discovery.started",
+    "authorization.phase.started",
+    "authorization.subject.discovered",
+    "authorization.role.discovered",
+    "authorization.permission.discovered",
+    "authorization.scope.discovered",
+    "authorization.policy.discovered",
+    "authorization.resource.discovered",
+    "authorization.action.discovered",
+    "authorization.ownership.discovered",
+    "authorization.tenant.discovered",
+    "authorization.admin_surface.discovered",
+    "authorization.function_level.discovered",
+    "authorization.object_level.discovered",
+    "authorization.field_level.discovered",
+    "authorization.frontend.discovered",
+    "authorization.backend.discovered",
+    "authorization.api_correlation.discovered",
+    "authorization.graphql.discovered",
+    "authorization.websocket.discovered",
+    "authorization.service.discovered",
+    "authorization.decision.discovered",
+    "authorization.change.detected",
+    "authorization.conflict.detected",
+    "authorization.correlation.completed",
+    "authorization.discovery.completed",
+    "authorization.discovery.failed"
+  ],
+  "permissions": ["none"],
+  "scope_requirements": {
+    "authorized_target_only": "target must pass the scope policy before any analysis runs",
+    "per_observation_filter": "out-of-scope observations are never persisted",
+    "no_scope_expansion": "discovered authorization intelligence never expands mission scope",
+    "no_external_requests": "discovered roles/resources/admin surfaces are recorded as metadata; nothing is requested",
+    "deny_by_default": false,
+    "fail_open_empty_policy": true
+  },
+  "sensitive_data_protection": {
+    "never_persist": [
+      "passwords", "session cookie values", "access tokens", "refresh tokens",
+      "API secrets", "private keys", "authorization header values", "JWT claim values",
+      "resource identifier values used for access", "PII"
+    ],
+    "masking": "shared.masking mask_value applied to any retained sensitive context",
+    "metadata_only": "identifiers store metadata only; claims store references only"
+  },
+  "tridb_requirements": {
+    "system_of_record": "TIDB",
+    "tables": [
+      "tidb_authorization_runs", "tidb_authorization_subjects",
+      "tidb_authorization_roles", "tidb_authorization_groups",
+      "tidb_authorization_permissions", "tidb_authorization_scopes",
+      "tidb_authorization_claims", "tidb_authorization_policies",
+      "tidb_authorization_resources", "tidb_authorization_actions",
+      "tidb_authorization_identifiers", "tidb_authorization_ownership",
+      "tidb_authorization_tenants", "tidb_authorization_admin_surfaces",
+      "tidb_authorization_function_level", "tidb_authorization_object_level",
+      "tidb_authorization_field_level", "tidb_authorization_frontend",
+      "tidb_authorization_backend", "tidb_authorization_api_correlations",
+      "tidb_authorization_graphql", "tidb_authorization_websockets",
+      "tidb_authorization_services", "tidb_authorization_decisions",
+      "tidb_authorization_mass_assignment", "tidb_authorization_access_control",
+      "tidb_authorization_observations", "tidb_authorization_evidence",
+      "tidb_authorization_changes"
+    ],
+    "migration": "b7e2f9a4c1d3_authorization_intelligence_tables",
+    "schema_gap_policy": "STOP, document, extend via Alembic migration",
+    "no_memory_only_intelligence": true,
+    "no_separate_authorization_database": true
+  },
+  "performance": {
+    "analyze_snapshot": "single HTTP/JS snapshot analysis sub-millisecond",
+    "correlate_1k_observations": "well under 100ms (benchmarked)",
+    "run_query": "under 50ms against 1k persisted authorization records (benchmarked)"
+  },
+  "architecture_constraints": [
+    "no_bypass_tool_sdk",
+    "no_bypass_tidb",
+    "no_second_database",
+    "no_separate_graph",
+    "no_duplicate_repositories",
+    "no_duplicate_caches",
+    "no_duplicate_event_bus",
+    "no_idor_testing",
+    "no_bola_testing",
+    "no_bfla_testing",
+    "no_privilege_escalation",
+    "no_tenant_isolation_testing",
+    "no_jwt_manipulation",
+    "no_scope_escalation",
+    "no_cross_user_resource_access",
+    "no_cross_tenant_access",
+    "no_role_or_permission_modification",
+    "no_authorization_header_or_jwt_storage"
+  ],
+  "source_paths": [
+    "src/hunterx/domain/authorization/",
+    "src/hunterx/application/authorization.py",
+    "src/hunterx/tools/authorization/",
+    "src/hunterx/domain/entities/tidb/authorization_intelligence.py",
+    "src/hunterx/infrastructure/db/sql/tidb_models/authorization_intelligence_models.py",
+    "src/hunterx/domain/events/enums.py",
+    "src/hunterx/domain/events/catalog.py",
+    "src/hunterx/domain/events/types.py",
+    "src/hunterx/domain/topology/enums.py",
+    "tests/golden/authorization/"
+  ],
+  "documentation": "docs/v7-authorization-intelligence.md"
+}

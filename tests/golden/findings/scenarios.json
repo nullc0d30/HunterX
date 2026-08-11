@@ -1,0 +1,46 @@
+{
+  "description": "Sprint 034.5 finding certification golden scenarios. Each scenario drives the DISCOVER -> HYPOTHESIZE -> TEST -> VERIFY -> PROVE -> FINDING flow and asserts that a detection without reproducible evidence never becomes a fully validated finding.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "known_vulnerability_validated_with_evidence",
+      "vulnerability_class": "sql_injection",
+      "observations": ["detection_signature", "differential_database_behavior"],
+      "endpoints": ["/search"],
+      "parameters": ["q"],
+      "expected_validation_sufficiency": "sufficient_for_validation",
+      "expected_state": "validation_required",
+      "validated": true
+    },
+    {
+      "id": "variant_xss_requires_validation",
+      "vulnerability_class": "xss",
+      "observations": ["reflection"],
+      "endpoints": ["/search"],
+      "parameters": ["q"],
+      "expected_validation_sufficiency": "insufficient",
+      "expected_state": "supported",
+      "validated": false
+    },
+    {
+      "id": "novel_behavior_not_a_finding",
+      "vulnerability_class": "sql_injection",
+      "observations": ["novel_behavior"],
+      "endpoints": ["/search"],
+      "parameters": ["q"],
+      "expected_validation_sufficiency": "insufficient",
+      "expected_state": "supported",
+      "validated": false
+    },
+    {
+      "id": "detection_without_reproducible_evidence",
+      "vulnerability_class": "command_injection",
+      "observations": ["detection_signature"],
+      "endpoints": ["/exec"],
+      "parameters": ["cmd"],
+      "expected_validation_sufficiency": "insufficient",
+      "expected_state": "supported",
+      "validated": false
+    }
+  ]
+}

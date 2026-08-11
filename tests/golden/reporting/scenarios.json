@@ -1,0 +1,568 @@
+{
+  "description": "Sprint 029 professional finding intelligence & reporting golden scenarios. Each scenario carries the finding state, evidence, impact, confidence, proof and scope inputs and the expected reporting outcomes: severity, priority, quality grade, reportability verdict and classification mappings.",
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "sqli_validated_reportable",
+      "vulnerability_class": "sql_injection",
+      "finding_state": "proved",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "time-based differential observed",
+          "quality": "high",
+          "source": "validation",
+          "tool_id": "sqlmap"
+        },
+        {
+          "kind": "controlled_callback",
+          "value": "callback fired",
+          "quality": "proof",
+          "source": "validation",
+          "tool_id": "burp"
+        }
+      ],
+      "impact": {
+        "data_exposure": "high",
+        "authorization_boundary": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 2,
+      "replay_attempts": 2,
+      "scope_ok": true,
+      "asset_importance": "critical",
+      "internet_exposure": true,
+      "expected_severity": "critical",
+      "expected_priority": "p0",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-89"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "xss_validated_low_confidence_capped",
+      "vulnerability_class": "xss",
+      "finding_state": "validated",
+      "confidence": 0.55,
+      "evidence": [
+        {
+          "kind": "reflection",
+          "value": "payload reflected",
+          "quality": "medium",
+          "source": "scanner"
+        },
+        {
+          "kind": "behavioral_differential",
+          "value": "execution observed in browser",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "confidentiality": "low",
+        "integrity": "low"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": true,
+      "asset_importance": "medium",
+      "internet_exposure": true,
+      "expected_severity": "low",
+      "expected_priority": "p3",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "c",
+      "expected_cwes": [
+        "CWE-79"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "ssrf_out_of_scope",
+      "vulnerability_class": "ssrf",
+      "finding_state": "out_of_scope",
+      "confidence": 0.7,
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "value": "callback to internal host",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "data_exposure": "medium"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": false,
+      "asset_importance": "medium",
+      "internet_exposure": false,
+      "expected_severity": "informational",
+      "expected_priority": "p4",
+      "expected_reportability": "out_of_scope",
+      "expected_quality_grade": "d",
+      "expected_cwes": [
+        "CWE-918"
+      ],
+      "expected_owasp": [
+        "2021-A10"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "idor_insufficient_evidence",
+      "vulnerability_class": "idor",
+      "finding_state": "supported",
+      "confidence": 0.3,
+      "evidence": [
+        {
+          "kind": "detection_signature",
+          "value": "scanner sig",
+          "quality": "low",
+          "source": "scanner"
+        }
+      ],
+      "impact": {
+        "authorization_boundary": "medium"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": true,
+      "asset_importance": "high",
+      "internet_exposure": true,
+      "expected_severity": "medium",
+      "expected_priority": "p3",
+      "expected_reportability": "incomplete",
+      "expected_quality_grade": "d",
+      "expected_cwes": [
+        "CWE-639"
+      ],
+      "expected_owasp": [
+        "2021-A01",
+        "API1"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "rce_with_execution_evidence",
+      "vulnerability_class": "rce",
+      "finding_state": "proved",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "kind": "controlled_proof",
+          "value": "benign marker executed",
+          "quality": "proof",
+          "source": "validation"
+        },
+        {
+          "kind": "behavioral_differential",
+          "value": "code path diverged",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "remote_execution": "high",
+        "confidentiality": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 2,
+      "replay_attempts": 2,
+      "scope_ok": true,
+      "asset_importance": "critical",
+      "internet_exposure": true,
+      "expected_severity": "critical",
+      "expected_priority": "p0",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-94"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": [
+        "T1190"
+      ]
+    },
+    {
+      "id": "ssti_proof_validated",
+      "vulnerability_class": "ssti",
+      "finding_state": "proved",
+      "confidence": 0.85,
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "template expression evaluated",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "replay",
+          "value": "replay confirmed",
+          "quality": "proof",
+          "source": "proof_replay"
+        }
+      ],
+      "impact": {
+        "remote_execution": "high",
+        "data_exposure": "medium"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 1,
+      "replay_attempts": 1,
+      "scope_ok": true,
+      "asset_importance": "high",
+      "internet_exposure": true,
+      "expected_severity": "high",
+      "expected_priority": "p1",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-1336"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "cloud_exposure_validated",
+      "vulnerability_class": "cloud_exposure",
+      "finding_state": "validated",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "kind": "cloud_exposure",
+          "value": "bucket public write",
+          "quality": "high",
+          "source": "cloud_validation"
+        },
+        {
+          "kind": "behavioral_differential",
+          "value": "anonymous write accepted",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "cloud_resource_access": "high",
+        "data_exposure": "high"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": true,
+      "asset_importance": "critical",
+      "internet_exposure": true,
+      "expected_severity": "high",
+      "expected_priority": "p2",
+      "expected_reportability": "incomplete",
+      "expected_quality_grade": "c",
+      "expected_cwes": [
+        "CWE-668"
+      ],
+      "expected_owasp": [
+        "2021-A05"
+      ],
+      "expected_attack": [
+        "T1552"
+      ]
+    },
+    {
+      "id": "secret_exposure_with_rotation",
+      "vulnerability_class": "secret_exposure",
+      "finding_state": "proved",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "kind": "secret",
+          "value": "api key in public repo",
+          "quality": "high",
+          "source": "gitleaks"
+        },
+        {
+          "kind": "controlled_callback",
+          "value": "credential accepted",
+          "quality": "proof",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "credential_exposure": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 1,
+      "replay_attempts": 1,
+      "scope_ok": true,
+      "asset_importance": "high",
+      "internet_exposure": true,
+      "expected_severity": "high",
+      "expected_priority": "p1",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-798"
+      ],
+      "expected_owasp": [
+        "2021-A07"
+      ],
+      "expected_attack": [
+        "T1552"
+      ]
+    },
+    {
+      "id": "business_logic_observed",
+      "vulnerability_class": "business_logic",
+      "finding_state": "validated",
+      "confidence": 0.75,
+      "evidence": [
+        {
+          "kind": "business_state_transition",
+          "value": "order price modified client-side",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "behavioral_differential",
+          "value": "server accepted tampered price",
+          "quality": "high",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "business_impact": "high",
+        "integrity": "medium"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": true,
+      "asset_importance": "high",
+      "internet_exposure": true,
+      "expected_severity": "high",
+      "expected_priority": "p2",
+      "expected_reportability": "incomplete",
+      "expected_quality_grade": "c",
+      "expected_cwes": [
+        "CWE-840"
+      ],
+      "expected_owasp": [
+        "2021-A04"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "false_positive_not_reportable",
+      "vulnerability_class": "xss",
+      "finding_state": "disproved",
+      "confidence": 0.1,
+      "evidence": [
+        {
+          "kind": "reflection",
+          "value": "payload reflected but not executed",
+          "quality": "low",
+          "source": "scanner"
+        }
+      ],
+      "impact": {},
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 0,
+      "scope_ok": true,
+      "asset_importance": "medium",
+      "internet_exposure": true,
+      "expected_severity": "informational",
+      "expected_priority": "p4",
+      "expected_reportability": "not_actionable",
+      "expected_quality_grade": "d",
+      "expected_cwes": [
+        "CWE-79"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "disputed_finding",
+      "vulnerability_class": "ssrf",
+      "finding_state": "disputed",
+      "confidence": 0.4,
+      "evidence": [
+        {
+          "kind": "controlled_callback",
+          "value": "callback observed",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "behavioral_differential",
+          "value": "callback not reproducible on retest",
+          "quality": "medium",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "data_exposure": "low"
+      },
+      "proof_validated": false,
+      "replays_confirmed": 0,
+      "replay_attempts": 2,
+      "scope_ok": true,
+      "asset_importance": "medium",
+      "internet_exposure": true,
+      "expected_severity": "informational",
+      "expected_priority": "p4",
+      "expected_reportability": "disputed",
+      "expected_quality_grade": "d",
+      "expected_cwes": [
+        "CWE-918"
+      ],
+      "expected_owasp": [
+        "2021-A10"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "duplicate_finding",
+      "vulnerability_class": "sql_injection",
+      "finding_state": "duplicate",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "kind": "behavioral_differential",
+          "value": "differential observed",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "replay",
+          "value": "replay confirmed",
+          "quality": "proof",
+          "source": "proof_replay"
+        }
+      ],
+      "impact": {
+        "data_exposure": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 2,
+      "replay_attempts": 2,
+      "scope_ok": true,
+      "asset_importance": "high",
+      "internet_exposure": true,
+      "expected_severity": "high",
+      "expected_priority": "p1",
+      "expected_reportability": "duplicate",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-89"
+      ],
+      "expected_owasp": [
+        "2021-A03"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "multi_endpoint_root_cause",
+      "vulnerability_class": "broken_access_control",
+      "finding_state": "proved",
+      "confidence": 0.88,
+      "evidence": [
+        {
+          "kind": "authorization_state_comparison",
+          "value": "unprivileged user reached admin endpoint",
+          "quality": "high",
+          "source": "validation"
+        },
+        {
+          "kind": "replay",
+          "value": "replay confirmed on second endpoint",
+          "quality": "proof",
+          "source": "proof_replay"
+        }
+      ],
+      "impact": {
+        "authorization_boundary": "high",
+        "privilege_boundary": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 2,
+      "replay_attempts": 2,
+      "scope_ok": true,
+      "asset_importance": "critical",
+      "internet_exposure": true,
+      "root_cause": "shared authorization middleware defect",
+      "expected_severity": "critical",
+      "expected_priority": "p0",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-284"
+      ],
+      "expected_owasp": [
+        "2021-A01"
+      ],
+      "expected_attack": []
+    },
+    {
+      "id": "attack_path_finding",
+      "vulnerability_class": "secret_exposure",
+      "finding_state": "proved",
+      "confidence": 0.92,
+      "evidence": [
+        {
+          "kind": "secret",
+          "value": "cloud identity key leaked",
+          "quality": "high",
+          "source": "gitleaks"
+        },
+        {
+          "kind": "controlled_callback",
+          "value": "cloud identity accepted the credential",
+          "quality": "proof",
+          "source": "validation"
+        }
+      ],
+      "impact": {
+        "cloud_resource_access": "high",
+        "credential_exposure": "high"
+      },
+      "proof_validated": true,
+      "replays_confirmed": 1,
+      "replay_attempts": 1,
+      "scope_ok": true,
+      "asset_importance": "critical",
+      "internet_exposure": true,
+      "on_attack_path": true,
+      "attack_path_validated": true,
+      "expected_severity": "critical",
+      "expected_priority": "p0",
+      "expected_reportability": "reportable",
+      "expected_quality_grade": "b",
+      "expected_cwes": [
+        "CWE-798"
+      ],
+      "expected_owasp": [
+        "2021-A07"
+      ],
+      "expected_attack": [
+        "T1552"
+      ]
+    }
+  ]
+}

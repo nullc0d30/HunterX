@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
 # Production Linux Installer
 #
 # Supports: Ubuntu, Debian, Fedora, RHEL, Arch, Alpine, openSUSE
@@ -10,6 +10,7 @@
 # Usage:
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user
+#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --all
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --uninstall
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user --uninstall
 
@@ -23,6 +24,10 @@ PROJECT_NAME="hunterx"
 SYMLINKS=("HunterX" "Hunterx" "hunterX" "HUNTERX")
 INSTALL_MODE="system"
 DO_UNINSTALL=false
+# Optional dependency set installed alongside the core. Default is the full
+# v7 platform (REST API + database); --core installs only the base package.
+EXTRAS="api,db"
+REQUIRED_DIRS=("data" "reports" "config")
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -57,10 +62,20 @@ parse_args() {
                 DO_UNINSTALL=true
                 shift
                 ;;
+            --core)
+                EXTRAS=""
+                shift
+                ;;
+            --all)
+                EXTRAS="all"
+                shift
+                ;;
             --help|-h)
-                echo "Usage: install.sh [--user] [--uninstall]"
+                echo "Usage: install.sh [--user] [--core|--all] [--uninstall]"
                 echo ""
                 echo "  --user       Install to user home directory (no root/sudo required)"
+                echo "  --core       Install only the core package (no REST API / database extras)"
+                echo "  --all        Install every optional extra (api, db, report, ai, ...)"
                 echo "  --uninstall  Remove HunterX installation"
                 exit 0
                 ;;
@@ -242,36 +257,6 @@ check_python() {
     info "Found: $("$PYTHON" --version)"
 }
 
-verify_checksum() {
-    local file="$1"
-    local expected_hash="$2"
-    if [ -z "$expected_hash" ]; then
-        return 0
-    fi
-    if have_cmd sha256sum; then
-        local actual_hash
-        actual_hash=$(sha256sum "$file" | cut -d' ' -f1)
-        if [ "$actual_hash" != "$expected_hash" ]; then
-            error "Checksum mismatch for $file"
-            error "Expected: $expected_hash"
-            error "Actual:   $actual_hash"
-            return 1
-        fi
-        info "Checksum verified for $file"
-    elif have_cmd shasum; then
-        local actual_hash
-        actual_hash=$(shasum -a 256 "$file" | cut -d' ' -f1)
-        if [ "$actual_hash" != "$expected_hash" ]; then
-            error "Checksum mismatch for $file"
-            return 1
-        fi
-        info "Checksum verified for $file"
-    else
-        warn "No checksum tool available, skipping verification."
-    fi
-    return 0
-}
-
 install_hunterx() {
     step "Installing HunterX"
 
@@ -279,23 +264,29 @@ install_hunterx() {
         VENV_DIR="${INSTALL_DIR}/venv"
         BIN_DIR="/usr/local/bin"
         if [ -d "$INSTALL_DIR" ]; then
-            warn "Previous installation found at ${INSTALL_DIR}. Reinstalling..."
-            rm -rf "$INSTALL_DIR"
+            info "Existing installation found at ${INSTALL_DIR}. Upgrading in place (idempotent)..."
         fi
     else
         VENV_DIR="${USER_INSTALL_DIR}/venv"
         BIN_DIR="${HOME}/.local/bin"
         mkdir -p "$(dirname "$USER_INSTALL_DIR")"
         if [ -d "$USER_INSTALL_DIR" ]; then
-            warn "Previous installation found at ${USER_INSTALL_DIR}. Reinstalling..."
-            rm -rf "$USER_INSTALL_DIR"
+            info "Existing installation found at ${USER_INSTALL_DIR}. Upgrading in place (idempotent)..."
         fi
         mkdir -p "$BIN_DIR"
     fi
 
-    info "Creating virtual environment at ${VENV_DIR}"
-    mkdir -p "$(dirname "$VENV_DIR")"
-    "$PYTHON" -m venv "$VENV_DIR"
+    mkdir -p "$(dirname "$VENV_DIR")" "$BIN_DIR"
+    for dir in "${REQUIRED_DIRS[@]}"; do
+        mkdir -p "$(dirname "$VENV_DIR")/${dir}"
+    done
+
+    if [ ! -x "${VENV_DIR}/bin/python" ]; then
+        info "Creating virtual environment at ${VENV_DIR}"
+        "$PYTHON" -m venv "$VENV_DIR"
+    else
+        info "Virtual environment already present at ${VENV_DIR}"
+    fi
     # shellcheck disable=SC1091
     source "${VENV_DIR}/bin/activate"
 
@@ -305,45 +296,26 @@ install_hunterx() {
     src_dir="$(cd "$(dirname "$0")" && pwd)"
     if [ -f "${src_dir}/pyproject.toml" ]; then
         info "Installing from local source: ${src_dir}"
-        pip install --no-cache-dir "$src_dir" >/dev/null 2>&1 || {
-            error "pip install from local source failed."
-            exit 1
-        }
+        if [ -n "$EXTRAS" ]; then
+            pip install --no-cache-dir --upgrade "${src_dir}[${EXTRAS}]" >/dev/null 2>&1 || {
+                error "pip install from local source failed."
+                exit 1
+            }
+        else
+            pip install --no-cache-dir --upgrade "$src_dir" >/dev/null 2>&1 || {
+                error "pip install from local source failed."
+                exit 1
+            }
+        fi
     else
         info "Local source not found. Installing from PyPI..."
-        local pkg_hash=""
-        if [ -n "${HUNTERX_PACKAGE_HASH:-}" ] && have_cmd curl; then
-            # Try to verify the package checksum before installing
-            local tmp_dir
-            tmp_dir=$(mktemp -d)
-            curl -sSL "https://files.pythonhosted.org/packages/source/h/hunterx/hunterx-6.0.0.tar.gz" -o "${tmp_dir}/hunterx.tar.gz" 2>/dev/null || true
-            if [ -f "${tmp_dir}/hunterx.tar.gz" ]; then
-                if verify_checksum "${tmp_dir}/hunterx.tar.gz" "$pkg_hash"; then
-                    pip install --no-cache-dir "${tmp_dir}/hunterx.tar.gz" >/dev/null 2>&1 || {
-                        warn "Verified package install failed, falling back to PyPI..."
-                        pip install --no-cache-dir "$PROJECT_NAME" >/dev/null 2>&1 || {
-                            error "pip install from PyPI failed."
-                            rm -rf "$tmp_dir"
-                            exit 1
-                        }
-                    }
-                else
-                    warn "Checksum verification failed, falling back to PyPI..."
-                    pip install --no-cache-dir "$PROJECT_NAME" >/dev/null 2>&1 || {
-                        error "pip install from PyPI failed."
-                        rm -rf "$tmp_dir"
-                        exit 1
-                    }
-                fi
-                rm -rf "$tmp_dir"
-            else
-                pip install --no-cache-dir "$PROJECT_NAME" >/dev/null 2>&1 || {
-                    error "pip install from PyPI failed."
-                    exit 1
-                }
-            fi
+        if [ -n "$EXTRAS" ]; then
+            pip install --no-cache-dir --upgrade "${PROJECT_NAME}[${EXTRAS}]" >/dev/null 2>&1 || {
+                error "pip install from PyPI failed."
+                exit 1
+            }
         else
-            pip install --no-cache-dir "$PROJECT_NAME" >/dev/null 2>&1 || {
+            pip install --no-cache-dir --upgrade "$PROJECT_NAME" >/dev/null 2>&1 || {
                 error "pip install from PyPI failed."
                 exit 1
             }
@@ -352,6 +324,38 @@ install_hunterx() {
 
     deactivate
     info "HunterX installed into virtual environment"
+}
+
+initialize_database() {
+    step "Initializing database (Alembic migrations)"
+
+    local src_dir
+    src_dir="$(cd "$(dirname "$0")" && pwd)"
+    local config_arg=""
+    if [ -f "${src_dir}/alembic.ini" ]; then
+        config_arg="-c ${src_dir}/alembic.ini"
+    fi
+
+    if [ -x "${VENV_DIR}/bin/python" ]; then
+        info "Running database migrations via the installed package..."
+        (
+            # Alembic resolves script_location relative to the working
+            # directory, so run from the source tree when present.
+            if [ -d "${src_dir}/alembic" ]; then
+                cd "$src_dir"
+            fi
+            # Alembic reads the URL from HUNTERX_DB_URL or alembic.ini; the
+            # config ships with the source tree (alembic.ini + alembic/versions).
+            # On PyPI-only installs without a bundled config the step is skipped
+            # gracefully — the CLI creates tables on demand.
+            "${VENV_DIR}/bin/python" -m alembic ${config_arg} upgrade head 2>&1 || {
+                warn "Alembic migration step did not complete. This is not fatal;"
+                warn "HunterX creates tables on demand. Run: alembic upgrade head"
+            }
+        )
+    else
+        warn "Package binary not found; skipping database initialization."
+    fi
 }
 
 install_executable() {
@@ -430,23 +434,21 @@ verify_installation() {
 
     echo ""
     if have_cmd hunterx; then
-        info "1/3: hunterx --help"
-        hunterx --help && echo "" || { error "FAILED"; errors=$((errors+1)); }
-    else
-        error "1/3: hunterx command not found on PATH"
-        errors=$((errors+1))
-    fi
-
-    if have_cmd hunterx; then
-        info "2/3: hunterx --version"
-        hunterx --version || { error "FAILED"; errors=$((errors+1)); }
-    fi
-
-    if have_cmd hunterx; then
-        info "3/3: hunterx example.com --dry-run (quick smoke test)"
-        hunterx example.com --dry-run --preset quick 2>&1 | head -20 && echo "" || {
-            warn "Smoke test did not complete (may need network). This is not fatal."
+        info "1/5: hunterx version"
+        hunterx version || { error "FAILED"; errors=$((errors+1)); }
+        info "2/5: hunterx help"
+        hunterx help >/dev/null 2>&1 && echo "  (help rendered OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "3/5: hunterx config"
+        hunterx config >/dev/null 2>&1 && echo "  (config resolved OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "4/5: hunterx platform"
+        hunterx platform >/dev/null 2>&1 && echo "  (platform composition OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "5/5: hunterx tools list"
+        hunterx tools list >/dev/null 2>&1 && echo "  (toolchain catalog OK)" || {
+            warn "Toolchain catalog did not render. This is not fatal."
         }
+    else
+        error "1/5: hunterx command not found on PATH"
+        errors=$((errors+1))
     fi
 
     info "Verifying symlinks..."
@@ -486,7 +488,7 @@ show_banner() {
     echo " | |_| | | | | '_ \| __/ _ \ '__|  \  /"
     echo " |  _  | |_| | | | | ||  __/ |     /  \\"
     echo " |_| |_|\__,_|_| |_|\__\___|_|    /_/\_\\"
-    echo " HunterX v6.0 -- AI-Assisted Vulnerability Hunter"
+    echo " HunterX v7 -- AI-Powered Security Orchestration & Intelligence Platform"
     echo ""
 }
 
@@ -515,17 +517,23 @@ main() {
     check_python
     install_hunterx
     install_executable
+    initialize_database
     add_to_path
     verify_installation
 
     echo ""
     info "Installation complete!"
     echo ""
-    echo "  Quick start:  hunterx example.com"
-    echo "  Help:         hunterx --help"
-    echo "  Config:       hunterx config --show"
-    echo "  Doctor:       hunterx doctor"
-    echo "  Update:       hunterx update"
+    echo "  Quick start:  hunterx help"
+    echo "  Mission:      hunterx mission create <objective> <target>"
+    echo "  Hunt:         hunterx hunt <objective> <target>"
+    echo "  Toolchain:    hunterx tools list"
+    echo "  Config:       hunterx config"
+    echo "  Version:      hunterx version"
+    echo "  Platform:     hunterx platform"
+    echo ""
+    echo "  Responsible use: HunterX is an authorized cybersecurity testing and"
+    echo "  research platform. Obtain authorization before testing any system."
     echo ""
     if [ "$INSTALL_MODE" = "system" ]; then
         echo "  Uninstall:    sudo bash $0 --uninstall"

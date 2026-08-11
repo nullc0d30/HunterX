@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2026 Ahmed Awad (NullC0d3). SPDX-License-Identifier: Apache-2.0. -->
+
 # Security Policy
 
 HunterX takes the security of the tool and its users seriously. This document outlines the vulnerability reporting process, supported versions, and security features.

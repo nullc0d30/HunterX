@@ -1,0 +1,2 @@
+{"name":"www.example.com.","type":"A","status":"NOERROR","data":{"answers":[{"type":"A","data":"93.184.216.34"},{"type":"A","data":"93.184.216.35"}]}}
+{"name":"api.example.com.","type":"A","status":"NOERROR","data":{"answers":[{"type":"A","data":"1.2.3.4"}]}}

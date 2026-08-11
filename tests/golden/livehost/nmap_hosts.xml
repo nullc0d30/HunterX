@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated as: nmap -oX - -sT -p 22,80,443,8080 -sV with ssl-cert script 1.2.3.4 -->
+<nmaprun scanner="nmap" args="nmap -oX - -sT -p 22,80,443,8080 -sV --script ssl-cert 1.2.3.4" start="1735689600" startstr="Tue Jan 01 00:00:00 2025" version="7.95" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="4" services="22,80,443,8080"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1735689600" endtime="1735689602">
+<status state="up" reason="syn-ack" reason_ttl="0"/>
+<address addr="1.2.3.4" addrtype="ipv4"/>
+<hostnames>
+<hostname name="web.example.com" type="user"/>
+</hostnames>
+<ports>
+<port protocol="tcp" portid="22">
+<state state="open" reason="syn-ack" reason_ttl="0"/>
+<service name="ssh" product="OpenSSH" version="8.9p1 Ubuntu 3ubuntu0.6" extrainfo="Ubuntu Linux; protocol 2.0" method="probed" conf="10">
+<cpe>cpe:/a:openbsd:openssh:8.9p1</cpe>
+</service>
+</port>
+<port protocol="tcp" portid="80">
+<state state="open" reason="syn-ack" reason_ttl="0"/>
+<service name="http" product="nginx" version="1.24.0" method="probed" conf="10">
+<cpe>cpe:/a:nginx:nginx:1.24.0</cpe>
+</service>
+</port>
+<port protocol="tcp" portid="443">
+<state state="open" reason="syn-ack" reason_ttl="0"/>
+<service name="https" product="nginx" version="1.24.0" extrainfo="TLSv1.3" method="probed" conf="10">
+<cpe>cpe:/a:nginx:nginx:1.24.0</cpe>
+</service>
+</port>
+<port protocol="tcp" portid="8080">
+<state state="closed" reason="reset" reason_ttl="0"/>
+<service name="http-proxy" method="table" conf="3"/>
+</port>
+</ports>
+<hostscript>
+<script id="ssl-cert" output="Subject: commonName=web.example.com/otherName=1.3.6.1.4.1.311.60.2.1.3\nIssuer: commonName=Example Intermediate CA\nPublic Key type: rsa\nPublic Key bits: 2048\nSignature Algorithm: sha256WithRSAEncryption\nNot valid before: 2025-01-01T00:00:00Z\nNot valid after: 2026-01-01T23:59:59Z\nMD5: 1111\nSHA-1: 2222\nSHA-256: aaaaBbbbCcccDdddEeeeFfff111122223333444455556666777788889999AAAA">
+<table key="subject">
+<elem key="commonName">web.example.com</elem>
+</table>
+<table key="issuer">
+<elem key="commonName">Example Intermediate CA</elem>
+</table>
+<table key="x509">
+<elem key="serialNumber">1122334455</elem>
+<elem key="MD5">1111</elem>
+<elem key="SHA-1">2222</elem>
+<elem key="SHA-256">aaaaBbbbCcccDdddEeeeFfff111122223333444455556666777788889999AAAA</elem>
+<table key="validity">
+<elem key="notBefore">2025-01-01T00:00:00Z</elem>
+<elem key="notAfter">2026-01-01T23:59:59Z</elem>
+</table>
+<table key="extensions">
+<elem key="subjectAltName">DNS:web.example.com, DNS:admin.example.com</elem>
+</table>
+</table>
+<table key="port">
+<elem key="portid">443</elem>
+</table>
+</script>
+</hostscript>
+<times srtt="1779" rttvar="667" to="100000"/>
+</host>
+<host starttime="1735689600" endtime="1735689601">
+<status state="down" reason="no-response" reason_ttl="0"/>
+<address addr="5.6.7.8" addrtype="ipv4"/>
+<hostnames>
+<hostname name="old.example.com" type="user"/>
+</hostnames>
+<ports>
+</ports>
+</host>
+<runstats>
+<finished time="1735689602" timestr="Tue Jan 01 00:00:02 2025" elapsed="2.00" summary="Nmap done at Tue Jan 01 00:00:02 2025; 1 IP address (1 host up) scanned in 2.00 seconds" exit="success"/>
+<hosts up="1" down="1" total="2"/>
+</runstats>
+</nmaprun>
