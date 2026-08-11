@@ -47,12 +47,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "pydantic>=2.0",
-    "pyyaml>=6.0.0",
-    "jsonschema>=4.20.0",
-    "rich>=13.0.0",
-    "networkx>=3.0",
-    "urllib3>=2.0",
+    "pydantic>=2.13.4",
+    "pyyaml>=6.0.3",
+    "jsonschema>=4.26.0",
+    "rich>=15.0.0",
+    "networkx>=3.6.1",
+    "urllib3>=2.7.0",
     "dataclasses-json>=0.6.0",
     "dnspython>=2.6.0",
     "defusedxml>=0.7.1",
