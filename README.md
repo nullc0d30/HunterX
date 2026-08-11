@@ -4,17 +4,17 @@
 
 # HunterX
 
-**AI-Assisted Vulnerability Discovery, Validation & Proof Engine**
+## AI-Assisted Offensive Security Engine
 
-### "Find it. Verify it. Prove it. Report it."
+### Discover. Validate. Prove. Report.
 
-Not just another scanner. HunterX v7 combines reconnaissance, security tooling,
-AI-assisted reasoning, vulnerability validation, PoC generation and validation,
-evidence collection, correlation, and report generation into one workflow.
-
-An AI-powered offensive security platform for bug bounty researchers,
-penetration testers, red teams, security researchers, and security engineers.
-It is an authorized cybersecurity testing and research platform.
+HunterX is not merely a vulnerability scanner. It is an open-source,
+AI-assisted **offensive security engine** for planning and running authorized
+security-assessment missions. It combines **reconnaissance**, **security-tool
+orchestration**, **AI-assisted reasoning**, **hypothesis-driven investigation**,
+**vulnerability validation**, **evidence collection**, **proof / PoC
+engineering**, **replay / reproducibility**, **correlation**, **impact
+assessment** and **professional reporting** into a single workflow.
 
 [![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://www.python.org/)
@@ -28,6 +28,21 @@ It is an authorized cybersecurity testing and research platform.
 
 </div>
 
+> **The core message.** HunterX does not stop at finding a *possible*
+> vulnerability. It is built to **investigate the hypothesis, validate the
+> behavior, prove the finding, reproduce the evidence, assess the impact, and
+> turn the result into a report-ready security finding.**
+
+```
+Vulnerability
++ Evidence
++ Reproducibility
++ Proof / PoC
++ Impact
+================
+Validated Finding
+```
+
 > **Responsible use.** HunterX is an authorized cybersecurity testing and
 > research platform. You are responsible for obtaining appropriate
 > authorization before testing any system. The author is not responsible for
@@ -35,59 +50,58 @@ It is an authorized cybersecurity testing and research platform.
 > software. See [Responsible Use](#responsible-use) and
 > [SECURITY.md](SECURITY.md).
 
-## What is HunterX?
+---
 
-HunterX v7 is an **AI-assisted vulnerability discovery, validation & proof
-engine** — an open-source, Clean Architecture Python platform for planning and
-running authorized security-assessment missions. It integrates open-source
-security tools, normalizes their output into a unified intelligence model,
-plans and chains tool executions, and — crucially — **validates hypotheses with
-evidence, engineers and replays proofs and PoCs, correlates findings, and
-produces professional, report-ready output.**
+## A Scanner Finds a Possibility. HunterX Builds the Case.
 
-HunterX does not stop at *"Possible SQL Injection."* It is designed to carry
-each candidate through to a **validated finding** that combines:
+A traditional scanner reports a candidate and stops:
 
 ```
-Vulnerability
-+ Evidence
-+ Reproducibility
-+ Impact
-+ PoC
-===============
-Validated Finding
+Traditional Scanner
+
+"Possible SQL Injection"
+          ↓
+       Finding?
 ```
 
-## Why HunterX?
-
-Traditional scanners report candidates:
-
-> **Potential SQL Injection** — Confidence: 87%
-
-HunterX targets the full investigation workflow instead:
+HunterX carries the candidate through the full investigation:
 
 ```
-SQL Injection
-  ↓ Affected asset
-  ↓ Endpoint
-  ↓ Parameter
-  ↓ Observed behavior
-  ↓ Verification
-  ↓ Evidence
-  ↓ Minimal reproducible PoC
-  ↓ PoC validation
-  ↓ Impact assessment
-  ↓ Report-ready finding
+Candidate
+   ↓
+Affected Endpoint
+   ↓
+Parameter
+   ↓
+Observed Behavior
+   ↓
+Hypothesis
+   ↓
+Verification
+   ↓
+Evidence
+   ↓
+Minimal Reproducible PoC
+   ↓
+PoC Validation
+   ↓
+Impact
+   ↓
+Report-Ready Finding
 ```
 
-Every claim HunterX makes is backed by observations, evidence, validation,
-proof, replay records, impact and provenance. A finding is only
-`REPORT_READY` when the reportability contract is satisfied.
+`"Possible SQL Injection"` is only a **hypothesis**. HunterX is designed to
+investigate, validate, prove, reproduce, correlate and report it — not to
+surface it as a verdict. Every claim HunterX makes is backed by observations,
+evidence, validation, proof, replay records, impact and provenance. A finding
+is only `REPORT_READY` when the reportability contract is satisfied.
 
-## From Detection to Proof
+---
 
-A vulnerability detection is **not** a validated finding. HunterX drives each
-finding through a lifecycle:
+## From Detection to Validated Finding
+
+A vulnerability **detection is not a validated finding**. HunterX drives each
+candidate through a lifecycle:
 
 ```
 DETECTED → SUSPECTED → VALIDATING → VALIDATED → PROVEN → CONFIRMED → REPORT_READY
@@ -95,13 +109,25 @@ DETECTED → SUSPECTED → VALIDATING → VALIDATED → PROVEN → CONFIRMED →
                                             ↘ INCONCLUSIVE
 ```
 
-- `PROVEN` requires a valid, reproducible proof.
-- `CONFIRMED` requires the vulnerability-specific proof contract to permit
-  confirmation and confidence requirements to be met.
-- `REPORT_READY` requires evidence, proof, reproducible PoC, impact,
+- `DETECTED` / `SUSPECTED` — a candidate from tool output or reasoning. Not yet
+  validated.
+- `VALIDATING` / `VALIDATED` — behavior is tested and compared against the
+  hypothesis.
+- `PROVEN` — requires a valid, reproducible proof.
+- `CONFIRMED` — requires the vulnerability-specific proof contract to permit
+  confirmation and the confidence requirements to be met.
+- `REPORT_READY` — requires evidence, proof, a reproducible PoC, impact,
   confidence, scope, timestamp and provenance.
-- A PoC that fails is never automatically a false positive — the engine
-  distinguishes `FALSE_POSITIVE` from `INCONCLUSIVE`.
+- `FALSE_POSITIVE` — requires evidence that the original hypothesis was
+  incorrect.
+- `INCONCLUSIVE` — the outcome could not be determined (target changed,
+  preconditions changed, WAF behavior changed, network instability, failed
+  tool run or insufficient evidence).
+
+A PoC that fails is **never automatically a false positive**. The engine
+distinguishes `FALSE_POSITIVE` from `INCONCLUSIVE` deliberately.
+
+---
 
 ## How HunterX Works
 
@@ -110,111 +136,470 @@ replace the security-tool ecosystem:
 
 ```
 DISCOVER
-  ↓
+    ↓
 FINGERPRINT
-  ↓
+    ↓
 REASON
-  ↓
+    ↓
 HYPOTHESIZE
-  ↓
+    ↓
 PROBE
-  ↓
+    ↓
 VERIFY
-  ↓
+    ↓
 PROVE
-  ↓
+    ↓
 POC
-  ↓
+    ↓
 REPLAY
-  ↓
+    ↓
 CORRELATE
-  ↓
+    ↓
 REPORT
 ```
+
+| Phase | Purpose |
+|---|---|
+| **DISCOVER** | Surface the attack surface — assets, services, endpoints. |
+| **FINGERPRINT** | Identify technologies, versions and exposure. |
+| **REASON** | Generate and prioritize hypotheses with AI-assisted reasoning. |
+| **HYPOTHESIZE** | Turn candidates into testable vulnerability hypotheses. |
+| **PROBE** | Execute targeted checks and tool runs against each hypothesis. |
+| **VERIFY** | Compare observed behavior against expected behavior. |
+| **PROVE** | Require evidence and reproducible proof before a finding advances. |
+| **POC** | Engineer minimal, safe, replayable PoCs. |
+| **REPLAY** | Reproduce the proof deterministically — more than once. |
+| **CORRELATE** | Connect evidence, findings and attack paths across tools and missions. |
+| **REPORT** | Produce professional, evidence-traced reports. |
 
 HunterX **orchestrates** open-source security tools: it executes them with
 structured contracts, parses and normalizes their output into canonical
 observations, correlates results, reasons over hypotheses, validates with
-evidence, engineers and replays proofs/PoCs, and produces reports. It is
-built to work with the ecosystem, not to own every security capability itself.
+evidence, engineers and replays proofs/PoCs, and produces reports. It is built
+to work with the ecosystem, not to own every security capability itself.
 
-## v7 Highlights
+---
 
-HunterX v7.0.0 (2026-08-11) is the production-ready v7 release:
+## What HunterX Brings Together
 
-- **Composition root** — Clean Architecture `src/hunterx` core (domain,
-  application, infrastructure, engines, agents, tools, plugins, knowledge,
-  reporting, config, CLI, API) wired through a single platform assembler.
-- **Tool integration architecture** — the Tool Integration SDK, tool
-  intelligence platform and a 92-tool arsenal manifest with machine-readable
-  contracts, structured execution, versioned parsers/normalizers and
-  dependency-aware chaining.
-- **Autonomous mission orchestration** — create, run, checkpoint, resume and
-  finalize full-spectrum security-assessment missions (`hunterx mission`,
-  `hunterx hunt`).
-- **Adaptive mission planning** — attack-path planning, replanning and
-  explainable next-best-action selection.
-- **Target intelligence persistence (TIDB)** — SQL storage with Alembic
-  migrations, events, audit and versioning; structured target intelligence
-  (assets, targets, observations, findings, evidence, history, relationships).
-- **Cloud & SaaS intelligence** — evidence-backed cloud/SaaS attack-surface
-  intelligence across providers (AWS, Azure, GCP, OCI, Cloudflare,
-  DigitalOcean, Akamai, Fastly, Vercel, Netlify, Heroku, Render, Fly.io,
-  Supabase, Firebase, Kubernetes, Docker).
-- **Topology & events** — network/cloud topology relationships and a typed
-  event bus with observability.
-- **Knowledge & correlation** — knowledge graph relationships, cross-tool
-  correlation and evidence chains.
-- **PoC / evidence architecture** — the Vulnerability Proof & PoC Validation
-  Engine: proof contracts, minimal safe proofs, replay, reproducibility,
-  impact and evidence-driven confidence.
-- **Professional reporting** — findings, evidence bundles, remediation plans
-  and multi-format exports (Markdown, HTML, JSON, SARIF, PDF, package).
-- **Security hardening** — scope and authorization guards, sandboxing,
-  evidence-gated confidence, secret masking, hardened XML parsing.
-- **Installation system** — idempotent `install.sh` v7 installer, Docker
-  multi-stage image, PyPI packaging.
-- **CI/CD** — lint, type, test, security, supply-chain, packaging and release
-  pipelines.
-- **Documentation** — comprehensive v7 docs and product site.
-- **Production readiness** — final hardening, release-tree and architecture
-  certification.
+HunterX v7.0.0 (2026-08-11) is the production-ready v7 release. It assembles
+these capability areas into one platform:
 
-Engineering validation at release: **3479 tests passed, 8 skipped,
-2 deselected, 0 failed** (ruff, mypy, bandit, vulture, docs and package gates
-green). This is an engineering validation metric, not a quality guarantee.
+### Intelligence
 
-## Security Coverage
+- Reconnaissance
+- Asset discovery
+- Fingerprinting
+- Target intelligence
+- Cloud / SaaS attack-surface intelligence
+
+### Reasoning
+
+- AI-assisted reasoning
+- Hypothesis generation
+- Adaptive mission planning
+- Attack-path analysis
+- Explainable next-best-action selection
+
+### Validation
+
+- Vulnerability validation
+- Evidence collection
+- Proof contracts
+- PoC engineering
+- Replay / reproducibility
+- Impact assessment
+
+### Correlation
+
+- Cross-tool correlation
+- Knowledge graph
+- Evidence chains
+- Topology
+- Mission history
+
+### Reporting
+
+- Findings & evidence bundles
+- Remediation & retesting
+- Markdown · HTML · JSON · SARIF 2.1 · PDF · evidence packages
+
+**Platform capabilities** — autonomous mission orchestration and adaptive
+planning (`hunterx mission`, `hunterx hunt`); a Tool Integration SDK and
+tool-intelligence platform with a 92-tool arsenal manifest; persistent target
+intelligence (TIDB) with Alembic migrations, events, audit and versioning;
+topology and a typed event bus; knowledge-graph correlation; the Vulnerability
+Proof & PoC Validation Engine; professional multi-format reporting; security
+hardening (scope and authorization guards, sandboxing, evidence-gated
+confidence, secret masking, hardened XML parsing); an idempotent `install.sh`
+installer, Docker image and PyPI packaging; CI/CD pipelines; and comprehensive
+v7 documentation.
+
+---
+
+# The Proof Engine
+
+HunterX treats **proof as part of vulnerability validation**. The proof engine
+transforms a validated hypothesis into a report-ready finding:
+
+```
+HYPOTHESIS
+    ↓
+PROOF CONTRACT
+    ↓
+REQUIRED EVIDENCE
+    ↓
+MINIMAL PROOF STRATEGY
+    ↓
+PROOF CONSTRUCTION
+    ↓
+SAFETY VALIDATION
+    ↓
+SCOPE VALIDATION
+    ↓
+EXECUTION
+    ↓
+REPLAY
+    ↓
+EVIDENCE EVALUATION
+    ↓
+IMPACT
+    ↓
+CONFIDENCE
+    ↓
+VALIDATED FINDING
+    ↓
+REPRODUCTION PACKAGE
+    ↓
+REPORT
+```
+
+Two distinctions are fundamental:
+
+```
+GENERATED ≠ VALIDATED
+EXECUTED ≠ VALIDATED
+```
+
+Generating a PoC proves nothing. Executing it once proves nothing. A finding is
+only `PROVEN` / `CONFIRMED` / `REPORT_READY` when its evidence, proof and
+reproducibility requirements are actually satisfied.
+
+- **Proof contracts** — every supported vulnerability class has a deterministic
+  contract defining preconditions, allowed and forbidden actions, required
+  evidence, expected behavior, replay and impact requirements. Classes include
+  SQL/NoSQL injection, XSS, SSRF, path traversal/LFI, IDOR, authentication,
+  authorization, SSTI, XXE, command-injection indicators, cloud exposure and
+  `UNKNOWN_BEHAVIOR`.
+- **Minimal, safe proofs** — PoCs are structured artifacts (request templates,
+  differential tests, configuration snapshots), never arbitrary executable
+  scripts. Inputs are bounded, forbidden markers are refused, secrets are
+  redacted, and every PoC is immutable with lineage.
+- **Replay & reproducibility** — proofs are replayed deterministically with a
+  `SUCCESS` / `FAILED` / `INCONCLUSIVE` / `BLOCKED` verdict. `REPRODUCIBLE`
+  requires repeated successful replays — never a single run. A single
+  "executed once" is never "reproducible".
+- **Evidence-driven impact & confidence** — impact is classified strictly from
+  captured evidence, never inferred merely from the vulnerability class.
+  Confidence is a versioned, weighted policy over named factors — never a
+  universal percentage. `CONFIRMED` can never be reached unless the proof
+  contract permits confirmation.
+- **Novel / unknown behavior** — unknown behaviors follow a hypothesis-driven
+  loop (`Unknown Behavior → Hypothesis → Experiment → Unexpected Result → New
+  Hypothesis → Minimal Proof → Validated Finding`) and remain candidates until
+  sufficient evidence exists. HunterX supports hypothesis-driven investigation
+  of unknown or application-specific behaviors; it does not claim guaranteed
+  autonomous discovery of zero-days.
+- **RCE, responsibly** — where applicable, proof emphasizes minimal-impact
+  demonstration, evidence of execution and reproducibility — not destructive
+  commands.
+
+The engine is **not a weaponization engine**. Data destruction, persistence,
+credential dumping, reverse shells, lateral movement, DoS, mass data extraction
+and unrestricted database extraction are never scheduled. Proof means
+demonstrating the vulnerability with the minimum necessary interaction and
+impact.
+
+---
+
+## What Can HunterX Investigate?
 
 HunterX supports vulnerability discovery, validation and proof across a broad
-set of classes, including (as supported by its proof-contract registry):
+set of classes, as supported by its proof-contract registry:
 
-SQL injection · NoSQL injection · XSS · SSRF · Path traversal / LFI · RCE /
-command injection indicators · IDOR / BOLA · SSTI · XXE · authentication and
-authorization issues · API/GraphQL issues · open redirect · CORS · sensitive
-information exposure · security misconfiguration · known vulnerable components ·
-dependency vulnerabilities · cloud exposure · novel / unknown behavior
-(`UNKNOWN_BEHAVIOR`).
+| | | |
+|---|---|---|
+| SQL Injection | NoSQL Injection | XSS |
+| SSRF | Path Traversal / LFI | RCE / Command Injection Indicators |
+| IDOR / BOLA | SSTI | XXE |
+| Authentication | Authorization | API |
+| GraphQL | Open Redirect | CORS |
+| Sensitive Information Exposure | Security Misconfiguration | Known Vulnerable Components |
+| Dependency Vulnerabilities | Cloud Exposure | `UNKNOWN_BEHAVIOR` |
 
-The engine is **not a weaponization engine**: it demonstrates vulnerabilities
-with minimum necessary interaction and impact. Data destruction, persistence,
-credential dumping, reverse shells, lateral movement, DoS, mass data extraction
-and unrestricted database extraction are never scheduled.
+Validation depth is defined per class by the proof-contract registry — not every
+class has identical validation depth, and HunterX never claims otherwise. See
+[PoC & Validation](docs/poc-validation.md) for the full contract model.
 
-## Tool Ecosystem
+---
 
-HunterX is **built to work with the security-tooling ecosystem**. It integrates
-with, executes, parses, normalizes and correlates output from the tools below
-where the actual v7 implementation supports them. Integration status per tool
-is tracked in the [toolchain manifest](capabilities/full-toolchain-intelligence.json)
-and on the [Tool Ecosystem](docs/tool-ecosystem.md) page. Status labels:
+## Quick Start
+
+```
+INSTALL → HUNT → INSPECT → VALIDATE → REPORT
+```
+
+HunterX v7 organizes work as **missions**. Start with an authorized target:
+
+```bash
+# 1. INSTALL — Python 3.11+ on Linux, macOS or Windows
+curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+# or from source:  git clone https://github.com/nullc0d30/HunterX.git && cd HunterX
+#                  python -m pip install -e ".[api,db,dev]"
+
+# 2. HUNT — plan and start a full-spectrum hunt mission
+hunterx hunt full_security_assessment https://example.com
+
+# 3. INSPECT — track the mission and inspect the toolchain
+hunterx hunt status <mission_id>
+hunterx hunt surface <mission_id>
+hunterx tools list
+hunterx tools capabilities
+hunterx tools health
+
+# 4. VALIDATE — work findings, PoCs and proof replay
+hunterx finding list <mission_id>
+hunterx finding poc <finding_id>       # PoC engineering
+hunterx finding proof <finding_id>     # proof state
+hunterx finding replay <finding_id>    # proof replay
+
+# 5. REPORT — generate and export professional reports
+hunterx report generate <finding_id>
+hunterx report export <report_id> markdown
+```
+
+Verify your install:
+
+```bash
+hunterx version     # HunterX v7.0.0
+hunterx help        # command list
+hunterx platform    # platform composition
+hunterx config      # resolved configuration
+```
+
+Missions persist to the configured database (SQLite by default), so
+`hunterx mission create <objective> <target>` followed by
+`hunterx mission start <mission_id>` works across CLI invocations.
+
+See [Quickstart](docs/quickstart.md) and the full
+[CLI Reference](docs/cli/index.md) for complete usage.
+
+---
+
+## Persistent Target Intelligence
+
+HunterX does not treat every scan as an isolated command. It maintains
+**structured target intelligence** that persists and correlates across runs:
+
+```
+assets / targets → observations → findings → evidence
+      ↘ history → relationships / topology → mission state
+      ↘ cloud intelligence → correlation → tool results
+```
+
+- **assets / targets** — the surface under assessment
+- **observations** — canonical normalized results from every tool run
+- **findings** — validated results with evidence and proof
+- **evidence** — provenance-backed evidence records
+- **history** — target snapshots, diffs and change detection
+- **relationships / topology** — how assets, services and cloud resources relate
+- **cloud intelligence** — cloud/SaaS attack-surface intelligence
+- **correlation** — cross-tool evidence chains
+- **mission state** — checkpoint/resume and campaign state
+- **tool results** — structured execution records
+
+---
+
+## Cloud & SaaS Attack-Surface Intelligence
+
+HunterX v7 includes evidence-backed **Cloud & SaaS Attack-Surface
+Intelligence**. Where supported, provider coverage includes **AWS, Azure, GCP,
+OCI, Cloudflare, DigitalOcean, Akamai, Fastly, Vercel, Netlify, Heroku, Render,
+Fly.io, Supabase, Firebase, Kubernetes and Docker**.
+
+It provides provider detection, cloud resource intelligence, exposure
+classification, environment classification, topology, account/region/resource
+relationships, SaaS detection, cloud evidence and correlation — built from
+passive, static evidence (DNS, TLS, HTTP headers, HTML/JS, OpenAPI,
+documentation) for authorized targets. It **never authenticates to cloud
+accounts, never accesses cloud resources and never retrieves secrets.**
+
+---
+
+## Knowledge Graph & Cross-Tool Correlation
+
+HunterX correlates results across tools and missions into a knowledge graph of
+entities and relationships:
+
+```
+Assets
+  ↕
+Services
+  ↕
+Observations
+  ↕
+Findings
+  ↕
+Evidence
+  ↕
+Proofs
+  ↕
+Attack Paths
+```
+
+This enables cross-scan correlation, attack-path analysis and context-aware
+reasoning across missions.
+
+---
+
+## From Finding to Professional Report
+
+The workflow does not end at detection:
+
+```
+Finding
+   ↓
+Evidence
+   ↓
+Verification
+   ↓
+PoC
+   ↓
+Reproduction
+   ↓
+Impact
+   ↓
+Remediation
+   ↓
+Report
+```
+
+HunterX turns validated findings into structured, professional reports with
+verified export formats:
+
+```
+JSON  → machine-parsable
+Markdown → human-readable
+HTML  → visual dashboard
+SARIF 2.1 → VS Code / GitHub CodeQL integration
+PDF   → document export
+Evidence Package → bundled evidence (ZIP)
+```
+
+Reports include finding, asset, endpoint, parameter, evidence, verification,
+PoC, reproduction, impact, confidence, relationships, risk/context, and
+remediation/recommendations where supported. Every statement traces to
+observation, evidence, validation, proof, impact, tool result, target
+intelligence or explicit analyst reasoning.
+
+---
+
+## Installation
+
+Requirements: **Python 3.11+** on Linux, macOS or Windows.
+
+```bash
+# Installer script (Linux/macOS)
+curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+
+# Or from source
+git clone https://github.com/nullc0d30/HunterX.git
+cd HunterX
+python -m pip install -e ".[api,db,dev]"
+```
+
+> **Name note.** The GitHub repository
+> [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
+> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). A
+> different, unrelated Python project also uses the name `hunterx` on PyPI.
+> Always install HunterX from this repository (or `install.sh`) to get the
+> correct, current project.
+
+Verify your install with `hunterx version` (see [Quick Start](#quick-start)).
+
+See [Installation](docs/installation/index.md) for details, including database
+initialization (`alembic upgrade head`) and Docker.
+
+## CLI Reference
+
+HunterX v7 ships a single `hunterx` command with capability groups:
+
+| Area | Commands |
+|---|---|
+| Missions | `hunterx mission create/start/status/pause/resume/cancel/finalize`, `hunterx hunt ...` |
+| Planning | `hunterx mission plan/replan/paths/explain` |
+| Findings | `hunterx finding create/list/show/validate/poc/proof/replay/explain` |
+| Reports | `hunterx report list/generate/export/sarif/remediation/retest` |
+| Targets | `hunterx target memory/snapshot/diff/changes/history/coverage/revalidate` |
+| Campaigns | `hunterx campaign list/show/intelligence` |
+| Toolchain | `hunterx tools list/show/contract/execute/parse/normalize/chain/recommend` |
+
+See [CLI Reference](docs/cli/index.md) for the full command reference.
+
+## REST API
+
+The v7 REST API is a FastAPI application (`hunterx.api.app:create_app`). Install
+from source with the `api` extra and run:
+
+```bash
+git clone https://github.com/nullc0d30/HunterX.git
+cd HunterX
+python -m pip install -e ".[api]"
+uvicorn hunterx.api.app:create_app --host 127.0.0.1 --port 8080
+```
+
+API-key authentication is opt-in (admin/read-only roles). See
+[Documentation Hub](docs/documentation.md).
+
+## Docker
+
+```bash
+docker build -t nullc0d30/hunterx:7.0.0 .
+docker compose up -d hunterx-api
+```
+
+The container runs as a non-root user. See
+[Release Guide](docs/v7-release-guide.md).
+
+---
+
+# Tool Ecosystem
+
+> HunterX is designed to orchestrate the security tooling ecosystem rather than
+> replace it.
+
+HunterX integrates with, executes, parses, normalizes and correlates output
+from open-source security tools where the actual v7 implementation supports
+them. Integration status per tool is tracked in the
+[toolchain manifest](capabilities/full-toolchain-intelligence.json) and on the
+[Tool Ecosystem](docs/tool-ecosystem.md) page. Status labels:
 
 - **Integrated (fully-supported)** — structured execution, parser and
   normalizer.
 - **Integrated (partial-support)** — parser/normalizer or adapter with
   documented limitations.
+- **Integrated (execution-only)** — structured execution with a guarded adapter
+  (never arbitrary subprocess).
 - **Planned / Resource** — registered as a knowledge resource or known tool;
   not claimed as direct execution.
+
+**Categorized summary** — 92 registered tools: recon & asset discovery (13),
+network & port scanning (7), HTTP, crawling & discovery (10), fuzzing & content
+discovery (5), parameter & endpoint discovery (6), vulnerability detection &
+validation (17), source, code & secret analysis (5), proxy & web security (2),
+exploitation & security research (3), knowledge & payload resources (3), cloud,
+container & supply chain (7), enterprise / Active Directory (9), and DNS, API &
+proof (5).
 
 ### Recon / Asset Discovery
 
@@ -326,7 +711,7 @@ and on the [Tool Ecosystem](docs/tool-ecosystem.md) page. Status labels:
 | Tool | Role in HunterX | Status |
 |---|---|---|
 | [Metasploit](https://github.com/rapid7/metasploit-framework) | exploit validation (execution-only) | Integrated (execution-only) |
-| [SearchSploit](https://gitlab.com/exploit-database/exploitdb) | exploit research | Integrated (fully-supported) |
+| [SearchSploit](https://gitlab.com/exploit-database/exploitdb) | exploit research | Integrated (partial-support) |
 | [ExploitDB](https://gitlab.com/exploit-database/exploitdb) | exploit research | Integrated (partial-support) |
 
 ### Knowledge / Payload Resources
@@ -363,230 +748,53 @@ and on the [Tool Ecosystem](docs/tool-ecosystem.md) page. Status labels:
 | [hashcat](https://github.com/hashcat/hashcat) | hash analysis | Planned / Resource |
 | [John the Ripper](https://github.com/openwall/john) | hash analysis | Planned / Resource |
 
+### DNS / API / Proof Ecosystem
+
+| Tool | Role in HunterX | Status |
+|---|---|---|
+| [dnspython](https://github.com/rthalley/dnspython) | DNS resolution, record enumeration | Integrated (fully-supported) |
+| OpenAPI / Swagger parser | OpenAPI analysis, API discovery | Integrated (partial-support) |
+| Postman collection parser | API discovery, parameter analysis | Integrated (partial-support) |
+| [jwt_tool](https://github.com/ticarpi/jwt_tool) | JWT / authentication analysis | Planned / Resource |
+| Proof Replay | proof replay, safe validation | Integrated (fully-supported) |
+
 > **Attribution.** HunterX integrates with and leverages these third-party
 > open-source projects. It does not claim ownership of them. Each tool keeps
 > its own license and attribution; third-party attribution is preserved in
 > [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES). Tool names and descriptions are
 > used only to document interoperability.
 
-## PoC & Proof Engine
-
-HunterX treats **proof as part of vulnerability validation**. The proof engine
-transforms a validated hypothesis into a report-ready finding:
-
-```
-HYPOTHESIS → PROOF CONTRACT → REQUIRED EVIDENCE → MINIMAL PROOF STRATEGY →
-PROOF CONSTRUCTION → SAFETY VALIDATION → SCOPE VALIDATION → EXECUTION →
-REPLAY → EVIDENCE EVALUATION → IMPACT → CONFIDENCE → VALIDATED FINDING →
-REPRODUCTION PACKAGE → REPORT
-```
-
-- **Proof contracts** define, per vulnerability class, preconditions, allowed
-  and forbidden actions, required evidence, expected behavior, replay and
-  impact requirements. Classes include SQL/NoSQL injection, XSS, SSRF, path
-  traversal/LFI, IDOR, authentication, authorization, SSTI, XXE, command
-  injection indicators, cloud exposure and `UNKNOWN_BEHAVIOR` (novel).
-- **Minimal, safe proofs** — PoCs are structured artifacts (request templates,
-  differential tests, configuration snapshots), never arbitrary executable
-  scripts. `GENERATED` ≠ `VALIDATED`; `EXECUTED` ≠ `VALIDATED`.
-- **Replay & reproducibility** — proofs are replayed deterministically;
-  `REPRODUCIBLE` requires repeated successful replays, never a single run.
-- **Evidence-driven impact and confidence** — impact is classified strictly
-  from captured evidence; confidence is a versioned, weighted policy over
-  named factors — never a universal percentage.
-- **Novel behavior** — unknown behaviors follow a hypothesis-driven loop:
-  `Unknown Behavior → Hypothesis → Experiment → Unexpected Result → New
-  Hypothesis → Minimal Proof → Validated Finding`. HunterX supports
-  hypothesis-driven discovery and investigation of unknown or
-  application-specific behaviors; it does not claim guaranteed autonomous
-  discovery of zero-days.
-- **RCE, responsibly** — where applicable, proof emphasizes minimal-impact
-  demonstration, evidence of execution, and reproducibility — not destructive
-  commands.
-
-## Target Intelligence
-
-HunterX maintains **structured target intelligence** rather than treating every
-scan as an isolated command. v7 persists and correlates:
-
-- **assets / targets** — the surface under assessment
-- **observations** — canonical normalized results from every tool run
-- **findings** — validated results with evidence and proof
-- **evidence** — provenance-backed evidence records
-- **history** — target snapshots, diffs and change detection
-- **relationships / topology** — how assets, services and cloud resources relate
-- **cloud intelligence** — cloud/SaaS attack-surface intelligence
-- **correlation** — cross-tool evidence chains
-- **mission state** — checkpoint/resume and campaign state
-- **tool results** — structured execution records
-
-## Cloud & SaaS Intelligence
-
-HunterX v7 includes evidence-backed **Cloud & SaaS Attack-Surface Intelligence**.
-Where supported, provider coverage includes **AWS, Azure, GCP, OCI, Cloudflare,
-DigitalOcean, Akamai, Fastly, Vercel, Netlify, Heroku, Render, Fly.io,
-Supabase, Firebase, Kubernetes and Docker**.
-
-It provides provider detection, cloud resource intelligence, exposure
-classification, environment classification, topology, account/region/resource
-relationships, SaaS detection, cloud evidence and correlation — built from
-passive, static evidence (DNS, TLS, HTTP headers, HTML/JS, OpenAPI,
-documentation) for authorized targets. It never authenticates to cloud
-accounts, never accesses cloud resources and never retrieves secrets.
-
-## Knowledge Graph & Correlation
-
-HunterX correlates results across tools and missions into a knowledge graph of
-entities and relationships (targets, assets, observations, findings, evidence,
-proofs, attack paths). This enables cross-scan correlation, attack-path
-analysis and context-aware reasoning.
-
-## Reporting
-
-The workflow does not end at detection. HunterX turns validated findings into
-structured, professional reports with verified export formats:
-
-- **JSON** — machine-parsable
-- **Markdown** — human-readable
-- **HTML** — visual dashboard
-- **SARIF 2.1** — VS Code / GitHub CodeQL integration
-- **PDF** — document export
-- **package** — evidence bundles (ZIP)
-
-Reports include finding, asset, endpoint, parameter, evidence, verification,
-PoC, reproduction, impact, confidence, relationships, risk/context, and
-remediation/recommendations where supported. Every statement traces to
-observation, evidence, validation, proof, impact, tool result, target
-intelligence or explicit analyst reasoning.
-
-## Usage
-
-HunterX v7 organizes work as **missions**. Start with an authorized target:
-
-```bash
-# Plan and start a full-spectrum hunt mission
-hunterx hunt full_security_assessment https://example.com
-
-# Track it
-hunterx hunt status <mission_id>
-hunterx hunt surface <mission_id>
-
-# Inspect the toolchain
-hunterx tools list
-hunterx tools capabilities
-hunterx tools health
-
-# Findings and reports
-hunterx finding list <mission_id>
-hunterx report generate <finding_id>
-hunterx report export <report_id> markdown
-```
-
-Missions persist to the configured database (SQLite by default), so
-`hunterx mission create <objective> <target>` followed by
-`hunterx mission start <mission_id>` works across CLI invocations.
-
-## Example Workflow
-
-```bash
-# Plan and start a full-spectrum hunt mission against an authorized target
-hunterx hunt full_security_assessment https://example.com
-
-# Track mission state and surface
-hunterx hunt status <mission_id>
-hunterx hunt surface <mission_id>
-
-# Inspect the integrated toolchain
-hunterx tools list
-hunterx tools capabilities
-hunterx tools health
-
-# Work with findings, proofs and reports
-hunterx finding list <mission_id>
-hunterx finding poc <finding_id>       # PoC engineering
-hunterx finding proof <finding_id>     # proof state
-hunterx finding replay <finding_id>    # proof replay
-hunterx report generate <finding_id>
-hunterx report export <report_id> sarif
-```
-
-## Installation
-
-Requirements: **Python 3.11+** on Linux, macOS or Windows.
-
-```bash
-# Installer script (Linux/macOS)
-curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
-
-# Or from source
-git clone https://github.com/nullc0d30/HunterX.git
-cd HunterX
-python -m pip install -e ".[api,db,dev]"
-```
-
-> **Name note.** The GitHub repository
-> [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
-> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). A
-> different, unrelated Python project also uses the name `hunterx` on PyPI.
-> Always install HunterX from this repository (or `install.sh`) to get the
-> correct, current project.
-
-Verify:
-
-```bash
-hunterx version     # HunterX v7.0.0
-hunterx help        # command list
-hunterx platform    # platform composition
-hunterx config      # resolved configuration
-```
-
-See [docs/installation](docs/installation/index.md) for details, including
-database initialization (`alembic upgrade head`) and Docker.
-
-## CLI
-
-HunterX v7 ships a single `hunterx` command with capability groups:
-
-| Area | Commands |
-|---|---|
-| Missions | `hunterx mission create/start/status/pause/resume/cancel/finalize`, `hunterx hunt ...` |
-| Planning | `hunterx mission plan/replan/paths/explain` |
-| Findings | `hunterx finding create/list/show/validate/poc/proof/replay/explain` |
-| Reports | `hunterx report list/generate/export/sarif/remediation/retest` |
-| Targets | `hunterx target memory/snapshot/diff/changes/history/coverage/revalidate` |
-| Campaigns | `hunterx campaign list/show/intelligence` |
-| Toolchain | `hunterx tools list/show/contract/execute/parse/normalize/chain/recommend` |
-
-See [docs/cli](docs/cli/index.md) for the full reference.
-
-## REST API
-
-The v7 REST API is a FastAPI application (`hunterx.api.app:create_app`).
-Install from source with the `api` extra and run:
-
-```bash
-git clone https://github.com/nullc0d30/HunterX.git
-cd HunterX
-python -m pip install -e ".[api]"
-uvicorn hunterx.api.app:create_app --host 127.0.0.1 --port 8080
-```
-
-API-key authentication is opt-in (admin/read-only roles). See
-[docs](docs/documentation.md).
-
-## Docker
-
-```bash
-docker build -t nullc0d30/hunterx:7.0.0 .
-docker compose up -d hunterx-api
-```
-
-The container runs as a non-root user. See
-[docs/v7-release-guide.md](docs/v7-release-guide.md).
+---
 
 ## Architecture
 
 The v7 core is a Clean Architecture package under `src/hunterx`:
+
+```
+                    HUNTERX v7
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+     Missions        Reasoning       Toolchain
+        │               │               │
+        └───────────────┼───────────────┘
+                        │
+                  Core Platform
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+     Domain       Application     Infrastructure
+        │               │               │
+        └───────────────┼───────────────┘
+                        │
+                 Intelligence
+                        │
+        ┌───────────────┼───────────────┐
+        │               │               │
+      Evidence       Knowledge       Reporting
+```
+
+Package layers:
 
 - `domain` — pure domain layer (entities, ports, services)
 - `application` — use-case services
@@ -598,9 +806,9 @@ The v7 core is a Clean Architecture package under `src/hunterx`:
 - `agents` — multi-agent platform
 - `knowledge`, `reporting`, `config`, `cli`, `api` — delivery layers
 
-See [docs/architecture](docs/architecture/README.md),
-[docs/v7-foundation.md](docs/v7-foundation.md) and
-[docs/v7-platform-composition-root.md](docs/v7-platform-composition-root.md).
+See [Architecture](docs/architecture/README.md),
+[Foundation](docs/v7-foundation.md) and
+[Platform Composition Root](docs/v7-platform-composition-root.md).
 
 ## Integrations
 
@@ -614,7 +822,30 @@ See [docs/architecture](docs/architecture/README.md),
 - **Persistence** — SQL (SQLite default, PostgreSQL supported) via TIDB with
   Alembic migrations.
 
-## Testing & Quality
+---
+
+## Engineering Status
+
+At the v7.0.0 release (2026-08-11):
+
+```text
+3,479 tests passed
+8 skipped
+2 deselected
+0 failed
+```
+
+The suite spans unit, component, integration, golden, security, acceptance,
+performance, engineering, architecture and framework tests, plus the 92-tool
+toolchain contract suite. At release, the following quality gates were green:
+**pytest, ruff, mypy (eng + shared), bandit (Medium+), vulture, architecture,
+docs, compliance, hygiene, dependency and lock-file consistency.**
+
+> **Disclaimer.** These are engineering validation metrics — they document the
+> state of the test suite and quality gates at release. They are **not** a
+> guarantee of software quality, detection rates, or security assurance.
+
+Local validation commands:
 
 ```bash
 pytest -m "not tools"        # full default suite
@@ -624,29 +855,41 @@ python -m bandit -r src/hunterx
 python -m eng.gates          # all quality gates
 ```
 
+---
+
 ## Target Users
 
-- **Bug bounty hunters** — evidence-backed findings, minimal reproducible PoCs,
-  report-ready packages.
-- **Penetration testers** — structured missions, professional reports,
-  remediation and retest planning.
-- **Red teams** — mission orchestration, attack-path planning, cloud/SaaS
-  intelligence, knowledge-graph correlation.
-- **Security researchers** — hypothesis-driven investigation of unknown and
-  application-specific behaviors.
-- **Application security engineers** — validated findings with PoC, impact and
-  confidence instead of candidate noise.
-- **DevSecOps / security engineering teams** — CI/CD integration, SARIF,
-  REST API, reproducible results.
+```text
+Bug Bounty
+→ Turn candidates into reproducible, report-ready findings with minimal PoCs.
+
+Pentesting
+→ Orchestrate structured assessments and produce evidence-backed reports.
+
+Red Team
+→ Plan missions, orchestrate toolchains, and correlate attack-surface intelligence.
+
+Security Research
+→ Investigate unknown and application-specific behavior with hypothesis-driven proof.
+
+Application Security
+→ Validate findings with PoC, impact and confidence instead of candidate noise.
+
+DevSecOps / Security Engineering
+→ Integrate reproducible results into CI/CD with SARIF and the REST API.
+```
+
+---
 
 ## Documentation
 
 - [Documentation Hub](docs/documentation.md)
-- [Installation](docs/installation/index.md)
-- [CLI Reference](docs/cli/index.md)
 - [Quickstart](docs/quickstart.md)
-- [Tool Ecosystem](docs/tool-ecosystem.md)
+- [Installation](docs/installation/index.md)
+- [Architecture](docs/architecture/README.md)
 - [PoC & Validation](docs/poc-validation.md)
+- [CLI Reference](docs/cli/index.md)
+- [Tool Ecosystem](docs/tool-ecosystem.md)
 - [Features](docs/features/index.md)
 - [Security](docs/security.md)
 - [Responsible Use](docs/responsible-use.md)
@@ -659,6 +902,8 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md),
 [GitHub Issues](https://github.com/nullc0d30/HunterX/issues) and ask questions
 in [Discussions](https://github.com/nullc0d30/HunterX/discussions).
 
+---
+
 ## Responsible Use
 
 HunterX is an authorized cybersecurity testing and research platform. It is
@@ -670,10 +915,16 @@ authorized to test. You are responsible for:
 - Complying with all applicable laws, regulations, and terms of service.
 - Handling any data discovered during testing responsibly.
 
+The engine never schedules data destruction, persistence, credential dumping,
+reverse shells, lateral movement, DoS, mass data extraction or unrestricted
+database extraction.
+
 **Disclaimer:** The developer/author (Ahmed Awad / NullC0d3) is not responsible
 for misuse, unauthorized access, illegal activity, damage, or any other
 unethical use of the software. The software is provided "AS IS" without
-warranty of any kind. See [docs/responsible-use.md](docs/responsible-use.md).
+warranty of any kind. See [Responsible Use](docs/responsible-use.md).
+
+---
 
 ## License
 
