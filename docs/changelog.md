@@ -10,7 +10,7 @@ description: >-
 
 > Full changelog maintained at [CHANGELOG.md](https://github.com/nullc0d30/HunterX/blob/main/CHANGELOG.md).
 
-## v7.0.0 (2026-08-11)
+## v7.0.0 (2026-08-12)
 
 ### Major Features
 - **Clean Architecture v7 core** (`src/hunterx`) — domain, application, infrastructure, engines, agents, tools, plugins, knowledge, reporting, config, CLI and API layers

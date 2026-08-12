@@ -52,8 +52,8 @@ We ask that you:
 
 | Version | Supported |
 |---------|-----------|
-| v6.0.0  | Yes       |
-| < v6.0.0 | No       |
+| v7.0.0  | Yes       |
+| < v7.0.0 | No       |
 
 Only the latest stable release receives security patches. Users are strongly encouraged to keep HunterX up to date.
 

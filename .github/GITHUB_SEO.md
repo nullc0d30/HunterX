@@ -70,8 +70,9 @@ security-testing
 
 ## Notes
 
-- **Do not** claim PyPI installation as the canonical install path: an
-  unrelated Python project uses the name `hunterx` on PyPI. HunterX is
-  installed from this repository (`install.sh` or source).
+- HunterX publishes to PyPI as **`hunterxsec`**; the plain `hunterx` name on
+  PyPI belongs to an unrelated project. The canonical install paths are
+  `pip install hunterxsec`, `install.sh`, or source install from this
+  repository.
 - **Do not** add topics like `zero-day`, `exploitation`, or `malware` — they
   are not supported by the product.

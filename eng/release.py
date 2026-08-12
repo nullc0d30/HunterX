@@ -266,5 +266,5 @@ def build_rollback_plan(current: Version, previous: Version | None = None) -> Ro
     return RollbackPlan(
         previous_version=str(prev),
         image_tag=f"nullc0d30/hunterx:{prev}",
-        package_version=f"hunterx=={prev}",
+        package_version=f"hunterxsec=={prev}",
     )
