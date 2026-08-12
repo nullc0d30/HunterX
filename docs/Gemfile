@@ -1,0 +1,22 @@
+source "https://rubygems.org"
+
+# HunterX documentation site.
+#
+# Built for GitHub Pages. Use the pinned github-pages gem set for exact
+# parity with the Pages build environment so the Actions-based Pages
+# deployment and the local build produce identical output.
+
+gem "github-pages", "~> 232", group: :jekyll_plugins
+
+group :jekyll_plugins do
+  gem "jekyll-seo-tag"
+  gem "jekyll-sitemap"
+  gem "jekyll-feed"
+  gem "jekyll-redirect-from"
+end
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem.
+gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# Performance-booster for watching directories on Windows.
+gem "wdm", "~> 0.1.1", platforms: [:mingw, :x64_mingw]

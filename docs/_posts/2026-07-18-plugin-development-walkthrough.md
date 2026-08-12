@@ -12,6 +12,14 @@ categories: [technical, extensions]
 
 ## Plugin Development with HunterX
 
+> **Version note.** This article was published before HunterX v7.0.0 and
+> describes the retired v6-era plugin system (`hunterx.plugin` decorators and
+> the `plugins/` directory). The v7 architecture replaced this with the Tool
+> Integration SDK and tool-intelligence layer — see
+> [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) and
+> [v7 Tool Integration SDK]({{ '/v7-tool-integration-sdk/' | relative_url }}).
+> The code below is preserved as a historical reference only.
+
 HunterX has a decorator-based plugin system with three plugin types: detector, reporter, and hook.
 
 ## Plugin Types

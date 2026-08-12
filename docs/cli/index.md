@@ -98,6 +98,6 @@ hunterx report generate <finding_id>
 
 ## See also
 
-- [Quickstart](/quickstart/) — run a first mission
-- [Configuration](/configuration/) — environment overrides
-- [Architecture](/architecture/) — platform internals
+- [Quickstart]({{ '/quickstart/' | relative_url }}) — run a first mission
+- [Configuration]({{ '/configuration/' | relative_url }}) — environment overrides
+- [Architecture]({{ '/architecture/' | relative_url }}) — platform internals

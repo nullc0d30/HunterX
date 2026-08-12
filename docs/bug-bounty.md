@@ -58,7 +58,7 @@ HunterX orchestrates the ecosystem bounty hunters already use: Amass,
 Subfinder, Assetfinder, Findomain, DNSx, HTTPx, Katana, GAU, Waybackurls, FFUF,
 Feroxbuster, Arjun, ParamSpider, Nuclei, Dalfox, XSStrike, SQLmap, Ghauri,
 Commix, Interactsh, Gitleaks, Semgrep and more. See the
-[Tool Ecosystem](/tool-ecosystem/) for the full list with integration status.
+[Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) for the full list with integration status.
 
 ## Safety and scope
 
@@ -69,14 +69,14 @@ authorization before testing.
 
 ## Getting started
 
-- [Installation](/installation/)
-- [Quickstart](/quickstart/)
-- [PoC & Validation](/poc-validation/)
-- [Tool Ecosystem](/tool-ecosystem/)
-- [Responsible Use](/responsible-use/)
+- [Installation]({{ '/installation/' | relative_url }})
+- [Quickstart]({{ '/quickstart/' | relative_url }})
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [Responsible Use]({{ '/responsible-use/' | relative_url }})
 
 ## Related
 
-- [AI Penetration Testing](/ai-penetration-testing/)
-- [Red Team](/red-team/)
-- [Comparisons](/comparisons/)
+- [AI Penetration Testing]({{ '/ai-penetration-testing/' | relative_url }})
+- [Red Team]({{ '/red-team/' | relative_url }})
+- [Comparisons]({{ '/comparisons/' | relative_url }})

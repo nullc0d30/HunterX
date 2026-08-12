@@ -12,12 +12,21 @@ categories: [technical, devops]
 
 ## Deploying HunterX in Production with Docker
 
-HunterX provides an optimized 271MB multi-stage Docker image running as a non-root user.
+> **Version note.** This article was published before HunterX v7.0.0 and uses
+> the v6-era CLI (`hunterx scan`). In v7, assessments are organized as
+> missions: `hunterx hunt <objective> <target>` creates and starts a mission,
+> and findings are managed with `hunterx finding` / `hunterx report`. See the
+> [Quickstart]({{ '/quickstart/' | relative_url }}) and
+> [CLI Reference]({{ '/cli/' | relative_url }}) for current usage.
+> The image tags now follow v7 (`7`, `7.0`, `7.0.0`, `latest`, `stable`).
+
+HunterX provides an optimized multi-stage Docker image running as a non-root user.
 
 ## Quick Start
 
 ```bash
-docker run --rm nullc0d30/hunterx:latest scan http://example.com --profile bounty
+docker run --rm nullc0d30/hunterx:latest version
+docker run --rm nullc0d30/hunterx:latest hunt full_security_assessment https://example.com
 ```
 
 ## Production Deployment
@@ -26,10 +35,9 @@ docker run --rm nullc0d30/hunterx:latest scan http://example.com --profile bount
 
 ```bash
 docker run --rm \
-  -v $(pwd)/hunterx.yaml:/app/hunterx.yaml:ro \
   -v $(pwd)/reports:/data \
   nullc0d30/hunterx:latest \
-  scan http://example.com -o /data
+  hunt full_security_assessment https://example.com
 ```
 
 ### Resource Limits
@@ -38,16 +46,16 @@ docker run --rm \
 docker run --rm \
   --memory="512m" \
   --cpus="2" \
-  nullc0d30/hunterx:latest scan http://example.com
+  nullc0d30/hunterx:latest hunt full_security_assessment https://example.com
 ```
 
 ### API Server
 
 ```bash
 docker run --rm \
-  -p 8443:8443 \
-  -v $(pwd)/reports:/data \
-  nullc0d30/hunterx:latest api --port 8443
+  -p 8080:8080 \
+  --entrypoint uvicorn nullc0d30/hunterx:latest \
+  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 ## CI/CD Integration
@@ -61,8 +69,7 @@ jobs:
     container:
       image: nullc0d30/hunterx:latest
     steps:
-      - run: hunterx scan {% raw %}${{ secrets.TARGET_URL }}{% endraw %} \
-          -o /data/report.sarif
+      - run: hunterx hunt full_security_assessment {% raw %}${{ secrets.TARGET_URL }}{% endraw %}
 ```
 
 ### GitLab CI
@@ -71,9 +78,9 @@ jobs:
 scan:
   image: nullc0d30/hunterx:latest
   script:
-    - hunterx scan $TARGET_URL -o report.sarif
+    - hunterx hunt full_security_assessment $TARGET_URL
   artifacts:
-    paths: [report.sarif]
+    paths: [artifacts/reports/]
 ```
 
 ## Security
@@ -86,5 +93,5 @@ scan:
 ## Image Tags
 
 - `latest`: Most recent stable release
-- `6.0.0`: Specific version
-- `dev`: Development build (unstable)
+- `7.0.0`: Specific version
+- `stable`: Latest stable release

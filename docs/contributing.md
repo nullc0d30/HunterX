@@ -39,7 +39,7 @@ git checkout -b feat/your-feature
 1. **Fork** the repository on GitHub
 2. **Clone** your fork locally
 3. **Create a feature branch** from `main`
-4. **Make your changes** following the [Development Bible](/bible/) conventions
+4. **Make your changes** following the [Development Bible]({{ '/bible/' | relative_url }}) conventions
 5. **Run tests** to verify nothing is broken
 6. **Run linting** to ensure code style
 7. **Commit with DCO sign-off** (`git commit -s`)
@@ -75,7 +75,7 @@ ruff format --check .
 ## Quality Gates
 
 Contributions must keep the quality gates green — see
-[Quality Gates](/v7-quality-gates/):
+[Quality Gates]({{ '/v7-quality-gates/' | relative_url }}):
 
 ```bash
 python -m eng.gates        # ruff, mypy, pytest, coverage, security, docs, ...
@@ -132,6 +132,6 @@ git commit -s -m "feat(tools): add a new tool adapter"
 ## Resources
 
 - [Full contribution guide on GitHub](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md)
-- [Development Bible](/bible/) — engineering standards
-- [Architecture Enforcement](/architecture/) — layering and dependency rules
-- [Governance](/governance/)
+- [Development Bible]({{ '/bible/' | relative_url }}) — engineering standards
+- [Architecture Enforcement]({{ '/architecture/' | relative_url }}) — layering and dependency rules
+- [Governance]({{ '/governance/' | relative_url }})

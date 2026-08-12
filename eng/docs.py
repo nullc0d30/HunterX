@@ -227,6 +227,7 @@ def _check_markdown_links(repo_root: pathlib.Path) -> DocCheck:
     for path in _doc_files(repo_root):
         text = path.read_text(encoding="utf-8", errors="replace")
         for target in _iter_markdown_links(text):
+            target = _normalize_target(target)
             if _is_external(target) or target.startswith(("#", "mailto:", "tel:")):
                 continue
             resolved = _resolve_link(path.parent, target)
@@ -235,6 +236,34 @@ def _check_markdown_links(repo_root: pathlib.Path) -> DocCheck:
     if broken:
         return DocCheck("markdown-links", False, "broken links: " + "; ".join(broken[:5]))
     return DocCheck("markdown-links", True, "all internal links resolve")
+
+
+#: Matches the path argument inside a Jekyll ``{{ '/path' | relative_url }}``.
+_LIQUID_RELATIVE_URL_RE = re.compile(r"\{\{\s*['\"]([^'\"]+)['\"]\s*\|?\s*relative_url\s*\}\}")
+#: Matches ``{{ site.baseurl }}/path``.
+_LIQUID_BASEURL_RE = re.compile(r"\{\{\s*site\.baseurl\s*\}\}([^)\s]+)")
+
+
+def _normalize_target(target: str) -> str:
+    """Resolve Jekyll Liquid link targets to the site-absolute URL they produce.
+
+    ``[x]({{ '/installation/' | relative_url }})`` resolves to
+    ``/installation/``; ``[x]({{ site.baseurl }}/installation/)`` resolves to
+    ``/installation/``. Non-Liquid targets are returned unchanged.
+    """
+    t = target.strip()
+    if not t.startswith("{{"):
+        return t
+    m = _LIQUID_RELATIVE_URL_RE.search(t)
+    if m:
+        path = m.group(1)
+        if not path.startswith("/"):
+            path = "/" + path
+        return path
+    m = _LIQUID_BASEURL_RE.search(t)
+    if m:
+        return m.group(1)
+    return t
 
 
 def _iter_markdown_links(text: str) -> list[str]:

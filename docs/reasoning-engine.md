@@ -81,8 +81,8 @@ tool result, target intelligence or explicit analyst reasoning.
 
 ## Related
 
-- [PoC & Validation](/poc-validation/) — the proof engine
-- [AI Penetration Testing](/ai-penetration-testing/)
-- [Vulnerability Validation & Proof Orchestration](/v7-vulnerability-validation-proof-orchestration/)
-- [Vulnerability Intelligence](/v7-vulnerability-intelligence/)
-- [Tool Ecosystem](/tool-ecosystem/)
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }}) — the proof engine
+- [AI Penetration Testing]({{ '/ai-penetration-testing/' | relative_url }})
+- [Vulnerability Validation & Proof Orchestration]({{ '/v7-vulnerability-validation-proof-orchestration/' | relative_url }})
+- [Vulnerability Intelligence]({{ '/v7-vulnerability-intelligence/' | relative_url }})
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})

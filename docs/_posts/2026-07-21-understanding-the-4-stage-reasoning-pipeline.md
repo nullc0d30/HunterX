@@ -12,6 +12,15 @@ categories: [technical, red-team]
 
 ## Understanding HunterX's 4-Stage Reasoning Pipeline
 
+> **Version note.** This article was published before HunterX v7.0.0 and
+> describes the v6-era 4-stage reasoning pipeline (Passive Intelligence →
+> Probe → Confirm → Verify). The v7 architecture reasons over hypotheses
+> through the mission orchestration and vulnerability-proof engines. See
+> [Reasoning Engine]({{ '/reasoning-engine/' | relative_url }}) and
+> [v7 Vulnerability Proof & PoC]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }})
+> for current behavior. The content below is preserved as a historical
+> reference.
+
 Traditional vulnerability scanners operate on a simple model: send a payload, check for a match. HunterX replaces this with a **reasoning pipeline** inspired by how human penetration testers think.
 
 ## Stage 0: Passive Intelligence

@@ -12,6 +12,15 @@ categories: [bug-bounty, technical]
 
 ## Optimizing Your Bug Bounty Workflow with HunterX
 
+> **Version note.** This article was published before HunterX v7.0.0 and uses
+> the v6-era CLI (`hunterx scan` with the `Bounty` profile). In v7, work is
+> organized as missions: `hunterx hunt full_security_assessment <target>`
+> creates and starts a mission, and findings, PoCs and reports are managed with
+> `hunterx finding` and `hunterx report`. See the
+> [Quickstart]({{ '/quickstart/' | relative_url }}) and
+> [CLI Reference]({{ '/cli/' | relative_url }}). The `Bounty` profile and
+> `--auth` flags shown below are v6-era features.
+
 Bug bounty hunting requires a careful balance between coverage and safety. HunterX's **Bounty profile** is specifically designed for this.
 
 ## The Bounty Profile
@@ -29,45 +38,43 @@ This profile ensures you stay within program limits while maximizing coverage.
 ### 1. Recon Phase
 
 ```bash
-# Gather intelligence without sending probes
-hunterx scan http://target.com --dry-run
+# Create and start a mission against an authorized target
+hunterx hunt full_security_assessment https://target.com
+hunterx mission status <mission_id>
 ```
 
-### 2. Focused Scanning
+### 2. Focused Assessment
 
 ```bash
-# Scan with Bounty profile, JSON output for analysis
-hunterx scan http://target.com \
-  --profile bounty \
-  -o findings.json
+# Track mission surface and findings
+hunterx hunt surface <mission_id>
+hunterx finding list <mission_id>
 ```
 
-### 3. Authenticated Testing
+### 3. Validation & PoC
 
 ```bash
-hunterx scan http://target.com \
-  --auth form \
-  --username user@example.com \
-  --password s3cret \
-  --profile bounty
+# Engineer and replay a minimal, safe proof for a finding
+hunterx finding show <finding_id>
+hunterx finding poc <finding_id>
+hunterx finding replay <finding_id>
 ```
 
 ### 4. Results Analysis
 
 ```bash
-# Scan with SARIF output for VS Code integration
-hunterx scan http://target.com \
-  --profile bounty \
-  -o report.sarif
+# Generate and export a professional report (SARIF for VS Code / CodeQL)
+hunterx report generate <finding_id>
+hunterx report export <report_id> sarif
 ```
 
 ## Tips
 
-- Always use the **Bounty profile** on third-party programs
+- Always work from an explicit scope and use the **Bounty profile** on third-party programs (v6-era CLI)
 - Combine with Nuclei for broad template coverage
 - Use Docker for consistent environments
 - Enable OOB detection for SSRF/blind XXE
 
 ## Safety First
 
-Remember: the Bounty profile blocks destructive payloads. If you need to disable a category, use `--exclude-category`. Never bypass safety constraints on third-party targets.
+Remember: HunterX blocks destructive payloads and enforces scope and authorization guards. Never bypass safety constraints on third-party targets.

@@ -74,7 +74,7 @@ A glossary of terms as used by HunterX v7.
 
 ## Related
 
-- [PoC & Validation](/poc-validation/)
-- [Reasoning Engine](/reasoning-engine/)
-- [FAQ](/faq/)
-- [Documentation Hub](/documentation/)
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})
+- [Reasoning Engine]({{ '/reasoning-engine/' | relative_url }})
+- [FAQ]({{ '/faq/' | relative_url }})
+- [Documentation Hub]({{ '/documentation/' | relative_url }})

@@ -55,6 +55,6 @@ workflow.
 
 ## Related
 
-- [Tool Ecosystem](/tool-ecosystem/)
-- [Comparisons](/comparisons/)
-- [Bug Bounty](/bug-bounty/)
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [Comparisons]({{ '/comparisons/' | relative_url }})
+- [Bug Bounty]({{ '/bug-bounty/' | relative_url }})

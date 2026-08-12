@@ -63,6 +63,6 @@ Both are open source; HunterX integrates Nuclei rather than replacing it.
 
 ## Related
 
-- [Tool Ecosystem](/tool-ecosystem/)
-- [Comparisons](/comparisons/)
-- [PoC & Validation](/poc-validation/)
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [Comparisons]({{ '/comparisons/' | relative_url }})
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})

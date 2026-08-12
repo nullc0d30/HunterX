@@ -19,8 +19,8 @@ This document describes the support channels available for HunterX.
 Comprehensive documentation is available in the repository and wiki:
 
 - [README](https://github.com/nullc0d30/HunterX/blob/main/README.md) - Overview, installation, and quick start
-- [CONTRIBUTING.md](./CONTRIBUTING.md) — Guide for contributors
-- [SECURITY.md](./SECURITY.md) — Security vulnerability reporting
+- [CONTRIBUTING.md](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md) — Guide for contributors
+- [SECURITY.md](https://github.com/nullc0d30/HunterX/blob/main/SECURITY.md) — Security vulnerability reporting
 - [Documentation Hub](./documentation.md) — v7 documentation index
 - [Support Guide](./faq.md) — FAQ and troubleshooting
 - [Architecture](./architecture/README.md) — Architecture enforcement
@@ -57,7 +57,7 @@ Discussions are community-driven. While maintainers participate, responses from 
 
 Report security vulnerabilities via [GitHub Private Vulnerability Reporting](https://github.com/nullc0d30/HunterX/security/advisories/new).
 
-**Do not** open public issues for security vulnerabilities. See [SECURITY.md](./SECURITY.md) for the full security policy.
+**Do not** open public issues for security vulnerabilities. See [SECURITY.md](https://github.com/nullc0d30/HunterX/blob/main/SECURITY.md) for the full security policy.
 
 ---
 

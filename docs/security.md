@@ -19,7 +19,7 @@ to test. You are responsible for:
 
 The developer/author is **not responsible** for misuse, unauthorized access,
 illegal activity, damage, or any other unethical use of the software. See the
-[Responsible Use & Legal Notice](/responsible-use/) for the full statement.
+[Responsible Use & Legal Notice]({{ '/responsible-use/' | relative_url }}) for the full statement.
 
 ## Supported Versions
 
@@ -67,5 +67,5 @@ HunterX v7 is designed for safe, evidence-driven, authorized assessment:
 - **Opt-in API authentication** — the REST API supports API-key auth with
   admin/read-only roles.
 
-See [Responsible Use](/responsible-use/) and the
-[Security Pipeline](/v7-security-pipeline/) guide for details.
+See [Responsible Use]({{ '/responsible-use/' | relative_url }}) and the
+[Security Pipeline]({{ '/v7-security-pipeline/' | relative_url }}) guide for details.
