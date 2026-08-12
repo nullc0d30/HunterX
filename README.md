@@ -563,13 +563,56 @@ API-key authentication is opt-in (admin/read-only roles). See
 
 ## Docker
 
+Official images are published on
+[Docker Hub](https://hub.docker.com/r/nullc0d30/hunterx) as
+`nullc0d30/hunterx` for Linux (amd64 / arm64). Tags follow the version
+(`7`, `7.0`, `7.0.0`) plus `latest` and `stable`.
+
+### Pull from Docker Hub
+
 ```bash
-docker build -t nullc0d30/hunterx:7.0.0 .
+docker pull nullc0d30/hunterx:latest
+```
+
+### Run the CLI
+
+```bash
+# Show the version
+docker run --rm nullc0d30/hunterx:latest version
+
+# Show help
+docker run --rm nullc0d30/hunterx:latest help
+
+# Interactive shell
+docker run -it --rm --entrypoint sh nullc0d30/hunterx:latest
+```
+
+### Run the REST API
+
+The image ships with the `api` extras. Start the FastAPI server and point a
+browser at <http://localhost:8080/health>:
+
+```bash
+docker run -d --name hunterx-api -p 8080:8080 \
+  --entrypoint uvicorn nullc0d30/hunterx:latest \
+  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+```
+
+Configuration is passed with `HUNTERX_*` environment variables (for example
+`HUNTERX_API_PORT` or `HUNTERX_DATABASE_URL`).
+
+### Docker Compose
+
+`docker-compose.yml` ships a `hunterx-api` service (FastAPI) and a `hunterx`
+CLI service backed by the `nullc0d30/hunterx:latest` image:
+
+```bash
 docker compose up -d hunterx-api
 ```
 
-The container runs as a non-root user. See
-[Release Guide](docs/v7-release-guide.md).
+The container runs as a non-root user, exposes `8080`, and keeps persistent
+state under the named volume. See
+[Release Guide](docs/v7-release-guide.md) for build and publishing details.
 
 ---
 
