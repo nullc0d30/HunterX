@@ -104,7 +104,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest --help
+          docker run --rm --entrypoint python ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -c "import hunterx; print(hunterx.__version__)"
 
       - name: Image size report
         if: github.event_name != 'pull_request'
