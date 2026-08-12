@@ -17,7 +17,7 @@ authorized mission.
 - Python 3.11+
 - Linux, macOS or Windows
 - Authorization to test the target you exercise (see
-  [Responsible Use](/responsible-use/))
+  [Responsible Use]({{ '/responsible-use/' | relative_url }}))
 
 ## Install
 
@@ -78,7 +78,7 @@ hunterx report export <report_id> markdown
 
 ## Next steps
 
-- [CLI Reference](/cli/) — every `hunterx` command
-- [Configuration](/configuration/) — `HUNTERX_*` environment overrides
-- [Features](/features/) — platform capabilities
-- [Documentation Hub](/documentation/) — the full v7 guide set
+- [CLI Reference]({{ '/cli/' | relative_url }}) — every `hunterx` command
+- [Configuration]({{ '/configuration/' | relative_url }}) — `HUNTERX_*` environment overrides
+- [Features]({{ '/features/' | relative_url }}) — platform capabilities
+- [Documentation Hub]({{ '/documentation/' | relative_url }}) — the full v7 guide set

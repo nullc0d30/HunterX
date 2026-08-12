@@ -20,7 +20,7 @@ reasons over hypotheses, validates with evidence, engineers and replays
 proofs/PoCs, and produces professional reports.
 
 The canonical integration registry is the
-[v7 toolchain intelligence](/v7-full-toolchain-intelligence/) architecture and
+[v7 toolchain intelligence]({{ '/v7-full-toolchain-intelligence/' | relative_url }}) architecture and
 the machine-readable
 [`full-toolchain-intelligence.json`](https://github.com/nullc0d30/HunterX/blob/main/capabilities/full-toolchain-intelligence.json)
 capability manifest.
@@ -274,9 +274,9 @@ interoperability.
 
 ## Related
 
-- [Vulnerability Proof & PoC](/v7-vulnerability-proof-and-poc/) — how proof
+- [Vulnerability Proof & PoC]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }}) — how proof
   contracts validate hypotheses
-- [Full Toolchain Intelligence](/v7-full-toolchain-intelligence/) — the
+- [Full Toolchain Intelligence]({{ '/v7-full-toolchain-intelligence/' | relative_url }}) — the
   integration architecture
-- [Tool Integration SDK](/v7-tool-integration-sdk/) — the adapter SDK
-- [Features](/features/) — platform capabilities
+- [Tool Integration SDK]({{ '/v7-tool-integration-sdk/' | relative_url }}) — the adapter SDK
+- [Features]({{ '/features/' | relative_url }}) — platform capabilities

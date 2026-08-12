@@ -64,7 +64,7 @@ engineering context, and validate against your own workloads.
 
 ## Related
 
-- [Quality Gates](/v7-quality-gates/)
-- [Final Hardening Audit](/v7-sprint-035-final-hardening-audit/)
-- [Engineering Certification](/v7-sprint-034-final-engineering-certification/)
-- [PoC & Validation](/poc-validation/)
+- [Quality Gates]({{ '/v7-quality-gates/' | relative_url }})
+- [Final Hardening Audit]({{ '/v7-sprint-035-final-hardening-audit/' | relative_url }})
+- [Engineering Certification]({{ '/v7-sprint-034-final-engineering-certification/' | relative_url }})
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})

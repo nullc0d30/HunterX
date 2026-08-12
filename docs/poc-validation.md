@@ -157,8 +157,8 @@ of execution, and reproducibility — not destructive commands.
 
 ## Related
 
-- [Vulnerability Proof & PoC (architecture)](/v7-vulnerability-proof-and-poc/)
-- [Vulnerability Validation & Proof Orchestration](/v7-vulnerability-validation-proof-orchestration/)
-- [Safe Vulnerability Validation](/v7-safe-vulnerability-validation/)
-- [Professional Finding Intelligence & Reporting](/v7-professional-finding-intelligence-reporting/)
-- [Tool Ecosystem](/tool-ecosystem/)
+- [Vulnerability Proof & PoC (architecture)]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }})
+- [Vulnerability Validation & Proof Orchestration]({{ '/v7-vulnerability-validation-proof-orchestration/' | relative_url }})
+- [Safe Vulnerability Validation]({{ '/v7-safe-vulnerability-validation/' | relative_url }})
+- [Professional Finding Intelligence & Reporting]({{ '/v7-professional-finding-intelligence-reporting/' | relative_url }})
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})

@@ -18,12 +18,12 @@ produces report-ready findings.
 
 The comparison pages below describe how HunterX relates to each tool. HunterX
 does not claim to replace these tools — where relevant it **integrates with**
-them (see the [Tool Ecosystem](/tool-ecosystem/) for integration status).
+them (see the [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) for integration status).
 
-- [HunterX vs Nuclei](/comparisons/vs-nuclei/)
-- [HunterX vs OWASP ZAP](/comparisons/vs-zap/)
-- [HunterX vs Burp Suite](/comparisons/vs-burp/)
-- [HunterX vs OpenVAS](/comparisons/vs-openvas/)
+- [HunterX vs Nuclei]({{ '/comparisons/vs-nuclei/' | relative_url }})
+- [HunterX vs OWASP ZAP]({{ '/comparisons/vs-zap/' | relative_url }})
+- [HunterX vs Burp Suite]({{ '/comparisons/vs-burp/' | relative_url }})
+- [HunterX vs OpenVAS]({{ '/comparisons/vs-openvas/' | relative_url }})
 
 ## The core distinction
 
@@ -40,7 +40,7 @@ capability itself.
 
 ## Related
 
-- [Tool Ecosystem](/tool-ecosystem/)
-- [PoC & Validation](/poc-validation/)
-- [AI Penetration Testing](/ai-penetration-testing/)
-- [Reasoning Engine](/reasoning-engine/)
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})
+- [AI Penetration Testing]({{ '/ai-penetration-testing/' | relative_url }})
+- [Reasoning Engine]({{ '/reasoning-engine/' | relative_url }})

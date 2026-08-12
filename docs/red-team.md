@@ -58,19 +58,19 @@ produces professional reports (Markdown, HTML, JSON, SARIF, PDF, package).
 HunterX orchestrates the ecosystem: Amass, Subfinder, Findomain, Nmap, Naabu,
 Masscan, HTTPx, Katana, FFUF, Nuclei, SQLmap, Dalfox, Metasploit (execution
 only), SearchSploit, ExploitDB and more. See the
-[Tool Ecosystem](/tool-ecosystem/) for the full list with integration status.
+[Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) for the full list with integration status.
 
 ## Responsible use
 
 HunterX is authorized security testing and research. Red team operations must
 have written authorization, defined scope, and rules of engagement. The
 platform enforces scope and authorization guards and a safety policy. See
-[Responsible Use](/responsible-use/).
+[Responsible Use]({{ '/responsible-use/' | relative_url }}).
 
 ## Getting started
 
-- [Installation](/installation/)
-- [Quickstart](/quickstart/)
-- [Mission Orchestration](/v7-autonomous-mission-orchestration/)
-- [Adaptive Mission Planning](/v7-adaptive-mission-planning/)
-- [Cloud & SaaS Intelligence](/v7-cloud-saas-intelligence/)
+- [Installation]({{ '/installation/' | relative_url }})
+- [Quickstart]({{ '/quickstart/' | relative_url }})
+- [Mission Orchestration]({{ '/v7-autonomous-mission-orchestration/' | relative_url }})
+- [Adaptive Mission Planning]({{ '/v7-adaptive-mission-planning/' | relative_url }})
+- [Cloud & SaaS Intelligence]({{ '/v7-cloud-saas-intelligence/' | relative_url }})

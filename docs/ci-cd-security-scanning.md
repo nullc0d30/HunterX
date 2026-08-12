@@ -65,14 +65,14 @@ reducing false-positive load on the security team.
 
 ## Getting started
 
-- [Installation](/installation/)
-- [Quickstart](/quickstart/)
-- [Reporting](/v7-professional-finding-intelligence-reporting/)
-- [DevSecOps](/v7-devsecops/)
-- [CI/CD Architecture](/v7-cicd-architecture/)
+- [Installation]({{ '/installation/' | relative_url }})
+- [Quickstart]({{ '/quickstart/' | relative_url }})
+- [Reporting]({{ '/v7-professional-finding-intelligence-reporting/' | relative_url }})
+- [DevSecOps]({{ '/v7-devsecops/' | relative_url }})
+- [CI/CD Architecture]({{ '/v7-cicd-architecture/' | relative_url }})
 
 ## Related
 
-- [AI Penetration Testing](/ai-penetration-testing/)
-- [Bug Bounty](/bug-bounty/)
-- [Red Team](/red-team/)
+- [AI Penetration Testing]({{ '/ai-penetration-testing/' | relative_url }})
+- [Bug Bounty]({{ '/bug-bounty/' | relative_url }})
+- [Red Team]({{ '/red-team/' | relative_url }})

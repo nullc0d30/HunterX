@@ -62,6 +62,6 @@ HunterX integrates ZAP rather than replacing it.
 
 ## Related
 
-- [Tool Ecosystem](/tool-ecosystem/)
-- [Comparisons](/comparisons/)
-- [AI Penetration Testing](/ai-penetration-testing/)
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [Comparisons]({{ '/comparisons/' | relative_url }})
+- [AI Penetration Testing]({{ '/ai-penetration-testing/' | relative_url }})

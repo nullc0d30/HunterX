@@ -60,6 +60,6 @@ managed with `alembic upgrade head` / `alembic downgrade`.
 
 ## See also
 
-- [Quickstart](/quickstart/) — getting started
-- [CLI Reference](/cli/) — `hunterx config` and friends
-- [Persistence (TIDB)](/v7-tidb/) — database design and migrations
+- [Quickstart]({{ '/quickstart/' | relative_url }}) — getting started
+- [CLI Reference]({{ '/cli/' | relative_url }}) — `hunterx config` and friends
+- [Persistence (TIDB)]({{ '/v7-tidb/' | relative_url }}) — database design and migrations

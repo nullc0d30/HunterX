@@ -59,6 +59,6 @@ scanning, but direct execution is not claimed.
 
 ## Related
 
-- [Tool Ecosystem](/tool-ecosystem/)
-- [Comparisons](/comparisons/)
-- [Security Coverage](/)
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
+- [Comparisons]({{ '/comparisons/' | relative_url }})
+- [Security Coverage]({{ '/' | relative_url }})

@@ -1,1 +1,8 @@
+# Netlify-style redirects file (Netlify `_redirects`).
+#
+# NOTE: GitHub Pages does NOT execute this file. On GitHub Pages the mapped
+# behavior is provided natively: `/HunterX/index.html` is served at
+# `/HunterX/` automatically, so the redirect below is equivalent by default.
+# This file is preserved so the project remains Netlify-compatible if it is
+# ever hosted on Netlify.
 /index.html  /  301!

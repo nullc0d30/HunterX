@@ -80,8 +80,8 @@ Impact + PoC.
 
 ## Related
 
-- [PoC & Validation](/poc-validation/) — the proof engine
-- [Tool Ecosystem](/tool-ecosystem/) — 92 integrated security tools
-- [Changelog](/changelog/) — full release history
-- [Release Guide](/v7-release-guide/) — building and releasing v7
-- [Features](/features/) — platform capabilities
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }}) — the proof engine
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) — 92 integrated security tools
+- [Changelog]({{ '/changelog/' | relative_url }}) — full release history
+- [Release Guide]({{ '/v7-release-guide/' | relative_url }}) — building and releasing v7
+- [Features]({{ '/features/' | relative_url }}) — platform capabilities

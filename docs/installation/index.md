@@ -77,7 +77,7 @@ alembic upgrade head
 ```
 
 The database URL defaults to `sqlite:///hunterx.db` and can be overridden with
-`HUNTERX_DATABASE_URL` (see [Configuration](/configuration/)).
+`HUNTERX_DATABASE_URL` (see [Configuration]({{ '/configuration/' | relative_url }})).
 
 ## Uninstall
 
@@ -105,5 +105,5 @@ import package and CLI command are `hunterx` either way, so install with
 
 ## Next steps
 
-- [Quickstart](/quickstart/) — run your first mission
-- [CLI Reference](/cli/) — command reference
+- [Quickstart]({{ '/quickstart/' | relative_url }}) — run your first mission
+- [CLI Reference]({{ '/cli/' | relative_url }}) — command reference

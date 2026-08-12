@@ -6,8 +6,12 @@
 # Generates the final readiness report (architecture health, security health,
 # code quality, coverage, documentation score, dependency health, release
 # readiness, production-readiness score, technical debt) and publishes it as a
-# GitHub Pages artifact. The assessment itself does not block merges; the
+# workflow artifact. The assessment itself does not block merges; the
 # per-gate workflows do.
+#
+# Note: this workflow no longer deploys to the GitHub Pages environment. The
+# documentation site is deployed exclusively by the "Deploy Documentation"
+# workflow (.github/workflows/pages.yml).
 
 name: Readiness Assessment
 
@@ -20,20 +24,15 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: readiness
   cancel-in-progress: true
 
 jobs:
   readiness:
     name: Production Readiness
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,15 +61,3 @@ jobs:
           name: readiness-report
           path: artifacts/readiness.json
           if-no-files-found: error
-
-      - name: Publish readiness report to Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: artifacts/readiness.json
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

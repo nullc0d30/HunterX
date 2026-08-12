@@ -70,14 +70,14 @@ This keeps AI use controlled, testable and replaceable.
 
 ## Getting started
 
-- [Installation](/installation/)
-- [Quickstart](/quickstart/)
-- [Reasoning Engine](/reasoning-engine/)
-- [PoC & Validation](/poc-validation/)
-- [Tool Ecosystem](/tool-ecosystem/)
+- [Installation]({{ '/installation/' | relative_url }})
+- [Quickstart]({{ '/quickstart/' | relative_url }})
+- [Reasoning Engine]({{ '/reasoning-engine/' | relative_url }})
+- [PoC & Validation]({{ '/poc-validation/' | relative_url }})
+- [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }})
 
 ## Responsible use
 
 AI-assisted penetration testing with HunterX is authorized security work only.
 Obtain written authorization before testing any system. See
-[Responsible Use](/responsible-use/).
+[Responsible Use]({{ '/responsible-use/' | relative_url }}).
