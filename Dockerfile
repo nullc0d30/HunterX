@@ -6,7 +6,7 @@
 # Multi-stage build for minimal production image
 
 # ============================================================
-# Stage 1: Build stage — install the package
+# Stage 1: Build stage — install the package into a dedicated venv
 # ============================================================
 FROM python:3.11-slim AS builder
 
@@ -21,9 +21,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /build
 
+# A venv at a fixed, version-independent path means the runtime stage never
+# needs to know the exact Python minor in `site-packages` — it works for 3.11,
+# 3.12, 3.13 and 3.14 alike.
+RUN python -m venv /opt/hunterx-venv
+
 COPY . .
 
-RUN pip install --no-cache-dir --no-compile "."
+RUN /opt/hunterx-venv/bin/pip install --no-cache-dir --no-compile ".[api]"
 
 # ============================================================
 # Stage 2: Runtime stage — minimal final image
@@ -47,16 +52,17 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.description="HunterX ${VERSION} — AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools." \
       org.opencontainers.image.base.name="docker.io/python:3.11-slim"
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
+ENV PATH="/opt/hunterx-venv/bin:${PATH}" \
+    PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
     HUNTERX_LOG_LEVEL=INFO
 
 WORKDIR /app
 
-# Copy installed Python packages and entry point from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
+# Copy the self-contained venv (Python version-independent). Entry points and
+# the full dependency tree are already inside it, so no hard-coded Python
+# minor path is copied.
+COPY --from=builder /opt/hunterx-venv/ /opt/hunterx-venv/
 
 # Create non-root user and directories
 RUN groupadd -r -g 999 hunterx && \
@@ -74,9 +80,12 @@ VOLUME ["/data"]
 
 EXPOSE 8080
 
-# Health check: verify the hunterx v7 runtime is functional
+# Health check: verify the python runtime can import the hunterx v7 package.
+# A plain import probe avoids invoking the CLI, which eagerly builds the
+# platform and writes the database — a second process racing the container
+# entrypoint on the same SQLite file would crash schema creation.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD hunterx version >/dev/null 2>&1 || exit 1
+    CMD python -c "import hunterx" >/dev/null 2>&1 || exit 1
 
 ENTRYPOINT ["hunterx"]
 CMD ["--help"]

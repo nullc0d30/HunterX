@@ -29,7 +29,10 @@ services:
       - HUNTERX_API_PORT=8080
       - HUNTERX_API_AUTH_ENABLED=${HUNTERX_API_AUTH_ENABLED:-false}
       - HUNTERX_API_API_KEY=${HUNTERX_API_KEY:-}
-    command: ["uvicorn", "hunterx.api.app:create_app", "--host", "0.0.0.0", "--port", "8080"]
+    # The image ENTRYPOINT is the `hunterx` CLI; this service runs the API
+    # server directly, so the entrypoint is overridden for this service only.
+    entrypoint: ["uvicorn"]
+    command: ["--factory", "hunterx.api.app:create_app", "--host", "0.0.0.0", "--port", "8080"]
     init: true
     cap_drop:
       - ALL
@@ -42,7 +45,7 @@ services:
           cpus: "2"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "hunterx", "version"]
+      test: ["CMD", "python", "-c", "import urllib.request, sys; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=5); sys.exit(0)"]
       interval: 30s
       timeout: 10s
       retries: 3

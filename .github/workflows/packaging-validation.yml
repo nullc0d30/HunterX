@@ -54,7 +54,7 @@ jobs:
         run: |
           WHL=$(ls dist/*.whl | head -1)
           python -m pip install --force-reinstall "$WHL"
-          hunterx --help
+          hunterx version
           hunterx-arch --help
 
       - name: Upload distributions
@@ -87,4 +87,4 @@ jobs:
           provenance: mode=max
 
       - name: Smoke test
-        run: docker run --rm hunterx:test --help
+        run: docker run --rm --entrypoint python hunterx:test -c "import hunterx; print(hunterx.__version__)"

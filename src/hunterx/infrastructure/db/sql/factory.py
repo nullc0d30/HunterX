@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from hunterx.config.settings import DatabaseSettings
@@ -19,6 +20,7 @@ def _load_sqlalchemy() -> dict[str, Any]:
     if "loaded" not in _mod_cache:
         try:
             from sqlalchemy import create_engine
+            from sqlalchemy.exc import OperationalError
             from sqlalchemy.orm import DeclarativeBase, sessionmaker
         except ImportError as exc:  # pragma: no cover - optional dependency
             raise InfrastructureConnectionError(
@@ -33,6 +35,7 @@ def _load_sqlalchemy() -> dict[str, Any]:
                 "loaded": True,
                 "create_engine": create_engine,
                 "sessionmaker": sessionmaker,
+                "OperationalError": OperationalError,
                 "Base": _Base,
             }
         )
@@ -85,10 +88,42 @@ class SessionFactory:
         """Open a new session."""
         return self._session_factory()
 
-    def create_all(self) -> None:
-        """Create tables for all registered models."""
+    def create_all(self, *, retries: int = 25, retry_delay: float = 0.1) -> None:
+        """Create tables for all registered models.
+
+        Retries a bounded number of times on SQLite ``OperationalError``
+        conditions raised when a concurrent process is racing to create the
+        same schema (``table ... already exists``, stale reflection via
+        ``database schema has changed``, or a held write lock via ``database
+        is locked``). SQLAlchemy's ``create_all`` uses ``checkfirst=True`` by
+        default, so it is idempotent: after the other process finishes, the
+        retried call sees the tables already present and quietly completes.
+
+        The default budget (25 attempts with linear backoff, ~32s worst case)
+        comfortably outlives a cold bootstrap of the full model registry
+        (~15s), so the loser of a concurrent first-run simply waits for the
+        winner instead of crashing.
+        """
         mod = _load_sqlalchemy()
-        mod["Base"].metadata.create_all(self._engine)
+        metadata = mod["Base"].metadata
+        last_error: Exception | None = None
+        for attempt in range(retries):
+            try:
+                metadata.create_all(self._engine)
+                return
+            except mod["OperationalError"] as exc:
+                last_error = exc
+                message = str(getattr(exc, "orig", exc) or exc).lower()
+                transient = (
+                    "already exists" in message
+                    or "locked" in message
+                    or "schema has changed" in message
+                )
+                if not transient:
+                    raise
+                time.sleep(retry_delay * (attempt + 1))
+        assert last_error is not None
+        raise last_error
 
     def dispose(self) -> None:
         """Dispose the engine connection pool."""
