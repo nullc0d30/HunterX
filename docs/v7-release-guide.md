@@ -143,7 +143,7 @@ from eng.release import build_rollback_plan, parse_version
 plan = build_rollback_plan(parse_version("7.1.0"))
 plan.previous_version  # -> "7.1.0" target minus a bump, e.g. "7.0.1"
 plan.image_tag         # -> "nullc0d30/hunterx:7.0.1"
-plan.package_version   # -> "hunterx==7.0.1"
+plan.package_version   # -> "hunterxsec==7.0.1"
 ```
 
 The release workflow fails a tag that cannot produce a rollback plan, so every

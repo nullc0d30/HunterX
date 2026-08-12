@@ -105,5 +105,5 @@ def test_verify_checksums_detects_mismatch(tmp_path: pathlib.Path) -> None:
 def test_rollback_plan() -> None:
     plan = build_rollback_plan(parse_version("7.2.0"))
     assert plan.previous_version == "7.2.1"  # patch-bump fallback
-    assert "hunterx==" in plan.package_version
+    assert "hunterxsec==" in plan.package_version
     assert "nullc0d30/hunterx:" in plan.image_tag

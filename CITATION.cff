@@ -3,7 +3,7 @@
 
 cff-version: 1.2.0
 message: "If you use HunterX in your research, please cite it as below."
-  title: "HunterX: AI-Assisted Offensive Security Framework"
+title: "HunterX: AI-Assisted Offensive Security Framework"
 authors:
   - family-names: "Awad"
     given-names: "Ahmed"
@@ -12,8 +12,8 @@ authors:
     orcid: ""
     email: "ahmed@nullc0d3.com"
     website: "https://github.com/nullc0d30"
-version: 6.0.0
-date-released: 2026-07-30
+version: 7.0.0
+date-released: 2026-08-12
 doi: "10.6084/m9.figshare.33102290"
 url: "https://github.com/nullc0d30/HunterX"
 repository-code: "https://github.com/nullc0d30/HunterX"
@@ -32,12 +32,12 @@ type: "software"
 abstract: "HunterX is an open-source AI-assisted offensive security framework. It combines a Security Skills Framework (41 skills), Reasoning Engine (18 goal types), Multi-Agent Platform (10 agents), AI Provider Abstraction, Knowledge Graph, Threat Modeling, Attack Chain Analysis, and Payload Intelligence into a single extensible platform."
 preferred-citation:
   type: "software"
-title: "HunterX: AI-Assisted Offensive Security Framework"
+  title: "HunterX: AI-Assisted Offensive Security Framework"
   authors:
     - family-names: "Awad"
       given-names: "Ahmed"
       alias: "NullC0d3"
-  version: 6.0.0
-  date-released: 2026-07-30
+  version: 7.0.0
+  date-released: 2026-08-12
   url: "https://github.com/nullc0d30/HunterX"
   doi: "10.6084/m9.figshare.33102290"

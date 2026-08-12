@@ -21,6 +21,10 @@ USER_INSTALL_DIR="${HOME}/.local/share/hunterx"
 VENV_DIR=""
 BIN_DIR=""
 PROJECT_NAME="hunterx"
+# PyPI distribution name. The import package, CLI command and Docker image all
+# stay "hunterx"; "hunterx" itself is an unrelated project on PyPI, so HunterX
+# publishes as "hunterxsec". Used only for the PyPI fallback install below.
+PYPI_PACKAGE="hunterxsec"
 SYMLINKS=("HunterX" "Hunterx" "hunterX" "HUNTERX")
 INSTALL_MODE="system"
 DO_UNINSTALL=false
@@ -310,12 +314,12 @@ install_hunterx() {
     else
         info "Local source not found. Installing from PyPI..."
         if [ -n "$EXTRAS" ]; then
-            pip install --no-cache-dir --upgrade "${PROJECT_NAME}[${EXTRAS}]" >/dev/null 2>&1 || {
+            pip install --no-cache-dir --upgrade "${PYPI_PACKAGE}[${EXTRAS}]" >/dev/null 2>&1 || {
                 error "pip install from PyPI failed."
                 exit 1
             }
         else
-            pip install --no-cache-dir --upgrade "$PROJECT_NAME" >/dev/null 2>&1 || {
+            pip install --no-cache-dir --upgrade "$PYPI_PACKAGE" >/dev/null 2>&1 || {
                 error "pip install from PyPI failed."
                 exit 1
             }

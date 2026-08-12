@@ -42,6 +42,6 @@ This document outlines the steps required to publish a new HunterX v7 release.
 
 ## Post-Release
 
-- [ ] Verify the PyPI install: `pip install "hunterx[api,db]" && hunterx version`
+- [ ] Verify the PyPI install: `pip install "hunterxsec[api,db]" && hunterx version`
 - [ ] Verify the Docker image: `docker run nullc0d30/hunterx:latest version`
 - [ ] Mark release complete in `CHANGELOG.md`

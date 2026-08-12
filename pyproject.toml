@@ -12,7 +12,7 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hunterx"
+name = "hunterxsec"
 version = "7.0.0"
 description = "Enterprise AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools."
 readme = "README.md"
@@ -91,7 +91,7 @@ dev = [
     "types-PyYAML>=6.0",
 ]
 all = [
-    "hunterx[api,db,queue,cache,graph,secrets,ai,telemetry,report,dev]",
+    "hunterxsec[api,db,queue,cache,graph,secrets,ai,telemetry,report,dev]",
 ]
 
 [project.urls]

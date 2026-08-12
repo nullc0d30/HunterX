@@ -91,9 +91,10 @@ bash install.sh --user --uninstall
 
 The GitHub repository [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
 is the canonical home of HunterX, created and maintained by Ahmed Awad (AKA
-NullC0d3). A different, unrelated Python project also uses the name `hunterx`
-on PyPI. Always install HunterX from this repository (or `install.sh`) to get
-the correct, current project.
+NullC0d3). The HunterX v7 distribution is published to PyPI as `hunterxsec`;
+the plain `hunterx` name on PyPI belongs to a different, unrelated project. The
+import package and CLI command are `hunterx` either way, so install with
+`pip install hunterxsec` and run `hunterx`.
 
 ## Troubleshooting
 

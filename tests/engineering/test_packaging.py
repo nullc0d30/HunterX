@@ -27,17 +27,17 @@ class _FakeRunner:
 
 
 def test_is_dist() -> None:
-    assert _is_dist("hunterx-7.0.0-py3-none-any.whl") is True
-    assert _is_dist("hunterx-7.0.0.tar.gz") is True
-    assert _is_dist("hunterx-7.0.0.zip") is False
+    assert _is_dist("hunterxsec-7.0.0-py3-none-any.whl") is True
+    assert _is_dist("hunterxsec-7.0.0.tar.gz") is True
+    assert _is_dist("hunterxsec-7.0.0.zip") is False
     assert _is_dist("README.md") is False
 
 
 def test_validate_packaging_passes(tmp_path: pathlib.Path) -> None:
     dist = tmp_path / "dist"
     dist.mkdir()
-    (dist / "hunterx-7.0.0-py3-none-any.whl").write_bytes(b"w")
-    (dist / "hunterx-7.0.0.tar.gz").write_bytes(b"s")
+    (dist / "hunterxsec-7.0.0-py3-none-any.whl").write_bytes(b"w")
+    (dist / "hunterxsec-7.0.0.tar.gz").write_bytes(b"s")
     runner = _FakeRunner(
         {
             "python": ToolResult(returncode=0, stdout="built"),
@@ -46,13 +46,13 @@ def test_validate_packaging_passes(tmp_path: pathlib.Path) -> None:
     )
     report = validate_packaging(tmp_path, runner=runner)
     assert report.ok is True
-    assert report.artifacts == ["hunterx-7.0.0-py3-none-any.whl", "hunterx-7.0.0.tar.gz"]
+    assert report.artifacts == ["hunterxsec-7.0.0-py3-none-any.whl", "hunterxsec-7.0.0.tar.gz"]
 
 
 def test_validate_packaging_fails_without_sdist(tmp_path: pathlib.Path) -> None:
     dist = tmp_path / "dist"
     dist.mkdir()
-    (dist / "hunterx-7.0.0-py3-none-any.whl").write_bytes(b"w")
+    (dist / "hunterxsec-7.0.0-py3-none-any.whl").write_bytes(b"w")
     runner = _FakeRunner(
         {
             "python": ToolResult(returncode=0, stdout="built"),

@@ -512,6 +512,9 @@ Requirements: **Python 3.11+** on Linux, macOS or Windows.
 # Installer script (Linux/macOS)
 curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
+# From PyPI
+python -m pip install hunterxsec
+
 # Or from source
 git clone https://github.com/nullc0d30/HunterX.git
 cd HunterX
@@ -520,10 +523,10 @@ python -m pip install -e ".[api,db,dev]"
 
 > **Name note.** The GitHub repository
 > [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
-> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). A
-> different, unrelated Python project also uses the name `hunterx` on PyPI.
-> Always install HunterX from this repository (or `install.sh`) to get the
-> correct, current project.
+> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). The
+> HunterX v7 distribution is published to PyPI as `hunterxsec`; the plain
+> `hunterx` name on PyPI belongs to a different, unrelated project. The import
+> package and CLI command are `hunterx` either way.
 
 Verify your install with `hunterx version` (see [Quick Start](#quick-start)).
 
