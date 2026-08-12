@@ -197,7 +197,7 @@ docker run --rm \
 
 ## Docker Security
 
-- The container runs as a **non-root** user (`hunterx`, UID 999) with a read-only application directory; only `/data` is writable.
+- The container runs as the **non-root** `hunterx` user (UID 999) and exposes a single writable volume at `/data` for persistent state.
 - The image is multi-stage, based on `python:3.11-slim`, and publishes OCI labels (source, license, version) for supply-chain inspection.
 - Use **pinned image tags** (`nullc0d30/hunterx:7.0.0`) for reproducible deployments.
 - Protect API credentials: enable `HUNTERX_API_AUTH_ENABLED`, use a strong `HUNTERX_API_KEY`, and do not expose the API port beyond your trusted network.
