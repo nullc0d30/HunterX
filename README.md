@@ -568,6 +568,8 @@ Official images are published on
 `nullc0d30/hunterx` for Linux (amd64 / arm64). Tags follow the version
 (`7`, `7.0`, `7.0.0`) plus `latest` and `stable`.
 
+**1.7K+ Docker image pulls and counting.**
+
 ### Pull from Docker Hub
 
 ```bash
