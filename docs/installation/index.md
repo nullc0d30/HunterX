@@ -36,9 +36,25 @@ python -m pip install -e ".[api,db,dev]"
 
 ## 3. Docker
 
+Official images are published on
+[Docker Hub](https://hub.docker.com/r/nullc0d30/hunterx) as
+`nullc0d30/hunterx` (tags `7`, `7.0`, `7.0.0`, `latest`, `stable`):
+
 ```bash
-docker build -t nullc0d30/hunterx:7.0.0 .
-# or
+docker pull nullc0d30/hunterx:latest
+
+# CLI
+docker run --rm nullc0d30/hunterx:latest version
+
+# REST API (FastAPI) — health check at http://localhost:8080/health
+docker run -d --name hunterx-api -p 8080:8080 \
+  --entrypoint uvicorn nullc0d30/hunterx:latest \
+  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+```
+
+Or use the bundled compose stack:
+
+```bash
 docker compose up -d hunterx-api
 ```
 
