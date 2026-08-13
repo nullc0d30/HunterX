@@ -21,6 +21,11 @@ services:
     ports:
       - "${HUNTERX_API_PORT:-8080}:8080"
     volumes:
+      # Named volume: initialized from the image with hunterx:hunterx (UID 999)
+      # ownership. If you bind-mount a host directory instead (e.g.
+      # ./data:/data), it must be writable by UID 999 or SQLite fails with
+      # "attempt to write a readonly database" — fix with:
+      #   sudo chown -R 999:999 ./data
       - hunterx-data:/data
     environment:
       - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
@@ -73,6 +78,8 @@ services:
     profiles:
       - cli
     volumes:
+      # Same note as hunterx-api: a bind-mounted host dir must be writable by
+      # UID 999 (chown -R 999:999) or the CLI reports a readonly database.
       - hunterx-data:/data
     environment:
       - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
