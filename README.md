@@ -21,6 +21,7 @@ assessment** and **professional reporting** into a single workflow.
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Tests](https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?style=flat-square&label=tests)](https://github.com/nullc0d30/HunterX/actions)
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/r/nullc0d30/hunterx)
+[![PyPI](https://img.shields.io/pypi/v/hunterxsec?style=flat-square&logo=pypi&label=pypi)](https://pypi.org/project/hunterxsec/)
 [![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
 
@@ -357,9 +358,10 @@ HunterX v7 organizes work as **missions**. Start with an authorized target:
 
 ```bash
 # 1. INSTALL — Python 3.11+ on Linux, macOS or Windows
-curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+pip install hunterxsec
 # or from source:  git clone https://github.com/nullc0d30/HunterX.git && cd HunterX
 #                  python -m pip install -e ".[api,db,dev]"
+# or installer:   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
 # 2. HUNT — plan and start a full-spectrum hunt mission
 hunterx hunt full_security_assessment https://example.com
@@ -516,7 +518,7 @@ Requirements: **Python 3.11+** on Linux, macOS or Windows.
 # Installer script (Linux/macOS)
 curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
-# From PyPI
+# From PyPI — https://pypi.org/project/hunterxsec/
 python -m pip install hunterxsec
 
 # Or from source
@@ -528,9 +530,10 @@ python -m pip install -e ".[api,db,dev]"
 > **Name note.** The GitHub repository
 > [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
 > home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). The
-> HunterX v7 distribution is published to PyPI as `hunterxsec`; the plain
-> `hunterx` name on PyPI belongs to a different, unrelated project. The import
-> package and CLI command are `hunterx` either way.
+> HunterX v7 distribution is published to [PyPI](https://pypi.org/project/hunterxsec/)
+> as `hunterxsec`; the plain `hunterx` name on PyPI belongs to a different,
+> unrelated project. The import package and CLI command are `hunterx` either
+> way.
 
 Verify your install with `hunterx version` (see [Quick Start](#quick-start)).
 

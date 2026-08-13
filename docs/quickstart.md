@@ -22,7 +22,10 @@ authorized mission.
 ## Install
 
 ```bash
-# System install (Linux/macOS)
+# PyPI install (any platform)
+python -m pip install hunterxsec
+
+# Or system install (Linux/macOS)
 curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
 # Or install the current package from source
@@ -33,9 +36,12 @@ python -m pip install -e ".[api,db,dev]"
 
 > **Name note.** The GitHub repository
 > [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX) is the canonical
-> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). A
-> different, unrelated Python project also uses the name `hunterx` on PyPI.
-> Always install HunterX from this repository to get the correct project.
+> home of HunterX, created and maintained by Ahmed Awad (AKA NullC0d3). The
+> HunterX v7 distribution is published to
+> [PyPI](https://pypi.org/project/hunterxsec/) as `hunterxsec`; a different,
+> unrelated Python project also uses the name `hunterx` on PyPI. The import
+> package and CLI command are `hunterx` either way, so install with
+> `pip install hunterxsec`.
 
 Verify:
 

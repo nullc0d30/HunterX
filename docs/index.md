@@ -28,6 +28,7 @@ description: >-
     <a href="https://github.com/nullc0d30/HunterX/actions"><img src="https://img.shields.io/github/actions/workflow/status/nullc0d30/HunterX/test.yml?style=flat-square&label=tests" alt="Tests"></a>
     <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="License"></a>
     <a href="https://hub.docker.com/r/nullc0d30/hunterx"><img src="https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker" alt="Docker"></a>
+    <a href="https://pypi.org/project/hunterxsec/"><img src="https://img.shields.io/pypi/v/hunterxsec?style=flat-square&logo=pypi&label=pypi" alt="PyPI"></a>
     <a href="https://owasp.org/www-community/Vulnerability_Scanning_Tools"><img src="https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp" alt="OWASP Community"></a>
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python" alt="Python"></a>
     <a href="https://github.com/nullc0d30/HunterX"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square" alt="Platform"></a>
@@ -420,9 +421,10 @@ description: >-
   <h2>Installation</h2>
   <p>Requirements: Python 3.11+ on Linux, macOS or Windows.</p>
   <p style="font-family:var(--font-mono);font-size:0.9rem;background:var(--bg-code);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 1rem;max-width:640px;margin:0 auto 1.5rem;overflow-x:auto;">
-    curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+    pip install hunterxsec
   </p>
   <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+    <a href="https://pypi.org/project/hunterxsec/" class="primary">Install from PyPI</a>
     <a href="{{ '/installation' | relative_url }}" class="primary">Installation Guide</a>
     <a href="{{ '/quickstart' | relative_url }}" class="primary" style="background:var(--gradient-end);">Quickstart</a>
   </div>
