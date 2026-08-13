@@ -13,7 +13,7 @@ description: >-
 
 <!-- ===== HERO ===== -->
 <div class="lp-hero">
-  <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" class="lp-hero-logo">
+  <img src="{{ '/assets/images/logof.png' | relative_url }}" alt="HunterX official logo" class="lp-hero-logo">
   <h1>HunterX</h1>
   <div class="subtitle">AI-Assisted Vulnerability Discovery, Validation &amp; Proof Engine</div>
   <div class="pipeline"><span>Find it.</span> <span>Verify it.</span> <span>Prove it.</span> <span>Report it.</span></div>
@@ -32,6 +32,15 @@ description: >-
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python" alt="Python"></a>
     <a href="https://github.com/nullc0d30/HunterX"><img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square" alt="Platform"></a>
   </div>
+</div>
+
+<!-- ===== CAPABILITY OVERVIEW ===== -->
+<div class="lp-section" style="padding-top:2.5rem;padding-bottom:1rem;">
+  <div class="lp-section-header">
+    <h2>HunterX v7 Overview</h2>
+    <p>From AI-assisted reasoning and hypothesis generation to validated findings, minimal safe PoCs, reproducible proof and report-ready output.</p>
+  </div>
+  <img src="{{ '/assets/images/des.png' | relative_url }}" alt="HunterX v7 capability overview showing AI-assisted reasoning, vulnerability validation, verified findings, tool integrations, and security workflow." class="lp-capability-image">
 </div>
 
 <!-- ===== WHY HUNTERX? ===== -->

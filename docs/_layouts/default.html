@@ -21,9 +21,9 @@
   <meta property="og:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
   <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}">
-  <meta property="og:image:width" content="918">
-  <meta property="og:image:height" content="918">
+  <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}">
+  <meta property="og:image:width" content="1215">
+  <meta property="og:image:height" content="1295">
   <meta property="og:image:alt" content="HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
   <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:locale" content="en_US">
@@ -44,7 +44,7 @@
   <meta name="twitter:creator" content="@nullc0d30">
   <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
-  <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}">
+  <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}">
   <meta name="twitter:image:alt" content="HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
   {% if page.layout == 'post' %}
   <meta name="twitter:label1" content="Written by">
@@ -132,7 +132,7 @@
     }
     .top-nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; color: var(--text); flex-shrink: 0; }
     .top-nav-logo:hover { text-decoration: none; }
-    .top-nav-logo img { width: 28px; height: 28px; display: block; }
+    .top-nav-logo img { width: 28px; height: auto; display: block; }
     .top-nav-links { display: flex; align-items: center; gap: 0.25rem; margin-left: auto; }
     .top-nav-links a {
       padding: 0.4rem 0.75rem; font-size: 0.85rem; font-weight: 500;
@@ -193,7 +193,7 @@
                   radial-gradient(ellipse at 70% 50%, rgba(21,153,87,0.10) 0%, transparent 50%);
       pointer-events: none;
     }
-    .lp-hero-logo { width: 100px; height: 100px; margin-bottom: 1rem; position: relative; }
+    .lp-hero-logo { width: 100px; height: auto; margin-bottom: 1rem; position: relative; }
     .lp-hero h1 { font-size: 3rem; font-weight: 800; border: 0; margin: 0 0 0.5rem; color: inherit; letter-spacing: -0.02em; }
     .lp-hero .subtitle { font-size: 1.2rem; color: #8b949e; margin-bottom: 0.75rem; font-weight: 500; }
     .lp-hero .pipeline { font-family: var(--font-mono); font-size: 0.9rem; color: #58a6ff; margin-bottom: 1.5rem; letter-spacing: 0.05em; }
@@ -210,6 +210,11 @@
     .lp-hero-actions a.secondary:hover { border-color: rgba(255,255,255,0.4); text-decoration: none; }
     .lp-hero-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; position: relative; }
     .lp-hero-badges img { height: 20px; width: auto; }
+
+    .lp-capability-image {
+      display: block; margin: 0 auto; width: 100%; max-width: 920px;
+      height: auto; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+    }
 
     .lp-section { padding: 4rem 1.5rem; max-width: var(--max-width); margin: 0 auto; width: 100%; }
     .lp-section-header { text-align: center; margin-bottom: 3rem; }
@@ -348,7 +353,7 @@
   <nav class="top-nav" role="navigation" aria-label="Primary navigation">
     <div class="top-nav-inner">
       <a href="{{ '/' | relative_url }}" class="top-nav-logo">
-        <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Logo" width="28" height="28">
+        <img src="{{ '/assets/images/logof.png' | relative_url }}" alt="HunterX Logo" width="28" height="auto">
         <span>HunterX</span>
       </a>
       <div class="top-nav-links">
@@ -367,7 +372,7 @@
   <!-- Docs header (sub pages only) -->
   <header class="docs-header" role="banner">
     <div style="max-width:var(--max-width);margin:0 auto;padding:0 1rem;">
-      <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Logo" width="48" height="48" style="display:block;margin:0 auto 0.5rem;">
+      <img src="{{ '/assets/images/logof.png' | relative_url }}" alt="HunterX Logo" width="48" height="auto" style="display:block;margin:0 auto 0.5rem;">
       <h1>{{ page.title | default: site.title }}</h1>
       {% if page.description %}<p>{{ page.description }}</p>{% endif %}
     </div>
@@ -478,7 +483,7 @@
     </div>
     {% endif %}
     <div style="margin-bottom:0.75rem;">
-      <img src="{{ '/assets/images/logo.png' | relative_url }}" alt="HunterX Official Logo" width="48" height="48" style="opacity:0.6;">
+      <img src="{{ '/assets/images/logof.png' | relative_url }}" alt="HunterX Official Logo" width="48" height="auto" style="opacity:0.6;">
     </div>
     <div class="footer-links">
       <a href="https://github.com/nullc0d30/HunterX">GitHub</a>
