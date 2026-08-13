@@ -21,6 +21,7 @@ urllib3==2.7.0
 dataclasses-json==0.6.7
 dnspython==2.8.0
 defusedxml==0.7.1
+python-dotenv==1.2.2
 sqlalchemy==2.0.51
 alembic==1.19.0
 

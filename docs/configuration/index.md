@@ -15,9 +15,59 @@ HunterX v7 resolves settings in order of increasing precedence:
 2. The bundled `hunterx.yaml` default profile (in the package).
 3. A user profile file (`HUNTERX_CONFIG` or `hunterx.yaml` in the current
    directory).
-4. `HUNTERX_*` environment variables.
+4. `HUNTERX_*` environment variables — including values loaded from a local
+   `.env` file (real environment variables win over the file).
 
 The result is a validated, typed settings object shown by `hunterx config`.
+
+## AI configuration (optional)
+
+HunterX runs fine without any AI provider. When you want AI features, configure
+them **externally** — you never need to edit files under `src/`.
+
+### Quick setup (`.env`)
+
+```bash
+# 1. Copy the template
+cp .env.example .env
+
+# 2. Edit .env
+HUNTERX_AI_PROVIDER=openrouter
+HUNTERX_AI_MODEL=deepseek/deepseek-chat
+HUNTERX_AI_OPENROUTER_KEY=YOUR_KEY
+
+# 3. Run HunterX normally
+hunterx ...
+```
+
+Notes:
+
+- `.env` is local and private. It is ignored by Git and must **never** be
+  committed.
+- The same values can be supplied directly as environment variables by
+  Docker (`docker run --env-file .env ...`), CI, or Kubernetes secrets —
+  HunterX does not care where the value came from.
+- AI configuration is optional: with no provider configured, HunterX uses a
+  safe `NullAIClient` fallback and stays fully functional.
+- API keys are masked everywhere (settings dumps, CLI `config` output,
+  `repr()`, logs); they are never written back to diagnostics.
+
+### Supported environment variables
+
+| Variable | Setting | Purpose |
+|---|---|---|
+| `HUNTERX_AI_PROVIDER` | `ai.provider` | Provider name: `openrouter` (others reserved) |
+| `HUNTERX_AI_MODEL` | `ai.model` | Default model id, e.g. `deepseek/deepseek-chat` |
+| `HUNTERX_AI_OPENROUTER_KEY` | `ai.openrouter_key` | OpenRouter API key |
+| `HUNTERX_AI_OPENAI_KEY` | `ai.openai_key` | OpenAI API key (reserved) |
+| `HUNTERX_AI_ANTHROPIC_KEY` | `ai.anthropic_key` | Anthropic API key (reserved) |
+| `HUNTERX_AI_GEMINI_KEY` | `ai.gemini_key` | Gemini API key (reserved) |
+| `HUNTERX_AI_DEEPSEEK_KEY` | `ai.deepseek_key` | DeepSeek API key (reserved) |
+| `HUNTERX_AI_GROK_KEY` | `ai.grok_key` | Grok API key (reserved) |
+
+If `HUNTERX_AI_PROVIDER` is empty or unset, AI stays disabled. Selecting a
+provider without its API key raises a clear configuration error (the key value
+is never shown).
 
 ## Environment variables
 

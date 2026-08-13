@@ -116,7 +116,7 @@ from hunterx.engines.report import ReportEngine
 from hunterx.engines.risk import DefaultRiskScorer
 from hunterx.engines.target_intelligence.engine import TargetIntelligenceEngine
 from hunterx.engines.workflow import WorkflowEngine
-from hunterx.infrastructure.ai import NullAIClient
+from hunterx.infrastructure.ai import build_ai_client
 from hunterx.infrastructure.cache import MemoryCache, NullCache
 from hunterx.infrastructure.db.graph import InMemoryKnowledgeGraph
 from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory
@@ -418,7 +418,7 @@ def _build_adapters(settings: Settings) -> dict[str, object]:
         "cache": cache,
         "queue": queue,
         "secrets": EnvironmentSecrets(),
-        "ai": NullAIClient(),
+        "ai": build_ai_client(settings.ai),
         "telemetry": MemoryTelemetry(),
         "knowledge_graph": InMemoryKnowledgeGraph(),
     }

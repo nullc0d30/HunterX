@@ -31,6 +31,27 @@ _ENV_PREFIX = "HUNTERX_"
 _DEFAULT_PROFILE = "hunterx.yaml"
 
 
+def load_env_file(env_file: str | Path | None = None) -> None:
+    """Load a local ``.env`` file into the process environment (best-effort).
+
+    Values already present in the real environment win over the file
+    (``override=False``) so secrets injected by Docker, CI or Kubernetes take
+    precedence over a local ``.env``. The call is a no-op when the file is
+    missing or ``python-dotenv`` is not installed, keeping the base install
+    dependency-light.
+
+    Args:
+        env_file: explicit path to a ``.env`` file; when ``None``,
+            ``python-dotenv`` searches the working directory and its parents.
+
+    """
+    try:
+        from dotenv import load_dotenv
+    except ImportError:  # pragma: no cover - optional dependency
+        return
+    load_dotenv(dotenv_path=str(env_file) if env_file is not None else None, override=False)
+
+
 def _default_profile_path() -> Path:
     return Path(__file__).with_name(_DEFAULT_PROFILE)
 
@@ -73,7 +94,14 @@ def _env_override_paths() -> dict[str, list[str]]:
     → ``database.url``). ``HUNTERX_API_KEY`` and ``HUNTERX_API_READ_ONLY_KEY``
     are accepted as aliases for the ``api`` section fields.
     """
-    from hunterx.config.settings import ApiSettings, CacheSettings, DatabaseSettings, QueueSettings, SecuritySettings
+    from hunterx.config.settings import (
+        AISettings,
+        ApiSettings,
+        CacheSettings,
+        DatabaseSettings,
+        QueueSettings,
+        SecuritySettings,
+    )
 
     paths: dict[str, list[str]] = {}
     for name in Settings.model_fields:
@@ -84,6 +112,7 @@ def _env_override_paths() -> dict[str, list[str]]:
         ("QUEUE", QueueSettings),
         ("SECURITY", SecuritySettings),
         ("API", ApiSettings),
+        ("AI", AISettings),
     ):
         for name in model.model_fields:
             paths[f"{_ENV_PREFIX}{section}_{name.upper()}"] = [section.lower(), name]
@@ -108,8 +137,24 @@ def _apply_env(merged: dict[str, object], env: dict[str, str] | None = None) -> 
         node[path[-1]] = source[key]
 
 
-def load_default_settings(*, profile: str | Path | None = None, env: dict[str, str] | None = None) -> Settings:
-    """Build :class:`Settings` from defaults + optional profile + environment."""
+def load_default_settings(
+    *,
+    profile: str | Path | None = None,
+    env: dict[str, str] | None = None,
+    env_file: str | Path | None = None,
+) -> Settings:
+    """Build :class:`Settings` from defaults + optional profile + environment.
+
+    Args:
+        profile: optional user profile file (``hunterx.yaml``).
+        env: optional explicit environment mapping; when omitted, the real
+            process environment is used (after loading a local ``.env`` file).
+        env_file: optional explicit ``.env`` path for :func:`load_env_file`;
+            ignored when ``env`` is provided.
+
+    """
+    if env is None:
+        load_env_file(env_file)
     merged: dict[str, object] = dict(_load_yaml(_default_profile_path()))
     for profile_path in _resolve_profile_files(profile):
         merged.update(_load_yaml(profile_path))
