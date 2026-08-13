@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="logo.png" alt="HunterX Official Logo" width="200" height="auto">
+<img src="docs/assets/images/logof.png" alt="HunterX official logo" width="220" height="auto">
 
 # HunterX
 
@@ -27,6 +27,10 @@ assessment** and **professional reporting** into a single workflow.
 **Less noise. More verified findings.**
 
 </div>
+
+<p align="center">
+  <img src="docs/assets/images/des.png" alt="HunterX v7 capability overview showing AI-assisted reasoning, vulnerability validation, verified findings, tool integrations, and security workflow." width="100%">
+</p>
 
 > **The core message.** HunterX does not stop at finding a *possible*
 > vulnerability. It is built to **investigate the hypothesis, validate the

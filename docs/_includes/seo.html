@@ -23,8 +23,8 @@
   "name": "{{ site.title | escape }}",
   "description": "{{ site.description | escape }}",
   "url": "{{ site_root }}",
-  "logo": "{{ site_root }}/assets/images/logo.png",
-  "image": "{{ site_root }}/assets/images/logo.png",
+  "logo": "{{ site_root }}/assets/images/logof.png",
+  "image": "{{ site_root }}/assets/images/logof.png",
   "sameAs": [
     "https://github.com/nullc0d30",
     "https://hub.docker.com/u/nullc0d30"
@@ -79,7 +79,7 @@
   "publisher": {
     "@id": "{{ site_root }}/#organization"
   },
-  "image": "{{ site_root }}/assets/images/logo.png",
+  "image": "{{ site_root }}/assets/images/logof.png",
   "license": "https://www.apache.org/licenses/LICENSE-2.0",
   "url": "https://github.com/nullc0d30/HunterX",
   "version": "7.0.0",
@@ -186,7 +186,7 @@
     "@type": "WebPage",
     "@id": "{{ page.url | absolute_url }}"
   },
-  "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
+  "image": "{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}",
   "keywords": "{{ page.keywords | default: site.keywords | split: "\n" | join: ", " | strip_newlines | escape }}"
 }
 </script>
@@ -237,7 +237,7 @@
     "@type": "WebPage",
     "@id": "{{ page.url | absolute_url }}"
   },
-  "image": "{{ page.image | default: site.image | default: '/assets/images/logo.png' | absolute_url }}",
+  "image": "{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}",
   "keywords": "{{ page.keywords | default: site.keywords | split: "\n" | join: ", " | strip_newlines | escape }}",
   "articleSection": "Documentation"
 }
