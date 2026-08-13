@@ -376,6 +376,20 @@ description: >-
   </div>
 </div>
 
+<!-- ===== AI CONFIGURATION ===== -->
+<div class="lp-section fade-in">
+  <div class="lp-section-header">
+    <h2>Enable AI in HunterX</h2>
+    <p>AI is optional. Configure HunterX AI providers, API keys, models, environment variables, and Docker usage in minutes.</p>
+  </div>
+  <div class="lp-card-grid">
+    <div class="lp-card"><span class="lp-card-icon">&#129302;</span><h3>Optional by Design</h3><p>HunterX runs without an API key using a safe fallback. Add AI only when you want AI-assisted reasoning.</p></div>
+    <div class="lp-card"><span class="lp-card-icon">&#128273;</span><h3>Private .env</h3><p>Copy <code>.env.example</code> to <code>.env</code>, add your provider, model and key. The file is gitignored and never committed.</p></div>
+    <div class="lp-card"><span class="lp-card-icon">&#128268;</span><h3>Docker Ready</h3><p>Supply keys at runtime with <code>docker run --env-file .env</code> — never bake secrets into an image.</p></div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem;"><a href="{{ '/configuration/ai' | relative_url }}" class="primary">AI Configuration &rarr;</a></p>
+</div>
+
 <!-- ===== COMMUNITY ===== -->
 <div class="lp-section fade-in" style="background:var(--bg-alt);padding-top:4rem;padding-bottom:4rem;max-width:100%;">
   <div style="max-width:var(--max-width);margin:0 auto;padding:0 1.5rem;">

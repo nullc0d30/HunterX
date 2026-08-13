@@ -86,5 +86,6 @@ hunterx report export <report_id> markdown
 
 - [CLI Reference]({{ '/cli/' | relative_url }}) — every `hunterx` command
 - [Configuration]({{ '/configuration/' | relative_url }}) — `HUNTERX_*` environment overrides
+- [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI providers, API keys and models
 - [Features]({{ '/features/' | relative_url }}) — platform capabilities
 - [Documentation Hub]({{ '/documentation/' | relative_url }}) — the full v7 guide set

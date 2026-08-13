@@ -22,52 +22,35 @@ The result is a validated, typed settings object shown by `hunterx config`.
 
 ## AI configuration (optional)
 
-HunterX runs fine without any AI provider. When you want AI features, configure
-them **externally** — you never need to edit files under `src/`.
+AI is optional. With no provider configured, HunterX uses a safe
+`NullAIClient` fallback and stays fully functional; AI-dependent operations
+report that no AI provider is configured when invoked.
 
-### Quick setup (`.env`)
+When you want AI, configure it **externally** — you never need to edit files
+under `src/`. Create a private `.env` from the template and set the provider,
+model and API key:
 
 ```bash
-# 1. Copy the template
 cp .env.example .env
-
-# 2. Edit .env
-HUNTERX_AI_PROVIDER=openrouter
-HUNTERX_AI_MODEL=deepseek/deepseek-chat
-HUNTERX_AI_OPENROUTER_KEY=YOUR_KEY
-
-# 3. Run HunterX normally
-hunterx ...
 ```
 
-Notes:
+```env
+HUNTERX_AI_PROVIDER=openrouter
+HUNTERX_AI_MODEL=deepseek/deepseek-chat
+HUNTERX_AI_OPENROUTER_KEY=YOUR_API_KEY
+```
 
-- `.env` is local and private. It is ignored by Git and must **never** be
-  committed.
-- The same values can be supplied directly as environment variables by
-  Docker (`docker run --env-file .env ...`), CI, or Kubernetes secrets —
-  HunterX does not care where the value came from.
-- AI configuration is optional: with no provider configured, HunterX uses a
-  safe `NullAIClient` fallback and stays fully functional.
-- API keys are masked everywhere (settings dumps, CLI `config` output,
-  `repr()`, logs); they are never written back to diagnostics.
+`.env` is local and private, ignored by Git and must **never** be committed.
+The same values can be supplied directly as environment variables (Docker
+`--env-file`, CI, Kubernetes secrets). API keys are masked everywhere and never
+written back to diagnostics.
 
-### Supported environment variables
+The current live provider adapter is **OpenRouter**; the configuration layer
+also accepts keys for OpenAI, Anthropic, Gemini, DeepSeek and Grok for future
+adapters.
 
-| Variable | Setting | Purpose |
-|---|---|---|
-| `HUNTERX_AI_PROVIDER` | `ai.provider` | Provider name: `openrouter` (others reserved) |
-| `HUNTERX_AI_MODEL` | `ai.model` | Default model id, e.g. `deepseek/deepseek-chat` |
-| `HUNTERX_AI_OPENROUTER_KEY` | `ai.openrouter_key` | OpenRouter API key |
-| `HUNTERX_AI_OPENAI_KEY` | `ai.openai_key` | OpenAI API key (reserved) |
-| `HUNTERX_AI_ANTHROPIC_KEY` | `ai.anthropic_key` | Anthropic API key (reserved) |
-| `HUNTERX_AI_GEMINI_KEY` | `ai.gemini_key` | Gemini API key (reserved) |
-| `HUNTERX_AI_DEEPSEEK_KEY` | `ai.deepseek_key` | DeepSeek API key (reserved) |
-| `HUNTERX_AI_GROK_KEY` | `ai.grok_key` | Grok API key (reserved) |
-
-If `HUNTERX_AI_PROVIDER` is empty or unset, AI stays disabled. Selecting a
-provider without its API key raises a clear configuration error (the key value
-is never shown).
+Full setup, Docker usage and troubleshooting are on the dedicated
+[AI Configuration]({{ '/configuration/ai/' | relative_url }}) page.
 
 ## Environment variables
 
@@ -110,6 +93,8 @@ managed with `alembic upgrade head` / `alembic downgrade`.
 
 ## See also
 
+- [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI
+  with `.env`, Docker and troubleshooting
 - [Quickstart]({{ '/quickstart/' | relative_url }}) — getting started
 - [CLI Reference]({{ '/cli/' | relative_url }}) — `hunterx config` and friends
 - [Persistence (TIDB)]({{ '/v7-tidb/' | relative_url }}) — database design and migrations

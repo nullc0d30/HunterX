@@ -540,6 +540,62 @@ Verify your install with `hunterx version` (see [Quick Start](#quick-start)).
 See [Installation](docs/installation/index.md) for details, including database
 initialization (`alembic upgrade head`) and Docker.
 
+## Enable AI (Optional)
+
+HunterX works without an AI API key. If you configure nothing, HunterX runs
+normally using a safe `NullAIClient` fallback; AI-dependent operations simply
+report that no AI provider is configured when invoked.
+
+To enable AI-assisted reasoning:
+
+1. Copy the template: `cp .env.example .env`
+2. Add your provider
+3. Add your model
+4. Add your API key
+5. Run HunterX
+
+`.env.example` is a template. `.env` is your private, local configuration file
+that holds your real API key. It is already ignored by Git and must **never** be
+committed. Never paste API keys into source files, GitHub issues, pull
+requests, screenshots, logs, or public documentation.
+
+For **OpenRouter** (the currently implemented provider adapter), edit `.env`:
+
+```env
+HUNTERX_AI_PROVIDER=openrouter
+HUNTERX_AI_MODEL=deepseek/deepseek-chat
+HUNTERX_AI_OPENROUTER_KEY=YOUR_API_KEY
+```
+
+- `HUNTERX_AI_PROVIDER` — where the API request is sent (`openrouter`).
+- `HUNTERX_AI_MODEL` — which model HunterX asks the provider to use. The model
+  name is not a key.
+- `HUNTERX_AI_OPENROUTER_KEY` — the secret credential used to authenticate the
+  request. Get one at <https://openrouter.ai/keys>.
+
+HunterX's configuration layer also accepts keys for OpenAI, Anthropic, Gemini,
+DeepSeek and Grok (`HUNTERX_AI_OPENAI_KEY`, `HUNTERX_AI_ANTHROPIC_KEY`,
+`HUNTERX_AI_GEMINI_KEY`, `HUNTERX_AI_DEEPSEEK_KEY`, `HUNTERX_AI_GROK_KEY`) for
+future adapters — **OpenRouter is the live implemented adapter**.
+
+Verify the setup with `hunterx config` (the API key is masked), then run your
+missions normally.
+
+With Docker, supply the same values at runtime — never bake `.env` into the
+image:
+
+```bash
+docker run --rm --env-file .env nullc0d30/hunterx:latest config
+```
+
+> **Security:** Never commit your `.env` file or expose API keys in source
+> code, GitHub issues, pull requests, screenshots, logs, or public
+> documentation. Use environment variables or runtime secret injection in
+> CI/CD and container environments.
+
+Full setup, provider reference, troubleshooting and Docker usage:
+[AI Configuration](docs/configuration/ai.md) · [GitHub Pages](https://nullc0d30.github.io/HunterX/configuration/ai/)
+
 ## CLI Reference
 
 HunterX v7 ships a single `hunterx` command with capability groups:
@@ -941,6 +997,7 @@ DevSecOps / Security Engineering
 - [Documentation Hub](docs/documentation.md)
 - [Quickstart](docs/quickstart.md)
 - [Installation](docs/installation/index.md)
+- [AI Configuration](docs/configuration/ai.md)
 - [Architecture](docs/architecture/README.md)
 - [PoC & Validation](docs/poc-validation.md)
 - [CLI Reference](docs/cli/index.md)
