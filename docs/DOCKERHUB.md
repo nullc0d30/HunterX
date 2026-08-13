@@ -172,7 +172,7 @@ Configuration is resolved in this order (each level overrides the previous):
 | Variable | Default | Description |
 |---|---|---|
 | `HUNTERX_LOG_LEVEL` | `INFO` | Root logging level |
-| `HUNTERX_DATABASE_URL` | `sqlite:///hunterx.db` | SQLAlchemy database URL (e.g. `sqlite:////data/hunterx.db`) |
+| `HUNTERX_DATABASE_URL` | `sqlite:////data/hunterx.db` (image default) | SQLAlchemy database URL; the image defaults to the writable `/data` volume so persistent state is never lost |
 | `HUNTERX_CACHE_BACKEND` | `memory` | Cache backend (`memory`, `redis`, `null`) |
 | `HUNTERX_QUEUE_BACKEND` | `memory` | Queue backend (`memory`, `redis`, `null`) |
 | `HUNTERX_API_HOST` | `127.0.0.1` | API bind host |
@@ -220,7 +220,7 @@ See [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/) and 
 | Problem | Likely cause | Action |
 |---|---|---|
 | `docker run ...` prints usage text | The CLI uses subcommands; no default command was supplied | Use `hunterx help` or a specific command such as `hunterx version` |
-| `permission denied` writing state | The database path is not writable by the `hunterx` user | Mount a volume at `/data` and use `HUNTERX_DATABASE_URL=sqlite:////data/hunterx.db` |
+| `attempt to write a readonly database` / `permission denied` writing state | The database path is not writable by the `hunterx` user (UID 999) | The image defaults to `HUNTERX_DATABASE_URL=sqlite:////data/hunterx.db`. Ensure `/data` is writable by UID 999: use the compose named volume (`hunterx-data`), or for a bind mount run `chown -R 999:999 ./data` on the host dir |
 | API returns `401` | Authentication is enabled and the request has no/incorrect key | Send a valid `X-API-Key` header |
 | Wrong version behavior | Running a legacy `6.x`/`4.x` image or an old `latest` | Pull a v7 tag and run `hunterx version` to confirm |
 | Config looks wrong | Env var name or YAML profile error | Run `docker run --rm nullc0d30/hunterx:latest config` to inspect the resolved configuration |

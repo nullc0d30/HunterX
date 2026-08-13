@@ -52,10 +52,15 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.description="HunterX ${VERSION} — AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools." \
       org.opencontainers.image.base.name="docker.io/python:3.11-slim"
 
+# Persistent state lives on the /data volume (created and owned by the
+# non-root hunterx user below), so the CLI never falls back to a CWD-relative
+# ./hunterx.db which would write to the ephemeral container layer.
 ENV PATH="/opt/hunterx-venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    HUNTERX_LOG_LEVEL=INFO
+    HUNTERX_LOG_LEVEL=INFO \
+    HUNTERX_DATABASE_URL="sqlite:////data/hunterx.db" \
+    HUNTERX_DB_URL="sqlite:////data/hunterx.db"
 
 WORKDIR /app
 
