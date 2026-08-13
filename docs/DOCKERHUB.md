@@ -5,6 +5,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX)](https://github.com/nullc0d30/HunterX/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
 
 **HunterX** is an open-source, AI-assisted vulnerability discovery, validation and proof engine for authorized security testing. It does not stop at candidate detections: it plans and orchestrates missions, reasons over hypotheses, validates findings with evidence, engineers and replays proofs and PoCs, and produces report-ready output.
 
