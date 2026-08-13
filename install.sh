@@ -125,6 +125,21 @@ uninstall_hunterx() {
         fi
     done
 
+    # Remove persistent database env config
+    if [ "$INSTALL_MODE" = "system" ]; then
+        rm -f /etc/profile.d/hunterx.sh /etc/fish/conf.d/hunterx.fish 2>/dev/null || true
+        info "Removed /etc/profile.d/hunterx.sh and fish config."
+    else
+        for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+            if [ -f "$rc" ]; then
+                sed -i "\|export HUNTERX_DATABASE_URL=|d; \|export HUNTERX_DB_URL=|d" "$rc" 2>/dev/null || true
+            fi
+        done
+        if [ -f "$HOME/.config/fish/config.fish" ]; then
+            sed -i "\|set -gx HUNTERX_DATABASE_URL |d; \|set -gx HUNTERX_DB_URL |d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
+        fi
+    fi
+
     # Clean PATH exports from shell configs
     local cleaned=false
     for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
@@ -396,6 +411,74 @@ WRAPEOF
     info "Executable installed at ${main_bin}"
 }
 
+append_once() {
+    local file="$1"
+    local line="$2"
+    if [ -f "$file" ]; then
+        if ! grep -qF -- "$line" "$file" 2>/dev/null; then
+            echo "$line" >> "$file"
+        fi
+    fi
+}
+
+configure_database_env() {
+    step "Configuring persistent database path"
+
+    local data_dir
+    data_dir="$(dirname "$VENV_DIR")/data"
+    mkdir -p "$data_dir"
+
+    # Absolute SQLAlchemy URL: the leading slash of $data_dir yields the
+    # documented sqlite:////abs/path form. Keeps the CLI from falling back to
+    # a CWD-relative ./hunterx.db.
+    local db_url
+    db_url="sqlite:///${data_dir}/hunterx.db"
+
+    # System installs run as root but are normally invoked via sudo; hand the
+    # runtime data directory to the real user so a subsequent non-root
+    # `hunterx` run can write the DB. Otherwise SQLite fails with
+    # "attempt to write a readonly database".
+    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
+        chown -R "$SUDO_USER" "$data_dir" 2>/dev/null || true
+    fi
+
+    export HUNTERX_DATABASE_URL="$db_url"
+    export HUNTERX_DB_URL="$db_url"
+    info "Database URL: ${db_url}"
+
+    if [ "$INSTALL_MODE" = "system" ]; then
+        if [ "$(id -u)" -eq 0 ]; then
+            local profile="/etc/profile.d/hunterx.sh"
+            local fish_conf="/etc/fish/conf.d/hunterx.fish"
+            mkdir -p "$(dirname "$profile")" "$(dirname "$fish_conf")"
+            cat > "$profile" << EOF
+# HunterX persistent state (managed by install.sh)
+export HUNTERX_DATABASE_URL='${db_url}'
+export HUNTERX_DB_URL='${db_url}'
+EOF
+            cat > "$fish_conf" << EOF
+# HunterX persistent state (managed by install.sh)
+set -gx HUNTERX_DATABASE_URL '${db_url}'
+set -gx HUNTERX_DB_URL '${db_url}'
+EOF
+            info "Wrote ${profile} and ${fish_conf}"
+        else
+            warn "Not running as root; skipping /etc/profile.d export."
+            warn "Set HUNTERX_DATABASE_URL=${db_url} manually or rerun as root."
+        fi
+    else
+        append_once "$HOME/.bashrc" "export HUNTERX_DATABASE_URL='${db_url}'"
+        append_once "$HOME/.bashrc" "export HUNTERX_DB_URL='${db_url}'"
+        append_once "$HOME/.zshrc" "export HUNTERX_DATABASE_URL='${db_url}'"
+        append_once "$HOME/.zshrc" "export HUNTERX_DB_URL='${db_url}'"
+        local fish_cfg="$HOME/.config/fish/config.fish"
+        mkdir -p "$(dirname "$fish_cfg")"
+        append_once "$fish_cfg" "set -gx HUNTERX_DATABASE_URL '${db_url}'"
+        append_once "$fish_cfg" "set -gx HUNTERX_DB_URL '${db_url}'"
+        info "Exported HUNTERX_DATABASE_URL in shell config files."
+    fi
+}
+
 add_to_path() {
     step "Verifying PATH"
     local need_warn=false
@@ -521,6 +604,7 @@ main() {
     check_python
     install_hunterx
     install_executable
+    configure_database_env
     initialize_database
     add_to_path
     verify_installation
@@ -535,7 +619,13 @@ main() {
     echo "  Config:       hunterx config"
     echo "  Version:      hunterx version"
     echo "  Platform:     hunterx platform"
+    echo "  Database:     HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:///hunterx.db}"
     echo ""
+    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
+        echo "  Note: persistent data in $(dirname "$VENV_DIR")/data is owned by ${SUDO_USER};"
+        echo "        run hunterx as ${SUDO_USER} (not root) to keep the database writable."
+        echo ""
+    fi
     echo "  Responsible use: HunterX is an authorized cybersecurity testing and"
     echo "  research platform. Obtain authorization before testing any system."
     echo ""
