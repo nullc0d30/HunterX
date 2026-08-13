@@ -28,6 +28,7 @@ active architecture.
 - [CLI Reference]({{ '/cli/' | relative_url }}) — Command-line interface reference
 - [Architecture]({{ '/architecture/' | relative_url }}) — v7 architecture guides
 - [Configuration]({{ '/configuration/' | relative_url }}) — v7 configuration reference
+- [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI providers, API keys and models
 - [Features]({{ '/features/' | relative_url }}) — Platform capabilities and use cases
 
 ## Product
