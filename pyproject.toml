@@ -55,6 +55,7 @@ dependencies = [
     "dataclasses-json>=0.6.0",
     "dnspython>=2.6.0",
     "defusedxml>=0.7.1",
+    "python-dotenv>=1.0.0",
     # SQL persistence (TIDB stores + Alembic migrations) is the default v7
     # persistence layer (SQLite by default), so SQLAlchemy is a base
     # dependency — the base install and Docker image must run the CLI.

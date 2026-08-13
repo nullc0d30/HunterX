@@ -31,4 +31,10 @@ api:
   host: "127.0.0.1"
   port: 8080
 
+# AI configuration is external and optional. Set HUNTERX_AI_* variables (or a
+# local .env file, see .env.example); no API keys are ever stored here.
+ai:
+  provider: ""
+  model: ""
+
 telemetry_enabled: true

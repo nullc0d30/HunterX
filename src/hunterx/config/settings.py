@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 
 
 class DatabaseSettings(BaseModel):
@@ -65,6 +65,52 @@ class ApiSettings(BaseModel):
     read_only_key: str = Field(default="", description="Optional read-only API key.")
 
 
+class AISettings(BaseModel):
+    """AI provider configuration.
+
+    ``provider`` and ``model`` are plain values; API keys are
+    :class:`pydantic.SecretStr` so any repr / dump / log of the settings
+    object masks them automatically. Keys are loaded from the environment
+    (``HUNTERX_AI_OPENAI_KEY``, ``HUNTERX_AI_ANTHROPIC_KEY``,
+    ``HUNTERX_AI_OPENROUTER_KEY``, ``HUNTERX_AI_GEMINI_KEY``,
+    ``HUNTERX_AI_DEEPSEEK_KEY``, ``HUNTERX_AI_GROK_KEY``) or a ``.env`` file
+    and are never hardcoded in source. An empty ``provider`` keeps the safe
+    :class:`~hunterx.infrastructure.ai.NullAIClient` fallback in place.
+    """
+
+    provider: str = Field(default="", description="AI provider name (openai | anthropic | openrouter | gemini | deepseek | grok).")
+    model: str = Field(default="", description="Default model identifier (e.g. deepseek/deepseek-chat).")
+    openai_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="OpenAI API key (masked).")
+    anthropic_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Anthropic API key (masked).")
+    openrouter_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="OpenRouter API key (masked).")
+    gemini_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Gemini API key (masked).")
+    deepseek_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="DeepSeek API key (masked).")
+    grok_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Grok API key (masked).")
+
+    #: Provider name → key field name. Configuration knowledge only; provider
+    #: HTTP behaviour lives in the infrastructure adapters.
+    _PROVIDER_KEY_FIELDS: dict[str, str] = {
+        "openai": "openai_key",
+        "anthropic": "anthropic_key",
+        "openrouter": "openrouter_key",
+        "gemini": "gemini_key",
+        "deepseek": "deepseek_key",
+        "grok": "grok_key",
+    }
+
+    def api_key_for(self, provider: str) -> str:
+        """Return the plaintext API key configured for ``provider`` (``""`` when absent).
+
+        The returned value is only used to build the adapter; it is never
+        serialized back into diagnostics.
+        """
+        field = self._PROVIDER_KEY_FIELDS.get((provider or "").strip().lower())
+        if field is None:
+            return ""
+        value: SecretStr = getattr(self, field)
+        return value.get_secret_value()
+
+
 class Settings(BaseModel):
     """Top-level typed configuration.
 
@@ -80,6 +126,7 @@ class Settings(BaseModel):
     queue: QueueSettings = Field(default_factory=QueueSettings)
     security: SecuritySettings = Field(default_factory=SecuritySettings)
     api: ApiSettings = Field(default_factory=ApiSettings)
+    ai: AISettings = Field(default_factory=AISettings)
     telemetry_enabled: bool = Field(default=True)
 
 

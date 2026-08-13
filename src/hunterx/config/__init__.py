@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from hunterx.config.loader import ConfigurationManager, load_default_settings
 from hunterx.config.settings import (
+    AISettings,
     ApiSettings,
     CacheSettings,
     DatabaseSettings,
@@ -25,6 +26,7 @@ __all__ = [
     "CacheSettings",
     "QueueSettings",
     "ApiSettings",
+    "AISettings",
     "ConfigurationManager",
     "load_default_settings",
 ]

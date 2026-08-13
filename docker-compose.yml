@@ -29,6 +29,17 @@ services:
       - HUNTERX_API_PORT=8080
       - HUNTERX_API_AUTH_ENABLED=${HUNTERX_API_AUTH_ENABLED:-false}
       - HUNTERX_API_API_KEY=${HUNTERX_API_KEY:-}
+      # AI provider configuration is passed through from the compose project
+      # .env file (docker compose reads .env for ${VAR} substitution); never
+      # hardcode keys here.
+      - HUNTERX_AI_PROVIDER=${HUNTERX_AI_PROVIDER:-}
+      - HUNTERX_AI_MODEL=${HUNTERX_AI_MODEL:-}
+      - HUNTERX_AI_OPENROUTER_KEY=${HUNTERX_AI_OPENROUTER_KEY:-}
+      - HUNTERX_AI_OPENAI_KEY=${HUNTERX_AI_OPENAI_KEY:-}
+      - HUNTERX_AI_ANTHROPIC_KEY=${HUNTERX_AI_ANTHROPIC_KEY:-}
+      - HUNTERX_AI_GEMINI_KEY=${HUNTERX_AI_GEMINI_KEY:-}
+      - HUNTERX_AI_DEEPSEEK_KEY=${HUNTERX_AI_DEEPSEEK_KEY:-}
+      - HUNTERX_AI_GROK_KEY=${HUNTERX_AI_GROK_KEY:-}
     # The image ENTRYPOINT is the `hunterx` CLI; this service runs the API
     # server directly, so the entrypoint is overridden for this service only.
     entrypoint: ["uvicorn"]
@@ -66,6 +77,16 @@ services:
     environment:
       - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
       - HUNTERX_LOG_LEVEL=${HUNTERX_LOG_LEVEL:-INFO}
+      # AI provider configuration is passed through from the compose project
+      # .env file; never hardcode keys here.
+      - HUNTERX_AI_PROVIDER=${HUNTERX_AI_PROVIDER:-}
+      - HUNTERX_AI_MODEL=${HUNTERX_AI_MODEL:-}
+      - HUNTERX_AI_OPENROUTER_KEY=${HUNTERX_AI_OPENROUTER_KEY:-}
+      - HUNTERX_AI_OPENAI_KEY=${HUNTERX_AI_OPENAI_KEY:-}
+      - HUNTERX_AI_ANTHROPIC_KEY=${HUNTERX_AI_ANTHROPIC_KEY:-}
+      - HUNTERX_AI_GEMINI_KEY=${HUNTERX_AI_GEMINI_KEY:-}
+      - HUNTERX_AI_DEEPSEEK_KEY=${HUNTERX_AI_DEEPSEEK_KEY:-}
+      - HUNTERX_AI_GROK_KEY=${HUNTERX_AI_GROK_KEY:-}
     init: true
     cap_drop:
       - ALL
