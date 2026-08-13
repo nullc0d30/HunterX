@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Installation — HunterX v7
-keywords: HunterX Installation, Setup, Requirements
+keywords: HunterX Installation, Setup, Requirements, PyPI, pip install hunterxsec
 description: >-
-  Install HunterX v7 on Linux, macOS or Windows, from the installer script,
-  source, or Docker.
+  Install HunterX v7 on Linux, macOS or Windows, from PyPI, the installer
+  script, source, or Docker.
 ---
 
 # Installation
@@ -26,7 +26,21 @@ curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | 
 
 Re-running the installer is safe (idempotent).
 
-## 2. Source
+## 2. PyPI
+
+Install from [PyPI](https://pypi.org/project/hunterxsec/) with pip:
+
+```bash
+python -m pip install hunterxsec
+```
+
+Optional extras (for example the REST API):
+
+```bash
+python -m pip install "hunterxsec[api,db]"
+```
+
+## 3. Source
 
 ```bash
 git clone https://github.com/nullc0d30/HunterX.git
@@ -34,7 +48,7 @@ cd HunterX
 python -m pip install -e ".[api,db,dev]"
 ```
 
-## 3. Docker
+## 4. Docker
 
 Official images are published on
 [Docker Hub](https://hub.docker.com/r/nullc0d30/hunterx) as
@@ -91,9 +105,10 @@ bash install.sh --user --uninstall
 
 The GitHub repository [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
 is the canonical home of HunterX, created and maintained by Ahmed Awad (AKA
-NullC0d3). The HunterX v7 distribution is published to PyPI as `hunterxsec`;
-the plain `hunterx` name on PyPI belongs to a different, unrelated project. The
-import package and CLI command are `hunterx` either way, so install with
+NullC0d3). The HunterX v7 distribution is published to
+[PyPI](https://pypi.org/project/hunterxsec/) as `hunterxsec`; the plain `hunterx`
+name on PyPI belongs to a different, unrelated project. The import package and
+CLI command are `hunterx` either way, so install with
 `pip install hunterxsec` and run `hunterx`.
 
 ## Troubleshooting
