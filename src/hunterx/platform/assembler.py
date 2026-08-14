@@ -32,6 +32,7 @@ from hunterx.application.findings import FindingService
 from hunterx.application.javascript import JavaScriptQueryService, JavaScriptService
 from hunterx.application.livehost import LiveHostService
 from hunterx.application.mission_dashboard import MissionDashboardService
+from hunterx.application.mission_execution import MissionExecutionService
 from hunterx.application.mission_orchestration import (
     MissionOrchestrationQueryService,
     MissionOrchestrationService,
@@ -177,6 +178,9 @@ from hunterx.tools.mastery.api import ToolMasteryAPI
 from hunterx.tools.parameter import register_parameter_adapters, register_parameter_tools
 from hunterx.tools.proof_replay import register_proof_replay_adapters
 from hunterx.tools.proxy import register_proxy_adapters
+from hunterx.tools.readiness.manifest import CAPABILITY_PROVIDERS
+from hunterx.tools.readiness.platform import PlatformDetector
+from hunterx.tools.readiness.service import ToolReadinessService
 from hunterx.tools.recon import register_recon_adapters, register_recon_tools
 from hunterx.tools.registry import ToolRegistry
 from hunterx.tools.safe_validation import (
@@ -216,37 +220,9 @@ _MEMORY_REPOSITORIES: dict[str, type[object]] = {    "missions": InMemoryMission
 
 #: Deterministic tool fallback families per capability (used when the Sprint
 #: 025 selector yields nothing, keeping the planner functional without a tool
-#: catalog).
-_TOOL_DEFAULT_CANDIDATES: dict[str, tuple[str, ...]] = {
-    "subdomain_enumeration": ("subfinder", "amass", "assetfinder"),
-    "dns_enumeration": ("dnsx", "dig"),
-    "port_discovery": ("nmap", "rustscan", "masscan"),
-    "service_detection": ("nmap", "httpx"),
-    "technology_fingerprint": ("whatweb", "wappalyzer"),
-    "certificate_enumeration": ("certspotter", "crt.sh"),
-    "endpoint_enumeration": ("httpx", "katana", "gospider"),
-    "content_discovery": ("ffuf", "gobuster", "feroxbuster"),
-    "parameter_discovery": ("arjun", "x8"),
-    "api_mapping": ("katana", "postman"),
-    "authentication_analysis": ("httpx", "nuclei"),
-    "authorization_analysis": ("httpx", "nuclei"),
-    "vulnerability_scanning": ("nuclei", "nikto"),
-    "sql_injection": ("sqlmap", "ffuf"),
-    "xss": ("dalfox", "xsscope"),
-    "ssrf": ("ffuf", "nuclei"),
-    "ssti": ("tplmap", "nuclei"),
-    "xxe": ("xxe", "nuclei"),
-    "lfi": ("ffuf", "nuclei"),
-    "rce": ("nuclei", "metasploit"),
-    "idor": ("ffuf", "nuclei"),
-    "api_security": ("nuclei", "kiterunner"),
-    "graphql_security": ("inql", "nuclei"),
-    "secret_detection": ("trufflehog", "gitleaks"),
-    "dependency_check": ("osv-scanner", "trivy"),
-    "cloud_ownership_mapping": ("cloudfox", "prowler"),
-    "proof_validation": ("proof-replay", "safe-validation"),
-    "replay": ("proof-replay",),
-}
+#: catalog). The single source of truth is the Tool Readiness manifest — the
+#: planner never hardcodes tool facts.
+_TOOL_DEFAULT_CANDIDATES: dict[str, tuple[str, ...]] = CAPABILITY_PROVIDERS
 
 
 def _build_repositories(settings: Settings, *, force_sql: bool = False) -> dict[str, object]:
@@ -539,7 +515,15 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
     register_vulnerability_scanner_tools(tip)
     register_secrets_tools(tip)
     mastery = ToolMasteryAPI(tip=tip)
+    from hunterx.tools.readiness.knowledge import register_command_knowledge
+
+    register_command_knowledge(tip)
     execution_engine = ExecutionEngine(intelligence=tip.registry)
+    tool_readiness = ToolReadinessService(
+        tip=tip,
+        engine=execution_engine,
+        platform=PlatformDetector().detect(),
+    )
     register_recon_adapters(execution_engine)
     register_dns_adapters(execution_engine)
     register_live_adapters(execution_engine)
@@ -862,6 +846,13 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         service=mission_orchestration_service,
         query=mission_orchestration_query_service,
     )
+    mission_execution_service = MissionExecutionService(
+        orchestration=mission_orchestration_service,
+        planning=adaptive_mission_engine,
+        execution_engine=execution_engine,
+        event_bus=adapters["event_bus"],  # type: ignore[arg-type]
+        readiness=tool_readiness,
+    )
 
     # -- observability -------------------------------------------------------
     observability = _build_observability(settings, adapters["event_bus"])  # type: ignore[arg-type]
@@ -949,6 +940,8 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
     container.register_instance(MissionOrchestrationService, mission_orchestration_service)
     container.register_instance(MissionOrchestrationQueryService, mission_orchestration_query_service)
     container.register_instance(MissionDashboardService, mission_dashboard_service)
+    container.register_instance(MissionExecutionService, mission_execution_service)
+    container.register_instance(ToolReadinessService, tool_readiness)
 
     return Platform(
         settings=settings,
@@ -1004,6 +997,8 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         mission_orchestration_service=mission_orchestration_service,
         mission_orchestration_query_service=mission_orchestration_query_service,
         mission_dashboard_service=mission_dashboard_service,
+        mission_execution_service=mission_execution_service,
+        tool_readiness_service=tool_readiness,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
         cache=adapters["cache"],  # type: ignore[arg-type]
         queue=adapters["queue"],  # type: ignore[arg-type]

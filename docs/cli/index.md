@@ -85,11 +85,25 @@ linter for developers). Commands are grouped by capability.
 | `hunterx tools inspect-result / parse / normalize` | Output processing |
 | `hunterx tools chain / chain-execute / recommend` | Chaining |
 
+## Tool readiness & provisioning
+
+| Command | Description |
+|---|---|
+| `hunterx install [--profile <name>]` | Establish the base HunterX environment (detect + verify tools) |
+| `hunterx tools check [--json]` | Show per-tool readiness and capability coverage |
+| `hunterx tools install [--profile <name>] [tool_id ...]` | Provision missing tools via trusted static methods |
+| `hunterx tools audit [--json]` | Show tool integration maturity (knowledge + runtime) |
+
+Install profiles: `minimal`, `recon`, `web`, `network`, `vulnerability`, `full`.
+
 ## Examples
 
 ```bash
 hunterx version
 hunterx platform
+hunterx install
+hunterx tools check
+hunterx tools install --profile full
 hunterx tools list
 hunterx hunt full_security_assessment https://example.com
 hunterx finding list <mission_id>

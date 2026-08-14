@@ -3,14 +3,39 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
-# Production Linux Installer
+# Environment Bootstrapper
 #
-# Supports: Ubuntu, Debian, Fedora, RHEL, Arch, Alpine, openSUSE
+# The installer is an environment bootstrap, not just `pip install`:
+#
+#     Detect environment
+#         ↓
+#     Install HunterX Python package
+#         ↓
+#     Invoke the canonical Tool Readiness layer (hunterx install / tools install)
+#         ↓
+#     Discover installed tools
+#         ↓
+#     Validate existing executables / identify missing / broken
+#         ↓
+#     Provision missing tools (trusted static methods only)
+#         ↓
+#     Configure PATH (current process + future shells, idempotent)
+#         ↓
+#     Re-discover / verify readiness
+#         ↓
+#     Report final readiness (COMPLETE / DEGRADED / INCOMPLETE)
+#
+# The canonical tool manifest lives in the Python package
+# (hunterx.tools.readiness.manifest). This script NEVER duplicates it: external
+# tool discovery, validation, provisioning and verification are delegated to the
+# Tool Readiness Service through the CLI. `install.sh` only handles environment
+# detection and PATH management (the shell-only concerns).
 #
 # Usage:
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --all
+#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --profile full
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --uninstall
 #   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user --uninstall
 
@@ -31,7 +56,16 @@ DO_UNINSTALL=false
 # Optional dependency set installed alongside the core. Default is the full
 # v7 platform (REST API + database); --core installs only the base package.
 EXTRAS="api,db"
+# Tool-readiness installation profile provisioned after the package install.
+# Defaults to the full external toolchain; --core uses the minimal profile.
+TOOL_PROFILE="full"
 REQUIRED_DIRS=("data" "reports" "config")
+
+#: Directories (other than the HunterX bin dir) that provisioned tools land in.
+TOOL_PATH_DIRS=(
+    "${HOME}/.local/bin"
+    "${HOME}/.cargo/bin"
+)
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -55,6 +89,15 @@ trap cleanup EXIT
 
 have_cmd() { command -v "$1" &>/dev/null; }
 
+# shellcheck disable=SC2120
+path_contains() {
+    local dir="$1"
+    case ":${PATH:-}:" in
+        *":${dir}:"*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -68,19 +111,29 @@ parse_args() {
                 ;;
             --core)
                 EXTRAS=""
+                TOOL_PROFILE="minimal"
                 shift
                 ;;
             --all)
                 EXTRAS="all"
                 shift
                 ;;
+            --profile)
+                if [[ $# -lt 2 ]]; then
+                    error "--profile requires an argument (minimal|recon|web|network|vulnerability|full)"
+                    exit 1
+                fi
+                TOOL_PROFILE="$2"
+                shift 2
+                ;;
             --help|-h)
-                echo "Usage: install.sh [--user] [--core|--all] [--uninstall]"
+                echo "Usage: install.sh [--user] [--core|--all] [--profile <name>] [--uninstall]"
                 echo ""
-                echo "  --user       Install to user home directory (no root/sudo required)"
-                echo "  --core       Install only the core package (no REST API / database extras)"
-                echo "  --all        Install every optional extra (api, db, report, ai, ...)"
-                echo "  --uninstall  Remove HunterX installation"
+                echo "  --user            Install to user home directory (no root/sudo required)"
+                echo "  --core            Install only the core package (minimal tool profile)"
+                echo "  --all             Install every optional extra (api, db, report, ai, ...)"
+                echo "  --profile <name>  Tool readiness profile to provision (minimal|recon|web|network|vulnerability|full)"
+                echo "  --uninstall       Remove HunterX installation"
                 exit 0
                 ;;
             *)
@@ -144,12 +197,12 @@ uninstall_hunterx() {
     local cleaned=false
     for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
         if [ -f "$rc" ]; then
-            sed -i "\|export PATH=\$PATH:${bins[0]%/*}|d" "$rc" 2>/dev/null || true
+            sed -i "\|export PATH=\$PATH:${BIN_DIR%/*}|d" "$rc" 2>/dev/null || true
             cleaned=true
         fi
     done
     if [ -f "$HOME/.config/fish/config.fish" ]; then
-        sed -i "\|set -gx PATH \$PATH ${bins[0]%/*}|d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
+        sed -i "\|set -gx PATH \$PATH ${BIN_DIR%/*}|d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
         cleaned=true
     fi
 
@@ -479,40 +532,253 @@ EOF
     fi
 }
 
+# ---------------------------------------------------------------------------
+# Environment detection (shell-only concerns)
+# ---------------------------------------------------------------------------
+
+detect_environment() {
+    step "Detecting environment"
+
+    local os_name arch
+    os_name="$(uname -s 2>/dev/null || echo 'unknown')"
+    arch="$(uname -m 2>/dev/null || echo 'unknown')"
+    info "OS: ${os_name} | Architecture: ${arch}"
+
+    # Shell
+    if [ -n "${BASH_VERSION:-}" ]; then
+        DETECTED_SHELL="bash"
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        DETECTED_SHELL="zsh"
+    else
+        DETECTED_SHELL="posix"
+    fi
+    info "Shell: ${DETECTED_SHELL}"
+
+    # Package managers & runtimes (only report what actually exists)
+    local present=""
+    for cmd in python3 python pip pipx go cargo npm brew apt-get pacman dnf choco jq; do
+        if have_cmd "$cmd"; then
+            present="${present}${present:+, }${cmd}"
+        fi
+    done
+    if [ -n "$present" ]; then
+        info "Available tools/package managers: ${present}"
+    else
+        warn "No known package managers or language runtimes detected."
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# PATH management (idempotent; current process + future shells)
+# ---------------------------------------------------------------------------
+
+collect_tool_paths() {
+    # HunterX user executable directory + the runtimes provisioned tools land in.
+    TOOL_PATH_DIRS=(
+        "${BIN_DIR:-${HOME}/.local/bin}"
+        "${HOME}/.local/bin"
+        "${HOME}/.cargo/bin"
+    )
+    if have_cmd go; then
+        local gobin gopath
+        gobin="$(go env GOBIN 2>/dev/null || true)"
+        gopath="$(go env GOPATH 2>/dev/null || true)"
+        if [ -n "$gobin" ] && [ "$gobin" != "" ]; then
+            TOOL_PATH_DIRS+=("$gobin")
+        fi
+        if [ -n "$gopath" ]; then
+            TOOL_PATH_DIRS+=("${gopath}/bin")
+        fi
+    fi
+    # Python user script directory (Windows/MSYS style when APPDATA is set).
+    if [ -n "${APPDATA:-}" ]; then
+        for d in "${APPDATA}"/Python/Python*/Scripts; do
+            [ -d "$d" ] && TOOL_PATH_DIRS+=("$d")
+        done
+    fi
+    # Deduplicate
+    local seen=""
+    local filtered=()
+    for d in "${TOOL_PATH_DIRS[@]}"; do
+        case ":$seen:" in
+            *":$d:"*) ;;
+            *) filtered+=("$d"); seen="$seen:$d" ;;
+        esac
+    done
+    TOOL_PATH_DIRS=("${filtered[@]}")
+}
+
+ensure_path_for_current_process() {
+    local added=()
+    for d in "${TOOL_PATH_DIRS[@]}"; do
+        [ -d "$d" ] || continue
+        if ! path_contains "$d"; then
+            export PATH="$d:${PATH}"
+            added+=("$d")
+        fi
+    done
+    if [ "${#added[@]}" -gt 0 ]; then
+        info "Exported into current PATH: ${added[*]}"
+    fi
+}
+
+persist_path_for_shells() {
+    local line
+    for d in "${TOOL_PATH_DIRS[@]}"; do
+        [ -d "$d" ] || continue
+        if path_contains "$d"; then
+            continue
+        fi
+        case "$DETECTED_SHELL" in
+            bash)
+                line="export PATH=\"\$PATH:${d}\""
+                append_once "$HOME/.bashrc" "$line"
+                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
+                ;;
+            zsh)
+                line="export PATH=\"\$PATH:${d}\""
+                append_once "$HOME/.zshrc" "$line"
+                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
+                ;;
+            *)
+                line="export PATH=\"\$PATH:${d}\""
+                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
+                ;;
+        esac
+    done
+    info "PATH configuration persisted to shell config files (idempotent)."
+}
+
+# ---------------------------------------------------------------------------
+# Tool readiness bootstrap (delegates to the canonical Python readiness layer)
+# ---------------------------------------------------------------------------
+
+run_hunterx() {
+    # Prefer the just-installed binary; fall back to PATH.
+    local hx="${BIN_DIR}/${PROJECT_NAME}"
+    if [ -x "$hx" ]; then
+        "$hx" "$@"
+    else
+        "${PROJECT_NAME}" "$@"
+    fi
+}
+
+bootstrap_toolchain() {
+    step "Bootstrap: establishing the base HunterX environment"
+    if ! run_hunterx install --profile minimal; then
+        error "hunterx install (base environment) failed."
+        return 1
+    fi
+
+    if [ "$TOOL_PROFILE" != "minimal" ]; then
+        step "Bootstrap: provisioning tool profile '${TOOL_PROFILE}'"
+        if ! run_hunterx tools install --profile "$TOOL_PROFILE"; then
+            warn "hunterx tools install --profile ${TOOL_PROFILE} reported failures."
+        fi
+    fi
+
+    # Re-export PATH so the current process sees freshly provisioned binaries,
+    # then re-verify immediately (install → PATH → verify in the same run).
+    collect_tool_paths
+    ensure_path_for_current_process
+    return 0
+}
+
+final_readiness_report() {
+    step "Final readiness verification (hunterx tools check)"
+
+    local json_file="${TMPDIR:-/tmp}/hunterx_readiness.json"
+    if ! run_hunterx tools check --json > "$json_file" 2>/dev/null; then
+        warn "hunterx tools check failed; showing the text report instead."
+        run_hunterx tools check || true
+        return 1
+    fi
+
+    local py_interp="${VENV_DIR}/bin/python"
+    [ -x "$py_interp" ] || py_interp="$PYTHON"
+
+    "$py_interp" - "$TOOL_PROFILE" "$json_file" <<'PYEOF'
+import json
+import sys
+
+profile, json_file = sys.argv[1], sys.argv[2]
+with open(json_file, encoding="utf-8") as handle:
+    data = json.load(handle)
+
+summary = data.get("summary", {})
+capabilities = data.get("capabilities", [])
+platform = data.get("platform", {})
+
+available = summary.get("available", 0)
+missing = summary.get("missing", 0)
+broken = summary.get("broken", 0)
+outdated = summary.get("outdated", 0)
+unsupported = summary.get("unsupported", 0)
+
+print()
+print("HunterX installation complete.")
+print()
+print("Platform:", f"{platform.get('os')} / {platform.get('distro') or platform.get('package_manager')}")
+print("Tool readiness:")
+print(f"    AVAILABLE:   {available}")
+print(f"    MISSING:     {missing}")
+print(f"    BROKEN:      {broken}")
+print(f"    OUTDATED:    {outdated}")
+print(f"    UNSUPPORTED: {unsupported}")
+print()
+print("Capability coverage:")
+for cap in capabilities:
+    print(f"    {cap['capability']:<28} {cap['status'].upper()}")
+print()
+
+if profile == "minimal":
+    # The minimal profile intentionally provisions no external tools; the base
+    # environment is complete when its in-process capabilities are available.
+    base_missing = [
+        c for c in capabilities
+        if c.get("capability") in ("proof_validation", "replay") and c.get("status") != "ready"
+    ]
+    if base_missing:
+        print("INSTALLATION INCOMPLETE")
+        for c in base_missing:
+            print(f"    - {c['capability']}: providers missing ({', '.join(c.get('missing', ()))})")
+        sys.exit(1)
+    print("INSTALLATION COMPLETE")
+    sys.exit(0)
+
+required_missing = [c for c in capabilities if c.get("level") == "required" and c.get("status") != "ready"]
+optional_missing = [c for c in capabilities if c.get("level") != "required" and c.get("status") != "ready"]
+
+if required_missing:
+    print("INSTALLATION INCOMPLETE")
+    print("Mandatory capabilities could not be established:")
+    for c in required_missing:
+        print(f"    - {c['capability']}: providers missing ({', '.join(c.get('missing', ()))})")
+    sys.exit(1)
+elif optional_missing:
+    print("INSTALLATION COMPLETE — DEGRADED")
+    print("Optional capabilities missing (mission runs with reduced coverage):")
+    for c in optional_missing:
+        print(f"    - {c['capability']}")
+    sys.exit(0)
+else:
+    print("INSTALLATION COMPLETE")
+    sys.exit(0)
+PYEOF
+}
+
+# ---------------------------------------------------------------------------
+
 add_to_path() {
     step "Verifying PATH"
-    local need_warn=false
+    collect_tool_paths
+    ensure_path_for_current_process
+    persist_path_for_shells
 
-    if ! echo "$PATH" | tr ':' '\n' | grep -qx "$BIN_DIR" >/dev/null 2>&1; then
-        warn "${BIN_DIR} is not in PATH."
-        if [ -f "$HOME/.bashrc" ] && [ "$BIN_DIR" != "/usr/local/bin" ]; then
-            if ! grep -q "export PATH=\$PATH:${BIN_DIR}" "$HOME/.bashrc" 2>/dev/null; then
-                echo "export PATH=\$PATH:${BIN_DIR}" >> "$HOME/.bashrc"
-                info "Added to ~/.bashrc. Run: source ~/.bashrc"
-            fi
-        fi
-        if [ -f "$HOME/.zshrc" ] && [ "$BIN_DIR" != "/usr/local/bin" ]; then
-            if ! grep -q "export PATH=\$PATH:${BIN_DIR}" "$HOME/.zshrc" 2>/dev/null; then
-                echo "export PATH=\$PATH:${BIN_DIR}" >> "$HOME/.zshrc"
-                info "Added to ~/.zshrc. Run: source ~/.zshrc"
-            fi
-        fi
-        if [ -f "$HOME/.config/fish/config.fish" ] && [ "$BIN_DIR" != "/usr/local/bin" ]; then
-            if ! grep -q "set -gx PATH \$PATH ${BIN_DIR}" "$HOME/.config/fish/config.fish" 2>/dev/null; then
-                echo "set -gx PATH \$PATH ${BIN_DIR}" >> "$HOME/.config/fish/config.fish"
-                info "Added to fish config. Run: source ~/.config/fish/config.fish"
-            fi
-        fi
-        need_warn=true
+    if ! path_contains "$BIN_DIR"; then
+        export PATH="${BIN_DIR}:${PATH}"
     fi
-
-    export PATH="${BIN_DIR}:${PATH}"
-
-    if $need_warn; then
-        warn "Log out and back in, or run: export PATH=\$PATH:${BIN_DIR}"
-    else
-        info "PATH OK"
-    fi
+    info "PATH OK"
 }
 
 verify_installation() {
@@ -520,21 +786,25 @@ verify_installation() {
     local errors=0
 
     echo ""
-    if have_cmd hunterx; then
-        info "1/5: hunterx version"
-        hunterx version || { error "FAILED"; errors=$((errors+1)); }
-        info "2/5: hunterx help"
-        hunterx help >/dev/null 2>&1 && echo "  (help rendered OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "3/5: hunterx config"
-        hunterx config >/dev/null 2>&1 && echo "  (config resolved OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "4/5: hunterx platform"
-        hunterx platform >/dev/null 2>&1 && echo "  (platform composition OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "5/5: hunterx tools list"
-        hunterx tools list >/dev/null 2>&1 && echo "  (toolchain catalog OK)" || {
+    if have_cmd hunterx || [ -x "${BIN_DIR}/${PROJECT_NAME}" ]; then
+        info "1/6: hunterx version"
+        run_hunterx version || { error "FAILED"; errors=$((errors+1)); }
+        info "2/6: hunterx help"
+        run_hunterx help >/dev/null 2>&1 && echo "  (help rendered OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "3/6: hunterx config"
+        run_hunterx config >/dev/null 2>&1 && echo "  (config resolved OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "4/6: hunterx platform"
+        run_hunterx platform >/dev/null 2>&1 && echo "  (platform composition OK)" || { error "FAILED"; errors=$((errors+1)); }
+        info "5/6: hunterx tools list"
+        run_hunterx tools list >/dev/null 2>&1 && echo "  (toolchain catalog OK)" || {
             warn "Toolchain catalog did not render. This is not fatal."
         }
+        info "6/6: hunterx tools check"
+        run_hunterx tools check >/dev/null 2>&1 && echo "  (readiness report OK)" || {
+            warn "Readiness report did not render. Inspect output above."
+        }
     else
-        error "1/5: hunterx command not found on PATH"
+        error "1/6: hunterx command not found on PATH"
         errors=$((errors+1))
     fi
 
@@ -591,7 +861,7 @@ main() {
     fi
 
     show_banner
-    info "HunterX Linux Installer (${INSTALL_MODE} mode)"
+    info "HunterX Environment Bootstrapper (${INSTALL_MODE} mode, profile: ${TOOL_PROFILE})"
     echo ""
 
     if [ "$INSTALL_MODE" = "system" ] && [ "$(id -u)" -ne 0 ]; then
@@ -602,12 +872,23 @@ main() {
     detect_distro
     install_system_deps
     check_python
+    detect_environment
     install_hunterx
     install_executable
     configure_database_env
     initialize_database
     add_to_path
     verify_installation
+
+    # Tool readiness bootstrap + final verification.
+    bootstrap_toolchain
+    final_readiness_report
+    local readiness_rc=$?
+    if [ "$readiness_rc" -ne 0 ]; then
+        error "Tool readiness verification reported mandatory capability failures."
+        error "Review the report above and run: hunterx tools check / hunterx tools install --profile ${TOOL_PROFILE}"
+        exit "$readiness_rc"
+    fi
 
     echo ""
     info "Installation complete!"
@@ -616,6 +897,7 @@ main() {
     echo "  Mission:      hunterx mission create <objective> <target>"
     echo "  Hunt:         hunterx hunt <objective> <target>"
     echo "  Toolchain:    hunterx tools list"
+    echo "  Readiness:    hunterx tools check"
     echo "  Config:       hunterx config"
     echo "  Version:      hunterx version"
     echo "  Platform:     hunterx platform"

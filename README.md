@@ -351,10 +351,12 @@ class has identical validation depth, and HunterX never claims otherwise. See
 ## Quick Start
 
 ```
-INSTALL → HUNT → INSPECT → VALIDATE → REPORT
+INSTALL → TOOLS READY → HUNT → INSPECT → VALIDATE → REPORT
 ```
 
-HunterX v7 organizes work as **missions**. Start with an authorized target:
+HunterX v7 organizes work as **missions**. HunterX integrates *external*
+security tools (nmap, subfinder, nuclei, ffuf, ...); those tools are discovered,
+verified and provisioned *before* a mission runs. Start with an authorized target:
 
 ```bash
 # 1. INSTALL — Python 3.11+ on Linux, macOS or Windows
@@ -363,23 +365,30 @@ pip install hunterxsec
 #                  python -m pip install -e ".[api,db,dev]"
 # or installer:   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
 
-# 2. HUNT — plan and start a full-spectrum hunt mission
+# 2. TOOLS READY — establish the base environment and inspect readiness
+hunterx install                          # base HunterX environment (detect + verify tools)
+hunterx tools check                      # readiness table + capability coverage
+hunterx tools audit                      # integration maturity (knowledge + runtime)
+hunterx tools install --profile recon    # provision missing tools via trusted methods
+hunterx tools install --profile full     # provision the complete external toolchain
+
+# 3. HUNT — plan and start a full-spectrum hunt mission
 hunterx hunt full_security_assessment https://example.com
 
-# 3. INSPECT — track the mission and inspect the toolchain
+# 4. INSPECT — track the mission and inspect the toolchain
 hunterx hunt status <mission_id>
 hunterx hunt surface <mission_id>
 hunterx tools list
 hunterx tools capabilities
 hunterx tools health
 
-# 4. VALIDATE — work findings, PoCs and proof replay
+# 5. VALIDATE — work findings, PoCs and proof replay
 hunterx finding list <mission_id>
 hunterx finding poc <finding_id>       # PoC engineering
 hunterx finding proof <finding_id>     # proof state
 hunterx finding replay <finding_id>    # proof replay
 
-# 5. REPORT — generate and export professional reports
+# 6. REPORT — generate and export professional reports
 hunterx report generate <finding_id>
 hunterx report export <report_id> markdown
 ```
@@ -397,7 +406,21 @@ Missions persist to the configured database (SQLite by default), so
 `hunterx mission create <objective> <target>` followed by
 `hunterx mission start <mission_id>` works across CLI invocations.
 
-See [Quickstart](docs/quickstart.md) and the full
+### Tool readiness & preflight
+
+Every `hunterx hunt` mission runs a **tool-readiness preflight** before any
+execution:
+
+- Required capabilities with no available tool **block** the mission with an
+  explicit `status: blocked`, the missing capability names and the missing
+  tools — never a silent zero-execution mission.
+- Missing optional/recommended tools produce a **degraded** mission that still
+  runs with reduced coverage.
+- `hunterx tools check` shows per-tool status (`AVAILABLE` / `MISSING` /
+  `BROKEN` / `OUTDATED` / `UNSUPPORTED`), detected versions and paths, plus
+  per-capability coverage.
+
+See [Tool Readiness](docs/tool-readiness.md) and the full
 [CLI Reference](docs/cli/index.md) for complete usage.
 
 ---
@@ -609,6 +632,7 @@ HunterX v7 ships a single `hunterx` command with capability groups:
 | Targets | `hunterx target memory/snapshot/diff/changes/history/coverage/revalidate` |
 | Campaigns | `hunterx campaign list/show/intelligence` |
 | Toolchain | `hunterx tools list/show/contract/execute/parse/normalize/chain/recommend` |
+| Readiness | `hunterx install`, `hunterx tools check`, `hunterx tools install [--profile <name>]`, `hunterx tools audit` |
 
 See [CLI Reference](docs/cli/index.md) for the full command reference.
 
@@ -1000,6 +1024,7 @@ DevSecOps / Security Engineering
 - [AI Configuration](docs/configuration/ai.md)
 - [Architecture](docs/architecture/README.md)
 - [PoC & Validation](docs/poc-validation.md)
+- [Tool Readiness & Auto-Provisioning](docs/tool-readiness.md)
 - [CLI Reference](docs/cli/index.md)
 - [Tool Ecosystem](docs/tool-ecosystem.md)
 - [Features](docs/features/index.md)

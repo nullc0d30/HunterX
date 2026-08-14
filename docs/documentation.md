@@ -42,6 +42,7 @@ active architecture.
 - [Mission Orchestration]({{ '/v7-autonomous-mission-orchestration/' | relative_url }}) — autonomous full-spectrum missions
 - [Adaptive Mission Planning]({{ '/v7-adaptive-mission-planning/' | relative_url }}) — attack-path planning engine
 - [Toolchain Intelligence]({{ '/v7-full-toolchain-intelligence/' | relative_url }}) — 92 integrated security tools
+- [Tool Readiness & Auto-Provisioning]({{ '/tool-readiness/' | relative_url }}) — discover, validate and provision external tools
 - [Vulnerability Proof & PoC]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }}) — evidence-driven validation and proof
 - [Professional Reporting]({{ '/v7-professional-finding-intelligence-reporting/' | relative_url }}) — findings, intelligence and reports
 - [Target Memory & Campaign Intelligence]({{ '/v7-target-memory-and-campaign-intelligence/' | relative_url }}) — campaign state

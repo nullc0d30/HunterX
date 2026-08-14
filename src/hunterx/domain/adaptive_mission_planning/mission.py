@@ -20,6 +20,7 @@ from hunterx.domain.adaptive_mission_planning.catalog import DeterministicPlanne
 from hunterx.domain.adaptive_mission_planning.enums import (
     ActionStatus,
     ActionType,
+    DependencyKind,
     MissionMode,
     MissionObjective,
     MissionState,
@@ -29,6 +30,7 @@ from hunterx.domain.adaptive_mission_planning.models import (
     ActionNode,
     AttackPath,
     DecisionRecord,
+    DynamicDependency,
     FailureRecord,
     Gap,
     MissionConstraints,
@@ -183,6 +185,16 @@ class DeterministicMissionPlanner:
                 provenance={"source": "deterministic_planner", "objective": mission.objective.value},
             )
             mission.graph.add_action(node)
+            if previous is not None:
+                mission.graph.add_dependency(
+                    DynamicDependency(
+                        dependency_id=generate_id(),
+                        source_action_id=previous.action_id,
+                        target_action_id=node.action_id,
+                        kind=DependencyKind.DEPENDS_ON,
+                        rationale="capability chain",
+                    )
+                )
             previous = node
         version = PlanVersion(
             plan_version=1,

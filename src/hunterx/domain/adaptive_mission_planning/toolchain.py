@@ -175,9 +175,11 @@ class ToolChainPlanner:
 
     def as_dependencies(self, actions: list[ActionNode]) -> list[DynamicDependency]:
         """Convert the chained actions into typed dependencies."""
+        from hunterx.shared.ids import generate_id
+
         return [
             DynamicDependency(
-                dependency_id=f"dep-{node.action_id}",
+                dependency_id=generate_id(),
                 source_action_id=node.action_id,
                 target_action_id=dep_id,
                 kind=DependencyKind.DEPENDS_ON,

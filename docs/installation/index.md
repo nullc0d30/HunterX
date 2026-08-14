@@ -81,6 +81,41 @@ hunterx platform    # platform composition
 hunterx config      # resolved configuration
 ```
 
+## External tool readiness & provisioning
+
+HunterX orchestrates *external* security tools (nmap, subfinder, nuclei, ffuf,
+...). After installing HunterX itself, establish the base environment and check
+which external tools are available:
+
+```bash
+hunterx install                        # base environment (detect + verify tools)
+hunterx tools check                    # per-tool readiness + capability coverage
+hunterx tools audit                    # integration maturity (knowledge + runtime)
+hunterx tools install --profile recon  # provision missing recon tools
+hunterx tools install --profile full   # provision the complete external toolchain
+```
+
+The `install.sh` script is a full **environment bootstrapper**: it detects the
+platform and available runtimes/package managers, installs the HunterX package,
+invokes the canonical Tool Readiness layer to discover/verify/provision external
+tools, configures PATH (current process and future shells, idempotent), then
+runs the final readiness verification and reports `INSTALLATION COMPLETE`,
+`INSTALLATION COMPLETE — DEGRADED` or `INSTALLATION INCOMPLETE` with exact
+reasons.
+
+```bash
+./install.sh --profile full     # provision the complete external toolchain
+./install.sh --profile recon    # recon toolset
+./install.sh --core             # base package + minimal profile
+```
+
+Provisioning uses trusted, static installation methods (`apt`/`brew`/`go`/
+`cargo`/`pip`/`choco`/...); it is idempotent, never builds commands from target
+input, and only invokes runtimes/package managers actually present. A
+`hunterx hunt` mission runs a readiness preflight before execution and blocks
+explicitly when a required capability has no available tool. See
+[Tool Readiness & Auto-Provisioning]({{ '/tool-readiness/' | relative_url }}).
+
 ## Database initialization
 
 HunterX v7 uses Alembic migrations. The CLI initializes on demand; for an

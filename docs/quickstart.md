@@ -54,9 +54,16 @@ hunterx config         # resolved configuration
 ## Run your first mission
 
 HunterX v7 organizes work as **missions** (`hunterx mission` / `hunterx hunt`).
-Start with an authorized target:
+HunterX drives *external* security tools, so first establish the base
+environment and check readiness, then start with an authorized target:
 
 ```bash
+# Tool readiness: detect, verify and (optionally) provision external tools
+hunterx install                        # base environment
+hunterx tools check                    # readiness table + capability coverage
+hunterx tools audit                    # integration maturity (knowledge + runtime)
+hunterx tools install --profile recon  # provision missing recon tools
+
 # Plan and start a full-spectrum hunt mission
 hunterx hunt full_security_assessment https://example.com
 
@@ -64,6 +71,11 @@ hunterx hunt full_security_assessment https://example.com
 hunterx hunt status <mission_id>
 hunterx hunt surface <mission_id>
 ```
+
+Every hunt runs a readiness **preflight** before execution: required
+capabilities without an available tool block the mission with an explicit
+`status: blocked` (never a silent zero-execution mission); missing
+optional tools produce a `degraded` mission that still runs.
 
 ## Explore the toolchain
 
@@ -85,6 +97,7 @@ hunterx report export <report_id> markdown
 ## Next steps
 
 - [CLI Reference]({{ '/cli/' | relative_url }}) — every `hunterx` command
+- [Tool Readiness & Auto-Provisioning]({{ '/tool-readiness/' | relative_url }}) — how external tools are discovered and provisioned
 - [Configuration]({{ '/configuration/' | relative_url }}) — `HUNTERX_*` environment overrides
 - [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI providers, API keys and models
 - [Features]({{ '/features/' | relative_url }}) — platform capabilities

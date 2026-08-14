@@ -89,6 +89,7 @@ def register_default_commands(app: CliApplication, platform: Any | None = None) 
     _register_report_commands(app, platform)
     _register_target_memory_commands(app, platform)
     _register_toolchain_commands(app, platform)
+    _register_tool_readiness_commands(app, platform)
 
 
 def _require_finding_id(argv: list[str]) -> str:
@@ -370,11 +371,12 @@ def _register_adaptive_mission_commands(app: CliApplication, platform: Any) -> N
 def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
     """Register the full-spectrum hunt commands (Sprint 033).
 
-    Commands: ``hunt`` (create+start a mission), ``hunt status``, ``hunt
+    Commands: ``hunt`` (create+start+execute a mission), ``hunt status``, ``hunt
     surface``, ``hunt coverage``, ``hunt findings``, ``hunt evidence``, ``hunt
     proofs``, ``hunt paths`` and ``hunt timeline``. They wrap the autonomous
-    mission orchestration and the mission dashboard services so an operator can
-    drive and inspect a full-spectrum security-assessment mission from the CLI.
+    mission orchestration, the mission execution runner and the mission
+    dashboard services so an operator can drive and inspect a full-spectrum
+    security-assessment mission from the CLI.
     """
 
     def _orchestration() -> Any:
@@ -382,6 +384,9 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
 
     def _dashboard() -> Any:
         return platform.mission_dashboard_service
+
+    def _execution() -> Any:
+        return platform.mission_execution_service
 
     def _require_mission_id(argv: list[str]) -> str:
         if not argv:
@@ -393,7 +398,21 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         target = argv[1] if len(argv) > 1 else ""
         mission = _orchestration().create_mission(objective=objective, target=target)
         _orchestration().start(mission.mission_id)
+        run = _execution().run(mission.mission_id)
         overview = _dashboard().overview(mission.mission_id)
+        if run.get("status") == "blocked":
+            overview["status"] = "blocked"
+            overview["reason"] = run.get("reason", "tool readiness gate blocked the mission")
+            overview["preflight"] = run.get("preflight")
+            overview["missing_tools"] = (
+                list(run["preflight"].get("missing_tools", ())) if run.get("preflight") else []
+            )
+        else:
+            overview["status"] = "degraded" if run.get("status") == "degraded" else "executed"
+            if run.get("preflight"):
+                overview["preflight"] = run["preflight"]
+                if run["preflight"].get("optional_missing"):
+                    overview["missing_optional"] = list(run["preflight"]["optional_missing"])
         print(app.renderer.render(overview, fmt="json"))
         return 0
 
@@ -437,7 +456,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         print(app.renderer.render(_dashboard().timeline(mission_id), fmt="json"))
         return 0
 
-    app.registry.register("hunt", _hunt, help_text="Create and start a full-spectrum hunt mission")
+    app.registry.register("hunt", _hunt, help_text="Create, start and execute a full-spectrum hunt mission")
     app.registry.register("hunt status", _hunt_status, help_text="Show the mission overview")
     app.registry.register("hunt surface", _hunt_surface, help_text="Show the unified attack-surface view")
     app.registry.register("hunt coverage", _hunt_coverage, help_text="Show mission coverage")
@@ -834,3 +853,165 @@ def _register_toolchain_commands(app: CliApplication, platform: Any) -> None:
     app.registry.register("tools chain", _tools_chain, help_text="Plan a dependency-aware tool chain")
     app.registry.register("tools chain-execute", _tools_chain_execute, help_text="Plan and execute an end-to-end tool chain")
     app.registry.register("tools recommend", _tools_recommend, help_text="Recommend tools for a capability")
+
+
+def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> None:
+    """Register the tool readiness & provisioning commands.
+
+    Commands: ``install`` (base HunterX environment), ``tools check`` (readiness
+    table + capability coverage) and ``tools install`` (provision missing tools
+    via trusted static methods, optionally by profile).
+    """
+
+    def _readiness() -> Any:
+        return platform.tool_readiness_service
+
+    def _json_flag(argv: list[str]) -> bool:
+        return "--json" in argv or "-j" in argv
+
+    def _flag(argv: list[str], name: str, default: str = "") -> str:
+        for index, part in enumerate(argv):
+            if part == name and index + 1 < len(argv):
+                return argv[index + 1]
+        return default
+
+    def _install(argv: list[str]) -> int:
+        service = _readiness()
+        profile = _flag(argv, "--profile", "minimal")
+        if profile not in service.profiles():
+            raise SystemExit(
+                f"unknown install profile '{profile}' (choose from {', '.join(service.profiles())})"
+            )
+        outcomes = service.install(profile=profile)
+        report = service.check()
+        payload = {
+            "action": "install",
+            "profile": profile,
+            "platform": report.platform,
+            "outcomes": [outcome.to_dict() for outcome in outcomes],
+            "capabilities": [capability.to_dict() for capability in report.capabilities],
+            "summary": report.summary,
+            "status": _install_status(outcomes),
+            "note": (
+                "Base HunterX environment established. Use 'hunterx tools install "
+                "--profile full' to provision the external security toolchain."
+                if profile == "minimal"
+                else f"Profile '{profile}' provisioned. Re-run 'hunterx tools check' to re-verify."
+            ),
+        }
+        print(app.renderer.render(payload, fmt="json"))
+        return 0
+
+    def _tools_check(argv: list[str]) -> int:
+        report = _readiness().check()
+        if _json_flag(argv):
+            print(app.renderer.render(report.to_dict(), fmt="json"))
+            return 0
+        rows = [
+            {
+                "Tool": verdict.tool_id,
+                "Status": verdict.status.value.upper(),
+                "Version": verdict.version or (verdict.expected_version or "-"),
+                "Path": verdict.path or "-",
+            }
+            for verdict in report.tools
+        ]
+        print(_render_table(["Tool", "Status", "Version", "Path"], rows))
+        capability_rows = [
+            {
+                "Capability": capability.capability,
+                "Level": capability.level.value,
+                "Status": capability.status.upper(),
+                "Providers": ",".join(capability.available) or "-",
+            }
+            for capability in report.capabilities
+        ]
+        print()
+        print(_render_table(["Capability", "Level", "Status", "Providers"], capability_rows))
+        summary = report.summary
+        print()
+        print(
+            f"Summary: {summary['available']}/{summary['total']} tools available, "
+            f"{summary['capabilities_missing']} capabilities missing "
+            f"({summary['broken']} broken, {summary['outdated']} outdated)."
+        )
+        print("Missing tools can be provisioned with: hunterx tools install [--profile <name>]")
+        return 0
+
+    def _tools_install(argv: list[str]) -> int:
+        service = _readiness()
+        profile = _flag(argv, "--profile", "")
+        tool_ids = [part for part in argv if not part.startswith("-")]
+        try:
+            outcomes = service.install(tool_ids, profile=profile)
+        except ValueError as error:
+            raise SystemExit(str(error)) from error
+        print(app.renderer.render([outcome.to_dict() for outcome in outcomes], fmt="json"))
+        return 0
+
+    def _tools_audit(argv: list[str]) -> int:
+        report = _readiness().audit()
+        if _json_flag(argv):
+            print(app.renderer.render(report.to_dict(), fmt="json"))
+            return 0
+        rows = [
+            {
+                "Tool": audit.tool_id,
+                "Level": audit.level.value.upper(),
+                "Runtime": "YES" if audit.runtime else "no",
+                "Available": "YES" if audit.available else "no",
+                "Missing": ",".join(audit.missing) or "-",
+            }
+            for audit in report.audits
+        ]
+        print(_render_table(["Tool", "Level", "Runtime", "Available", "Missing"], rows))
+        summary = report.summary
+        print()
+        print(
+            f"Integration maturity: "
+            f"{summary.get('fully_integrated', 0)} fully_integrated, "
+            f"{summary.get('parsable', 0)} parsable, "
+            f"{summary.get('invokable', 0)} invokable, "
+            f"{summary.get('verified', 0)} verified, "
+            f"{summary.get('known', 0)} known, "
+            f"{summary.get('unknown', 0)} unknown."
+        )
+        print("A tool is only fully integrated when every knowledge dimension is present.")
+        return 0
+
+    app.registry.register("install", _install, help_text="Establish the base HunterX environment (detect + verify tools)")
+    app.registry.register("tools check", _tools_check, help_text="Show tool readiness and capability coverage")
+    app.registry.register("tools install", _tools_install, help_text="Provision missing tools (--profile <name> or explicit tool ids)")
+    app.registry.register("tools audit", _tools_audit, help_text="Show tool integration maturity (knowledge + runtime)")
+
+
+def _render_table(headers: list[str], rows: list[dict[str, str]]) -> str:
+    """Render a left-aligned monospace table."""
+    widths = [len(header) for header in headers]
+    normalized: list[list[str]] = []
+    for row in rows:
+        cells = [str(row.get(header, "")) for header in headers]
+        normalized.append(cells)
+        for index, cell in enumerate(cells):
+            widths[index] = max(widths[index], len(cell))
+    lines = ["  ".join(header.ljust(widths[index]) for index, header in enumerate(headers))]
+    lines.append("  ".join("-" * width for width in widths))
+    for cells in normalized:
+        lines.append("  ".join(cell.ljust(widths[index]) for index, cell in enumerate(cells)))
+    return "\n".join(lines)
+
+
+def _install_status(outcomes: list[Any]) -> str:
+    """Classify an install run as ``complete`` / ``degraded`` / ``incomplete``.
+
+    All provisioning attempts succeeded → complete. Some failed but others
+    succeeded → degraded. Every attempt failed → incomplete. Failures are never
+    hidden: the caller reports the per-tool outcomes alongside this status.
+    """
+    succeeded = [outcome for outcome in outcomes if outcome.success]
+    failed = [outcome for outcome in outcomes if not outcome.success]
+    if not failed:
+        return "complete"
+    if succeeded:
+        return "degraded"
+    return "incomplete"
