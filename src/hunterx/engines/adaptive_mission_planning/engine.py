@@ -126,7 +126,7 @@ class AdaptiveMissionPlanningEngine:
     def create_mission(
         self,
         *,
-        objective: MissionObjective = MissionObjective.ATTACK_SURFACE_DISCOVERY,
+        objective: MissionObjective | str = MissionObjective.ATTACK_SURFACE_DISCOVERY,
         mode: MissionMode = MissionMode.BALANCED,
         constraints: MissionConstraints | None = None,
         authorization_context: str = "default",
@@ -136,7 +136,7 @@ class AdaptiveMissionPlanningEngine:
     ) -> AdaptiveMission:
         """Create a mission and build its initial deterministic plan."""
         mission = AdaptiveMission(
-            objective=objective,
+            objective=_coerce_objective(objective),
             mode=mode,
             constraints=constraints or MissionConstraints(),
             authorization_context=authorization_context,
@@ -146,6 +146,13 @@ class AdaptiveMissionPlanningEngine:
         if target:
             mission.constraints = _with_target(mission.constraints, target)
         self.mission_planner.create_initial_plan(mission)
+        # The deterministic discovery chain is a pre-approved plan: every node
+        # becomes immediately schedulable so the orchestrator's decision loop
+        # can produce an actionable first decision right after mission
+        # creation (Sprint 033 execution lifecycle).
+        for action in mission.graph.actions.values():
+            if action.status is ActionStatus.PROPOSED:
+                action.mark(ActionStatus.APPROVED)
         mission.state = MissionState.SCOPING
         self._missions[mission.mission_id] = mission
         return mission
@@ -547,6 +554,16 @@ def _with_target(constraints: MissionConstraints, target: str) -> MissionConstra
     if not constraints.included_targets:
         return dataclasses.replace(constraints, included_targets=(target,))
     return constraints
+
+
+def _coerce_objective(objective: MissionObjective | str) -> MissionObjective:
+    """Coerce a string objective name into a ratified :class:`MissionObjective`."""
+    if isinstance(objective, MissionObjective):
+        return objective
+    try:
+        return MissionObjective(str(objective))
+    except ValueError:
+        return MissionObjective.ATTACK_SURFACE_DISCOVERY
 
 
 __all__ = [

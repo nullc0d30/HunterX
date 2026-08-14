@@ -34,6 +34,7 @@ from hunterx.application.findings import FindingService
 from hunterx.application.javascript import JavaScriptQueryService, JavaScriptService
 from hunterx.application.livehost import LiveHostService
 from hunterx.application.mission_dashboard import MissionDashboardService
+from hunterx.application.mission_execution import MissionExecutionService
 from hunterx.application.mission_orchestration import (
     MissionOrchestrationQueryService,
     MissionOrchestrationService,
@@ -86,6 +87,7 @@ from hunterx.shared.di import Container
 from hunterx.tools.factory.api import ToolIntegrationFactory
 from hunterx.tools.intelligence.api import ToolIntelligenceAPI
 from hunterx.tools.mastery.api import ToolMasteryAPI
+from hunterx.tools.readiness.service import ToolReadinessService
 from hunterx.tools.sdk.engine import ExecutionEngine
 
 T = TypeVar("T")
@@ -207,6 +209,8 @@ class Platform:
     mission_orchestration_service: MissionOrchestrationService
     mission_orchestration_query_service: MissionOrchestrationQueryService
     mission_dashboard_service: MissionDashboardService
+    mission_execution_service: MissionExecutionService
+    tool_readiness_service: ToolReadinessService
     event_bus: EventBusPort
     cache: CachePort
     queue: QueuePort

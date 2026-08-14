@@ -367,6 +367,20 @@ class MissionOrchestrationService:
         """Return the latest telemetry snapshot."""
         return self._engine.telemetry(mission_id)
 
+    def record_telemetry(self, mission_id: str) -> dict[str, Any]:
+        """Compute and persist a telemetry snapshot for the mission.
+
+        Snapshots are normally recorded at checkpoint/finalize time; the
+        execution runner calls this after every cycle so live missions expose
+        telemetry (tool executions, utilization, failure counts) while they
+        run.
+        """
+        mission = self._engine.get(mission_id)
+        self._engine.orchestrator.telemetry.record(mission)
+        self._persist_mission(mission)
+        latest = mission.last_telemetry()
+        return latest.to_dict() if latest else {}
+
     # -- persistence helpers -------------------------------------------------
 
     def _restore_mission(self, mission_id: str) -> OrchestratedMission | None:
