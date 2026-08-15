@@ -445,6 +445,7 @@ class ToolchainService:
             .with_mission(mission_id)
             .with_profile(profile)
             .with_parameters(dict(parameters or {}))
+            .with_permissions(_adapter_permissions(self._engine, tool_id))
         )
         if target_type:
             builder = builder.with_target_type(target_type)
@@ -825,6 +826,23 @@ def _missing_contract_dimensions(contract: dict[str, Any]) -> list[str]:
     } and not contract.get("timeout"):
         missing.append("timeout")
     return missing
+
+
+def _adapter_permissions(engine: Any, tool_id: str) -> tuple[str, ...]:
+    """Return the permission flags a tool's adapter requires.
+
+    The sandbox denies any execution whose context does not explicitly grant
+    the adapter-declared permission (network/filesystem/...). Direct tool
+    execution through ``hunterx tools execute`` must grant exactly what the
+    adapter declares so the tool can actually run.
+    """
+    if engine is None:
+        return ("none",)
+    adapter = engine.adapter_for(tool_id)
+    if adapter is None:
+        return ("none",)
+    requested = tuple(getattr(getattr(adapter, "descriptor", None), "permissions", ()) or ())
+    return requested or ("none",)
 
 
 def _chain_result_dict(chain: Any, result: Any) -> dict[str, Any]:

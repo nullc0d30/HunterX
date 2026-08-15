@@ -63,6 +63,7 @@ from hunterx.application.vulnerability_proof import VulnerabilityProofService
 from hunterx.application.vulnerability_proof_strategy import VulnerabilityProofStrategyService
 from hunterx.application.vulnerability_validation import VulnerabilityValidationService
 from hunterx.config.loader import load_default_settings
+from hunterx.config.paths import DEFAULT_DATABASE_URL
 from hunterx.config.settings import Settings
 from hunterx.domain.adaptive_mission_planning.toolchain import ToolSelectionEngine
 from hunterx.domain.events.catalog import build_registry
@@ -238,7 +239,9 @@ def _build_repositories(settings: Settings, *, force_sql: bool = False) -> dict[
     across invocations).
     """
     repositories: dict[str, object] = {role: constructor() for role, constructor in _MEMORY_REPOSITORIES.items()}
-    use_sql = settings.database.url and (force_sql or settings.database.url != "sqlite:///hunterx.db")
+    use_sql = settings.database.url and (
+        force_sql or settings.database.url != DEFAULT_DATABASE_URL
+    )
     if use_sql:
         try:  # pragma: no cover - depends on optional `db` extra
             from hunterx.infrastructure.db.sql.factory import SessionFactory

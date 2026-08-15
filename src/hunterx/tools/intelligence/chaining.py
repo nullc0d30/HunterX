@@ -409,8 +409,23 @@ class ChainExecutor:
             profile="",
             correlation_id=correlation_id,
             timeout_seconds=timeout,
+            permissions=self._permissions_for(tool_id),
             parameters=step_params,
         )
+
+    def _permissions_for(self, tool_id: str) -> tuple[str, ...]:
+        """Return the permissions the tool's adapter requires.
+
+        The sandbox denies executions whose context does not explicitly grant
+        the adapter-requested permission flags. Mirroring the mission
+        executor, the chain executor grants exactly what the adapter declares
+        so a planned step can actually run instead of being denied.
+        """
+        adapter = self._engine.adapter_for(tool_id) if self._engine is not None else None
+        descriptor = getattr(adapter, "descriptor", None) if adapter is not None else None
+        requested = tuple(getattr(descriptor, "permissions", ()) or ()) if descriptor is not None else ()
+        # An adapter with no declared permissions is a no-permission step.
+        return requested or ("none",)
 
     @staticmethod
     def _step_target(step: Any, target: str, derived: dict[str, list[str]]) -> str:

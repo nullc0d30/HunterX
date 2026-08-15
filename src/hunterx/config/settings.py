@@ -16,7 +16,12 @@ from pydantic import BaseModel, Field, SecretStr
 
 
 class DatabaseSettings(BaseModel):
-    """Database connection settings."""
+    """Database connection settings.
+
+    The default URL is a sentinel resolved at engine-creation time to
+    ``<application root>/data/hunterx.db`` (see ``hunterx.config.paths``);
+    set ``HUNTERX_DATABASE_URL`` to override explicitly.
+    """
 
     url: str = Field(
         default="sqlite:///hunterx.db",

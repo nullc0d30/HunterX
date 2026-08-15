@@ -39,31 +39,53 @@ from hunterx.tools.readiness.platform import PlatformInfo
 #: Prefix used when the process has no elevation rights but the method needs it.
 _SUDO = ("sudo",)
 
+#: Hard timeout (seconds) applied per install-method kind. The manifest may
+#: override any of these with an explicit ``timeout_s`` on an ``InstallMethod``.
+#: apt-style package managers are fast; source builds (cargo/script) are slow.
+_METHOD_DEFAULT_TIMEOUTS: dict[str, float] = {
+    "apt": 300.0,
+    "dnf": 300.0,
+    "pacman": 300.0,
+    "apk": 300.0,
+    "zypper": 300.0,
+    "choco": 300.0,
+    "brew": 600.0,
+    "pip": 300.0,
+    "pipx": 300.0,
+    "npm": 300.0,
+    "go": 600.0,
+    "cargo": 1200.0,
+    "script": 1800.0,
+    "default": 900.0,
+}
+
 
 class CommandRunner:
     """Execute static install commands, capturing bounded output.
 
     Subclass or stub in tests to avoid real installations. The argv is always
-    passed structurally (no shell) so arguments are inert data.
+    passed structurally (no shell) so arguments are inert data. A per-call
+    timeout replaces the runner default when supplied.
     """
 
     def __init__(self, *, timeout_s: float = 900.0) -> None:
         self._timeout = timeout_s
 
-    def run(self, argv: list[str]) -> tuple[int, str, str]:
+    def run(self, argv: list[str], *, timeout_s: float | None = None) -> tuple[int, str, str]:
         """Run ``argv`` and return ``(returncode, stdout, stderr)``."""
+        effective = timeout_s if timeout_s is not None else self._timeout
         try:
             completed = subprocess.run(  # nosec B603  # trusted static argv
                 argv,
                 capture_output=True,
                 text=True,
-                timeout=self._timeout,
+                timeout=effective,
                 check=False,
             )
         except FileNotFoundError as exc:
             return 127, "", f"command not found: {argv[0]}" if argv else str(exc)
         except subprocess.TimeoutExpired:
-            return 124, "", f"install timed out after {self._timeout}s"
+            return 124, "", f"install timed out after {effective:g}s"
         except OSError as exc:
             return 126, "", str(exc)
         return completed.returncode, completed.stdout or "", completed.stderr or ""
@@ -90,20 +112,27 @@ class ToolProvisioner:
         *,
         auto_elevate: bool = True,
         command_available: Any | None = None,
+        observer: Any | None = None,
     ) -> None:
         self._discovery = discovery
         self._platform = platform
         self._runner = runner or CommandRunner()
         self._auto_elevate = auto_elevate
         self._command_available = command_available or shutil.which
+        self._observer = observer
+
+    def _emit(self, event: Any) -> None:
+        """Forward a progress event to the installer observer (best-effort)."""
+        if self._observer is not None:
+            self._observer(event)
 
     def install(self, definition: ToolDefinition, *, verify: bool = True) -> InstallOutcome:
         """Provision ``definition`` and return the outcome.
 
         Already-available tools are skipped (idempotency). Returns an
         ``UNSUPPORTED`` outcome when no compatible install method exists on
-        the current platform, and a ``PROVISIONING_FAILED`` outcome when the
-        install ran but post-install verification did not pass.
+        the current platform, and a ``PROVISIONING_FAILED`` outcome when every
+        trusted method ran but post-install verification did not pass.
         """
         current = self._discovery.probe(definition, self._platform)
         if current.status is ToolReadinessStatus.AVAILABLE:
@@ -133,61 +162,93 @@ class ToolProvisioner:
                 error=_unsupported_reason(definition, self._platform),
             )
 
-        method = methods[0]
-        command = self._build_command(method)
-        returncode, stdout, stderr = self._runner.run(list(command))
-        if returncode != 0:
-            return InstallOutcome(
-                tool_id=definition.tool_id,
-                success=False,
-                status=ToolReadinessStatus.PROVISIONING_FAILED,
-                version=current.version,
-                method=method,
-                command=tuple(command),
-                stdout=stdout,
-                stderr=stderr,
-                error=(stderr or stdout or f"install exited {returncode}")[:2000],
+        # Try each trusted method in declaration order and use the first that
+        # installs AND verifies. This is the manifest's documented fallback
+        # strategy (e.g. pip -> pipx -> apt): a method may be unavailable at
+        # runtime (PEP 668 managed interpreter, missing compiler, stale repo)
+        # without the whole tool being marked unprovisionable.
+        last_error = ""
+        last_command: tuple[str, ...] = ()
+        last_stdout = ""
+        last_stderr = ""
+        for method in methods:
+            command = self._build_command(method)
+            timeout_s = self._method_timeout(method)
+            self._emit(
+                {
+                    "phase": "method",
+                    "tool_id": definition.tool_id,
+                    "method": method.kind,
+                    "command": command,
+                }
             )
+            try:
+                returncode, stdout, stderr = self._runner.run(list(command), timeout_s=timeout_s)
+            except KeyboardInterrupt:
+                self._emit(
+                    {
+                        "phase": "interrupted",
+                        "tool_id": definition.tool_id,
+                        "method": method.kind,
+                    }
+                )
+                raise
+            if returncode != 0:
+                last_error = _install_error(method, returncode, stdout, stderr, timeout_s)
+                last_command = tuple(command)
+                last_stdout = stdout
+                last_stderr = stderr
+                continue
 
-        if not verify:
-            return InstallOutcome(
-                tool_id=definition.tool_id,
-                success=True,
-                status=ToolReadinessStatus.AVAILABLE,
-                method=method,
-                command=tuple(command),
-                stdout=stdout,
-                stderr=stderr,
-            )
+            if not verify:
+                return InstallOutcome(
+                    tool_id=definition.tool_id,
+                    success=True,
+                    status=ToolReadinessStatus.AVAILABLE,
+                    method=method,
+                    command=tuple(command),
+                    stdout=stdout,
+                    stderr=stderr,
+                )
 
-        after = self._discovery.probe(definition, self._platform)
-        if after.status is ToolReadinessStatus.AVAILABLE or (
-            after.status is ToolReadinessStatus.OUTDATED and not self._should_upgrade(after)
-        ):
-            self._discovery.mark_installed(definition.tool_id, after.version)
-            return InstallOutcome(
-                tool_id=definition.tool_id,
-                success=True,
-                status=after.status,
-                version=after.version,
-                method=method,
-                command=tuple(command),
-                stdout=stdout,
-                stderr=stderr,
-            )
+            after = self._discovery.probe(definition, self._platform)
+            if after.status is ToolReadinessStatus.AVAILABLE or (
+                after.status is ToolReadinessStatus.OUTDATED and not self._should_upgrade(after)
+            ):
+                self._discovery.mark_installed(definition.tool_id, after.version)
+                return InstallOutcome(
+                    tool_id=definition.tool_id,
+                    success=True,
+                    status=after.status,
+                    version=after.version,
+                    method=method,
+                    command=tuple(command),
+                    stdout=stdout,
+                    stderr=stderr,
+                )
+            last_error = "installation finished but the tool could not be verified"
+            last_command = tuple(command)
+            last_stdout = stdout
+            last_stderr = stderr
+
         return InstallOutcome(
             tool_id=definition.tool_id,
             success=False,
             status=ToolReadinessStatus.PROVISIONING_FAILED,
-            version=after.version,
-            method=method,
-            command=tuple(command),
-            stdout=stdout,
-            stderr=stderr,
-            error="installation finished but the tool could not be verified",
+            version=current.version,
+            command=last_command,
+            stdout=last_stdout,
+            stderr=last_stderr,
+            error=last_error,
         )
 
     # -- helpers -----------------------------------------------------------
+
+    def _method_timeout(self, method: InstallMethod) -> float:
+        """Return the effective hard timeout for ``method`` (seconds)."""
+        if method.timeout_s and method.timeout_s > 0:
+            return method.timeout_s
+        return _METHOD_DEFAULT_TIMEOUTS.get(method.kind, _METHOD_DEFAULT_TIMEOUTS["default"])
 
     def _compatible_methods(self, definition: ToolDefinition) -> list[InstallMethod]:
         methods: list[InstallMethod] = []
@@ -252,6 +313,11 @@ class ToolProvisioner:
         if method.kind == "cargo":
             return ["cargo", "install", method.package]
         if method.kind == "pip":
+            # PEP 668 distros (Ubuntu 24.04+) refuse ``--user`` installs on the
+            # externally-managed system interpreter. The provisioner falls
+            # through to the next trusted method (typically pipx) declared for
+            # the tool, so ``pip --user`` remaining the primary contract here
+            # does not strand the tool on managed interpreters.
             argv = [sys.executable, "-m", "pip", "install"]
             if not self._elevated() and method.package:
                 argv.append("--user")
@@ -296,6 +362,27 @@ def _unsupported_reason(definition: ToolDefinition, platform: PlatformInfo) -> s
         f"no compatible installation method for '{definition.tool_id}' on "
         f"{platform.os}/{platform.distro or platform.package_manager}"
     )
+
+
+def _install_error(
+    method: InstallMethod,
+    returncode: int,
+    stdout: str,
+    stderr: str,
+    timeout_s: float,
+) -> str:
+    """Build a human explanation for a failed installer run.
+
+    Distinguishes the timeout case (which otherwise only produces a terse
+    stderr) so the installer UI can explain the failure and suggest a retry.
+    """
+    if returncode == 124:
+        return (
+            f"installation timed out after {timeout_s:g}s "
+            f"({method.kind} installer for '{method.package or method.name}')"
+        )
+    detail = (stderr or stdout or f"installer exited with code {returncode}").strip()
+    return detail[:2000] or f"installer exited with code {returncode}"
 
 
 #: Static, trusted shell scripts for ``script``-kind install methods. Kept

@@ -85,12 +85,41 @@ class FakeReadinessService:
             },
         )
 
-    def install(self, tool_ids=None, *, profile="", verify=True):  # noqa: ANN001
+    def install(self, tool_ids=None, *, profile="", verify=True, observer=None, state=None):  # noqa: ANN001
         if profile and profile not in self.profiles():
             raise ValueError(
                 f"unknown install profile '{profile}' (choose from {', '.join(self.profiles())})"
             )
         self.install_calls.append({"tool_ids": tool_ids, "profile": profile})
+        if observer is not None:
+            for index, tool in enumerate(("sqlmap",), start=1):
+                observer(
+                    type(
+                        "P",
+                        (),
+                        {"index": index, "total": 1, "tool_id": tool, "phase": "start"},
+                    )()
+                )
+                observer(
+                    type(
+                        "P",
+                        (),
+                        {
+                            "index": index,
+                            "total": 1,
+                            "tool_id": tool,
+                            "phase": "done",
+                            "outcome": InstallOutcome(
+                                tool_id=tool,
+                                success=True,
+                                status=ToolReadinessStatus.AVAILABLE,
+                                version="1.10.8",
+                            ),
+                        },
+                    )()
+                )
+        if state is not None:
+            state.mark_tool_started("sqlmap")
         return [
             InstallOutcome(
                 tool_id="sqlmap",
@@ -168,17 +197,20 @@ def app():
 
 
 class TestToolsCheck:
-    def test_check_renders_table(self, app, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_check_renders_human_inventory(self, app, capsys: pytest.CaptureFixture[str]) -> None:
         app_instance, platform = app
         platform.tool_readiness_service = FakeReadinessService()  # type: ignore[assignment]
 
         assert app_instance.run(["tools", "check"]) == 0
         output = capsys.readouterr().out
 
-        assert "Tool" in output and "Status" in output and "Version" in output and "Path" in output
-        assert "NMAP" in output.upper() or "AVAILABLE" in output.upper()
-        assert "MISSING" in output.upper()
-        assert "Capability" in output and "port_discovery" in output
+        assert "Checking HunterX security toolchain" in output
+        assert "Available" in output
+        assert "Missing" in output
+        assert "nmap" in output
+        assert "nuclei" in output
+        assert "port_discovery" in output
+        assert "Required:" in output
 
     def test_check_json(self, app, capsys: pytest.CaptureFixture[str]) -> None:
         app_instance, platform = app
@@ -198,7 +230,7 @@ class TestToolsInstall:
         service = FakeReadinessService()
         platform.tool_readiness_service = service  # type: ignore[assignment]
 
-        assert app_instance.run(["tools", "install", "sqlmap"]) == 0
+        assert app_instance.run(["tools", "install", "sqlmap", "--json"]) == 0
         payload = json.loads(capsys.readouterr().out)
 
         assert payload[0]["tool_id"] == "sqlmap"
@@ -210,11 +242,24 @@ class TestToolsInstall:
         service = FakeReadinessService()
         platform.tool_readiness_service = service  # type: ignore[assignment]
 
-        assert app_instance.run(["tools", "install", "--profile", "recon"]) == 0
+        assert app_instance.run(["tools", "install", "--profile", "recon", "--json"]) == 0
         payload = json.loads(capsys.readouterr().out)
 
         assert service.install_calls[0]["profile"] == "recon"
         assert payload[0]["success"] is True
+
+    def test_install_human_shows_progress(self, app, capsys: pytest.CaptureFixture[str]) -> None:
+        app_instance, platform = app
+        service = FakeReadinessService()
+        platform.tool_readiness_service = service  # type: ignore[assignment]
+
+        assert app_instance.run(["tools", "install", "sqlmap"]) == 0
+        output = capsys.readouterr().out
+
+        assert "Missing tools detected" in output
+        assert "Installing security toolchain" in output
+        assert "sqlmap" in output
+        assert "Installed:" in output
 
     def test_install_rejects_unknown_profile(self, app) -> None:
         app_instance, platform = app
@@ -229,7 +274,7 @@ class TestInstall:
         app_instance, platform = app
         platform.tool_readiness_service = FakeReadinessService()  # type: ignore[assignment]
 
-        assert app_instance.run(["install"]) == 0
+        assert app_instance.run(["install", "--json"]) == 0
         payload = json.loads(capsys.readouterr().out)
 
         assert payload["action"] == "install"
@@ -241,11 +286,22 @@ class TestInstall:
         app_instance, platform = app
         platform.tool_readiness_service = FakeReadinessService()  # type: ignore[assignment]
 
-        assert app_instance.run(["install", "--profile", "recon"]) == 0
+        assert app_instance.run(["install", "--profile", "recon", "--json"]) == 0
         payload = json.loads(capsys.readouterr().out)
 
         assert payload["profile"] == "recon"
         assert payload["status"] in ("complete", "degraded")
+
+    def test_install_human_output(self, app, capsys: pytest.CaptureFixture[str]) -> None:
+        app_instance, platform = app
+        platform.tool_readiness_service = FakeReadinessService()  # type: ignore[assignment]
+
+        assert app_instance.run(["install"]) == 0
+        output = capsys.readouterr().out
+
+        assert "Establishing base HunterX environment" in output
+        assert "sqlmap" in output
+        assert "Required:" in output
 
 
 class TestToolsAudit:

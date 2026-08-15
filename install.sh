@@ -3,46 +3,64 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
-# Environment Bootstrapper
+# One-Shot Production Installer
 #
-# The installer is an environment bootstrap, not just `pip install`:
+# Running `sudo ./install.sh` ONCE prepares the complete HunterX working
+# environment:
 #
 #     Detect environment
 #         ↓
-#     Install HunterX Python package
+#     Prepare OS dependencies
 #         ↓
-#     Invoke the canonical Tool Readiness layer (hunterx install / tools install)
+#     Prepare runtime / toolchains
 #         ↓
-#     Discover installed tools
+#     Install HunterX
 #         ↓
-#     Validate existing executables / identify missing / broken
+#     Prepare HunterX directories
 #         ↓
-#     Provision missing tools (trusted static methods only)
+#     Prepare configuration
 #         ↓
-#     Configure PATH (current process + future shells, idempotent)
+#     Prepare database
 #         ↓
-#     Re-discover / verify readiness
+#     Run migrations
 #         ↓
-#     Report final readiness (COMPLETE / DEGRADED / INCOMPLETE)
+#     Prepare HunterX supporting resources
+#         ↓
+#     Detect security tools
+#         ↓
+#     Install missing tools
+#         ↓
+#     Verify every tool
+#         ↓
+#     Verify required capabilities
+#         ↓
+#     Perform final health / readiness check
+#         ↓
+#     READY
+#         ↓
+#     Show quick-start commands
 #
 # The canonical tool manifest lives in the Python package
 # (hunterx.tools.readiness.manifest). This script NEVER duplicates it: external
 # tool discovery, validation, provisioning and verification are delegated to the
-# Tool Readiness Service through the CLI. `install.sh` only handles environment
-# detection and PATH management (the shell-only concerns).
+# Tool Readiness Service through the CLI (`hunterx install`, `hunterx tools
+# check`, `hunterx tools install`). `install.sh` handles environment detection,
+# OS/runtime preparation, directories, configuration, the database, PATH
+# management and the final readiness verdict — the shell-only concerns.
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --all
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --profile full
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash -s -- --uninstall
-#   curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | bash -s -- --user --uninstall
+#   sudo ./install.sh                                  # one-shot system install
+#   sudo ./install.sh --profile full                   # explicit tool profile
+#   bash ./install.sh --user                           # user-local install
+#   bash ./install.sh --core                           # core package only
+#   sudo ./install.sh --json                           # machine-readable summary
+#   sudo ./install.sh --uninstall                      # remove HunterX
 
 set -euo pipefail
 
 INSTALL_DIR="/opt/hunterx"
 USER_INSTALL_DIR="${HOME}/.local/share/hunterx"
+STATE_DIR=""
 VENV_DIR=""
 BIN_DIR=""
 PROJECT_NAME="hunterx"
@@ -50,22 +68,20 @@ PROJECT_NAME="hunterx"
 # stay "hunterx"; "hunterx" itself is an unrelated project on PyPI, so HunterX
 # publishes as "hunterxsec". Used only for the PyPI fallback install below.
 PYPI_PACKAGE="hunterxsec"
-SYMLINKS=("HunterX" "Hunterx" "hunterX" "HUNTERX")
 INSTALL_MODE="system"
 DO_UNINSTALL=false
+JSON_MODE=false
 # Optional dependency set installed alongside the core. Default is the full
 # v7 platform (REST API + database); --core installs only the base package.
 EXTRAS="api,db"
 # Tool-readiness installation profile provisioned after the package install.
 # Defaults to the full external toolchain; --core uses the minimal profile.
 TOOL_PROFILE="full"
-REQUIRED_DIRS=("data" "reports" "config")
-
-#: Directories (other than the HunterX bin dir) that provisioned tools land in.
-TOOL_PATH_DIRS=(
-    "${HOME}/.local/bin"
-    "${HOME}/.cargo/bin"
-)
+HUNTERX_VERSION=""
+DB_URL=""
+DATA_DIR=""
+TOOLCHAIN_STATUS=""
+FAILED_TOOLS=""
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -77,6 +93,22 @@ info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 step()  { echo -e "\n${BLUE}==>${NC} $1"; }
+ok()    { echo -e "${GREEN}✓${NC} $1"; }
+fail()  { echo -e "${RED}✗${NC} $1"; }
+
+# -- graceful interruption ---------------------------------------------------
+on_interrupt() {
+    echo ""
+    echo -e "${YELLOW}[WARN]${NC} Installation interrupted by user."
+    echo ""
+    echo "Completed work has been preserved."
+    echo "The installation can be resumed safely with:"
+    echo ""
+    echo "  sudo ./install.sh"
+    echo ""
+    exit 130
+}
+trap on_interrupt INT TERM
 
 cleanup() {
     local ec=$?
@@ -118,6 +150,10 @@ parse_args() {
                 EXTRAS="all"
                 shift
                 ;;
+            --json)
+                JSON_MODE=true
+                shift
+                ;;
             --profile)
                 if [[ $# -lt 2 ]]; then
                     error "--profile requires an argument (minimal|recon|web|network|vulnerability|full)"
@@ -127,12 +163,13 @@ parse_args() {
                 shift 2
                 ;;
             --help|-h)
-                echo "Usage: install.sh [--user] [--core|--all] [--profile <name>] [--uninstall]"
+                echo "Usage: install.sh [--user] [--core|--all] [--profile <name>] [--json] [--uninstall]"
                 echo ""
                 echo "  --user            Install to user home directory (no root/sudo required)"
                 echo "  --core            Install only the core package (minimal tool profile)"
                 echo "  --all             Install every optional extra (api, db, report, ai, ...)"
                 echo "  --profile <name>  Tool readiness profile to provision (minimal|recon|web|network|vulnerability|full)"
+                echo "  --json            Emit a machine-readable readiness summary"
                 echo "  --uninstall       Remove HunterX installation"
                 exit 0
                 ;;
@@ -143,6 +180,10 @@ parse_args() {
     done
 }
 
+# ---------------------------------------------------------------------------
+# Uninstall (unchanged contract)
+# ---------------------------------------------------------------------------
+
 uninstall_hunterx() {
     step "Uninstalling HunterX"
     local dirs=()
@@ -151,15 +192,9 @@ uninstall_hunterx() {
     if [ "$INSTALL_MODE" = "system" ]; then
         dirs=("/opt/hunterx")
         bins=("/usr/local/bin/${PROJECT_NAME}")
-        for link in "${SYMLINKS[@]}"; do
-            bins+=("/usr/local/bin/${link}")
-        done
     else
         dirs=("${HOME}/.local/share/hunterx")
         bins=("${HOME}/.local/bin/${PROJECT_NAME}")
-        for link in "${SYMLINKS[@]}"; do
-            bins+=("${HOME}/.local/bin/${link}")
-        done
     fi
 
     for d in "${dirs[@]}"; do
@@ -185,37 +220,37 @@ uninstall_hunterx() {
     else
         for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
             if [ -f "$rc" ]; then
-                sed -i "\|export HUNTERX_DATABASE_URL=|d; \|export HUNTERX_DB_URL=|d" "$rc" 2>/dev/null || true
+                sed -i "\|export HUNTERX_DATA_DIR=|d; \|export HUNTERX_DATABASE_URL=|d; \|export HUNTERX_DB_URL=|d" "$rc" 2>/dev/null || true
             fi
         done
         if [ -f "$HOME/.config/fish/config.fish" ]; then
-            sed -i "\|set -gx HUNTERX_DATABASE_URL |d; \|set -gx HUNTERX_DB_URL |d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
+            sed -i "\|set -gx HUNTERX_DATA_DIR |d; \|set -gx HUNTERX_DATABASE_URL |d; \|set -gx HUNTERX_DB_URL |d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
         fi
     fi
 
     # Clean PATH exports from shell configs
-    local cleaned=false
     for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
         if [ -f "$rc" ]; then
             sed -i "\|export PATH=\$PATH:${BIN_DIR%/*}|d" "$rc" 2>/dev/null || true
-            cleaned=true
         fi
     done
     if [ -f "$HOME/.config/fish/config.fish" ]; then
         sed -i "\|set -gx PATH \$PATH ${BIN_DIR%/*}|d" "$HOME/.config/fish/config.fish" 2>/dev/null || true
-        cleaned=true
     fi
 
     info "Uninstall complete."
-    if $cleaned; then
-        warn "Shell config files were modified. You may need to restart your shell or run: hash -r"
-    fi
     exit 0
 }
 
+# ---------------------------------------------------------------------------
+# 1. Environment detection
+# ---------------------------------------------------------------------------
+
 detect_distro() {
     step "Detecting Linux distribution"
+    local pkg_update=""
     if [ -f /etc/os-release ]; then
+        # shellcheck disable=SC1091
         . /etc/os-release
         DISTRO_ID="$ID"
         DISTRO_NAME="$NAME"
@@ -231,42 +266,46 @@ detect_distro() {
         DISTRO_NAME="Alpine"
     else
         error "Unsupported or unknown Linux distribution."
-        error "Please install Python 3.11+ and pip manually, then run: pip install ."
         exit 1
     fi
     info "Detected: ${DISTRO_NAME} ${DISTRO_VERSION_ID}"
 
     case "$DISTRO_ID" in
-        ubuntu|debian|linuxmint|pop|elementary|raspbian)
+        ubuntu|debian|linuxmint|pop|elementary|raspbian|kali|parrot|zorin)
             PKG_MANAGER="apt-get"
-            PKG_UPDATE="$PKG_MANAGER update"
+            PKG_UPDATE="apt-get update"
             PYTHON_PKGS="python3 python3-pip python3-venv"
-            INSTALL_CMD="$PKG_MANAGER install -y"
+            BUILD_PKGS="git curl ca-certificates build-essential"
+            INSTALL_CMD="apt-get install -y"
             ;;
         fedora|rhel|centos|rocky|almalinux)
             PKG_MANAGER="dnf"
             if ! have_cmd dnf; then PKG_MANAGER="yum"; fi
             PKG_UPDATE="$PKG_MANAGER check-update || true"
-            PYTHON_PKGS="python3 python3-pip python3-venv"
+            PYTHON_PKGS="python3 python3-pip"
+            BUILD_PKGS="git curl ca-certificates gcc make"
             INSTALL_CMD="$PKG_MANAGER install -y"
             ;;
         arch|manjaro|endeavouros)
             PKG_MANAGER="pacman"
-            PKG_UPDATE="$PKG_MANAGER -Sy"
+            PKG_UPDATE="pacman -Sy"
             PYTHON_PKGS="python python-pip"
-            INSTALL_CMD="$PKG_MANAGER -S --noconfirm"
+            BUILD_PKGS="git curl ca-certificates base-devel"
+            INSTALL_CMD="pacman -S --noconfirm"
             ;;
         alpine)
             PKG_MANAGER="apk"
-            PKG_UPDATE="$PKG_MANAGER update"
+            PKG_UPDATE="apk update"
             PYTHON_PKGS="python3 py3-pip"
-            INSTALL_CMD="$PKG_MANAGER add"
+            BUILD_PKGS="git curl ca-certificates build-base"
+            INSTALL_CMD="apk add"
             ;;
         opensuse*|suse)
             PKG_MANAGER="zypper"
-            PKG_UPDATE="$PKG_MANAGER refresh"
+            PKG_UPDATE="zypper refresh"
             PYTHON_PKGS="python3 python3-pip python3-venv"
-            INSTALL_CMD="$PKG_MANAGER install -y"
+            BUILD_PKGS="git curl ca-certificates gcc make"
+            INSTALL_CMD="zypper install -y"
             ;;
         *)
             error "Unsupported distribution: ${DISTRO_NAME}. Install Python 3.11+ and pip manually."
@@ -276,38 +315,40 @@ detect_distro() {
     info "Package manager: $PKG_MANAGER"
 }
 
+# ---------------------------------------------------------------------------
+# 2. OS dependencies
+# ---------------------------------------------------------------------------
+
 install_system_deps() {
-    step "Installing system dependencies"
+    step "Preparing OS dependencies"
     if [ "$INSTALL_MODE" = "user" ]; then
         info "User mode: skipping system package installation."
-        info "Ensure Python 3.11+ and pip are already installed."
-        return
+        info "Ensure Python 3.11+, pip and git are already installed."
+        return 0
     fi
+    local installer=()
     if [ "$(id -u)" -eq 0 ]; then
-        info "Running as root, installing packages..."
-        $PKG_UPDATE >/dev/null 2>&1 || true
-        $INSTALL_CMD $PYTHON_PKGS >/dev/null 2>&1 || {
-            error "Failed to install system packages. Try: $INSTALL_CMD $PYTHON_PKGS"
-            exit 1
-        }
+        installer=()
+    elif have_cmd sudo; then
+        installer=(sudo)
     else
-        warn "Not running as root. Attempting sudo for package installation..."
-        if have_cmd sudo; then
-            sudo $PKG_UPDATE >/dev/null 2>&1 || true
-            sudo $INSTALL_CMD $PYTHON_PKGS >/dev/null 2>&1 || {
-                error "Failed to install system packages via sudo."
-                error "Run: sudo $INSTALL_CMD $PYTHON_PKGS"
-                exit 1
-            }
-        else
-            warn "sudo not available. Ensure Python 3.11+ and pip are already installed."
-        fi
+        warn "sudo not available. Ensure Python 3.11+, pip and git are already installed."
+        return 0
     fi
-    info "System dependencies satisfied"
+    info "Installing: $PYTHON_PKGS $BUILD_PKGS"
+    "${installer[@]}" $PKG_UPDATE >/dev/null 2>&1 || true
+    if ! "${installer[@]}" $INSTALL_CMD $PYTHON_PKGS $BUILD_PKGS >/dev/null 2>&1; then
+        warn "System package installation reported errors; continuing (Python 3.11+ must be present)."
+    fi
+    ok "System dependencies satisfied"
 }
 
+# ---------------------------------------------------------------------------
+# 3. Runtime / toolchains
+# ---------------------------------------------------------------------------
+
 check_python() {
-    step "Checking Python version"
+    step "Preparing Python runtime"
     local py_cmd=""
     for c in python3 python; do
         if have_cmd "$c"; then
@@ -322,12 +363,44 @@ check_python() {
         fi
     done
     if [ -z "$py_cmd" ]; then
-        error "Python 3.11+ is required. Please install it first."
+        error "Python 3.11+ is required. Install it first, then re-run."
         exit 1
     fi
     PYTHON="$py_cmd"
-    info "Found: $("$PYTHON" --version)"
+    ok "$("$PYTHON" --version)"
 }
+
+ensure_venv() {
+    # A genuine venv has a `pyvenv.cfg` and its `bin/python` reports the venv
+    # as sys.prefix. A stale/broken venv (missing pyvenv.cfg, or python
+    # symlinked straight to the system interpreter) makes pip treat the system
+    # Python as externally managed (PEP 668) and every install fails. Detect
+    # that state and rebuild the venv instead of failing.
+    local venv_ok=false
+    if [ -x "${VENV_DIR}/bin/python" ] && [ -f "${VENV_DIR}/pyvenv.cfg" ]; then
+        if "$VENV_DIR/bin/python" -c 'import sys; sys.exit(0 if sys.prefix == sys.argv[1] else 1)' "$VENV_DIR" >/dev/null 2>&1; then
+            venv_ok=true
+        fi
+    fi
+
+    if [ "$venv_ok" = true ]; then
+        info "Virtual environment healthy at ${VENV_DIR}"
+    else
+        if [ -d "$VENV_DIR" ]; then
+            warn "Existing virtual environment is broken; rebuilding at ${VENV_DIR}"
+            rm -rf "$VENV_DIR"
+        else
+            info "Creating virtual environment at ${VENV_DIR}"
+        fi
+        "$PYTHON" -m venv "$VENV_DIR"
+    fi
+    # shellcheck disable=SC1091
+    source "${VENV_DIR}/bin/activate"
+}
+
+# ---------------------------------------------------------------------------
+# 4. Install HunterX
+# ---------------------------------------------------------------------------
 
 install_hunterx() {
     step "Installing HunterX"
@@ -335,32 +408,16 @@ install_hunterx() {
     if [ "$INSTALL_MODE" = "system" ]; then
         VENV_DIR="${INSTALL_DIR}/venv"
         BIN_DIR="/usr/local/bin"
-        if [ -d "$INSTALL_DIR" ]; then
-            info "Existing installation found at ${INSTALL_DIR}. Upgrading in place (idempotent)..."
-        fi
+        STATE_DIR="${INSTALL_DIR}/state"
     else
         VENV_DIR="${USER_INSTALL_DIR}/venv"
         BIN_DIR="${HOME}/.local/bin"
+        STATE_DIR="${HOME}/.local/state/hunterx"
         mkdir -p "$(dirname "$USER_INSTALL_DIR")"
-        if [ -d "$USER_INSTALL_DIR" ]; then
-            info "Existing installation found at ${USER_INSTALL_DIR}. Upgrading in place (idempotent)..."
-        fi
-        mkdir -p "$BIN_DIR"
     fi
 
-    mkdir -p "$(dirname "$VENV_DIR")" "$BIN_DIR"
-    for dir in "${REQUIRED_DIRS[@]}"; do
-        mkdir -p "$(dirname "$VENV_DIR")/${dir}"
-    done
-
-    if [ ! -x "${VENV_DIR}/bin/python" ]; then
-        info "Creating virtual environment at ${VENV_DIR}"
-        "$PYTHON" -m venv "$VENV_DIR"
-    else
-        info "Virtual environment already present at ${VENV_DIR}"
-    fi
-    # shellcheck disable=SC1091
-    source "${VENV_DIR}/bin/activate"
+    mkdir -p "$(dirname "$VENV_DIR")" "$BIN_DIR" "$STATE_DIR"
+    ensure_venv
 
     pip install --upgrade pip >/dev/null 2>&1 || true
 
@@ -395,73 +452,170 @@ install_hunterx() {
     fi
 
     deactivate
-    info "HunterX installed into virtual environment"
+    ok "HunterX installed into virtual environment"
 }
 
-initialize_database() {
-    step "Initializing database (Alembic migrations)"
-
-    local src_dir
-    src_dir="$(cd "$(dirname "$0")" && pwd)"
-    local config_arg=""
-    if [ -f "${src_dir}/alembic.ini" ]; then
-        config_arg="-c ${src_dir}/alembic.ini"
-    fi
-
-    if [ -x "${VENV_DIR}/bin/python" ]; then
-        info "Running database migrations via the installed package..."
-        (
-            # Alembic resolves script_location relative to the working
-            # directory, so run from the source tree when present.
-            if [ -d "${src_dir}/alembic" ]; then
-                cd "$src_dir"
-            fi
-            # Alembic reads the URL from HUNTERX_DB_URL or alembic.ini; the
-            # config ships with the source tree (alembic.ini + alembic/versions).
-            # On PyPI-only installs without a bundled config the step is skipped
-            # gracefully — the CLI creates tables on demand.
-            "${VENV_DIR}/bin/python" -m alembic ${config_arg} upgrade head 2>&1 || {
-                warn "Alembic migration step did not complete. This is not fatal;"
-                warn "HunterX creates tables on demand. Run: alembic upgrade head"
-            }
-        )
-    else
-        warn "Package binary not found; skipping database initialization."
-    fi
-}
+# ---------------------------------------------------------------------------
+# Executable + symlinks (verified, not assumed)
+# ---------------------------------------------------------------------------
 
 install_executable() {
-    step "Installing executable and symlinks"
+    step "Installing HunterX executable"
 
     mkdir -p "$BIN_DIR"
     local venv_bin="${VENV_DIR}/bin"
     local main_bin="${BIN_DIR}/${PROJECT_NAME}"
 
-    if [ -f "${venv_bin}/${PROJECT_NAME}" ]; then
-        info "Creating symlink: ${main_bin} -> ${venv_bin}/${PROJECT_NAME}"
-        ln -sf "${venv_bin}/${PROJECT_NAME}" "$main_bin"
-    else
-        local wrapper="${main_bin}"
-        info "Creating wrapper script at ${wrapper}"
-        cat > "$wrapper" << WRAPEOF
+    # Install a wrapper (not a bare symlink) that pins the persistent
+    # environment (database URL + shared tool bin) before exec'ing the real
+    # binary. This guarantees `hunterx` resolves the configured database and
+    # tools from ANY working directory and ANY shell (login, non-login, CI),
+    # without depending on /etc/profile.d being sourced.
+    #
+    # NOTE: the wrapper execs the venv's Python with the ``hunterx`` entry
+    # point. It must NEVER overwrite the pip-installed console script at
+    # ${venv_bin}/hunterx (the wrapper would exec itself → infinite recursion).
+    # ``-P`` prevents the working directory from shadowing the installed
+    # package (a repo-root ``hunterx.py`` v6 shim would otherwise win on
+    # sys.path and crash with "No module named hunterx.cli").
+    cat > "$main_bin" << WRAPEOF
 #!/usr/bin/env bash
-exec ${VENV_DIR}/bin/python -m hunterx "\$@"
+# HunterX launcher (managed by install.sh) — pins the persistent environment.
+export HUNTERX_DATA_DIR='${DATA_DIR}'
+if [ -z "\${HUNTERX_DATABASE_URL:-}" ] && [ -z "\${HUNTERX_DB_URL:-}" ]; then
+    export HUNTERX_DATABASE_URL='${DB_URL}'
+    export HUNTERX_DB_URL='${DB_URL}'
+fi
+if [ -n "${TOOL_BIN_DIR:-}" ] && [ -d "${TOOL_BIN_DIR}" ]; then
+    case ":\${PATH:-}:" in
+        *":${TOOL_BIN_DIR}:"*) ;;
+        *) export PATH="${TOOL_BIN_DIR}:\$PATH" ;;
+    esac
+fi
+if [ -n "${VENV_DIR:-}" ] && [ -d "${VENV_DIR}/bin" ]; then
+    case ":\${PATH:-}:" in
+        *":${VENV_DIR}/bin:"*) ;;
+        *) export PATH="${VENV_DIR}/bin:\$PATH" ;;
+    esac
+fi
+exec "${venv_bin}/python" -P -c "from hunterx.cli import main; import sys; sys.exit(main())" "\$@"
 WRAPEOF
-        chmod +x "$wrapper"
-    fi
+    chmod +x "$main_bin"
 
-    info "Creating case-variant symlinks..."
-    local target
-    for link in "${SYMLINKS[@]}"; do
-        target="${BIN_DIR}/${link}"
-        if [ -f "$target" ] || [ -L "$target" ]; then
-            rm -f "$target"
-        fi
-        ln -s "$PROJECT_NAME" "$target"
-        info "  ${target} -> ${PROJECT_NAME}"
+    # Verify the executable actually works (not merely that the file exists).
+    if ! "$main_bin" version >/dev/null 2>&1; then
+        error "HunterX executable does not run: ${main_bin}"
+        return 1
+    fi
+    HUNTERX_VERSION="$("$main_bin" version 2>/dev/null | head -1 || echo "HunterX v7")"
+    ok "${HUNTERX_VERSION} at ${main_bin}"
+}
+
+# ---------------------------------------------------------------------------
+# 5. Directories
+# ---------------------------------------------------------------------------
+
+prepare_directories() {
+    step "Preparing HunterX directories"
+    local base
+    base="$(dirname "$VENV_DIR")"
+    local dirs=("data" "reports" "config" "cache" "tmp" "state" "tools")
+    for dir in "${dirs[@]}"; do
+        mkdir -p "${base}/${dir}"
+        ok "Directory: ${base}/${dir}"
     done
 
-    info "Executable installed at ${main_bin}"
+    # System installs run as root but are normally invoked via sudo; hand the
+    # runtime data directories to the real user so a subsequent non-root
+    # `hunterx` run can write the DB and reports.
+    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
+        chown -R "$SUDO_USER" "${base}/data" "${base}/reports" "${base}/cache" "${base}/tmp" 2>/dev/null || true
+        info "Runtime directories owned by ${SUDO_USER}"
+    fi
+
+    # Shared tool directory. External tools provisioned as root (go/cargo/pipx
+    # installs under sudo) must land somewhere the real user can reach, not in
+    # root's private ~/go/bin or ~/.cargo/bin. Pointing GOBIN/CARGO_HOME/PIPX
+    # at the shared dir keeps every provisioned binary on one PATH entry.
+    TOOL_BIN_DIR="${base}/tools/bin"
+    mkdir -p "$TOOL_BIN_DIR"
+    export GOBIN="$TOOL_BIN_DIR"
+    export GOFLAGS="${GOFLAGS:-}"
+    export CARGO_HOME="${base}/tools/cargo"
+    export CARGO_INSTALL_ROOT="${base}/tools"
+    export PIPX_HOME="${base}/tools/pipx"
+    export PIPX_BIN_DIR="$TOOL_BIN_DIR"
+    export PATH="$TOOL_BIN_DIR:$PATH"
+    info "Shared tool directory: ${TOOL_BIN_DIR}"
+}
+
+# ---------------------------------------------------------------------------
+# 6. Configuration
+# ---------------------------------------------------------------------------
+
+configure_database_env() {
+    step "Preparing configuration"
+
+    DATA_DIR="$(dirname "$VENV_DIR")/data"
+    mkdir -p "$DATA_DIR"
+
+    # Absolute SQLAlchemy URL: the leading slash of $DATA_DIR yields the
+    # documented sqlite:////abs/path form. Keeps the CLI from falling back to
+    # a CWD-relative ./hunterx.db.
+    DB_URL="sqlite:///${DATA_DIR}/hunterx.db"
+
+    export HUNTERX_DATA_DIR="$DATA_DIR"
+    export HUNTERX_DATABASE_URL="$DB_URL"
+    export HUNTERX_DB_URL="$DB_URL"
+    info "Database URL: ${DB_URL}"
+
+    if [ "$INSTALL_MODE" = "system" ]; then
+        if [ "$(id -u)" -eq 0 ]; then
+            local profile="/etc/profile.d/hunterx.sh"
+            local fish_conf="/etc/fish/conf.d/hunterx.fish"
+            mkdir -p "$(dirname "$profile")" "$(dirname "$fish_conf")"
+            cat > "$profile" << EOF
+# HunterX persistent state (managed by install.sh)
+export HUNTERX_DATA_DIR='${DATA_DIR}'
+export HUNTERX_DATABASE_URL='${DB_URL}'
+export HUNTERX_DB_URL='${DB_URL}'
+export HUNTERX_TOOL_BIN='${TOOL_BIN_DIR:-}'
+export HUNTERX_VENV_BIN='${VENV_DIR}/bin'
+case ":\${PATH:-}:" in
+    *":\${HUNTERX_TOOL_BIN}:"*) ;;
+    *) export PATH="\${HUNTERX_TOOL_BIN}:\$PATH" ;;
+esac
+case ":\${PATH:-}:" in
+    *":\${HUNTERX_VENV_BIN}:"*) ;;
+    *) export PATH="\${HUNTERX_VENV_BIN}:\$PATH" ;;
+esac
+EOF
+            cat > "$fish_conf" << EOF
+# HunterX persistent state (managed by install.sh)
+set -gx HUNTERX_DATA_DIR '${DATA_DIR}'
+set -gx HUNTERX_DATABASE_URL '${DB_URL}'
+set -gx HUNTERX_DB_URL '${DB_URL}'
+set -gx HUNTERX_TOOL_BIN '${TOOL_BIN_DIR:-}'
+EOF
+            ok "Wrote ${profile} and ${fish_conf}"
+        else
+            warn "Not running as root; skipping /etc/profile.d export."
+            warn "Set HUNTERX_DATABASE_URL=${DB_URL} manually or rerun as root."
+        fi
+    else
+        append_once "$HOME/.bashrc" "export HUNTERX_DATA_DIR='${DATA_DIR}'"
+        append_once "$HOME/.bashrc" "export HUNTERX_DATABASE_URL='${DB_URL}'"
+        append_once "$HOME/.bashrc" "export HUNTERX_DB_URL='${DB_URL}'"
+        append_once "$HOME/.zshrc" "export HUNTERX_DATA_DIR='${DATA_DIR}'"
+        append_once "$HOME/.zshrc" "export HUNTERX_DATABASE_URL='${DB_URL}'"
+        append_once "$HOME/.zshrc" "export HUNTERX_DB_URL='${DB_URL}'"
+        local fish_cfg="$HOME/.config/fish/config.fish"
+        mkdir -p "$(dirname "$fish_cfg")"
+        append_once "$fish_cfg" "set -gx HUNTERX_DATA_DIR '${DATA_DIR}'"
+        append_once "$fish_cfg" "set -gx HUNTERX_DATABASE_URL '${DB_URL}'"
+        append_once "$fish_cfg" "set -gx HUNTERX_DB_URL '${DB_URL}'"
+        ok "Exported HUNTERX_DATABASE_URL in shell config files."
+    fi
 }
 
 append_once() {
@@ -474,108 +628,174 @@ append_once() {
     fi
 }
 
-configure_database_env() {
-    step "Configuring persistent database path"
+# ---------------------------------------------------------------------------
+# 7 + 8. Database initialization and migrations
+# ---------------------------------------------------------------------------
 
-    local data_dir
-    data_dir="$(dirname "$VENV_DIR")/data"
-    mkdir -p "$data_dir"
+initialize_database() {
+    step "Initializing HunterX database"
 
-    # Absolute SQLAlchemy URL: the leading slash of $data_dir yields the
-    # documented sqlite:////abs/path form. Keeps the CLI from falling back to
-    # a CWD-relative ./hunterx.db.
-    local db_url
-    db_url="sqlite:///${data_dir}/hunterx.db"
+    DATA_DIR="$(dirname "$VENV_DIR")/data"
+    mkdir -p "$DATA_DIR"
 
-    # System installs run as root but are normally invoked via sudo; hand the
-    # runtime data directory to the real user so a subsequent non-root
-    # `hunterx` run can write the DB. Otherwise SQLite fails with
-    # "attempt to write a readonly database".
-    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
-        chown -R "$SUDO_USER" "$data_dir" 2>/dev/null || true
+    ok "Database directory: ${DATA_DIR}"
+
+    # Alembic resolves script_location relative to the working directory, so
+    # run from the source tree when present.
+    local src_dir
+    src_dir="$(cd "$(dirname "$0")" && pwd)"
+    local config_arg=""
+    if [ -f "${src_dir}/alembic.ini" ]; then
+        config_arg="-c ${src_dir}/alembic.ini"
     fi
 
-    export HUNTERX_DATABASE_URL="$db_url"
-    export HUNTERX_DB_URL="$db_url"
-    info "Database URL: ${db_url}"
-
-    if [ "$INSTALL_MODE" = "system" ]; then
-        if [ "$(id -u)" -eq 0 ]; then
-            local profile="/etc/profile.d/hunterx.sh"
-            local fish_conf="/etc/fish/conf.d/hunterx.fish"
-            mkdir -p "$(dirname "$profile")" "$(dirname "$fish_conf")"
-            cat > "$profile" << EOF
-# HunterX persistent state (managed by install.sh)
-export HUNTERX_DATABASE_URL='${db_url}'
-export HUNTERX_DB_URL='${db_url}'
-EOF
-            cat > "$fish_conf" << EOF
-# HunterX persistent state (managed by install.sh)
-set -gx HUNTERX_DATABASE_URL '${db_url}'
-set -gx HUNTERX_DB_URL '${db_url}'
-EOF
-            info "Wrote ${profile} and ${fish_conf}"
+    if [ -x "${VENV_DIR}/bin/python" ]; then
+        info "Running database migrations..."
+        if [ -d "${src_dir}/alembic" ]; then
+            (
+                cd "$src_dir"
+                HUNTERX_DATA_DIR="$DATA_DIR" HUNTERX_DATABASE_URL="$DB_URL" HUNTERX_DB_URL="$DB_URL" \
+                    "${VENV_DIR}/bin/python" -m alembic ${config_arg} upgrade head >/dev/null 2>&1
+            ) || {
+                warn "Alembic migration step did not complete; HunterX creates tables on demand."
+                warn "Re-run manually with: cd ${src_dir} && HUNTERX_DB_URL='${DB_URL}' alembic upgrade head"
+            }
         else
-            warn "Not running as root; skipping /etc/profile.d export."
-            warn "Set HUNTERX_DATABASE_URL=${db_url} manually or rerun as root."
+            # PyPI-only installs: create tables on demand via the CLI (the
+            # SessionFactory.create_all path is idempotent).
+            HUNTERX_DATA_DIR="$DATA_DIR" HUNTERX_DATABASE_URL="$DB_URL" HUNTERX_DB_URL="$DB_URL" \
+                run_hunterx version >/dev/null 2>&1 || true
         fi
+        ok "Migrations complete"
     else
-        append_once "$HOME/.bashrc" "export HUNTERX_DATABASE_URL='${db_url}'"
-        append_once "$HOME/.bashrc" "export HUNTERX_DB_URL='${db_url}'"
-        append_once "$HOME/.zshrc" "export HUNTERX_DATABASE_URL='${db_url}'"
-        append_once "$HOME/.zshrc" "export HUNTERX_DB_URL='${db_url}'"
-        local fish_cfg="$HOME/.config/fish/config.fish"
-        mkdir -p "$(dirname "$fish_cfg")"
-        append_once "$fish_cfg" "set -gx HUNTERX_DATABASE_URL '${db_url}'"
-        append_once "$fish_cfg" "set -gx HUNTERX_DB_URL '${db_url}'"
-        info "Exported HUNTERX_DATABASE_URL in shell config files."
+        warn "Package binary not found; skipping database initialization."
+    fi
+
+    # 5. Run an actual persistence initialization check through the real
+    #    application runtime (not a raw sqlite probe): the CLI builds the
+    #    platform with the SQL persistence layer, which resolves the database
+    #    URL and runs metadata.create_all. Fails loudly — never in-memory.
+    info "Running persistence initialization check..."
+    if ! HUNTERX_DATA_DIR="$DATA_DIR" HUNTERX_DATABASE_URL="$DB_URL" HUNTERX_DB_URL="$DB_URL" \
+        run_hunterx version >/dev/null 2>&1; then
+        error "Persistence initialization failed."
+        error "Reason: the HunterX runtime could not open/initialize the database at:"
+        error "  ${DB_URL}"
+        error "Suggested fix: ensure '${DATA_DIR}' exists and is writable by $(id -un),"
+        error "then re-run: sudo ./install.sh"
+        error "HunterX status: NOT READY"
+        return 1
+    fi
+    ok "Persistence initialization check"
+
+    if ! verify_database; then
+        error "Database initialization failed."
+        error "HunterX status: NOT READY"
+        return 1
+    fi
+    ok "Database initialized"
+}
+
+verify_database() {
+    step "Verifying HunterX database"
+    local db_file="${DB_URL#sqlite:///}"
+    if [ ! -f "$db_file" ]; then
+        fail "Database file missing: ${db_file}"
+        return 1
+    fi
+    local venv_py="${VENV_DIR}/bin/python"
+    [ -x "$venv_py" ] || venv_py="$PYTHON"
+    if HUNTERX_DATA_DIR="$DATA_DIR" HUNTERX_DATABASE_URL="$DB_URL" HUNTERX_DB_URL="$DB_URL" "$venv_py" - "$db_file" <<'PYEOF'
+import sqlite3
+import sys
+
+db_file = sys.argv[1]
+try:
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='alembic_version'")
+    has_migrations = cursor.fetchone() is not None
+    cursor.execute("CREATE TABLE IF NOT EXISTS _hunterx_probe (id INTEGER)")
+    cursor.execute("DELETE FROM _hunterx_probe")
+    conn.commit()
+    cursor.execute("DROP TABLE IF EXISTS _hunterx_probe")
+    conn.commit()
+except Exception as exc:  # noqa: BLE001
+    print(f"error: {exc}", file=sys.stderr)
+    sys.exit(1)
+finally:
+    conn.close()
+if not has_migrations:
+    print("schema tables present (created on demand)", file=sys.stderr)
+sys.exit(0)
+PYEOF
+    then
+        ok "Database connection"
+        ok "Database writable"
+        ok "Schema"
+        return 0
+    else
+        fail "Database read/write verification failed"
+        return 1
     fi
 }
 
 # ---------------------------------------------------------------------------
-# Environment detection (shell-only concerns)
+# 9. Supporting resources
 # ---------------------------------------------------------------------------
 
-detect_environment() {
-    step "Detecting environment"
+prepare_resources() {
+    step "Preparing HunterX supporting resources"
+    local base
+    base="$(dirname "$VENV_DIR")"
 
-    local os_name arch
-    os_name="$(uname -s 2>/dev/null || echo 'unknown')"
-    arch="$(uname -m 2>/dev/null || echo 'unknown')"
-    info "OS: ${os_name} | Architecture: ${arch}"
-
-    # Shell
-    if [ -n "${BASH_VERSION:-}" ]; then
-        DETECTED_SHELL="bash"
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        DETECTED_SHELL="zsh"
-    else
-        DETECTED_SHELL="posix"
+    # Internal resource directories the platform expects at runtime.
+    mkdir -p "${base}/reports" "${base}/cache" "${base}/tmp" "${base}/data"
+    if [ -n "${SUDO_USER:-}" ] && [ "$INSTALL_MODE" = "system" ]; then
+        chown -R "$SUDO_USER" "${base}/reports" "${base}/cache" "${base}/tmp" 2>/dev/null || true
     fi
-    info "Shell: ${DETECTED_SHELL}"
+    ok "Reports / cache / temporary directories"
 
-    # Package managers & runtimes (only report what actually exists)
-    local present=""
-    for cmd in python3 python pip pipx go cargo npm brew apt-get pacman dnf choco jq; do
-        if have_cmd "$cmd"; then
-            present="${present}${present:+, }${cmd}"
-        fi
-    done
-    if [ -n "$present" ]; then
-        info "Available tools/package managers: ${present}"
-    else
-        warn "No known package managers or language runtimes detected."
+    # Establish the base HunterX environment (in-process adapters, internal
+    # knowledge, signatures, crawler/proof-replay resources). Delegated to the
+    # canonical readiness layer — never duplicated here.
+    if ! run_hunterx install --profile minimal --state "$STATE_DIR"; then
+        error "Base HunterX environment could not be established."
+        error "HunterX status: NOT READY"
+        return 1
     fi
+    ok "Base environment (internal resources)"
 }
 
 # ---------------------------------------------------------------------------
 # PATH management (idempotent; current process + future shells)
 # ---------------------------------------------------------------------------
 
+#: The interactive user owning this install (real user when invoked via sudo).
+real_user() {
+    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
+        echo "$SUDO_USER"
+    else
+        id -un 2>/dev/null || echo "${HOME##*/}"
+    fi
+}
+
+real_home() {
+    local user
+    user="$(real_user)"
+    if [ "$user" = "root" ]; then
+        echo "/root"
+    elif getent passwd "$user" >/dev/null 2>&1; then
+        getent passwd "$user" | cut -d: -f6
+    else
+        echo "$HOME"
+    fi
+}
+
 collect_tool_paths() {
-    # HunterX user executable directory + the runtimes provisioned tools land in.
     TOOL_PATH_DIRS=(
         "${BIN_DIR:-${HOME}/.local/bin}"
+        "${VENV_DIR:-}/bin"
         "${HOME}/.local/bin"
         "${HOME}/.cargo/bin"
     )
@@ -590,16 +810,11 @@ collect_tool_paths() {
             TOOL_PATH_DIRS+=("${gopath}/bin")
         fi
     fi
-    # Python user script directory (Windows/MSYS style when APPDATA is set).
-    if [ -n "${APPDATA:-}" ]; then
-        for d in "${APPDATA}"/Python/Python*/Scripts; do
-            [ -d "$d" ] && TOOL_PATH_DIRS+=("$d")
-        done
-    fi
     # Deduplicate
     local seen=""
     local filtered=()
     for d in "${TOOL_PATH_DIRS[@]}"; do
+        [ -n "$d" ] || continue
         case ":$seen:" in
             *":$d:"*) ;;
             *) filtered+=("$d"); seen="$seen:$d" ;;
@@ -617,44 +832,61 @@ ensure_path_for_current_process() {
             added+=("$d")
         fi
     done
+    # The shared tool directory must take precedence over the venv bin: the
+    # venv may contain same-named Python packages (e.g. the ``httpx`` HTTP
+    # client) that would shadow the real security tool.
+    if [ -n "${TOOL_BIN_DIR:-}" ] && [ -d "$TOOL_BIN_DIR" ]; then
+        # Remove any earlier occurrence, then prepend the canonical one.
+        local cleaned=""
+        local remaining="${PATH}"
+        while [ -n "$remaining" ]; do
+            local segment
+            segment="${remaining%%:*}"
+            if [ "$segment" != "$TOOL_BIN_DIR" ]; then
+                cleaned="${cleaned:+${cleaned}:}${segment}"
+            fi
+            if [ "$remaining" = "$segment" ]; then
+                remaining=""
+            else
+                remaining="${remaining#*:}"
+            fi
+        done
+        export PATH="${TOOL_BIN_DIR}:${cleaned}"
+    fi
     if [ "${#added[@]}" -gt 0 ]; then
         info "Exported into current PATH: ${added[*]}"
     fi
 }
 
 persist_path_for_shells() {
-    local line
+    # Persist PATH to the interactive user's shell configs (the real user when
+    # invoked via sudo), so provisioned tools are visible after logout/login.
+    local target_home
+    target_home="$(real_home)"
     for d in "${TOOL_PATH_DIRS[@]}"; do
         [ -d "$d" ] || continue
         if path_contains "$d"; then
             continue
         fi
-        case "$DETECTED_SHELL" in
-            bash)
-                line="export PATH=\"\$PATH:${d}\""
-                append_once "$HOME/.bashrc" "$line"
-                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
-                ;;
-            zsh)
-                line="export PATH=\"\$PATH:${d}\""
-                append_once "$HOME/.zshrc" "$line"
-                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
-                ;;
-            *)
-                line="export PATH=\"\$PATH:${d}\""
-                [ -f "$HOME/.profile" ] && append_once "$HOME/.profile" "$line"
-                ;;
-        esac
+        append_once "${target_home}/.bashrc" "export PATH=\"\$PATH:${d}\""
+        append_once "${target_home}/.profile" "export PATH=\"\$PATH:${d}\"" 2>/dev/null || true
     done
-    info "PATH configuration persisted to shell config files (idempotent)."
+    ok "PATH configuration persisted for $(real_user) (idempotent)"
+}
+
+add_to_path() {
+    step "Configuring PATH"
+    collect_tool_paths
+    ensure_path_for_current_process
+    persist_path_for_shells
+    ok "PATH configured"
 }
 
 # ---------------------------------------------------------------------------
-# Tool readiness bootstrap (delegates to the canonical Python readiness layer)
+# Tool readiness delegation (canonical layer owns the tool catalog)
 # ---------------------------------------------------------------------------
 
 run_hunterx() {
-    # Prefer the just-installed binary; fall back to PATH.
     local hx="${BIN_DIR}/${PROJECT_NAME}"
     if [ -x "$hx" ]; then
         "$hx" "$@"
@@ -663,180 +895,126 @@ run_hunterx() {
     fi
 }
 
-bootstrap_toolchain() {
-    step "Bootstrap: establishing the base HunterX environment"
-    if ! run_hunterx install --profile minimal; then
-        error "hunterx install (base environment) failed."
-        return 1
+provision_toolchain() {
+    step "Provisioning security toolchain (profile: ${TOOL_PROFILE})"
+
+    if [ "$TOOL_PROFILE" = "minimal" ]; then
+        ok "Minimal profile: base environment already established"
+        return 0
     fi
 
-    if [ "$TOOL_PROFILE" != "minimal" ]; then
-        step "Bootstrap: provisioning tool profile '${TOOL_PROFILE}'"
-        if ! run_hunterx tools install --profile "$TOOL_PROFILE"; then
-            warn "hunterx tools install --profile ${TOOL_PROFILE} reported failures."
-        fi
+    # Detect + show available/missing tools (compact multi-column output).
+    if ! run_hunterx tools check; then
+        warn "hunterx tools check reported an error; continuing to provision."
     fi
 
-    # Re-export PATH so the current process sees freshly provisioned binaries,
-    # then re-verify immediately (install → PATH → verify in the same run).
-    collect_tool_paths
-    ensure_path_for_current_process
-    return 0
-}
+    echo ""
+    info "HunterX will now provision the required toolchain automatically."
 
-final_readiness_report() {
-    step "Final readiness verification (hunterx tools check)"
-
-    local json_file="${TMPDIR:-/tmp}/hunterx_readiness.json"
-    if ! run_hunterx tools check --json > "$json_file" 2>/dev/null; then
-        warn "hunterx tools check failed; showing the text report instead."
-        run_hunterx tools check || true
-        return 1
+    # Provision missing tools with live progress, per-tool timeouts, failure
+    # isolation and state tracking for resume support.
+    if ! run_hunterx tools install --profile "$TOOL_PROFILE" --state "$STATE_DIR"; then
+        warn "Some tools could not be provisioned (see summary above)."
     fi
 
-    local py_interp="${VENV_DIR}/bin/python"
-    [ -x "$py_interp" ] || py_interp="$PYTHON"
-
-    "$py_interp" - "$TOOL_PROFILE" "$json_file" <<'PYEOF'
-import json
-import sys
-
-profile, json_file = sys.argv[1], sys.argv[2]
-with open(json_file, encoding="utf-8") as handle:
-    data = json.load(handle)
-
-summary = data.get("summary", {})
-capabilities = data.get("capabilities", [])
-platform = data.get("platform", {})
-
-available = summary.get("available", 0)
-missing = summary.get("missing", 0)
-broken = summary.get("broken", 0)
-outdated = summary.get("outdated", 0)
-unsupported = summary.get("unsupported", 0)
-
-print()
-print("HunterX installation complete.")
-print()
-print("Platform:", f"{platform.get('os')} / {platform.get('distro') or platform.get('package_manager')}")
-print("Tool readiness:")
-print(f"    AVAILABLE:   {available}")
-print(f"    MISSING:     {missing}")
-print(f"    BROKEN:      {broken}")
-print(f"    OUTDATED:    {outdated}")
-print(f"    UNSUPPORTED: {unsupported}")
-print()
-print("Capability coverage:")
-for cap in capabilities:
-    print(f"    {cap['capability']:<28} {cap['status'].upper()}")
-print()
-
-if profile == "minimal":
-    # The minimal profile intentionally provisions no external tools; the base
-    # environment is complete when its in-process capabilities are available.
-    base_missing = [
-        c for c in capabilities
-        if c.get("capability") in ("proof_validation", "replay") and c.get("status") != "ready"
-    ]
-    if base_missing:
-        print("INSTALLATION INCOMPLETE")
-        for c in base_missing:
-            print(f"    - {c['capability']}: providers missing ({', '.join(c.get('missing', ()))})")
-        sys.exit(1)
-    print("INSTALLATION COMPLETE")
-    sys.exit(0)
-
-required_missing = [c for c in capabilities if c.get("level") == "required" and c.get("status") != "ready"]
-optional_missing = [c for c in capabilities if c.get("level") != "required" and c.get("status") != "ready"]
-
-if required_missing:
-    print("INSTALLATION INCOMPLETE")
-    print("Mandatory capabilities could not be established:")
-    for c in required_missing:
-        print(f"    - {c['capability']}: providers missing ({', '.join(c.get('missing', ()))})")
-    sys.exit(1)
-elif optional_missing:
-    print("INSTALLATION COMPLETE — DEGRADED")
-    print("Optional capabilities missing (mission runs with reduced coverage):")
-    for c in optional_missing:
-        print(f"    - {c['capability']}")
-    sys.exit(0)
-else:
-    print("INSTALLATION COMPLETE")
-    sys.exit(0)
-PYEOF
+    # Verify every tool AFTER provisioning.
+    step "Verifying security toolchain"
+    run_hunterx tools check || true
 }
 
 # ---------------------------------------------------------------------------
+# Final readiness verification
+# ---------------------------------------------------------------------------
 
-add_to_path() {
-    step "Verifying PATH"
-    collect_tool_paths
-    ensure_path_for_current_process
-    persist_path_for_shells
+final_readiness() {
+    step "Final HunterX readiness verification"
 
-    if ! path_contains "$BIN_DIR"; then
-        export PATH="${BIN_DIR}:${PATH}"
-    fi
-    info "PATH OK"
-}
-
-verify_installation() {
-    step "Verifying installation"
+    local checks=0
     local errors=0
 
-    echo ""
+    # -- Core ---------------------------------------------------------------
     if have_cmd hunterx || [ -x "${BIN_DIR}/${PROJECT_NAME}" ]; then
-        info "1/6: hunterx version"
-        run_hunterx version || { error "FAILED"; errors=$((errors+1)); }
-        info "2/6: hunterx help"
-        run_hunterx help >/dev/null 2>&1 && echo "  (help rendered OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "3/6: hunterx config"
-        run_hunterx config >/dev/null 2>&1 && echo "  (config resolved OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "4/6: hunterx platform"
-        run_hunterx platform >/dev/null 2>&1 && echo "  (platform composition OK)" || { error "FAILED"; errors=$((errors+1)); }
-        info "5/6: hunterx tools list"
-        run_hunterx tools list >/dev/null 2>&1 && echo "  (toolchain catalog OK)" || {
-            warn "Toolchain catalog did not render. This is not fatal."
-        }
-        info "6/6: hunterx tools check"
-        run_hunterx tools check >/dev/null 2>&1 && echo "  (readiness report OK)" || {
-            warn "Readiness report did not render. Inspect output above."
-        }
+        ok "HunterX CLI: $(run_hunterx version 2>/dev/null | head -1)" && checks=$((checks+1))
+        run_hunterx help >/dev/null 2>&1 && ok "CLI help" && checks=$((checks+1))
+        run_hunterx config >/dev/null 2>&1 && ok "Configuration resolves" && checks=$((checks+1))
+        run_hunterx platform >/dev/null 2>&1 && ok "Platform composition" && checks=$((checks+1))
     else
-        error "1/6: hunterx command not found on PATH"
+        fail "HunterX command not found on PATH"
         errors=$((errors+1))
     fi
 
-    info "Verifying symlinks..."
-    local all_ok=true
-    for link in "${PROJECT_NAME}" "${SYMLINKS[@]}"; do
-        local lp="${BIN_DIR}/${link}"
-        if [ -L "$lp" ] || [ -f "$lp" ]; then
-            if [ "$link" = "$PROJECT_NAME" ]; then
-                if "$lp" --version >/dev/null 2>&1; then
-                    info "  ${lp} OK"
-                else
-                    warn "  ${lp} exists but may not work"
-                fi
-            else
-            local resolved
-            resolved=$(readlink -f "$lp" 2>/dev/null || readlink "$lp" 2>/dev/null || stat -c "%N" "$lp" 2>/dev/null || echo "symlink")
-                info "  ${lp} -> ${resolved}"
-            fi
-        else
-            warn "  ${lp} missing"
-            all_ok=false
-        fi
-    done
-
-    echo ""
-    if [ "$errors" -eq 0 ]; then
-        info "All checks passed! HunterX is ready to use."
+    # -- Runtime -------------------------------------------------------------
+    ok "Python: $("$PYTHON" --version 2>/dev/null)" && checks=$((checks+1))
+    if [ -x "${VENV_DIR}/bin/python" ]; then
+        ok "Virtual environment healthy" && checks=$((checks+1))
     else
-        warn "${errors} check(s) failed. Review output above."
+        fail "Virtual environment missing"
+        errors=$((errors+1))
     fi
+
+    # -- Database ------------------------------------------------------------
+    if verify_database >/dev/null 2>&1; then
+        ok "Database ready" && checks=$((checks+1))
+    else
+        fail "Database not ready"
+        errors=$((errors+1))
+    fi
+
+    # -- Tools: required capabilities ----------------------------------------
+    # Ensure the venv bin and shared tool bin are on the current PATH so the
+    # readiness probe resolves every provisioned tool (pip/venv + go/cargo).
+    collect_tool_paths
+    ensure_path_for_current_process
+    local readiness_rc=0
+    local readiness_file="${STATE_DIR}/readiness.json"
+    mkdir -p "$STATE_DIR" 2>/dev/null || true
+    rm -f "$readiness_file" 2>/dev/null || true
+    run_hunterx tools check --json > "$readiness_file" 2>/dev/null || readiness_rc=$?
+    local venv_py="${VENV_DIR}/bin/python"
+    [ -x "$venv_py" ] || venv_py="$PYTHON"
+    local verdict
+    verdict=$("$venv_py" - "$readiness_file" <<'PYEOF'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    data = json.load(handle)
+
+capabilities = data.get("capabilities", [])
+required = [c for c in capabilities if c.get("level") == "required" and c.get("status") != "ready"]
+recommended = [c for c in capabilities if c.get("level") == "recommended" and c.get("status") != "ready"]
+optional = [c for c in capabilities if c.get("level") == "optional" and c.get("status") != "ready"]
+if required:
+    print("NOT_READY")
+elif recommended or optional:
+    print("PARTIAL")
+else:
+    print("READY")
+PYEOF
+    )
+
+    case "$verdict" in
+        READY)
+            TOOLCHAIN_STATUS="READY"
+            ok "Required capabilities READY"
+            ;;
+        PARTIAL)
+            TOOLCHAIN_STATUS="PARTIAL"
+            ok "Required capabilities READY (recommended/optional gaps remain)"
+            ;;
+        *)
+            TOOLCHAIN_STATUS="NOT_READY"
+            fail "Required capabilities NOT READY"
+            errors=$((errors+1))
+            ;;
+    esac
+
+    return $errors
 }
+
+# ---------------------------------------------------------------------------
+# Banner + quick start
+# ---------------------------------------------------------------------------
 
 show_banner() {
     echo ""
@@ -849,6 +1027,57 @@ show_banner() {
     echo ""
 }
 
+show_quick_start() {
+    echo ""
+    echo "Quick Start"
+    echo "────────────────────────────────────────"
+    echo ""
+    echo "Start HunterX:"
+    echo "  hunterx help"
+    echo ""
+    echo "Run a security assessment:"
+    echo "  hunterx mission create <objective> <target>"
+    echo "  hunterx hunt full_security_assessment <target>"
+    echo ""
+    echo "Check tool readiness:"
+    echo "  hunterx tools check"
+    echo ""
+    echo "View help:"
+    echo "  hunterx --help"
+    echo ""
+    echo "Responsible use: HunterX is an authorized cybersecurity testing and"
+    echo "research platform. Obtain authorization before testing any system."
+    echo ""
+    if [ "$INSTALL_MODE" = "system" ]; then
+        echo "Uninstall:    sudo bash $0 --uninstall"
+    else
+        echo "Uninstall:    bash $0 --user --uninstall"
+    fi
+    echo ""
+}
+
+emit_json_summary() {
+    if [ "$JSON_MODE" = true ]; then
+        local venv_py="${VENV_DIR}/bin/python"
+        [ -x "$venv_py" ] || venv_py="$PYTHON"
+        "$venv_py" - "${HUNTERX_VERSION:-}" "$(dirname "$VENV_DIR")" "$STATE_DIR" "$DB_URL" <<'PYEOF'
+import json
+import sys
+
+version, install_dir, state_dir, database = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+summary = {
+    "hunterx": version,
+    "install_dir": install_dir,
+    "state_dir": state_dir,
+    "database": database,
+}
+print(json.dumps(summary, indent=2, sort_keys=True))
+PYEOF
+    fi
+}
+
+# ---------------------------------------------------------------------------
+
 main() {
     parse_args "$@"
 
@@ -857,7 +1086,6 @@ main() {
         info "HunterX Uninstaller"
         echo ""
         uninstall_hunterx
-        # uninstall_hunterx calls exit
     fi
 
     show_banner
@@ -869,54 +1097,107 @@ main() {
         warn "Run with --user for user-local installation, or prefix with sudo."
     fi
 
+    # 1. Detect environment
     detect_distro
+
+    # 2. Prepare OS dependencies
     install_system_deps
+
+    # 3. Prepare runtime / toolchains
     check_python
-    detect_environment
+
+    # 4. Install HunterX
     install_hunterx
-    install_executable
+
+    # 5. Prepare directories
+    prepare_directories
+
+    # 6. Prepare configuration
     configure_database_env
-    initialize_database
+
+    # 4b. Install/refresh the executable wrapper (pins DB URL + tool PATH).
+    install_executable
+
+    # 7 + 8. Database + migrations
+    if ! initialize_database; then
+        exit 1
+    fi
+
+    # 9. Supporting resources (base environment)
+    prepare_resources
+
+    # PATH for current process + future shells
     add_to_path
-    verify_installation
 
-    # Tool readiness bootstrap + final verification.
-    bootstrap_toolchain
-    final_readiness_report
-    local readiness_rc=$?
-    if [ "$readiness_rc" -ne 0 ]; then
-        error "Tool readiness verification reported mandatory capability failures."
-        error "Review the report above and run: hunterx tools check / hunterx tools install --profile ${TOOL_PROFILE}"
-        exit "$readiness_rc"
-    fi
+    # 10-12. Detect tools, install missing, verify
+    provision_toolchain
+
+    # 13-15. Final readiness verification
+    local readiness_errors=0
+    final_readiness || readiness_errors=$?
+
+    # Extract failed tools from the final report (for the summary banner).
+    local venv_py="${VENV_DIR}/bin/python"
+    [ -x "$venv_py" ] || venv_py="$PYTHON"
+    local readiness_file="${STATE_DIR}/readiness.json"
+    FAILED_TOOLS=$("$venv_py" - "$readiness_file" <<'PYEOF' 2>/dev/null || echo ""
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    data = json.load(handle)
+missing = [tool["tool_id"] for tool in data.get("tools", ()) if tool.get("status") in ("missing", "broken", "unsupported")]
+print(" ".join(sorted(missing)))
+PYEOF
+    )
 
     echo ""
-    info "Installation complete!"
-    echo ""
-    echo "  Quick start:  hunterx help"
-    echo "  Mission:      hunterx mission create <objective> <target>"
-    echo "  Hunt:         hunterx hunt <objective> <target>"
-    echo "  Toolchain:    hunterx tools list"
-    echo "  Readiness:    hunterx tools check"
-    echo "  Config:       hunterx config"
-    echo "  Version:      hunterx version"
-    echo "  Platform:     hunterx platform"
-    echo "  Database:     HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:///hunterx.db}"
-    echo ""
-    if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
-        echo "  Note: persistent data in $(dirname "$VENV_DIR")/data is owned by ${SUDO_USER};"
-        echo "        run hunterx as ${SUDO_USER} (not root) to keep the database writable."
+    echo "============================================================"
+    if [ "$readiness_errors" -eq 0 ]; then
+        echo " HunterX ${HUNTERX_VERSION:-v7.0.0}"
+        echo " Installation Complete"
+        echo "============================================================"
         echo ""
-    fi
-    echo "  Responsible use: HunterX is an authorized cybersecurity testing and"
-    echo "  research platform. Obtain authorization before testing any system."
-    echo ""
-    if [ "$INSTALL_MODE" = "system" ]; then
-        echo "  Uninstall:    sudo bash $0 --uninstall"
+        ok "HunterX Core ............... READY"
+        ok "Runtime ................... READY"
+        ok "Database .................. READY"
+        ok "Internal Resources ........ READY"
+        if [ "$TOOLCHAIN_STATUS" = "READY" ]; then
+            ok "Security Toolchain ........ READY"
+        else
+            warn "Security Toolchain ........ ${TOOLCHAIN_STATUS:-PARTIAL}"
+        fi
+        ok "Required Capabilities ..... READY"
+        echo ""
+        if [ -n "$FAILED_TOOLS" ]; then
+            echo "Optional/recommended tools not yet provisioned:"
+            echo "  $FAILED_TOOLS"
+            echo ""
+            echo "Retry provisioning with:"
+            echo "  hunterx tools install --profile ${TOOL_PROFILE}"
+            echo ""
+        fi
+        echo "HunterX is ready to use."
+        echo "============================================================"
+        show_quick_start
+        emit_json_summary
+        exit 0
     else
-        echo "  Uninstall:    bash $0 --user --uninstall"
+        echo " HunterX Installation Incomplete"
+        echo "============================================================"
+        echo ""
+        fail "HunterX Core ............... $([ -x "${BIN_DIR}/${PROJECT_NAME}" ] && echo READY || echo FAILED)"
+        fail "Runtime ................... $([ -x "${VENV_DIR}/bin/python" ] && echo READY || echo FAILED)"
+        warn "Security Toolchain ........ INCOMPLETE"
+        warn "Required Capabilities ..... NOT READY"
+        echo ""
+        echo "Failed components and their reasons are shown above."
+        echo ""
+        echo "Retry:"
+        echo "  sudo ./install.sh"
+        echo "============================================================"
+        exit 1
     fi
-    echo ""
 }
 
 main "$@"

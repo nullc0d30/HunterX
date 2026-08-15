@@ -23,12 +23,13 @@ services:
     volumes:
       # Named volume: initialized from the image with hunterx:hunterx (UID 999)
       # ownership. If you bind-mount a host directory instead (e.g.
-      # ./data:/data), it must be writable by UID 999 or SQLite fails with
-      # "attempt to write a readonly database" — fix with:
+      # ./data:/opt/hunterx/data), it must be writable by UID 999 or SQLite
+      # fails with "attempt to write a readonly database" — fix with:
       #   sudo chown -R 999:999 ./data
-      - hunterx-data:/data
+      - hunterx-data:/opt/hunterx/data
     environment:
-      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
+      - HUNTERX_DATA_DIR=${HUNTERX_DATA_DIR:-/opt/hunterx/data}
+      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////opt/hunterx/data/hunterx.db}
       - HUNTERX_LOG_LEVEL=${HUNTERX_LOG_LEVEL:-INFO}
       - HUNTERX_API_HOST=0.0.0.0
       - HUNTERX_API_PORT=8080
@@ -80,9 +81,10 @@ services:
     volumes:
       # Same note as hunterx-api: a bind-mounted host dir must be writable by
       # UID 999 (chown -R 999:999) or the CLI reports a readonly database.
-      - hunterx-data:/data
+      - hunterx-data:/opt/hunterx/data
     environment:
-      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////data/hunterx.db}
+      - HUNTERX_DATA_DIR=${HUNTERX_DATA_DIR:-/opt/hunterx/data}
+      - HUNTERX_DATABASE_URL=${HUNTERX_DATABASE_URL:-sqlite:////opt/hunterx/data/hunterx.db}
       - HUNTERX_LOG_LEVEL=${HUNTERX_LOG_LEVEL:-INFO}
       # AI provider configuration is passed through from the compose project
       # .env file; never hardcode keys here.

@@ -861,6 +861,11 @@ def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> Non
     Commands: ``install`` (base HunterX environment), ``tools check`` (readiness
     table + capability coverage) and ``tools install`` (provision missing tools
     via trusted static methods, optionally by profile).
+
+    Human-first by default: ``install`` and ``tools install`` render clean
+    progress/summary output and only emit JSON when ``--json`` is requested.
+    ``tools check`` renders a compact multi-column inventory plus capability
+    coverage, or a full JSON report with ``--json``.
     """
 
     def _readiness() -> Any:
@@ -875,79 +880,86 @@ def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> Non
                 return argv[index + 1]
         return default
 
+    def _collect_tool_ids(argv: list[str]) -> list[str]:
+        # Positional tool ids, skipping the values consumed by ``--profile``
+        # and ``--state`` so ``--profile full`` does not treat ``full`` as a
+        # tool id.
+        tool_ids: list[str] = []
+        skip_next = False
+        for part in argv:
+            if skip_next:
+                skip_next = False
+                continue
+            if part in ("--profile", "--state", "--state-dir"):
+                skip_next = True
+                continue
+            if part.startswith("-"):
+                continue
+            tool_ids.append(part)
+        return tool_ids
+
     def _install(argv: list[str]) -> int:
         service = _readiness()
         profile = _flag(argv, "--profile", "minimal")
+        json_mode = _json_flag(argv)
+        state_dir = _flag(argv, "--state", "") or _flag(argv, "--state-dir", "")
         if profile not in service.profiles():
             raise SystemExit(
                 f"unknown install profile '{profile}' (choose from {', '.join(service.profiles())})"
             )
-        outcomes = service.install(profile=profile)
+        state = _load_install_state(state_dir, profile)
+        try:
+            outcomes = service.install(profile=profile, state=state)
+        except KeyboardInterrupt:
+            if state_dir:
+                state.save(state_dir)
+            raise
+        if state_dir:
+            state.save(state_dir)
         report = service.check()
-        payload = {
-            "action": "install",
-            "profile": profile,
-            "platform": report.platform,
-            "outcomes": [outcome.to_dict() for outcome in outcomes],
-            "capabilities": [capability.to_dict() for capability in report.capabilities],
-            "summary": report.summary,
-            "status": _install_status(outcomes),
-            "note": (
-                "Base HunterX environment established. Use 'hunterx tools install "
-                "--profile full' to provision the external security toolchain."
-                if profile == "minimal"
-                else f"Profile '{profile}' provisioned. Re-run 'hunterx tools check' to re-verify."
-            ),
-        }
-        print(app.renderer.render(payload, fmt="json"))
-        return 0
+        if json_mode:
+            payload = _install_payload(profile, outcomes, report)
+            print(app.renderer.render(payload, fmt="json"))
+            return _exit_code_for(report, profile)
+        _print_install_human(profile, outcomes, report, state_dir)
+        return _exit_code_for(report, profile)
 
     def _tools_check(argv: list[str]) -> int:
         report = _readiness().check()
         if _json_flag(argv):
             print(app.renderer.render(report.to_dict(), fmt="json"))
             return 0
-        rows = [
-            {
-                "Tool": verdict.tool_id,
-                "Status": verdict.status.value.upper(),
-                "Version": verdict.version or (verdict.expected_version or "-"),
-                "Path": verdict.path or "-",
-            }
-            for verdict in report.tools
-        ]
-        print(_render_table(["Tool", "Status", "Version", "Path"], rows))
-        capability_rows = [
-            {
-                "Capability": capability.capability,
-                "Level": capability.level.value,
-                "Status": capability.status.upper(),
-                "Providers": ",".join(capability.available) or "-",
-            }
-            for capability in report.capabilities
-        ]
-        print()
-        print(_render_table(["Capability", "Level", "Status", "Providers"], capability_rows))
-        summary = report.summary
-        print()
-        print(
-            f"Summary: {summary['available']}/{summary['total']} tools available, "
-            f"{summary['capabilities_missing']} capabilities missing "
-            f"({summary['broken']} broken, {summary['outdated']} outdated)."
-        )
-        print("Missing tools can be provisioned with: hunterx tools install [--profile <name>]")
+        _print_check_human(report)
         return 0
 
     def _tools_install(argv: list[str]) -> int:
         service = _readiness()
         profile = _flag(argv, "--profile", "")
-        tool_ids = [part for part in argv if not part.startswith("-")]
+        json_mode = _json_flag(argv)
+        state_dir = _flag(argv, "--state", "") or _flag(argv, "--state-dir", "")
+        tool_ids = _collect_tool_ids(argv)
+        if profile and profile not in service.profiles():
+            raise SystemExit(
+                f"unknown install profile '{profile}' (choose from {', '.join(service.profiles())})"
+            )
+        state = _load_install_state(state_dir, profile)
         try:
-            outcomes = service.install(tool_ids, profile=profile)
+            if json_mode:
+                outcomes = service.install(tool_ids, profile=profile, state=state)
+                if state_dir:
+                    state.save(state_dir)
+                print(app.renderer.render([outcome.to_dict() for outcome in outcomes], fmt="json"))
+                return _exit_code_for(_readiness().check(), profile)
+            outcomes = _provision_human(service, tool_ids, profile, state, state_dir)
         except ValueError as error:
             raise SystemExit(str(error)) from error
-        print(app.renderer.render([outcome.to_dict() for outcome in outcomes], fmt="json"))
-        return 0
+        except KeyboardInterrupt:
+            if state_dir:
+                state.save(state_dir)
+            raise
+        if state_dir:
+            state.save(state_dir)
+        return _exit_code_for(_readiness().check(), profile)
 
     def _tools_audit(argv: list[str]) -> int:
         report = _readiness().audit()
@@ -983,6 +995,232 @@ def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> Non
     app.registry.register("tools check", _tools_check, help_text="Show tool readiness and capability coverage")
     app.registry.register("tools install", _tools_install, help_text="Provision missing tools (--profile <name> or explicit tool ids)")
     app.registry.register("tools audit", _tools_audit, help_text="Show tool integration maturity (knowledge + runtime)")
+
+
+def _load_install_state(state_dir: str, profile: str) -> Any:
+    """Load (or create) the persisted installation state for ``state_dir``."""
+    from hunterx.tools.readiness.state import InstallationState
+
+    state = InstallationState.load(state_dir) if state_dir else InstallationState()
+    state.save_dir = state_dir
+    if profile:
+        state.profile = profile
+    return state
+
+
+def _install_payload(profile: str, outcomes: list[Any], report: Any) -> dict[str, Any]:
+    """Return the machine-readable payload for ``hunterx install --json``."""
+    return {
+        "action": "install",
+        "profile": profile,
+        "platform": report.platform,
+        "outcomes": [outcome.to_dict() for outcome in outcomes],
+        "capabilities": [capability.to_dict() for capability in report.capabilities],
+        "summary": report.summary,
+        "status": _install_status(outcomes),
+        "note": (
+            "Base HunterX environment established. Use 'hunterx tools install "
+            "--profile full' to provision the external security toolchain."
+            if profile == "minimal"
+            else f"Profile '{profile}' provisioned. Re-run 'hunterx tools check' to re-verify."
+        ),
+    }
+
+
+def _exit_code_for(report: Any, profile: str = "") -> int:
+    """Return ``0`` when the required environment is ready, else ``1``.
+
+    Recommended/optional gaps degrade the report but do not fail the exit
+    code; a missing required capability means the environment is not ready.
+
+    The ``minimal`` profile intentionally provisions no external tools: its
+    "required" gate is limited to the base in-process capabilities
+    (``proof_validation`` / ``replay``), mirroring the installer's documented
+    contract that the base environment is complete when its in-process
+    capabilities are available.
+    """
+    from hunterx.tools.readiness.models import CapabilityLevel
+
+    if profile == "minimal":
+        gated = {"proof_validation", "replay"}
+        for capability in report.capabilities:
+            if capability.capability in gated and not capability.ready:
+                return 1
+        return 0
+    for capability in report.capabilities:
+        if capability.level is CapabilityLevel.REQUIRED and not capability.ready:
+            return 1
+    return 0
+
+
+def _print_install_human(profile: str, outcomes: list[Any], report: Any, state_dir: str) -> None:
+    """Render the human ``hunterx install`` output (base environment)."""
+    from hunterx.tools.readiness.models import ToolReadinessStatus
+    from hunterx.tools.readiness.reporting import render_summary
+
+    profile_tools = {
+        verdict.tool_id
+        for verdict in report.tools
+        if profile in (verdict.definition.profiles if verdict.definition is not None else ())
+    }
+    missing = [
+        verdict.tool_id
+        for verdict in report.tools
+        if verdict.tool_id in profile_tools and verdict.status is ToolReadinessStatus.MISSING
+    ]
+    print()
+    print(f"==> Establishing base HunterX environment (profile: {profile})")
+    print()
+    if missing:
+        print(f"[INFO] Base environment tools missing: {', '.join(sorted(missing))}")
+        print("[INFO] HunterX will now provision the base environment automatically.")
+        print()
+    for outcome in outcomes:
+        mark = "\u2713" if outcome.success else "\u2717"
+        detail = f" ({outcome.error})" if not outcome.success and outcome.error else ""
+        skipped = " [already present]" if outcome.skipped else ""
+        print(f"  {mark} {outcome.tool_id}{skipped}{detail}")
+    print()
+    print(render_summary(outcomes, already_available=sum(1 for o in outcomes if o.skipped)))
+    _print_capability_status(report)
+    if state_dir:
+        print()
+        print(f"[INFO] Installation state: {state_dir}/install.json")
+
+
+def _print_check_human(report: Any) -> None:
+    """Render the human ``hunterx tools check`` output."""
+    from hunterx.tools.readiness.models import ToolInventory
+    from hunterx.tools.readiness.reporting import render_inventory, terminal_width
+
+    inventory = ToolInventory.from_report(report)
+    width = terminal_width()
+    print()
+    print("==> Checking HunterX security toolchain")
+    print()
+    print(render_inventory(inventory, width))
+    print()
+    _print_capability_status(report)
+    summary = report.summary
+    print()
+    print(
+        f"Summary: {summary['available']}/{summary['total']} tools available, "
+        f"{summary['capabilities_missing']} capabilities missing "
+        f"({summary['broken']} broken, {summary['outdated']} outdated)."
+    )
+    if inventory.missing or inventory.broken:
+        print("Missing tools can be provisioned with: hunterx tools install [--profile <name>]")
+
+
+def _print_capability_status(report: Any) -> None:
+    """Render the compact capability coverage (required/recommended/optional)."""
+    from hunterx.tools.readiness.models import CapabilityLevel
+
+    ready = [c for c in report.capabilities if c.ready]
+    not_ready = [c for c in report.capabilities if not c.ready]
+    required = [c for c in not_ready if c.level is CapabilityLevel.REQUIRED]
+    recommended = [c for c in not_ready if c.level is CapabilityLevel.RECOMMENDED]
+    optional = [c for c in not_ready if c.level is CapabilityLevel.OPTIONAL]
+    print()
+    print("Capability coverage:")
+    for capability in ready:
+        print(f"  \u2713 {capability.capability}")
+    for capability in not_ready:
+        print(f"  \u2717 {capability.capability} [missing: {', '.join(capability.missing) or 'none'}]")
+    print()
+    print(f"Required: {len(required)} missing" if required else "Required: READY")
+    if recommended:
+        print(f"Recommended: PARTIAL ({len(recommended)} missing)")
+    else:
+        print("Recommended: READY")
+    if optional:
+        print(f"Optional: PARTIAL ({len(optional)} missing)")
+    else:
+        print("Optional: READY")
+
+
+def _provision_human(
+    service: Any,
+    tool_ids: list[str],
+    profile: str,
+    state: Any,
+    state_dir: str,
+) -> list[Any]:
+    """Run the human ``hunterx tools install`` flow with live progress.
+
+    Shows the current available/missing inventory first, then provisions
+    missing tools with ``[N/M] tool ... ✓`` lines, then a summary. Failures
+    are isolated per tool and reported with reasons.
+    """
+    from hunterx.tools.readiness.models import ToolInventory
+    from hunterx.tools.readiness.reporting import (
+        ProgressWriter,
+        render_inventory,
+        render_summary,
+        terminal_width,
+    )
+
+    report = service.check()
+    inventory = ToolInventory.from_report(report)
+    width = terminal_width()
+
+    print()
+    print("==> Checking HunterX security toolchain")
+    print()
+    print(render_inventory(inventory, width))
+
+    if tool_ids:
+        targets = list(dict.fromkeys(tool_ids))
+    elif profile:
+        targets = list(service.profile_tools(profile))
+    else:
+        targets = list(service.profile_tools("minimal"))
+
+    wanted = set(targets)
+    available = set(inventory.available)
+    needs_provision = sorted(tool_id for tool_id in wanted if tool_id not in available)
+    already = sorted(wanted - set(needs_provision))
+
+    if not needs_provision:
+        print()
+        print(f"[INFO] No missing tools to provision ({len(already)} already available).")
+        print()
+        return [outcome for outcome in service.install(targets, profile=profile, state=state)]
+
+    print()
+    print("[INFO] Missing tools detected.")
+    print("[INFO] HunterX will now provision the required toolchain automatically.")
+    print()
+    print("==> Installing security toolchain")
+    print()
+
+    writer = ProgressWriter(is_terminal=_stdout_is_tty())
+
+    def observer(event: Any) -> None:
+        if event.phase == "start":
+            writer.start(event.index, event.total, event.tool_id)
+        elif event.phase == "done":
+            writer.finish(event.index, event.total, event.tool_id, event.outcome)
+
+    outcomes = service.install(needs_provision, state=state, observer=observer)
+    print()
+    print(render_summary(outcomes, already_available=len(already)))
+    failed = [outcome for outcome in outcomes if not outcome.success]
+    if failed:
+        print()
+        print("[INFO] Continuing with remaining tools...")
+        print()
+        print("Failed tools can be retried with: hunterx tools install --profile full")
+    return list(outcomes)
+
+
+def _stdout_is_tty() -> bool:
+    import sys
+
+    try:
+        return bool(sys.stdout.isatty())
+    except (AttributeError, OSError):  # pragma: no cover - exotic streams
+        return False
 
 
 def _render_table(headers: list[str], rows: list[dict[str, str]]) -> str:

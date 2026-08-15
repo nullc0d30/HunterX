@@ -75,7 +75,8 @@ class ToolDefinitionBuilder:
             knowledge.cli_binary if knowledge is not None else ""
         )
         aliases = _tuple_of(spec.get("aliases"))
-        version_command = _tuple_of(spec.get("version_command")) or ("--version",)
+        raw_version_command = spec.get("version_command")
+        version_command = ("--version",) if raw_version_command is None else _tuple_of(raw_version_command)
         version_regex = str(spec.get("version_regex") or "")
         min_version = str(spec.get("min_version") or "")
         if not min_version and knowledge is not None:

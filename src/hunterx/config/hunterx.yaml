@@ -10,6 +10,8 @@ environment: production
 log_level: INFO
 
 database:
+  # Default sentinel — resolved at runtime to <application root>/data/hunterx.db
+  # (see hunterx.config.paths). Set HUNTERX_DATABASE_URL to override.
   url: "sqlite:///hunterx.db"
   echo: false
   pool_size: 10

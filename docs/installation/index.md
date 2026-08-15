@@ -125,8 +125,11 @@ explicit migration run:
 alembic upgrade head
 ```
 
-The database URL defaults to `sqlite:///hunterx.db` and can be overridden with
-`HUNTERX_DATABASE_URL` (see [Configuration]({{ '/configuration/' | relative_url }})).
+The database URL defaults to the application data directory —
+`<application root>/data/hunterx.db` — resolved at runtime by
+`hunterx.config.paths`. Override it with `HUNTERX_DATABASE_URL` or relocate the
+data directory with `HUNTERX_DATA_DIR` (see
+[Configuration]({{ '/configuration/' | relative_url }})).
 
 ## Uninstall
 

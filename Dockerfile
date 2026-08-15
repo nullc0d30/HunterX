@@ -52,15 +52,19 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.description="HunterX ${VERSION} — AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools." \
       org.opencontainers.image.base.name="docker.io/python:3.11-slim"
 
-# Persistent state lives on the /data volume (created and owned by the
-# non-root hunterx user below), so the CLI never falls back to a CWD-relative
-# ./hunterx.db which would write to the ephemeral container layer.
+# Persistent state lives in the application data directory inside the image
+# (/opt/hunterx/data, created and owned by the non-root hunterx user below),
+# exposed as a volume so database persistence survives container recreation.
+# The CLI/API resolve the same logical configuration as a native install:
+# <application root>/data/hunterx.db. HUNTERX_DATA_DIR pins that location and
+# the app's path resolver (hunterx.config.paths) derives the URL from it.
 ENV PATH="/opt/hunterx-venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HUNTERX_LOG_LEVEL=INFO \
-    HUNTERX_DATABASE_URL="sqlite:////data/hunterx.db" \
-    HUNTERX_DB_URL="sqlite:////data/hunterx.db"
+    HUNTERX_DATA_DIR="/opt/hunterx/data" \
+    HUNTERX_DATABASE_URL="sqlite:////opt/hunterx/data/hunterx.db" \
+    HUNTERX_DB_URL="sqlite:////opt/hunterx/data/hunterx.db"
 
 WORKDIR /app
 
@@ -69,19 +73,20 @@ WORKDIR /app
 # minor path is copied.
 COPY --from=builder /opt/hunterx-venv/ /opt/hunterx-venv/
 
-# Create non-root user and directories
+# Create non-root user and application data directory
 RUN groupadd -r -g 999 hunterx && \
     useradd -r -g hunterx -u 999 -d /app -s /sbin/nologin hunterx && \
-    mkdir -p /data /app/reports
+    mkdir -p /opt/hunterx/data /app/reports
 
-# Set ownership and secure permissions
-RUN chown -R hunterx:hunterx /app /data && \
-    chmod -R o-rwx /app && \
-    chmod 755 /app /data
+# Set ownership and secure permissions: the hunterx user owns the data dir so
+# SQLite can create/open /opt/hunterx/data/hunterx.db.
+RUN chown -R hunterx:hunterx /app /opt/hunterx && \
+    chmod -R o-rwx /app /opt/hunterx && \
+    chmod 755 /app /opt/hunterx /opt/hunterx/data
 
 USER hunterx
 
-VOLUME ["/data"]
+VOLUME ["/opt/hunterx/data"]
 
 EXPOSE 8080
 

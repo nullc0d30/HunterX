@@ -134,10 +134,12 @@ class StubRunner:
     def __init__(self, results: dict[str, tuple[int, str, str]] | None = None) -> None:
         self._results = results or {}
         self.calls: list[list[str]] = []
+        self.timeouts: list[float | None] = []
 
-    def run(self, argv: list[str]) -> tuple[int, str, str]:
+    def run(self, argv: list[str], *, timeout_s: float | None = None) -> tuple[int, str, str]:
         """Record the argv and return the canned result for its first element."""
         self.calls.append(list(argv))
+        self.timeouts.append(timeout_s)
         return self._results.get(argv[0], (0, "", ""))
 
     def install_succeeded(self) -> None:

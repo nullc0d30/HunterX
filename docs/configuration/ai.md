@@ -222,7 +222,7 @@ docker run --rm --env-file .env nullc0d30/hunterx:latest config
 
 # Run a hunt mission with AI enabled
 docker run --rm --env-file .env \
-  -v hunterx-data:/data \
+  -v hunterx-data:/opt/hunterx/data \
   nullc0d30/hunterx:latest hunt full_security_assessment https://example.com
 ```
 
@@ -230,9 +230,9 @@ Notes:
 
 - `--env-file .env` reads your local `.env` at container start; the key never
   ends up baked into the image.
-- The image runs as a non-root user and persists state under the `/data`
-  volume. See the [Docker guide]({{ '/DOCKERHUB/' | relative_url }}) for the
-  full image usage.
+- The image runs as a non-root user and persists state under the
+  `/opt/hunterx/data` volume. See the [Docker guide]({{ '/DOCKERHUB/' | relative_url }})
+  for the full image usage.
 - With Docker Compose, pass the same values through the project `.env` file —
   they are already forwarded as `HUNTERX_AI_*` environment variables.
 
