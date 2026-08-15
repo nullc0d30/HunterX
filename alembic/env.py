@@ -43,6 +43,13 @@ target_metadata = get_base().metadata
 env_url = os.environ.get("HUNTERX_DB_URL")
 if env_url:
     config.set_main_option("sqlalchemy.url", env_url)
+else:
+    # Resolve the default sentinel to the application data directory so a bare
+    # `alembic upgrade head` from the source tree targets the same
+    # <root>/data/hunterx.db the runtime uses.
+    from hunterx.config.paths import resolve_database_url
+
+    config.set_main_option("sqlalchemy.url", resolve_database_url(config.get_main_option("sqlalchemy.url")))
 
 
 def run_migrations_offline() -> None:

@@ -51,7 +51,10 @@ def create_app(
     if platform is None:
         from hunterx.platform import build_platform
 
-        platform = build_platform(settings)
+        # Force the SQL persistence layer so the API never silently runs with
+        # in-memory repositories: the database resolves to the application
+        # data directory (<root>/data/hunterx.db) via the shared path logic.
+        platform = build_platform(settings, persistence=True)
 
     configure_container(platform.container)
 

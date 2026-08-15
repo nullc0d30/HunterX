@@ -79,6 +79,8 @@ class InstallMethod:
         name: module/repo path for ``go``/``cargo`` or script id for ``script``.
         platforms: platforms this method targets.
         requires_elevation: whether the method needs root/administrator rights.
+        timeout_s: hard per-method timeout in seconds; ``0`` means the
+            provisioner's per-kind default applies.
 
     """
 
@@ -87,6 +89,7 @@ class InstallMethod:
     name: str = ""
     platforms: tuple[str, ...] = ("linux", "darwin", "windows")
     requires_elevation: bool = False
+    timeout_s: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-safe mapping of this method."""
@@ -96,6 +99,7 @@ class InstallMethod:
             "name": self.name,
             "platforms": list(self.platforms),
             "requires_elevation": self.requires_elevation,
+            "timeout_s": self.timeout_s,
         }
 
 
@@ -324,6 +328,91 @@ class InstallOutcome:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class InstallProgress:
+    """Live per-tool progress event emitted during provisioning.
+
+    The installer UI consumes these events to render ``[N/M] tool ... ✓``
+    lines without polluting the provisioning layer with terminal concerns.
+
+    Attributes:
+        index: 1-based position of the tool in the current install run.
+        total: total number of tools in the run.
+        tool_id: the tool currently being provisioned.
+        phase: ``"start"`` before the external installer runs, ``"done"``
+            after an outcome has been produced.
+        outcome: the resulting :class:`InstallOutcome` (only on ``"done"``).
+
+    """
+
+    index: int
+    total: int
+    tool_id: str
+    phase: str
+    outcome: InstallOutcome | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-safe mapping of this event."""
+        return {
+            "index": self.index,
+            "total": self.total,
+            "tool_id": self.tool_id,
+            "phase": self.phase,
+            "outcome": self.outcome.to_dict() if self.outcome is not None else None,
+        }
+
+
+@dataclass(slots=True)
+class ToolInventory:
+    """Grouped view of a readiness probe (for compact installer output).
+
+    Splits the per-tool verdicts into the five actionable buckets so the
+    installer can render ``Available`` / ``Missing`` / ``Broken`` /
+    ``Outdated`` / ``Unsupported`` inventories independently of the detailed
+    report.
+
+    Attributes:
+        available: tool ids whose binary is present and verifiable.
+        missing: tool ids with no executable on PATH.
+        broken: tool ids whose executable exists but cannot be verified.
+        outdated: tool ids whose installed version is below the minimum.
+        unsupported: tool ids with no compatible install method on this platform.
+
+    """
+
+    available: list[str] = field(default_factory=list)
+    missing: list[str] = field(default_factory=list)
+    broken: list[str] = field(default_factory=list)
+    outdated: list[str] = field(default_factory=list)
+    unsupported: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-safe mapping of this inventory."""
+        return {
+            "available": list(self.available),
+            "missing": list(self.missing),
+            "broken": list(self.broken),
+            "outdated": list(self.outdated),
+            "unsupported": list(self.unsupported),
+        }
+
+    @classmethod
+    def from_report(cls, report: ReadinessReport) -> ToolInventory:
+        """Build the grouped inventory from a :class:`ReadinessReport`."""
+        inventory = cls()
+        for verdict in report.tools:
+            bucket = {
+                ToolReadinessStatus.AVAILABLE: inventory.available,
+                ToolReadinessStatus.MISSING: inventory.missing,
+                ToolReadinessStatus.BROKEN: inventory.broken,
+                ToolReadinessStatus.OUTDATED: inventory.outdated,
+                ToolReadinessStatus.UNSUPPORTED: inventory.unsupported,
+            }.get(verdict.status)
+            if bucket is not None:
+                bucket.append(verdict.tool_id)
+        return inventory
+
+
 @dataclass(slots=True)
 class PreflightResult:
     """Mission preflight verdict.
@@ -370,3 +459,19 @@ class PreflightResult:
             "provision_failures": list(self.provision_failures),
             "blocked_reason": self.blocked_reason,
         }
+
+
+__all__ = [
+    "CapabilityLevel",
+    "CapabilityReadiness",
+    "InstallMethod",
+    "InstallOutcome",
+    "InstallProgress",
+    "PreflightResult",
+    "PreflightStatus",
+    "ReadinessReport",
+    "ToolDefinition",
+    "ToolInventory",
+    "ToolReadiness",
+    "ToolReadinessStatus",
+]

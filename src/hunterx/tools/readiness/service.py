@@ -18,6 +18,7 @@ pipeline agree on what is actually runnable.
 
 from __future__ import annotations
 
+import contextlib
 from typing import Any
 
 from hunterx.tools.intelligence.api import ToolIntelligenceAPI
@@ -31,9 +32,11 @@ from hunterx.tools.readiness.models import (
     CapabilityLevel,
     CapabilityReadiness,
     InstallOutcome,
+    InstallProgress,
     PreflightResult,
     ReadinessReport,
     ToolDefinition,
+    ToolInventory,
     ToolReadiness,
     ToolReadinessStatus,
 )
@@ -129,6 +132,7 @@ class ToolReadinessService:
             for verdict in readiness:
                 if verdict.status is ToolReadinessStatus.AVAILABLE:
                     self._discovery.mark_installed(verdict.tool_id, verdict.version)
+                    self._sync_tip_state(verdict.tool_id, verdict.version)
         by_tool = {verdict.tool_id: verdict for verdict in readiness}
         capabilities = self.capability_coverage(readiness=by_tool)
         summary = {
@@ -217,24 +221,87 @@ class ToolReadinessService:
         *,
         profile: str = "",
         verify: bool = True,
+        observer: Any | None = None,
+        state: Any | None = None,
     ) -> list[InstallOutcome]:
         """Provision missing tools and return the per-tool outcomes.
 
         ``tool_ids`` takes precedence; when empty, ``profile`` selects the
         profile's tools. An empty both defaults to the ``minimal`` profile
         (base HunterX environment — no external installs).
+
+        ``observer`` (optional) receives :class:`InstallProgress` events
+        before and after each tool so a UI can render live ``[N/M] tool ✓``
+        lines. ``state`` (optional) is an :class:`InstallationState` that is
+        updated with per-tool results and persisted by the caller for resume
+        support.
         """
         targets = self._resolve_targets(tool_ids, profile)
+        total = len(targets)
         outcomes: list[InstallOutcome] = []
-        for tool_id in targets:
+        for index, tool_id in enumerate(targets, start=1):
+            if state is not None:
+                state.mark_tool_started(tool_id)
+                state.persist()
+            if observer is not None:
+                observer(
+                    InstallProgress(
+                        index=index,
+                        total=total,
+                        tool_id=tool_id,
+                        phase="start",
+                    )
+                )
             definition = self._definitions.build(tool_id)
             if definition is None:
-                outcomes.append(
-                    InstallOutcome(tool_id=tool_id, success=False, error=f"unknown tool '{tool_id}'")
+                outcome = InstallOutcome(tool_id=tool_id, success=False, error=f"unknown tool '{tool_id}'")
+            else:
+                try:
+                    outcome = self._provisioner.install(definition, verify=verify)
+                except KeyboardInterrupt:
+                    if state is not None:
+                        state.mark_interrupted(f"interrupted while installing '{tool_id}'")
+                        state.persist()
+                    raise
+            outcomes.append(outcome)
+            if state is not None:
+                state.record_tool(outcome)
+                state.persist()
+            if observer is not None:
+                observer(
+                    InstallProgress(
+                        index=index,
+                        total=total,
+                        tool_id=tool_id,
+                        phase="done",
+                        outcome=outcome,
+                    )
                 )
-                continue
-            outcomes.append(self._provisioner.install(definition, verify=verify))
         return outcomes
+
+    def inventory(self) -> ToolInventory:
+        """Return the grouped tool inventory (available/missing/broken/...)."""
+        return ToolInventory.from_report(self.check())
+
+    def _sync_tip_state(self, tool_id: str, version: str = "") -> None:
+        """Record a discovered-available tool on the TIP lifecycle.
+
+        The TIP selection engine (``tools chain`` / planner) only proposes
+        tools whose lifecycle state is ``AVAILABLE``. Propagating the
+        readiness verdict keeps the TIP planner and the readiness layer in
+        agreement so the planner never proposes an unexecutable provider.
+        """
+        tip = self._tip
+        if tip is None:
+            return
+        with contextlib.suppress(Exception):  # best-effort state propagation
+            if not tip.is_usable(tool_id):
+                if version:
+                    tip.install(tool_id, version=version)
+                else:
+                    tip.install(tool_id)
+                tip.verify(tool_id, ok=True)
+                tip.make_available(tool_id)
 
     def _resolve_targets(self, tool_ids: list[str] | None, profile: str) -> list[str]:
         if tool_ids:

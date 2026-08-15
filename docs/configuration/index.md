@@ -88,7 +88,10 @@ export HUNTERX_DATABASE_URL="postgresql+psycopg://user:pass@host/hunterx"
 alembic upgrade head
 ```
 
-Default: `sqlite:///hunterx.db`. Migrations live under `alembic/` and are
+Default: `sqlite:///hunterx.db` (the sentinel resolved at runtime to
+`<application root>/data/hunterx.db` via `hunterx.config.paths`). Set
+`HUNTERX_DATA_DIR` to relocate the data directory, or override the URL
+entirely with `HUNTERX_DATABASE_URL`. Migrations live under `alembic/` and are
 managed with `alembic upgrade head` / `alembic downgrade`.
 
 ## See also

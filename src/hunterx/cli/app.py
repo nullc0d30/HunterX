@@ -40,7 +40,16 @@ class CliApplication:
             print(self.help_text(), file=sys.stderr)
             return 2
         command, remaining = resolved
-        return command.handler(remaining)
+        try:
+            return command.handler(remaining)
+        except KeyboardInterrupt:
+            print()
+            print("[WARN] Operation interrupted by user.")
+            print()
+            print("Completed work has been preserved.")
+            print("HunterX can resume safely with:")
+            print("  sudo ./install.sh")
+            return 130
 
     def help_text(self) -> str:
         """Render a simple command list for the help message."""

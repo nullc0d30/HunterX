@@ -5,9 +5,11 @@
 
 from __future__ import annotations
 
+import os
 import time
 from typing import Any
 
+from hunterx.config.paths import resolve_database_url
 from hunterx.config.settings import DatabaseSettings
 from hunterx.domain.exceptions import InfrastructureConnectionError
 
@@ -51,24 +53,46 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     """Create a SQLAlchemy engine from typed settings.
 
     SQLite ``:memory:`` databases use a static pool so every connection shares
-    the same in-process database.
+    the same in-process database. The default ``sqlite:///hunterx.db`` URL is
+    resolved to the application data directory (``<root>/data/hunterx.db``) and
+    the parent directory is created before the engine is built, so a missing
+    ``data/`` directory is never a runtime failure.
     """
     mod = _load_sqlalchemy()
-    if settings.url.startswith("sqlite:///:memory:"):
+    url = resolve_database_url(settings.url)
+    if url.startswith("sqlite:///:memory:"):
         from sqlalchemy.pool import StaticPool
 
         return mod["create_engine"](
-            settings.url,
+            url,
             echo=settings.echo,
             poolclass=StaticPool,
             connect_args={"check_same_thread": False},
         )
+    _ensure_sqlite_parent_directory(url)
     return mod["create_engine"](
-        settings.url,
+        url,
         echo=settings.echo,
         pool_size=settings.pool_size,
         pool_timeout=settings.pool_timeout,
     )
+
+
+def _ensure_sqlite_parent_directory(url: str) -> None:
+    """Create the parent directory of a file-backed SQLite database (idempotent).
+
+    ``sqlite:////abs/path.db`` and ``sqlite:///rel/path.db`` both embed a file
+    path after ``sqlite:///``; the directory holding it is created when
+    missing so SQLAlchemy can open the file. ``:memory:`` is never touched.
+    """
+    if not url.startswith("sqlite:///"):
+        return
+    db_path = url[len("sqlite:///"):]
+    if db_path.startswith(":memory:"):
+        return
+    parent = os.path.dirname(db_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
 
 
 class SessionFactory:

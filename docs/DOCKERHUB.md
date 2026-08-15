@@ -130,17 +130,18 @@ docker run -d --name hunterx-api -p 8080:8080 \
 
 ### Persistent data
 
-HunterX persists mission state to the database. Mount a volume at `/data` and point the database at it:
+HunterX persists mission state to the database. The image stores it in the
+application data directory (`/opt/hunterx/data`, image default
+`sqlite:////opt/hunterx/data/hunterx.db`). Mount a volume there:
 
 ```bash
 docker run -d --name hunterx-api -p 8080:8080 \
-  -v hunterx-data:/data \
-  -e HUNTERX_DATABASE_URL=sqlite:////data/hunterx.db \
+  -v hunterx-data:/opt/hunterx/data \
   --entrypoint uvicorn nullc0d30/hunterx:latest \
   --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
-The container runs as the non-root `hunterx` user and `/data` is writable by it.
+The container runs as the non-root `hunterx` user and `/opt/hunterx/data` is writable by it.
 
 ### Interactive shell
 
@@ -172,7 +173,8 @@ Configuration is resolved in this order (each level overrides the previous):
 | Variable | Default | Description |
 |---|---|---|
 | `HUNTERX_LOG_LEVEL` | `INFO` | Root logging level |
-| `HUNTERX_DATABASE_URL` | `sqlite:////data/hunterx.db` (image default) | SQLAlchemy database URL; the image defaults to the writable `/data` volume so persistent state is never lost |
+| `HUNTERX_DATA_DIR` | `/opt/hunterx/data` (image default) | Application data directory (created automatically) |
+| `HUNTERX_DATABASE_URL` | `sqlite:////opt/hunterx/data/hunterx.db` (image default) | SQLAlchemy database URL; the image defaults to the writable `/opt/hunterx/data` volume so persistent state is never lost |
 | `HUNTERX_CACHE_BACKEND` | `memory` | Cache backend (`memory`, `redis`, `null`) |
 | `HUNTERX_QUEUE_BACKEND` | `memory` | Queue backend (`memory`, `redis`, `null`) |
 | `HUNTERX_API_HOST` | `127.0.0.1` | API bind host |
@@ -188,7 +190,7 @@ Example:
 ```bash
 docker run --rm \
   -e HUNTERX_LOG_LEVEL=DEBUG \
-  -e HUNTERX_DATABASE_URL=sqlite:////data/hunterx.db \
+  -e HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db \
   nullc0d30/hunterx:7.0.0 config
 ```
 
@@ -198,7 +200,7 @@ docker run --rm \
 
 ## Docker Security
 
-- The container runs as the **non-root** `hunterx` user (UID 999) and exposes a single writable volume at `/data` for persistent state.
+- The container runs as the **non-root** `hunterx` user (UID 999) and exposes a single writable volume at `/opt/hunterx/data` for persistent state.
 - The image is multi-stage, based on `python:3.11-slim`, and publishes OCI labels (source, license, version) for supply-chain inspection.
 - Use **pinned image tags** (`nullc0d30/hunterx:7.0.0`) for reproducible deployments.
 - Protect API credentials: enable `HUNTERX_API_AUTH_ENABLED`, use a strong `HUNTERX_API_KEY`, and do not expose the API port beyond your trusted network.
@@ -220,7 +222,7 @@ See [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/) and 
 | Problem | Likely cause | Action |
 |---|---|---|
 | `docker run ...` prints usage text | The CLI uses subcommands; no default command was supplied | Use `hunterx help` or a specific command such as `hunterx version` |
-| `attempt to write a readonly database` / `permission denied` writing state | The database path is not writable by the `hunterx` user (UID 999) | The image defaults to `HUNTERX_DATABASE_URL=sqlite:////data/hunterx.db`. Ensure `/data` is writable by UID 999: use the compose named volume (`hunterx-data`), or for a bind mount run `chown -R 999:999 ./data` on the host dir |
+| `attempt to write a readonly database` / `permission denied` writing state | The database path is not writable by the `hunterx` user (UID 999) | The image defaults to `HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db`. Ensure `/opt/hunterx/data` is writable by UID 999: use the compose named volume (`hunterx-data`), or for a bind mount run `chown -R 999:999 ./data` on the host dir |
 | API returns `401` | Authentication is enabled and the request has no/incorrect key | Send a valid `X-API-Key` header |
 | Wrong version behavior | Running a legacy `6.x`/`4.x` image or an old `latest` | Pull a v7 tag and run `hunterx version` to confirm |
 | Config looks wrong | Env var name or YAML profile error | Run `docker run --rm nullc0d30/hunterx:latest config` to inspect the resolved configuration |
