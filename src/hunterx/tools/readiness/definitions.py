@@ -24,6 +24,7 @@ from hunterx.tools.readiness.manifest import (
     PROFILE_TOOLS,
     PROFILES,
     TOOL_BINARY_SPECS,
+    TOOL_CLASSIFICATIONS,
     install_methods_for,
 )
 from hunterx.tools.readiness.models import InstallMethod, ToolDefinition
@@ -49,13 +50,18 @@ class ToolDefinitionBuilder:
         self._platform = platform
 
     def build_all(self) -> list[ToolDefinition]:
-        """Return a definition for every tool registered in the TIP.
+        """Return a definition for every integrated tool.
 
-        Tools unknown to the manifest still get a definition derived from TIP
-        knowledge (best-effort executable/install info) so ``hunterx tools
-        check`` always reports every integrated tool.
+        The base set is every tool registered in the TIP. Tools declared in the
+        trusted readiness manifest but not yet registered in the TIP (catalog
+        completeness, e.g. ``crt-sh``/``crobat``) are appended so ``hunterx
+        tools check`` always reports the full supported CLI catalog and never
+        leaves a supported tool in an unexplained gap.
         """
         tool_ids = [metadata.tool_id for metadata in self._tip.list_tools()]
+        manifest_ids = set(TOOL_BINARY_SPECS) | set(INSTALL_METHODS) | set(TOOL_CLASSIFICATIONS)
+        for tool_id in sorted(manifest_ids - set(tool_ids)):
+            tool_ids.append(tool_id)
         return [
             definition
             for tool_id in tool_ids
@@ -66,7 +72,8 @@ class ToolDefinitionBuilder:
         """Return the definition for ``tool_id`` or ``None`` when unknown."""
         metadata = self._tip.get_tool(tool_id)
         knowledge = self._tip.get_knowledge(tool_id)
-        if metadata is None:
+        classification = TOOL_CLASSIFICATIONS.get(tool_id, {})
+        if metadata is None and tool_id not in TOOL_BINARY_SPECS and tool_id not in INSTALL_METHODS:
             return None
 
         spec = TOOL_BINARY_SPECS.get(tool_id, {})
@@ -90,21 +97,40 @@ class ToolDefinitionBuilder:
         profiles = _profiles_for(tool_id)
         required = tool_id in INPROCESS_TOOLS
 
+        classification_status = str(classification.get("status") or "")
+        classification_reason = str(classification.get("reason") or "")
+        remediation = str(classification.get("remediation") or "")
+        if not remediation and install_methods:
+            remediation = (
+                f"provision with 'hunterx tools install {tool_id}'"
+                + (f" or profile '{', '.join(profiles) or 'full'}'" if profiles else "")
+            )
+        cli_only_value = spec.get("cli_only", classification.get("cli_only", "true"))
+        cli_only = _as_bool(cli_only_value, default=True)
+        expected_identity = str(spec.get("expected_identity") or classification.get("expected_identity") or "")
+        homepage = str(spec.get("homepage") or classification.get("homepage") or "")
+
         return ToolDefinition(
             tool_id=tool_id,
-            name=metadata.display_name or tool_id,
+            name=metadata.display_name if metadata is not None else (tool_id.title() if metadata is None else tool_id),
             executable=executable,
             aliases=aliases,
             version_command=version_command,
             version_regex=version_regex,
             min_version=min_version,
             capabilities=capabilities,
-            platform_support=metadata.platforms if metadata.platforms else ("linux", "darwin", "windows"),
+            platform_support=metadata.platforms if metadata is not None and metadata.platforms else ("linux", "darwin", "windows"),
             installation_methods=install_methods,
             kind=kind,
             profiles=profiles,
             required=required,
-            description=metadata.description or "",
+            description=metadata.description if metadata is not None else "",
+            cli_only=cli_only,
+            expected_identity=expected_identity,
+            homepage=homepage,
+            classification=classification_status,
+            classification_reason=classification_reason,
+            remediation=remediation,
         )
 
     def capability_providers(self) -> dict[str, tuple[str, ...]]:
@@ -154,6 +180,20 @@ def _tuple_of(value: object) -> tuple[str, ...]:
     if value:
         return (str(value),)
     return ()
+
+
+def _as_bool(value: object, *, default: bool = True) -> bool:
+    """Coerce a manifest ``cli_only`` value to a boolean."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    normalized = str(value).strip().lower()
+    if normalized in ("false", "0", "no", "off"):
+        return False
+    if normalized in ("true", "1", "yes", "on"):
+        return True
+    return default
 
 
 __all__ = ["ToolDefinitionBuilder"]

@@ -115,8 +115,10 @@ class TestNonStandardDirectory:
 
 
 class TestWrongBinary:
-    def test_wrong_binary_is_broken_not_available(self, binaries: pathlib.Path) -> None:
-        # A same-named binary whose identity probe does not match is BROKEN.
+    def test_wrong_binary_is_never_available(self, binaries: pathlib.Path) -> None:
+        # A same-named binary whose identity probe does not match is never
+        # AVAILABLE: BROKEN when no competitor exists, SHADOWED when a
+        # competing provider is present on the machine.
         fake_executable(binaries, "httpx", "Usage: httpx [OPTIONS] URL")
         os.environ["PATH"] = str(binaries) + os.pathsep + os.environ.get("PATH", "")
         tip = tip_with(["httpx"])
@@ -125,7 +127,11 @@ class TestWrongBinary:
         definition = ToolDefinitionBuilder(tip, linux_platform()).build("httpx")
         verdict = ToolDiscovery().probe(definition, linux_platform())
 
-        assert verdict.status is ToolReadinessStatus.BROKEN
+        assert verdict.status in (
+            ToolReadinessStatus.BROKEN,
+            ToolReadinessStatus.SHADOWED,
+        )
+        assert verdict.status is not ToolReadinessStatus.AVAILABLE
 
 
 class TestIdempotency:

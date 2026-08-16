@@ -22,10 +22,21 @@ class ToolReadinessStatus(Enum):
     ``UNKNOWN`` — not yet probed.
     ``DISCOVERING`` — probe in progress.
     ``AVAILABLE`` — executable found, executability verified, version detected.
-    ``MISSING`` — executable not found on PATH (tool does not exist).
+    ``MISSING`` — executable not found on PATH (tool exists and is installable,
+        but is not currently installed).
     ``BROKEN`` — executable exists but cannot execute / version probe failed.
+    ``SHADOWED`` — the resolved executable is NOT the expected security tool; a
+        same-named competitor (e.g. a Python package CLI) shadows the provider.
     ``OUTDATED`` — installed version below the supported minimum.
-    ``UNSUPPORTED`` — no supported installation method for this platform.
+    ``MANUAL_ONLY`` — the tool is installable only through manual steps HunterX
+        will not automate (precise instructions are recorded).
+    ``NOT_CLI`` — the tool's useful operation requires a GUI/UI or a daemon; it
+        is excluded from the supported CLI catalog.
+    ``DEPRECATED`` — the tool is obsolete/unmaintained; retained only as
+        knowledge.
+    ``UNSUPPORTED`` — no installation method is declared for this tool.
+    ``PLATFORM_UNAVAILABLE`` — installation methods exist but none is
+        compatible with the current platform.
     ``PROVISIONING_FAILED`` — an install attempt was made but verification failed.
 
     """
@@ -35,9 +46,19 @@ class ToolReadinessStatus(Enum):
     AVAILABLE = "available"
     MISSING = "missing"
     BROKEN = "broken"
+    SHADOWED = "shadowed"
     OUTDATED = "outdated"
+    MANUAL_ONLY = "manual_only"
+    NOT_CLI = "not_cli"
+    DEPRECATED = "deprecated"
     UNSUPPORTED = "unsupported"
+    PLATFORM_UNAVAILABLE = "platform_unavailable"
     PROVISIONING_FAILED = "provisioning_failed"
+
+    #: Statuses that represent an intentionally non-installed classification
+    #: rather than a merely-not-installed tool. Used to decide whether a tool
+    #: is genuinely provisionable on the current platform.
+    CLASSIFIED = frozenset({"not_cli", "deprecated", "manual_only", "platform_unavailable", "unsupported"})
 
 
 class CapabilityLevel(Enum):
@@ -74,7 +95,8 @@ class InstallMethod:
 
     Attributes:
         kind: installation family (``apt``, ``brew``, ``pacman``, ``dnf``,
-            ``go``, ``cargo``, ``pip``, ``pipx``, ``npm``, ``script``).
+            ``go``, ``cargo``, ``pip``, ``pipx``, ``npm``, ``prebuilt``,
+            ``git``, ``script``).
         package: package name for package-manager families.
         name: module/repo path for ``go``/``cargo`` or script id for ``script``.
         platforms: platforms this method targets.
@@ -145,6 +167,20 @@ class ToolDefinition:
     profiles: tuple[str, ...] = ("full",)
     required: bool = False
     description: str = ""
+    #: ``False`` when the tool's useful operation requires a GUI/UI or daemon.
+    cli_only: bool = True
+    #: The expected tool identity (vendor + product) used to reject a
+    #: same-named unrelated executable during discovery.
+    expected_identity: str = ""
+    #: Project/documentation URL for the tool.
+    homepage: str = ""
+    #: Explicit catalog classification for tools that cannot be provisioned
+    #: automatically (``not_cli``/``deprecated``/``manual_only``/
+    #: ``platform_unavailable``). Empty string means the tool is provisionable.
+    classification: str = ""
+    classification_reason: str = ""
+    #: Human remediation guidance when the tool is not ``available``.
+    remediation: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-safe mapping of this definition."""
@@ -163,6 +199,12 @@ class ToolDefinition:
             "profiles": list(self.profiles),
             "required": self.required,
             "description": self.description,
+            "cli_only": self.cli_only,
+            "expected_identity": self.expected_identity,
+            "homepage": self.homepage,
+            "classification": self.classification,
+            "classification_reason": self.classification_reason,
+            "remediation": self.remediation,
         }
 
 
@@ -204,20 +246,78 @@ class ToolReadiness:
     #: directory) that competes with the resolved provider. The probe
     #: validates which one is actually the expected security-tool provider.
     collisions: tuple[dict[str, str], ...] = ()
+    #: The expected vendor/product identity of the tool (identity validation).
+    expected_identity: str = ""
+    #: ``False`` when the tool's useful operation requires a GUI/UI or daemon.
+    cli_only: bool = True
+    #: Human remediation guidance when the tool is not available.
+    remediation: str = ""
+
+    @property
+    def reason(self) -> str:
+        """Return the human explanation of the verdict (error, else rationale)."""
+        if self.error:
+            return self.error
+        if self.definition is not None and self.definition.classification_reason:
+            return self.definition.classification_reason
+        return ""
+
+    @property
+    def shadowed_by(self) -> list[str]:
+        """Return the paths of same-named competitors shadowing the provider."""
+        return [str(entry.get("path")) for entry in self.collisions if entry.get("path")]
+
+    @property
+    def health(self) -> str:
+        """Return the health descriptor for the verdict."""
+        return {
+            ToolReadinessStatus.AVAILABLE: "ok",
+            ToolReadinessStatus.MISSING: "not_found",
+            ToolReadinessStatus.BROKEN: "broken",
+            ToolReadinessStatus.SHADOWED: "shadowed",
+            ToolReadinessStatus.OUTDATED: "outdated",
+            ToolReadinessStatus.MANUAL_ONLY: "manual_only",
+            ToolReadinessStatus.NOT_CLI: "not_cli",
+            ToolReadinessStatus.DEPRECATED: "deprecated",
+            ToolReadinessStatus.UNSUPPORTED: "unsupported",
+            ToolReadinessStatus.PLATFORM_UNAVAILABLE: "platform_unavailable",
+            ToolReadinessStatus.PROVISIONING_FAILED: "provisioning_failed",
+            ToolReadinessStatus.UNKNOWN: "unknown",
+            ToolReadinessStatus.DISCOVERING: "discovering",
+        }.get(self.status, self.status.value)
 
     def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-safe mapping of this readiness verdict."""
+        """Return a JSON-safe mapping of this readiness verdict.
+
+        Exposes the authoritative machine-readable schema consumed by
+        ``hunterx tools check --json``: name, status, executable, resolved
+        path, expected identity, version, installation method, capabilities,
+        reason, remediation, platform, shadowed-by and health.
+        """
+        definition = self.definition
         return {
+            "name": definition.name if definition is not None else self.tool_id,
             "tool_id": self.tool_id,
             "status": self.status.value,
             "executable": self.executable,
-            "path": self.path,
+            "resolved_path": self.path,
+            "expected_identity": self.expected_identity or (definition.expected_identity if definition else ""),
             "version": self.version,
             "expected_version": self.expected_version,
             "detected_command": list(self.detected_command),
-            "error": self.error,
-            "install_methods": [method.to_dict() for method in self.install_methods],
+            "installation_method": (
+                [method.to_dict() for method in self.install_methods]
+                if self.install_methods
+                else [method.to_dict() for method in (definition.installation_methods if definition else ())]
+            ),
+            "capabilities": list(definition.capabilities) if definition else [],
+            "cli_only": self.cli_only if definition is None else (definition.cli_only and self.cli_only),
+            "reason": self.reason,
+            "remediation": self.remediation or (definition.remediation if definition else ""),
             "platform": self.platform,
+            "shadowed_by": self.shadowed_by,
+            "health": self.health,
+            "error": self.error,
             "collisions": [dict(entry) for entry in self.collisions],
         }
 
@@ -372,10 +472,11 @@ class InstallProgress:
 class ToolInventory:
     """Grouped view of a readiness probe (for compact installer output).
 
-    Splits the per-tool verdicts into the five actionable buckets so the
-    installer can render ``Available`` / ``Missing`` / ``Broken`` /
-    ``Outdated`` / ``Unsupported`` inventories independently of the detailed
-    report.
+    Splits the per-tool verdicts into actionable buckets so the installer can
+    render ``Available`` / ``Missing`` / ``Broken`` / ``Shadowed`` /
+    ``Outdated`` / ``Unsupported`` / ``Manual-only`` / ``Not CLI`` /
+    ``Deprecated`` / ``Platform unavailable`` inventories independently of the
+    detailed report.
 
     Attributes:
         available: tool ids whose binary is present and verifiable.
@@ -389,8 +490,14 @@ class ToolInventory:
     available: list[str] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
     broken: list[str] = field(default_factory=list)
+    shadowed: list[str] = field(default_factory=list)
     outdated: list[str] = field(default_factory=list)
     unsupported: list[str] = field(default_factory=list)
+    manual_only: list[str] = field(default_factory=list)
+    not_cli: list[str] = field(default_factory=list)
+    deprecated: list[str] = field(default_factory=list)
+    platform_unavailable: list[str] = field(default_factory=list)
+    provisioning_failed: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-safe mapping of this inventory."""
@@ -398,8 +505,14 @@ class ToolInventory:
             "available": list(self.available),
             "missing": list(self.missing),
             "broken": list(self.broken),
+            "shadowed": list(self.shadowed),
             "outdated": list(self.outdated),
             "unsupported": list(self.unsupported),
+            "manual_only": list(self.manual_only),
+            "not_cli": list(self.not_cli),
+            "deprecated": list(self.deprecated),
+            "platform_unavailable": list(self.platform_unavailable),
+            "provisioning_failed": list(self.provisioning_failed),
         }
 
     @classmethod
@@ -411,8 +524,14 @@ class ToolInventory:
                 ToolReadinessStatus.AVAILABLE: inventory.available,
                 ToolReadinessStatus.MISSING: inventory.missing,
                 ToolReadinessStatus.BROKEN: inventory.broken,
+                ToolReadinessStatus.SHADOWED: inventory.shadowed,
                 ToolReadinessStatus.OUTDATED: inventory.outdated,
                 ToolReadinessStatus.UNSUPPORTED: inventory.unsupported,
+                ToolReadinessStatus.MANUAL_ONLY: inventory.manual_only,
+                ToolReadinessStatus.NOT_CLI: inventory.not_cli,
+                ToolReadinessStatus.DEPRECATED: inventory.deprecated,
+                ToolReadinessStatus.PLATFORM_UNAVAILABLE: inventory.platform_unavailable,
+                ToolReadinessStatus.PROVISIONING_FAILED: inventory.provisioning_failed,
             }.get(verdict.status)
             if bucket is not None:
                 bucket.append(verdict.tool_id)

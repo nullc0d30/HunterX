@@ -78,11 +78,12 @@ class TestPreferredDirectoryOrder:
 
 
 class TestShadowedExecutable:
-    def test_venv_python_cli_shadowing_go_binary_is_broken_with_collision(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
+    def test_venv_python_cli_shadowing_go_binary_is_shadowed_with_collision(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
         # The Python 'httpx' package CLI sits earlier in PATH (the venv). Its
-        # version probe output cannot match the declared pattern, so the
-        # verdict must be BROKEN — with the preferred Go binary reported as a
-        # collision so the shadowing is visible.
+        # version probe output cannot match the declared identity, so the
+        # verdict must be SHADOWED — with the preferred Go binary reported as
+        # a collision so the shadowing is visible. This is never a silent
+        # AVAILABLE and never a vague MISSING/NOT_INSTALLED.
         venv_bin = tmp_path / "venv" / "bin"
         venv_bin.mkdir(parents=True)
         fake_executable(venv_bin, "httpx", "Usage: httpx [OPTIONS] URL")
@@ -95,14 +96,17 @@ class TestShadowedExecutable:
 
         verdict = make_discovery().probe(_httpx_definition, linux_platform())
 
-        assert verdict.status is ToolReadinessStatus.BROKEN
-        assert "did not match" in verdict.error
+        assert verdict.status is ToolReadinessStatus.SHADOWED
+        assert "shadowed" in verdict.error
+        assert "httpx" in verdict.error
         collision_paths = [collision["path"] for collision in verdict.collisions]
         assert collision_paths, "the shadowed provider must be reported as a collision"
-        assert os.path.normpath(str(tools_bin / "httpx")) in {
-            os.path.normpath(path) for path in collision_paths
+        assert os.path.normpath(str(tools_bin)) in {
+            os.path.normpath(os.path.dirname(path)) for path in collision_paths
         }, "the preferred Go binary must be named as the collision"
         assert any(collision["preferred"] == "true" for collision in verdict.collisions)
+        assert verdict.health == "shadowed"
+        assert verdict.shadowed_by
 
     def test_tools_bin_go_binary_first_resolves_available_with_venv_shadow(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
         # After the launcher fix, tools/bin precedes the venv: the Go binary is
@@ -125,18 +129,19 @@ class TestShadowedExecutable:
 
         assert verdict.status is ToolReadinessStatus.AVAILABLE
         assert verdict.version == "1.10.0"
-        assert os.path.basename(verdict.path) == "httpx"
+        assert os.path.basename(verdict.path).split(".")[0] == "httpx"
         collision_paths = [collision["path"] for collision in verdict.collisions]
-        assert os.path.normpath(str(venv_bin / "httpx")) in {
-            os.path.normpath(path) for path in collision_paths
+        assert os.path.normpath(str(venv_bin)) in {
+            os.path.normpath(os.path.dirname(path)) for path in collision_paths
         }
 
-    def test_unique_provider_has_no_collisions(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
+    def test_unique_provider_has_no_collisions(self, tmp_path: pathlib.Path, _httpx_definition, monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: ANN001
+        # With PATH isolated to a single provider there can be no collision.
         only = tmp_path / "tools" / "bin"
         only.mkdir(parents=True)
         fake_executable(only, "httpx", "[INF] Current Version: v1.10.0")
         os.environ["HUNTERX_TOOL_BIN"] = str(only)
-        add_to_path(only)
+        monkeypatch.setenv("PATH", str(only))
 
         verdict = make_discovery().probe(_httpx_definition, linux_platform())
 
@@ -158,5 +163,5 @@ class TestShadowedExecutable:
 
         verdict = make_discovery().probe(_httpx_definition, linux_platform())
 
-        assert verdict.status is ToolReadinessStatus.BROKEN
+        assert verdict.status is ToolReadinessStatus.SHADOWED
         assert verdict.collisions

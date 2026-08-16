@@ -55,6 +55,8 @@ _METHOD_DEFAULT_TIMEOUTS: dict[str, float] = {
     "npm": 300.0,
     "go": 600.0,
     "cargo": 1200.0,
+    "prebuilt": 600.0,
+    "git": 600.0,
     "script": 1800.0,
     "default": 900.0,
 }
@@ -150,6 +152,31 @@ class ToolProvisioner:
                 status=current.status,
                 version=current.version,
                 skipped=True,
+            )
+
+        # Non-provisionable catalog classifications are reported with their
+        # precise status and remediation — never retried as an install and
+        # never hidden behind a generic ``missing``/``unsupported`` verdict.
+        if definition.classification == ToolReadinessStatus.NOT_CLI.value:
+            return InstallOutcome(
+                tool_id=definition.tool_id,
+                success=False,
+                status=ToolReadinessStatus.NOT_CLI,
+                error=definition.classification_reason or "tool requires a GUI/UI or daemon",
+            )
+        if definition.classification == ToolReadinessStatus.DEPRECATED.value:
+            return InstallOutcome(
+                tool_id=definition.tool_id,
+                success=False,
+                status=ToolReadinessStatus.DEPRECATED,
+                error=definition.classification_reason or "tool is obsolete/deprecated",
+            )
+        if definition.classification == ToolReadinessStatus.MANUAL_ONLY.value:
+            return InstallOutcome(
+                tool_id=definition.tool_id,
+                success=False,
+                status=ToolReadinessStatus.MANUAL_ONLY,
+                error=definition.classification_reason or "installation requires manual steps",
             )
 
         methods = self._compatible_methods(definition)
@@ -291,7 +318,7 @@ class ToolProvisioner:
             return self._command_available("npm") is not None
         if method.kind == "choco":
             return self._command_available("choco") is not None
-        if method.kind == "script":
+        if method.kind in ("script", "prebuilt", "git"):
             return self._command_available("bash") is not None
         return False
 
@@ -341,6 +368,15 @@ class ToolProvisioner:
             return argv
         if method.kind == "script":
             return ["bash", "-c", _STATIC_SCRIPTS.get(method.name, "exit 1")]
+        if method.kind == "prebuilt":
+            # Download a trusted release binary/archive into the HunterX tool
+            # directory. ``name`` is the download URL; ``package`` is the local
+            # file name (or the archive member to install when ``package`` ends
+            # with ``!/path``). The URL is a static manifest constant.
+            return ["bash", "-c", _prebuilt_script(method)]
+        if method.kind == "git":
+            # Clone a trusted repository and (optionally) build its CLI.
+            return ["bash", "-c", _git_script(method)]
         raise ValueError(f"unsupported install method kind: {method.kind}")
 
     def _elevated(self) -> bool:
@@ -387,7 +423,85 @@ def _install_error(
 
 #: Static, trusted shell scripts for ``script``-kind install methods. Kept
 #: intentionally minimal; every entry is a static constant (never interpolated).
-_STATIC_SCRIPTS: dict[str, str] = {}
+_STATIC_SCRIPTS: dict[str, str] = {
+    "linkfinder": (
+        'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
+        'mkdir -p "$BIN/src"; '
+        'git clone --depth 1 https://github.com/GerbenJavado/LinkFinder.git "$BIN/src/LinkFinder" 2>/dev/null || true; '
+        'PY="${PYTHON:-python3}"; "$PY" -m pip install -q -r "$BIN/src/LinkFinder/requirements.txt" 2>/dev/null || true; '
+        'ln -sf "$BIN/src/LinkFinder/linkfinder.py" "$BIN/linkfinder"; chmod +x "$BIN/linkfinder"; '
+        'echo "linkfinder installed to $BIN/linkfinder"'
+    ),
+    "secretfinder": (
+        'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
+        'mkdir -p "$BIN/src"; '
+        'git clone --depth 1 https://github.com/m4ll0k/SecretFinder.git "$BIN/src/SecretFinder" 2>/dev/null || true; '
+        'ln -sf "$BIN/src/SecretFinder/SecretFinder.py" "$BIN/SecretFinder"; chmod +x "$BIN/SecretFinder"; '
+        'echo "secretfinder installed to $BIN/SecretFinder"'
+    ),
+    "xnlinkfinder": (
+        'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
+        'mkdir -p "$BIN/src"; '
+        'git clone --depth 1 https://github.com/xnl-h4ck3r/xnLinkFinder.git "$BIN/src/xnLinkFinder" 2>/dev/null || true; '
+        'PY="${PYTHON:-python3}"; "$PY" -m pip install -q -r "$BIN/src/xnLinkFinder/requirements.txt" 2>/dev/null || true; '
+        'ln -sf "$BIN/src/xnLinkFinder/xnLinkFinder.py" "$BIN/xnlinkfinder"; chmod +x "$BIN/xnlinkfinder"; '
+        'echo "xnlinkfinder installed to $BIN/xnlinkfinder"'
+    ),
+    "jwt-tool": (
+        'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
+        'mkdir -p "$BIN/src"; '
+        'git clone --depth 1 https://github.com/ticarpi/jwt_tool.git "$BIN/src/jwt_tool" 2>/dev/null || true; '
+        'chmod +x "$BIN/src/jwt_tool/jwt_tool.py"; '
+        'ln -sf "$BIN/src/jwt_tool/jwt_tool.py" "$BIN/jwt_tool"; chmod +x "$BIN/jwt_tool"; '
+        'echo "jwt-tool installed to $BIN/jwt_tool"'
+    ),
+}
+
+
+def _tool_bin() -> str:
+    """Return the HunterX managed tool directory used by prebuilt/git installs."""
+    return "${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"
+
+
+def _prebuilt_script(method: InstallMethod) -> str:
+    """Return a trusted static script installing a release binary/archive.
+
+    ``method.name`` is the download URL; ``method.package`` names the local
+    artifact. A ``package`` ending in ``!/relative/path`` extracts that member
+    from the archive into the tool bin. The URL is a static manifest constant.
+    """
+    url = method.name or ""
+    package = method.package or "tool"
+    bin_dir = _tool_bin()
+    member = ""
+    if "!" in package:
+        package, member = package.rsplit("!", 1)
+    member_install = f'tar -xzf "$BIN/{package}" -C "$BIN" "{member}" 2>/dev/null || unzip -o -j "$BIN/{package}" "{member}" -d "$BIN" 2>/dev/null || true' if member else ""
+    return (
+        f'set -e; BIN={bin_dir}; mkdir -p "$BIN"; '
+        f'(command -v curl >/dev/null && curl -fsSL -o "$BIN/{package}" "{url}") '
+        f'|| (command -v wget >/dev/null && wget -qO "$BIN/{package}" "{url}"); '
+        f'{member_install} '
+        f'chmod +x "$BIN/{package}" 2>/dev/null || true; '
+        f'echo "downloaded to $BIN/{package}"'
+    )
+
+
+def _git_script(method: InstallMethod) -> str:
+    """Return a trusted static script cloning and building a Go CLI from git.
+
+    ``method.name`` is the repository URL; ``method.package`` is the go package
+    path (or the local binary name when empty). The URL is a static constant.
+    """
+    repo = method.name or ""
+    bin_dir = _tool_bin()
+    name = method.package or (repo.rstrip("/").split("/")[-1] or "tool")
+    return (
+        f'set -e; BIN={bin_dir}; SRC="$BIN/src/{name}"; mkdir -p "$BIN"; '
+        f'git clone --depth 1 "{repo}" "$SRC" 2>/dev/null || (cd "$SRC" && git pull --ff-only) ; '
+        f'(cd "$SRC" && go build -o "$BIN/{name}" .); '
+        f'chmod +x "$BIN/{name}"; echo "built $BIN/{name}"'
+    )
 
 
 __all__ = ["CommandRunner", "ToolProvisioner"]
