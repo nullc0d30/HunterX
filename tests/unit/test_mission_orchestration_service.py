@@ -54,7 +54,11 @@ class TestEngineLifecycle:
         assert mission.runs[-1].status.value == "running"
         orchestrator.finalize(mission.mission_id)
         assert mission.outcome is not None
-        assert mission.outcome.stop_condition == "objectives_complete"
+        # Finalize is truthful: with no genuine stop fired and the objectives
+        # still open, the mission is reported as BLOCKED — never as a silent
+        # "objectives_complete" success.
+        assert mission.outcome.stop_condition == "blocked"
+        assert mission.outcome.objectives_complete is False
 
     def test_adaptive_loop_observation_to_decision(self) -> None:
         orchestrator = _orchestrator()

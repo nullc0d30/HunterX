@@ -110,6 +110,8 @@ class ReplanningEngine:
         ):
             changes = self._on_generic_signal(graph, signal, mission_id)
 
+        changes = self._filter_replays(changes, graph)
+
         return PlanDelta(
             mission_id=mission_id,
             plan_version=current_version + 1,
@@ -124,6 +126,29 @@ class ReplanningEngine:
                 "priority": signal.priority,
             },
         )
+
+    def _filter_replays(self, changes: list[PlanDeltaChange], graph: AdaptiveExecutionGraph) -> list[PlanDeltaChange]:
+        """Drop ADD_ACTION changes that replay a materially identical action.
+
+        Replay protection lives in the planning domain so it applies to every
+        replanning trigger, not just one caller: an action that shares the
+        identity (capability, asset, hypothesis, parameter/technology context,
+        tool) of an existing graph action — terminal or not — must not be
+        scheduled again. Only genuinely new state (a new endpoint, parameter,
+        technology, asset or hypothesis) produces a new identity and is
+        permitted.
+        """
+        deduplicated: list[PlanDeltaChange] = []
+        for change in changes:
+            if (
+                change.kind is PlanDeltaKind.ADD_ACTION
+                and change.node is not None
+                and graph.has_identical_action(change.node)
+            ):
+                # The repeated branch carries no new state: it is not added.
+                continue
+            deduplicated.append(change)
+        return deduplicated
 
     def version_for(self, delta: PlanDelta, *, created_by: str = "planner") -> PlanVersion:
         """Build the :class:`PlanVersion` describing ``delta``."""

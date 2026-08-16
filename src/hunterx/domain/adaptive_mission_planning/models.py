@@ -280,6 +280,30 @@ class ActionNode:
         self.status = status
         self.touch()
 
+    def identity_key(self) -> str:
+        """Return a canonical identity used for replay protection.
+
+        Two actions are *materially identical* when they share the capability,
+        asset (target/endpoint), hypothesis, parameter/technology context and
+        the tool that would actually run. Any of these changing (a new
+        endpoint, parameter, technology, asset, hypothesis or tool) produces a
+        different identity — which is what legitimately permits the same tool
+        to run again against new state.
+        """
+        parameter = str(self.provenance.get("parameter") or "")
+        technology = str(self.provenance.get("technology") or "")
+        tool = self.selected_tool or (self.tool_candidate_set[0] if self.tool_candidate_set else "")
+        return "\x1f".join(
+            (
+                self.capability or "",
+                self.asset or "",
+                self.hypothesis_id or "",
+                parameter,
+                technology,
+                tool,
+            )
+        )
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-safe mapping."""
         return {

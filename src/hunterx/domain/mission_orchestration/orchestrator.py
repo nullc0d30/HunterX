@@ -28,6 +28,7 @@ from dataclasses import replace
 from typing import Any
 
 from hunterx.domain.adaptive_mission_planning.enums import (
+    ActionStatus,
     MissionMode,
     MissionObjective,
     MissionState,
@@ -294,11 +295,28 @@ class MissionOrchestrator:
         Idempotent: an already-finalized mission (outcome recorded) is
         returned unchanged, so every terminal runner exit path may call this
         safely.
+
+        Termination is truthful: the stop condition is the genuinely fired one
+        (explicit or policy-evaluated). When nothing fired and the objectives
+        are NOT complete, the mission is reported as ``BLOCKED`` (no actionable
+        work / exhausted) — it is never silently converted into success.
         """
         mission = self.get(mission_id)
         if mission.outcome is not None:
             return mission
-        condition = stop_condition or self.policy.evaluate_stop(mission) or StopCondition.OBJECTIVES_COMPLETE
+        explicit = stop_condition
+        evaluated = self.policy.evaluate_stop(mission) if explicit is None else None
+        condition = explicit or evaluated
+        objectives_complete = not mission.context.remaining_objectives
+        if condition is None:
+            if objectives_complete:
+                condition = StopCondition.OBJECTIVES_COMPLETE
+            elif mission.budget.exhausted:
+                condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
+            else:
+                condition = StopCondition.BLOCKED
+        elif condition in _SUCCESS_STOP_CONDITIONS:
+            objectives_complete = True
         if self.planning is not None:
             self._advance_to_completed(mission_id)
         mission.current_phase = MissionPhase.REPORTING
@@ -317,7 +335,7 @@ class MissionOrchestrator:
         mission.outcome = MissionOutcome(
             mission_id=mission_id,
             phase=mission.current_phase.value,
-            objectives_complete=not mission.context.remaining_objectives,
+            objectives_complete=objectives_complete,
             findings_validated=validated,
             findings_report_ready=report_ready,
             hypotheses_resolved=resolved,
@@ -331,6 +349,213 @@ class MissionOrchestrator:
         return mission
 
     # -- observation intake --------------------------------------------------
+
+    def record_attack_paths(self, mission_id: str) -> list[dict[str, Any]]:
+        """Record attack paths from the discovered attack-surface context.
+
+        Attack paths are intelligence only — they never trigger execution. The
+        surface graph is derived from the mission context (host → port/service
+        → endpoint) and the planning engine's attack-path engine discovers the
+        exposure→application chains. Paths are stored on the mission context
+        (for dashboards/reports) and on the adaptive mission aggregate, and
+        validation state is fed from the mission's findings.
+        """
+        mission = self.get(mission_id)
+        if self.planning is None:
+            return list(mission.context.attack_paths)
+        from hunterx.domain.target_intelligence.graph import AttackSurfaceGraph, relationship_for
+        from hunterx.domain.target_intelligence.models import IntelligenceAsset
+        from hunterx.domain.topology.enums import EntityKind, RelationshipType
+        from hunterx.shared.target import normalize_target
+
+        graph = AttackSurfaceGraph()
+        target_id = mission.context.target_id or ""
+        target_spec = normalize_target(target_id)
+        host = target_spec.host_or_ip
+        host_asset = None
+        if host:
+            host_kind = EntityKind.HOSTNAME if ("." in host and not _is_ipv4(host)) else EntityKind.IP
+            host_asset = IntelligenceAsset(
+                kind=host_kind,
+                name=host,
+                key=f"{host_kind.value}:{host}",
+                label=f"host {host}",
+                in_scope=True,
+            )
+            graph.upsert_asset(host_asset)
+
+        port = target_spec.port or (443 if target_spec.scheme == "https" else 80)
+        port_asset = IntelligenceAsset(
+            kind=EntityKind.PORT,
+            name=str(port),
+            key=f"port:{host}:{port}" if host else f"port:{port}",
+            label=f"port {port}",
+            in_scope=True,
+            properties={"protocol": target_spec.scheme or "http"},
+        )
+        graph.upsert_asset(port_asset)
+        if host_asset is not None:
+            graph.add_relationship(
+                relationship_for(
+                    RelationshipType.CONTAINS,
+                    host_asset,
+                    port_asset,
+                    mission_id=mission_id,
+                    source_name="mission-context",
+                    confidence=0.8,
+                )
+            )
+
+        service_assets: dict[str, IntelligenceAsset] = {}
+        for entry in mission.context.services.values():
+            identity = str(entry.get("identity") or entry.get("key") or "")
+            if not identity:
+                continue
+            service_asset = IntelligenceAsset(
+                kind=EntityKind.SERVICE,
+                name=identity,
+                key=f"service:{identity}",
+                label=f"service {identity}",
+                in_scope=True,
+            )
+            graph.upsert_asset(service_asset)
+            service_assets[identity] = service_asset
+            graph.add_relationship(
+                relationship_for(
+                    RelationshipType.SERVES,
+                    port_asset,
+                    service_asset,
+                    mission_id=mission_id,
+                    source_name="mission-context",
+                    confidence=0.7,
+                )
+            )
+
+        validated_map = {
+            str(finding.get("asset_key")): finding.get("stage") in ("verified", "proven", "report_ready")
+            for finding in mission.context.findings
+        }
+        for _key, entry in mission.context.endpoints.items():
+            url = str(entry.get("key") or entry.get("url") or "")
+            if not url:
+                continue
+            parameters = [
+                str(param.get("parameter"))
+                for param_key, param in mission.context.parameters.items()
+                if isinstance(param, dict) and str(param.get("key") or "") == url and param.get("parameter")
+            ]
+            endpoint_asset = IntelligenceAsset(
+                kind=EntityKind.URL,
+                name=url,
+                key=f"url:{url}",
+                label=f"endpoint {url}",
+                in_scope=True,
+                properties={"parameters": [p for p in parameters if p]},
+            )
+            graph.upsert_asset(endpoint_asset)
+            graph.add_relationship(
+                relationship_for(
+                    RelationshipType.SERVES,
+                    port_asset,
+                    endpoint_asset,
+                    mission_id=mission_id,
+                    source_name="mission-context",
+                    confidence=0.8,
+                )
+            )
+            for service_asset in service_assets.values():
+                graph.add_relationship(
+                    relationship_for(
+                        RelationshipType.SERVES,
+                        service_asset,
+                        endpoint_asset,
+                        mission_id=mission_id,
+                        source_name="mission-context",
+                        confidence=0.7,
+                    )
+                )
+
+        evidence_map: dict[str, tuple[str, ...]] = {}
+        paths = self.planning.discover_attack_paths(
+            mission.mission_id,
+            surface=graph,
+            evidence_map=evidence_map,
+            validated_map=validated_map,
+        )
+        mission.mission.attack_paths = paths
+        mission.context.attack_paths = [path.to_dict() for path in paths]
+        return list(mission.context.attack_paths)
+
+    def record_probe(
+        self,
+        mission_id: str,
+        *,
+        vulnerability_class: str,
+        endpoint: str = "",
+        parameter: str = "",
+        action_id: str = "",
+        signal: str = "",
+        supported: bool = False,
+        contradicted: bool = False,
+        notes: str = "",
+        payload_count: int = 0,
+        response_summary: dict[str, Any] | None = None,
+        evidence_ref: str = "",
+    ) -> MissionObservation:
+        """Record a targeted differential probe execution as a first-class observation.
+
+        A probe observation proves that a targeted probe ran and what it
+        observed (baseline vs. payload response summary and verdict). It is
+        advisory evidence for the hypothesis loop — it is NOT vulnerability
+        evidence. Vulnerability evidence is persisted only when the probe
+        verdict supports the class and flows into the finding record
+        (e.g. ``BEHAVIORAL_DIFFERENTIAL``), so
+        ``targeted probe >= 1`` never by itself implies ``evidence >= 1``.
+        """
+        mission = self.get(mission_id)
+        observation = MissionObservation(
+            observation_id=generate_id(),
+            mission_id=mission_id,
+            action_id=action_id,
+            tool_id="hunterx-capability",
+            asset_key=endpoint or mission.context.target_id,
+            observation_type="probe",
+            content={
+                "vulnerability_class": vulnerability_class,
+                "endpoint": endpoint,
+                "parameter": parameter,
+                "signal": signal,
+                "supported": supported,
+                "contradicted": contradicted,
+                "notes": notes,
+                "payload_count": payload_count,
+                "response_summary": response_summary or {},
+            },
+            evidence_ref=evidence_ref,
+            confidence=1.0 if supported else 0.0,
+            raw_tool_id="hunterx-capability",
+            provenance={"probe": True, "vulnerability_class": vulnerability_class},
+        )
+        mission.add_observation(observation)
+        mission.context.tool_executions.append(
+            {
+                "action_id": action_id,
+                "tool_id": "hunterx-capability",
+                "tool_version": "",
+                "asset_key": endpoint or mission.context.target_id,
+                "capability": vulnerability_class,
+                "probe": True,
+                "supported": supported,
+                "executed_at": utcnow_iso(),
+            }
+        )
+        self._record_trace(
+            mission,
+            kind=ReasoningTraceKind.OBSERVATION,
+            node_id=observation.observation_id,
+            content={"type": "probe", "vulnerability_class": vulnerability_class, "supported": supported},
+        )
+        return observation
 
     def ingest_result(
         self,
@@ -365,6 +590,7 @@ class MissionOrchestrator:
         mission.add_observation(observation)
         self._populate_context(mission, observation)
         self._hypothesize_from_observation(mission, observation)
+        self._hypothesize_from_context(mission)
         self._link_findings_to_hypotheses(mission, observation)
         mission.budget.executions_used += 1
         mission.budget.time_used_seconds = _elapsed_seconds(mission)
@@ -697,12 +923,24 @@ class MissionOrchestrator:
         links a NEW_HYPOTHESIS_CREATED validation node to its hypothesis) is
         marked with ``hypothesis_id`` so the decision engine can rank evidence-
         driven probes above unrelated work.
+
+        Replay protection: a ready action whose identity was already executed
+        (a materially identical action completed earlier with no new state) is
+        invalidated — its repeated branch is dropped (``SUPERSEDED``) — so the
+        planner selects another actionable branch instead of blindly re-running
+        the same tool against the same input.
         """
         if self.planning is None:
             return ()
+        graph = self.planning.get_plan(mission.mission_id)
         ready = self.planning.next_parallel_wave(mission.mission_id)
         candidates: list[CandidateAction] = []
         for action in ready:
+            if graph.completed_identical(action):
+                # Same capability + asset + hypothesis + parameter/technology +
+                # tool was already completed: this is a stale repeated branch.
+                action.mark(ActionStatus.SUPERSEDED)
+                continue
             linked = ""
             if action.hypothesis_id and mission.hypothesis(action.hypothesis_id) is not None:
                 linked = action.hypothesis_id
@@ -956,7 +1194,16 @@ class MissionOrchestrator:
         evidence_refs: tuple[str, ...] | list[str] = (),
         confidence: float = 0.0,
     ) -> dict[str, Any]:
-        """Register (or update) a finding on the mission context."""
+        """Register (or update) a finding on the mission context.
+
+        Registration is deduplicated: a candidate carrying the same
+        vulnerability class and asset (endpoint) as an existing finding is
+        merged into it — accumulating unique evidence references — instead of
+        creating a duplicate. Repeated identical observations from the same
+        tool, target and endpoint therefore never multiply findings, and a
+        single candidate per class+endpoint is what a validated hypothesis may
+        later promote.
+        """
         mission = self.get(mission_id)
         stage_value = stage.value if isinstance(stage, FindingStage) else str(stage)
         finding = {
@@ -986,6 +1233,29 @@ class MissionOrchestrator:
                     finding_id=finding["finding_id"],
                 )
                 return merged
+        if stage_value == FindingStage.CANDIDATE.value:
+            # Deduplicate findings by class + asset (endpoint) so a repeated
+            # observation never spawns a second candidate that could later be
+            # promoted into a duplicate validated finding. The merge keeps the
+            # existing (possibly already promoted) stage and accumulates unique
+            # evidence references.
+            for index, existing in enumerate(mission.context.findings):
+                if (
+                    existing.get("vulnerability_class") == vulnerability_class
+                    and existing.get("asset_key") == asset_key
+                ):
+                    merged_refs = list(
+                        dict.fromkeys([*(existing.get("evidence_refs") or ()), *finding["evidence_refs"]])
+                    )
+                    merged = {**existing, **finding, "evidence_refs": merged_refs}
+                    merged["stage"] = _promote_stage(existing.get("stage", ""), stage_value)
+                    mission.context.findings[index] = merged
+                    self._trace_mission(
+                        mission,
+                        MissionEventType.MISSION_FINDING_CREATED,
+                        finding_id=finding["finding_id"],
+                    )
+                    return merged
         mission.context.findings.append(finding)
         self._trace_mission(mission, MissionEventType.MISSION_FINDING_CREATED, finding_id=finding["finding_id"])
         return finding
@@ -1093,8 +1363,12 @@ class MissionOrchestrator:
         if observation.observation_type == "vulnerability":
             # Every candidate produces its own class-specific hypothesis so
             # multiple classes in one observation chain into separate probes.
+            # Informational results (WAF/DNS/tech detection, fingerprinting,
+            # robots.txt, WHOIS/RDAP) are intelligence, never hypotheses.
             for candidate in _vulnerability_candidates(content):
                 if not isinstance(candidate, dict) or not candidate:
+                    continue
+                if not _is_vulnerability_signal(candidate):
                     continue
                 class_id = _vulnerability_class_of(candidate)
                 endpoint = _candidate_field(candidate, "endpoint")
@@ -1109,26 +1383,59 @@ class MissionOrchestrator:
                         "parameter": parameter or "",
                     }
                 if statement:
-                    proposed.append((statement, category, extra))
+                    proposed.append((statement, category, extra, 0.0))
         elif observation.observation_type in ("technology", "tech"):
             name = str(content.get("name") or "").strip()
             if name:
-                proposed.append((f"{asset_key} runs technology {name}", HypothesisType.UNKNOWN_BEHAVIOR, {}))
+                proposed.append((f"{asset_key} runs technology {name}", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
         elif observation.observation_type in ("service", "port"):
             service = str(content.get("service") or content.get("name") or "").strip()
             if service:
-                proposed.append((f"{asset_key} exposes service {service}", HypothesisType.UNKNOWN_BEHAVIOR, {}))
+                proposed.append((f"{asset_key} exposes service {service}", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
         elif observation.observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
-            for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url")]):
-                endpoint = str(endpoint).strip()
-                if endpoint:
-                    proposed.append((f"{endpoint} is a reachable endpoint of the target", HypothesisType.UNKNOWN_BEHAVIOR, {}))
-                    break
+            for endpoint in _endpoint_urls(content):
+                proposed.append((f"{endpoint} is a reachable endpoint of the target", HypothesisType.UNKNOWN_BEHAVIOR, {"endpoint": endpoint}, 0.0))
+                # Query parameters on the discovered surface drive targeted
+                # hypotheses (e.g. ``/redirect?to=`` → open redirect).
+                for parameter in _url_query_parameters(endpoint):
+                    class_id, class_priority = _class_for_parameter(parameter)
+                    if not class_id:
+                        continue
+                    proposed.append(
+                        (
+                            f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}",
+                            _category_for_template(class_id),
+                            {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
+                            class_priority,
+                        )
+                    )
         elif observation.observation_type in ("asset", "subdomain", "host", "hostname", "domain") and asset_key and asset_key != "target":
-            proposed.append((f"{asset_key} is part of the target's attack surface", HypothesisType.UNKNOWN_BEHAVIOR, {}))
+            proposed.append((f"{asset_key} is part of the target's attack surface", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
+        elif observation.observation_type == "parameter":
+            parameters = [
+                str(parameter)
+                for parameter in _as_list(content.get("parameters") or [content.get("parameter")])
+                if str(parameter).strip()
+            ]
+            for parameter in parameters:
+                class_id, class_priority = _class_for_parameter(parameter)
+                if not class_id:
+                    continue
+                proposed.append(
+                    (
+                        f"The '{parameter}' parameter on {asset_key} may be susceptible to {class_id}",
+                        _category_for_template(class_id),
+                        {
+                            "vulnerability_class": class_id,
+                            "endpoint": asset_key,
+                            "parameter": str(parameter),
+                        },
+                        class_priority,
+                    )
+                )
         if not proposed:
             return
-        for statement, category, provenance_extra in proposed:
+        for statement, category, provenance_extra, explicit_priority in proposed:
             behavior_class = (
                 BehaviorClass.KNOWN
                 if category is not HypothesisType.UNKNOWN_BEHAVIOR
@@ -1141,7 +1448,11 @@ class MissionOrchestrator:
                     category=category,
                     supporting=(observation.observation_id,),
                     confidence=max(0.2, min(1.0, observation.confidence or 0.4)),
-                    priority=_priority_for_hypothesis(category, observation.observation_type),
+                    priority=(
+                        explicit_priority
+                        if explicit_priority > 0
+                        else _priority_for_hypothesis(category, observation.observation_type)
+                    ),
                     proposed_by=f"observation:{observation.tool_id or 'tool'}",
                     behavior_class=behavior_class,
                     provenance_hint={
@@ -1153,6 +1464,85 @@ class MissionOrchestrator:
                 )
             except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
                 continue
+
+    def _hypothesize_from_context(self, mission: OrchestratedMission) -> None:
+        """Derive security hypotheses from the canonical attack-surface model.
+
+        Endpoints and parameters recorded in the mission context are actionable
+        surface: a discovered parameter with a class hint (``q`` → SQL
+        injection, ``id`` → IDOR, ``url`` → SSRF, ``to`` → open redirect, ...)
+        produces a targeted vulnerability hypothesis even when the producing
+        scanner payload had a different shape (e.g. httpx technologies with an
+        ``asset`` URL). Idempotent by statement.
+        """
+        proposed: list[tuple[str, HypothesisType, dict[str, Any], float]] = []
+        for param_entry in mission.context.parameters.values():
+            if not isinstance(param_entry, dict):
+                continue
+            endpoint = str(param_entry.get("key") or "")
+            parameter = str(param_entry.get("parameter") or "")
+            if not endpoint or not parameter:
+                continue
+            class_id, class_priority = _class_for_parameter(parameter)
+            if not class_id:
+                continue
+            statement = f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}"
+            proposed.append(
+                (
+                    statement,
+                    _category_for_template(class_id),
+                    {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
+                    class_priority,
+                )
+            )
+        for statement, category, provenance_extra, explicit_priority in proposed:
+            if self._has_open_hypothesis(
+                mission,
+                str(provenance_extra.get("vulnerability_class") or ""),
+                str(provenance_extra.get("endpoint") or ""),
+            ):
+                continue
+            behavior_class = (
+                BehaviorClass.KNOWN
+                if category is not HypothesisType.UNKNOWN_BEHAVIOR
+                else BehaviorClass.NOVEL_CANDIDATE
+            )
+            try:
+                self.add_hypothesis(
+                    mission.mission_id,
+                    statement=statement,
+                    category=category,
+                    supporting=(),
+                    confidence=0.6,
+                    priority=(explicit_priority if explicit_priority > 0 else 0.6),
+                    proposed_by="attack-surface-model",
+                    behavior_class=behavior_class,
+                    provenance_hint=dict(provenance_extra),
+                )
+            except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
+                continue
+
+    @staticmethod
+    def _has_open_hypothesis(mission: OrchestratedMission, class_id: str, endpoint: str) -> bool:
+        """Return ``True`` when a hypothesis already covers class+endpoint.
+
+        Guards the attack-surface-model against duplicating a vulnerability
+        hypothesis that a scanner observation (or an earlier derivation)
+        already produced for the same class and endpoint — settled or not
+        (statements differ, so idempotency-by-statement alone cannot merge
+        them; re-deriving a validated or refuted surface would duplicate
+        probes).
+        """
+        if not class_id:
+            return False
+        for hypothesis in mission.hypotheses:
+            provenance = hypothesis.provenance or {}
+            if (
+                str(provenance.get("vulnerability_class") or "") == class_id
+                and (str(provenance.get("endpoint") or "") == endpoint or not endpoint)
+            ):
+                return True
+        return False
 
     def _populate_context(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
         """Update the target-centric context from a normalized observation.
@@ -1190,11 +1580,7 @@ class MissionOrchestrator:
             for key, identity in _service_entries(content, asset_key):
                 mission.context.services[key] = {"key": asset_key, "content": content, "identity": identity}
         elif observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
-            endpoints = [
-                str(endpoint)
-                for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url")])
-                if str(endpoint).strip()
-            ]
+            endpoints = _endpoint_urls(content)
             for entry in _as_list(content.get("technologies")):
                 if not isinstance(entry, dict):
                     continue
@@ -1205,6 +1591,13 @@ class MissionOrchestrator:
                 if not str(endpoint).strip():
                     continue
                 mission.context.endpoints[f"endpoint:{endpoint}"] = {"key": str(endpoint), "content": content}
+                # Query parameters on the discovered URL become parameter
+                # context so downstream capabilities can target them.
+                for parameter in _url_query_parameters(str(endpoint)):
+                    mission.context.parameters[f"param:{endpoint}:{parameter}"] = {
+                        "key": str(endpoint),
+                        "parameter": parameter,
+                    }
         elif observation_type == "parameter":
             parameters = [
                 str(parameter)
@@ -1219,6 +1612,12 @@ class MissionOrchestrator:
         elif observation_type == "vulnerability":
             for finding in _vulnerability_candidates(content):
                 if not isinstance(finding, dict) or not finding:
+                    continue
+                if not _is_vulnerability_signal(finding):
+                    # Informational scanner results (WAF detection, tech / DNS /
+                    # SPF / MX fingerprinting, robots.txt, WHOIS / RDAP, ...)
+                    # stay observations/intelligence: they never enter the
+                    # candidate-finding pipeline.
                     continue
                 class_id = _vulnerability_class_of(finding)
                 endpoint = _candidate_field(finding, "endpoint")
@@ -1394,21 +1793,170 @@ def _vulnerability_candidates(content: Any) -> list[Any]:
 
 
 def _vulnerability_class_of(candidate: Any) -> str:
-    """Return the canonical vulnerability class of a candidate record."""
-    if not isinstance(candidate, dict):
-        return "unknown"
-    value = candidate.get("vulnerability_class")
-    if value:
-        return str(value).strip()
-    return _template_of(candidate) or "unknown"
+    """Return the canonical vulnerability class of a candidate record.
+
+    Real scanner templates are canonicalized to a probeable capability class
+    (e.g. nuclei ``swagger-api`` -> ``api-security``) so the engine can select a
+    targeted differential probe for the observed surface.
+    """
+    raw = ""
+    if isinstance(candidate, dict):
+        value = candidate.get("vulnerability_class")
+        raw = str(value).strip() if value else _template_of(candidate)
+    raw = raw or "unknown"
+    from hunterx.domain.vulnerability_capability.registry import canonical_class
+
+    return canonical_class(raw)
+
+
+def _is_vulnerability_signal(candidate: Any) -> bool:
+    """Return ``True`` when a scanner candidate is a real vulnerability signal.
+
+    Semantic boundary: informational scanner results (WAF detection, technology
+    / DNS / SPF / MX fingerprinting, robots.txt, WHOIS / RDAP lookups, ...) are
+    observations/intelligence — they never become candidate findings or
+    vulnerability hypotheses. Only a class the engine recognizes as a real
+    vulnerability may enter the candidate pipeline.
+    """
+    if not isinstance(candidate, dict) or not candidate:
+        return False
+    raw = candidate.get("vulnerability_class") or _template_of(candidate)
+    raw = str(raw).strip() or "unknown"
+    from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
+
+    return is_vulnerability_class(raw)
 
 
 def _candidate_field(candidate: Any, name: str) -> str:
-    """Return a candidate field (endpoint/parameter/...) as a string."""
+    """Return a candidate field (endpoint/parameter/...) as a string.
+
+    Scanner records use different keys (``endpoint``, ``matched_at`` for nuclei,
+    ``url``, ``target``); the endpoint is resolved with these fallbacks so a
+    targeted probe hits the actual matched surface, never the bare target.
+    """
     if not isinstance(candidate, dict):
         return ""
-    value = candidate.get(name) or candidate.get(f"{name}_id") or ""
+    if name == "endpoint":
+        for key in ("endpoint", "endpoint_id", "matched_at", "url", "target"):
+            value = candidate.get(key)
+            if value:
+                return str(value).strip()
+        return ""
+    value = candidate.get(name) or candidate.get(f"{name}_id")
     return str(value).strip()
+
+
+#: Parameter name hints → (canonical vulnerability class, priority). Targeted
+#: reasoning: a discovered parameter maps to the class its semantics imply (an
+#: object-lookup ``id`` → IDOR/BOLA, a server-side ``url`` → SSRF, a redirect
+#: ``to`` → open redirect, a search ``q`` → SQL injection, a ``file`` → LFI, a
+#: ``cmd`` → command injection, ``password``/``username`` → authentication).
+#: The engine never runs every class against an endpoint.
+_PARAMETER_CLASS_HINTS: dict[str, tuple[str, float]] = {
+    "id": ("idor", 0.8),
+    "uid": ("idor", 0.8),
+    "user_id": ("idor", 0.8),
+    "resource": ("idor", 0.7),
+    "item": ("idor", 0.7),
+    "account": ("idor", 0.7),
+    "url": ("ssrf", 0.8),
+    "fetch": ("ssrf", 0.8),
+    "uri": ("ssrf", 0.7),
+    "redirect": ("open-redirect", 0.7),
+    "next": ("open-redirect", 0.7),
+    "return": ("open-redirect", 0.7),
+    "to": ("open-redirect", 0.7),
+    "callback": ("open-redirect", 0.7),
+    "destination": ("open-redirect", 0.7),
+    "q": ("sql-injection", 0.75),
+    "search": ("sql-injection", 0.75),
+    "query": ("sql-injection", 0.75),
+    "term": ("sql-injection", 0.7),
+    "keyword": ("sql-injection", 0.7),
+    "file": ("lfi", 0.75),
+    "path": ("lfi", 0.7),
+    "dir": ("lfi", 0.7),
+    "filename": ("lfi", 0.7),
+    "document": ("lfi", 0.7),
+    "cmd": ("command-injection", 0.8),
+    "command": ("command-injection", 0.8),
+    "exec": ("command-injection", 0.8),
+    "run": ("command-injection", 0.7),
+    "username": ("authentication", 0.7),
+    "password": ("authentication", 0.7),
+    "login": ("authentication", 0.7),
+    "email": ("authentication", 0.6),
+    "name": ("ssti", 0.6),
+    "template": ("ssti", 0.7),
+}
+
+
+def _class_for_parameter(name: str) -> tuple[str, float]:
+    """Return ``(canonical_class, priority)`` implied by a parameter name."""
+    normalized = (name or "").lower()
+    for hint, (class_id, priority) in _PARAMETER_CLASS_HINTS.items():
+        if hint in normalized:
+            return class_id, priority
+    return "", 0.0
+
+
+def _is_ipv4(value: str) -> bool:
+    """Return ``True`` when ``value`` is an IPv4 literal."""
+    import ipaddress
+
+    try:
+        ipaddress.IPv4Address(value)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
+def _url_query_parameters(url: str) -> list[str]:
+    """Return the query parameter names of a discovered URL.
+
+    A crawler URL such as ``/redirect?to=https`` exposes a ``to`` parameter
+    even before a dedicated parameter tool runs; recording it lets the engine
+    derive targeted hypotheses (``to`` → open redirect, ``id`` → IDOR, ...)
+    directly from the discovered surface.
+    """
+    from urllib.parse import parse_qsl, urlsplit
+
+    try:
+        query = urlsplit(url).query
+    except (ValueError, TypeError):
+        return []
+    return [str(name) for name, _ in parse_qsl(query) if str(name).strip()]
+
+
+def _endpoint_urls(content: Any) -> list[str]:
+    """Extract discovered endpoint URLs from an observation payload.
+
+    Handles the shapes emitted by the discovery adapters: ``endpoints``/``urls``/
+    ``routes`` lists, katana's ``crawl.urls`` records, and direct ``endpoint``/
+    ``url`` keys. Never fabricates a URL from a missing value.
+    """
+    entries: list[Any] = []
+    if isinstance(content, list):
+        entries = content
+    elif isinstance(content, dict):
+        for key in ("endpoints", "urls", "routes"):
+            entries.extend(_as_list(content.get(key)))
+        crawl = content.get("crawl")
+        if isinstance(crawl, dict):
+            entries.extend(_as_list(crawl.get("urls")))
+        for key in ("endpoint", "url"):
+            value = content.get(key)
+            if value:
+                entries.append(value)
+    urls: list[str] = []
+    for entry in entries:
+        if isinstance(entry, dict):
+            value = entry.get("url") or entry.get("endpoint") or entry.get("path")
+            if value:
+                urls.append(str(value).strip())
+        elif entry:
+            urls.append(str(entry).strip())
+    return [url for url in urls if url]
 
 
 def _discovered_assets(content: dict[str, Any], asset_key: str) -> list[str]:
@@ -1663,6 +2211,19 @@ def _promote_stage(current: str, incoming: str) -> str:
         return incoming
     return current
 
+
+#: Stop conditions that genuinely mean the mission objectives were met. These
+#: are the only conditions that may set ``objectives_complete``; any other
+#: terminal (budget/time exhausted, operator cancelled, unrecoverable failure,
+#: blocked) leaves the objectives incomplete and is never reported as success.
+_SUCCESS_STOP_CONDITIONS = frozenset(
+    {
+        StopCondition.OBJECTIVES_COMPLETE,
+        StopCondition.COVERAGE_TARGET_ACHIEVED,
+        StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED,
+        StopCondition.FINDINGS_VALIDATED,
+    }
+)
 
 #: Orchestration phase derived from the Sprint 027 planning state. The phase is
 #: workflow-driven — it reflects where the mission actually is, not what ran.

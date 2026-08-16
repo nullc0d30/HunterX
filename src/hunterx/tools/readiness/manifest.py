@@ -605,7 +605,7 @@ CAPABILITY_PROVIDERS: dict[str, tuple[str, ...]] = {
     "technology_fingerprint": ("whatweb", "httpx"),
     "certificate_enumeration": ("findomain",),
     "endpoint_enumeration": ("httpx", "katana", "gospider", "hakrawler", "gau", "waybackurls"),
-    "content_discovery": ("ffuf", "gobuster", "feroxbuster", "dirsearch"),
+    "content_discovery": ("katana", "ffuf", "gobuster", "feroxbuster", "dirsearch"),
     "parameter_discovery": ("arjun", "paramspider", "ffuf"),
     "api_mapping": ("katana", "kiterunner"),
     "authentication_analysis": ("httpx", "nuclei"),

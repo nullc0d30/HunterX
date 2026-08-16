@@ -185,10 +185,20 @@ class MissionOrchestrationService:
         self._publish("mission.completed", {"mission_id": mission_id, "stop": "operator_cancelled"})
         return mission.to_dict()
 
-    def finalize(self, mission_id: str) -> dict[str, Any]:
-        """Finalize a mission and record its outcome."""
+    def finalize(self, mission_id: str, *, stop_condition: str | None = None) -> dict[str, Any]:
+        """Finalize a mission and record its outcome.
+
+        ``stop_condition`` optionally forces the terminal reason; otherwise the
+        orchestrator derives the truthful stop (never claiming success while
+        the objectives are incomplete).
+        """
+        from hunterx.domain.mission_orchestration.enums import StopCondition
+
         self.get(mission_id)
-        mission = self._engine.finalize(mission_id)
+        resolved: StopCondition | None = None
+        if stop_condition:
+            resolved = StopCondition(stop_condition)
+        mission = self._engine.finalize(mission_id, stop_condition=resolved)
         self._persist_mission(mission)
         self._persist_runs(mission)
         self._persist_telemetry(mission)
@@ -204,6 +214,28 @@ class MissionOrchestrationService:
         return mission.value
 
     # -- reasoning loop -----------------------------------------------------
+
+    def record_probe(self, mission_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Record a targeted differential probe execution as an observation."""
+        observation = self._engine.record_probe(mission_id, **kwargs)
+        self._persist_observation(mission_id, observation)
+        self._persist_mission(self._engine.get(mission_id))
+        self._publish(
+            "mission.probe.recorded",
+            {
+                "mission_id": mission_id,
+                "observation_id": observation.observation_id,
+                "vulnerability_class": str(kwargs.get("vulnerability_class") or ""),
+                "supported": bool(kwargs.get("supported", False)),
+            },
+        )
+        return observation.to_dict()
+
+    def record_attack_paths(self, mission_id: str) -> list[dict[str, Any]]:
+        """Record attack paths derived from the discovered attack surface."""
+        paths = self._engine.record_attack_paths(mission_id)
+        self._persist_mission(self._engine.get(mission_id))
+        return paths
 
     def ingest_result(self, mission_id: str, **kwargs: Any) -> dict[str, Any]:
         """Ingest and normalize a tool result."""
@@ -239,6 +271,16 @@ class MissionOrchestrationService:
     def verify_hypothesis(self, mission_id: str, hypothesis_id: str, **kwargs: Any) -> dict[str, Any]:
         """Verify a supported hypothesis (promotes to VALIDATED when reproducible)."""
         hypothesis = self._engine.verify_hypothesis(mission_id, hypothesis_id, **kwargs)
+        self._persist_hypothesis(mission_id, hypothesis)
+        self._publish(
+            "mission.hypothesis.updated",
+            {"mission_id": mission_id, "hypothesis_id": hypothesis_id, "state": hypothesis.state.value},
+        )
+        return hypothesis.to_dict()
+
+    def refute_hypothesis(self, mission_id: str, hypothesis_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Refute a hypothesis whose class-specific probe found no signal."""
+        hypothesis = self._engine.refute_hypothesis(mission_id, hypothesis_id, **kwargs)
         self._persist_hypothesis(mission_id, hypothesis)
         self._publish(
             "mission.hypothesis.updated",

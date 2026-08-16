@@ -537,7 +537,11 @@ class TestDefect8RunFinalization:
         result = runner.run(mission_id, max_cycles=4, max_idle_cycles=2)
 
         mission = orchestration.get(mission_id)
-        assert result["status"] == "completed"
+        # The run finalizes deterministically, but with the objectives still
+        # incomplete the truthful status is BLOCKED — never "completed".
+        assert result["status"] == "blocked"
+        assert mission.outcome is not None
+        assert mission.outcome.objectives_complete is False
         assert mission.mission.state.value == "completed"
         assert mission.runs[-1].finished_at
 

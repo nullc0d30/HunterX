@@ -106,6 +106,9 @@ class StopCondition(StrEnum):
 
     Stop conditions are evaluated deterministically after every observation;
     none of them allow the orchestrator to exceed the mission's policy budget.
+    ``BLOCKED`` is the honest terminal used when no actionable work remains
+    (or no tool is available) while the objectives are not complete — it is
+    never reported as success.
     """
 
     OBJECTIVES_COMPLETE = "objectives_complete"
@@ -116,6 +119,7 @@ class StopCondition(StrEnum):
     TIME_BUDGET_EXHAUSTED = "time_budget_exhausted"
     OPERATOR_CANCELLED = "operator_cancelled"
     UNRECOVERABLE_FAILURE = "unrecoverable_failure"
+    BLOCKED = "blocked"
 
 
 class NegativeEvidenceKind(StrEnum):

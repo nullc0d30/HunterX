@@ -145,6 +145,42 @@ class AdaptiveExecutionGraph:
                 ready.append(action)
         return ready
 
+    def has_identical_action(self, node: ActionNode, *, include_terminal: bool = True) -> bool:
+        """Return ``True`` when a materially identical action already exists.
+
+        Replay protection for the planner: an action that shares ``node``'s
+        identity (capability, asset, hypothesis, parameter/technology context
+        and tool) must not be scheduled again unless new state changed the
+        identity. ``include_terminal`` controls whether already-completed (or
+        otherwise terminal) actions still count — the default keeps them in
+        play so a fully executed action is never silently re-run.
+        """
+        key = node.identity_key()
+        if not key:
+            return False
+        for existing in self.actions.values():
+            if not include_terminal and existing.status.is_terminal:
+                continue
+            if existing.identity_key() == key:
+                return True
+        return False
+
+    def completed_identical(self, node: ActionNode) -> list[ActionNode]:
+        """Return already-completed actions sharing ``node``'s identity.
+
+        A ready action whose identity was already executed is a *replay*: it
+        must be invalidated (the repeated branch dropped) so the planner moves
+        to another actionable branch instead of executing it again.
+        """
+        key = node.identity_key()
+        if not key:
+            return []
+        return [
+            existing
+            for existing in self.actions.values()
+            if existing.status is ActionStatus.COMPLETED and existing.identity_key() == key
+        ]
+
     def direct_dependencies(self, action_id: str) -> list[DynamicDependency]:
         """Return dependencies whose target is ``action_id``."""
         return [dep for dep in self.dependencies.values() if dep.target_action_id == action_id]
