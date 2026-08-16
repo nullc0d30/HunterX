@@ -106,6 +106,7 @@ class MissionPolicyEngine:
         if (
             StopCondition.COVERAGE_TARGET_ACHIEVED in conditions
             and mission.coverage_ratio() >= mission.policy.coverage_target
+            and not self._has_open_high_value_hypotheses(mission)
         ):
             return StopCondition.COVERAGE_TARGET_ACHIEVED
 
@@ -146,6 +147,22 @@ class MissionPolicyEngine:
                 "novel_behavior",
             )
             for hypothesis in high_value
+        )
+
+    @staticmethod
+    def _has_open_high_value_hypotheses(mission: OrchestratedMission) -> bool:
+        """Return ``True`` when a high-priority hypothesis is still unresolved.
+
+        Coverage measures what was tested — it does NOT prove the target is
+        secure. A coverage percentage must never let the mission terminate
+        while a high-value hypothesis (priority >= 0.75) remains open, so
+        ``COVERAGE_TARGET_ACHIEVED`` is gated on this predicate.
+        """
+        return any(
+            hypothesis.priority >= 0.75
+            and hypothesis.state.value
+            in ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
+            for hypothesis in mission.hypotheses
         )
 
 

@@ -104,6 +104,15 @@ _CAPABILITY_BY_TRIGGER: dict[ReplanTrigger, str] = {
     ReplanTrigger.NEW_HYPOTHESIS_CREATED: "vulnerability_scanning",
 }
 
+def _observation_id(observation: Any) -> str:
+    """Return the observation id from either a model or its serialized dict."""
+    if observation is None:
+        return ""
+    if isinstance(observation, dict):
+        return str(observation.get("observation_id") or "")
+    return str(getattr(observation, "observation_id", "") or "")
+
+
 #: Canonical MissionState the planning engine advances through as work is
 #: completed. ``_advance_state`` walks one legal hop per exhausted plan so the
 #: mission never gets stuck in reassessment while work remains.
@@ -448,7 +457,7 @@ class MissionExecutionService:
         result = pipeline.result
         if result.ok:
             raw = self._observation_from_result(capability, result)
-            self._orchestration.ingest_result(
+            ingested = self._orchestration.ingest_result(
                 mission_id,
                 tool_id=tool_id,
                 action_id=action_id,
@@ -459,7 +468,17 @@ class MissionExecutionService:
             meaningful = has_meaningful_content(raw.get("content"))
             if meaningful:
                 self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
-                self._replan_from_observation(mission_id, capability, raw)
+                # Evidence-driven reassessment: update the hypotheses this
+                # probe was designed to test, then let the planner reconsider.
+                self._assess_hypotheses_after_observation(
+                    mission_id,
+                    action_id=action_id,
+                    capability=capability,
+                    observation=ingested,
+                    raw=raw,
+                    result=result,
+                )
+                self._replan_from_observation(mission_id, capability, raw, observation=ingested)
                 self._sync_phase(mission_id)
                 self._publish_tool_completed(
                     mission_id, action_id, capability, tool_id, target, result, outcome="evidence"
@@ -802,13 +821,23 @@ class MissionExecutionService:
                     },
                 )
 
-    def _replan_from_observation(self, mission_id: str, capability: str, raw: dict[str, Any]) -> None:
+    def _replan_from_observation(
+        self,
+        mission_id: str,
+        capability: str,
+        raw: dict[str, Any],
+        observation: Any | None = None,
+    ) -> None:
         """Let the planner reconsider the mission from the new observation.
 
         Replanning is deduplicated: a capability already present in the live
         graph (non-terminal) is never scheduled twice. Replanning only fires on
         observations that carry meaningful evidence — an empty result never
         schedules follow-on work.
+
+        A ``NEW_HYPOTHESIS_CREATED`` signal binds the follow-on validation node
+        to the hypothesis that the observation produced, so the next decision
+        ranks an evidence-driven probe (and never a generic capability).
         """
         trigger = _TRIGGER_BY_OBSERVATION.get(str(raw.get("observation_type", "")))
         if trigger is None:
@@ -817,11 +846,25 @@ class MissionExecutionService:
         if not content or not has_meaningful_content(content):
             return
         new_capability = _CAPABILITY_BY_TRIGGER.get(trigger, "")
+        detail: dict[str, Any] = {}
+        if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
+            hypothesis_id = self._hypothesis_from_observation(mission_id, observation)
+            if hypothesis_id:
+                detail["hypothesis_id"] = hypothesis_id
+                detail["capability"] = "vulnerability_scanning"
         if new_capability:
-            # Never schedule the same capability twice, regardless of status:
-            # re-planning must extend the plan, not loop over the same action.
             graph = self._planning.get_plan(mission_id)
-            if any(action.capability == new_capability for action in graph.actions.values()):
+            if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
+                # Per-hypothesis validation actions are distinct: dedup against
+                # ANY existing action bound to the SAME hypothesis (terminal or
+                # not) so an open hypothesis never respawns endless probes.
+                if any(
+                    action.hypothesis_id == detail.get("hypothesis_id")
+                    for action in graph.actions.values()
+                ):
+                    return
+            elif any(action.capability == new_capability for action in graph.actions.values()):
+                # Generic follow-on capabilities are scheduled at most once.
                 return
         try:
             mission = self._orchestration.get(mission_id)
@@ -829,6 +872,7 @@ class MissionExecutionService:
                 mission_id,
                 trigger=trigger,
                 asset_key=mission.context.target_id,
+                detail=detail or None,
                 reason=f"observation from {capability}",
             )
         except Exception:  # noqa: BLE001 - replanning must never break the loop
@@ -836,6 +880,149 @@ class MissionExecutionService:
         # Replanned work may introduce capabilities the preflight never vetted:
         # re-check readiness before any of it is allowed to execute.
         self._check_replanned_readiness(mission_id)
+
+    def _hypothesis_from_observation(self, mission_id: str, observation: Any | None) -> str:
+        """Return the hypothesis supported by ``observation``, if any.
+
+        The hypothesis was created by the orchestrator from the same
+        observation (its ``supporting_evidence`` references the observation id);
+        the highest-priority candidate is returned.
+        """
+        if observation is None:
+            return ""
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort lookup
+            return ""
+        observation_id = _observation_id(observation)
+        candidates = [
+            hypothesis
+            for hypothesis in mission.hypotheses
+            if observation_id and observation_id in hypothesis.supporting_evidence
+        ]
+        if not candidates:
+            return ""
+        return sorted(candidates, key=lambda h: (-h.priority, -h.confidence))[0].hypothesis_id
+
+    def _assess_hypotheses_after_observation(
+        self,
+        mission_id: str,
+        *,
+        action_id: str,
+        capability: str,
+        observation: Any,
+        raw: dict[str, Any],
+        result: Any,
+    ) -> None:
+        """Update hypotheses the executed probe was designed to test.
+
+        A meaningful result is supporting evidence; an explicit negative is
+        contradicting evidence. When a hypothesis reaches SUPPORTED it is
+        independently verified, and when it validates the linked CANDIDATE
+        finding is promoted to ``verified``. This closes the
+        OBSERVE → HYPOTHESIZE → PROBE → REASSESS → VALIDATE → FINDING loop so a
+        probe result genuinely drives the next state.
+        """
+        mission = None
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort assessment
+            return
+        action = None
+        try:
+            action = self._planning.get_action(mission_id, action_id)
+        except Exception:  # noqa: BLE001 - best-effort lookup
+            action = None
+        hypothesis_id = getattr(action, "hypothesis_id", "") if action is not None else ""
+        if not hypothesis_id:
+            hypothesis_id = self._hypothesis_from_observation(mission_id, observation)
+        if not hypothesis_id:
+            return
+        hypothesis = mission.hypothesis(hypothesis_id)
+        if hypothesis is None:
+            return
+        if hypothesis.state.value in ("validated", "refuted", "disproved", "rejected"):
+            # A settled hypothesis is never downgraded by further observations.
+            return
+        observation_id = _observation_id(observation)
+        try:
+            if has_meaningful_content(raw.get("content")):
+                updated = self._orchestration.update_hypothesis(
+                    mission_id,
+                    hypothesis_id,
+                    supporting=(observation_id,) if observation_id else (),
+                    tested_action=action_id,
+                )
+            elif _is_explicit_negative(result):
+                updated = self._orchestration.update_hypothesis(
+                    mission_id,
+                    hypothesis_id,
+                    contradicting=(observation_id,) if observation_id else (),
+                    tested_action=action_id,
+                )
+            else:
+                return
+        except Exception:  # noqa: BLE001 - hypothesis updates must never break the loop
+            return
+        new_state = updated.get("state") if isinstance(updated, dict) else getattr(updated, "state", "")
+        new_state = getattr(new_state, "value", new_state)
+        if new_state == "supported":
+            with contextlib.suppress(Exception):
+                verified = self._orchestration.verify_hypothesis(mission_id, hypothesis_id)
+                verified_state = verified.get("state") if isinstance(verified, dict) else getattr(verified, "state", "")
+                verified_state = getattr(verified_state, "value", verified_state)
+                if verified_state == "validated":
+                    self._promote_findings_for_hypothesis(mission_id, hypothesis_id)
+        elif new_state in ("refuted", "disproved", "rejected"):
+            # The hypothesis was disproven by the probe: no finding promotion.
+            statement = updated.get("statement") if isinstance(updated, dict) else getattr(updated, "statement", "")
+            self._publish(
+                "mission.hypothesis.updated",
+                {
+                    "mission_id": mission_id,
+                    "hypothesis_id": hypothesis_id,
+                    "state": new_state,
+                    "statement": statement,
+                },
+            )
+
+    def _promote_findings_for_hypothesis(self, mission_id: str, hypothesis_id: str) -> None:
+        """Promote CANDIDATE findings linked to a validated hypothesis to verified.
+
+        A tool output is never a vulnerability: the finding is only promoted
+        when the evidence-driven hypothesis that explains it has been
+        independently validated.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            hypothesis = mission.hypothesis(hypothesis_id)
+        except Exception:  # noqa: BLE001 - promotion is best-effort
+            return
+        if hypothesis is None:
+            return
+        asset_key = str((hypothesis.provenance or {}).get("asset_key", ""))
+        for finding in list(mission.context.findings):
+            if finding.get("stage") != "candidate":
+                continue
+            if hypothesis_id and finding.get("hypothesis_id") not in (None, "", hypothesis_id):
+                continue
+            if asset_key and finding.get("asset_key") not in (None, "", asset_key):
+                continue
+            with contextlib.suppress(Exception):
+                self._orchestration.register_finding(
+                    mission_id,
+                    finding_id=finding["finding_id"],
+                    vulnerability_class=finding.get("vulnerability_class", ""),
+                    title=finding.get("title", ""),
+                    description=finding.get("description", ""),
+                    asset_key=finding.get("asset_key", ""),
+                    target=finding.get("target", ""),
+                    severity=finding.get("severity", "info"),
+                    tool=finding.get("tool", ""),
+                    stage="verified",
+                    evidence_refs=tuple(finding.get("evidence_refs") or ()),
+                    confidence=finding.get("confidence", 0.0) or 0.0,
+                )
 
     def _check_replanned_readiness(self, mission_id: str) -> None:
         """Re-check readiness for capabilities the preflight did not vet.

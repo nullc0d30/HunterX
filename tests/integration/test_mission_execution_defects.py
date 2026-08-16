@@ -469,9 +469,19 @@ class TestDefect6ObservationToHypothesis:
 
         findings = orchestration.get(mission_id).context.findings
         assert findings, "a vulnerability observation must record a finding"
-        assert all(finding.get("stage") in ("candidate",) for finding in findings), (
-            "findings never become report-ready merely because a tool ran"
-        )
+        # Finding honesty: a finding is never report-ready merely because a tool
+        # ran once. It may only reach ``verified`` when its explaining
+        # hypothesis was validated by an independent confirmation probe.
+        assert all(finding.get("stage") in ("candidate", "verified") for finding in findings)
+        assert not any(finding.get("stage") in ("proven", "report_ready") for finding in findings)
+        verified = [finding for finding in findings if finding.get("stage") == "verified"]
+        if verified:
+            validated = [
+                hypothesis
+                for hypothesis in orchestration.get(mission_id).hypotheses
+                if hypothesis.state.value == "validated"
+            ]
+            assert validated, "verified findings must be backed by a validated hypothesis"
 
 
 class TestDefect7PhaseAdvancement:

@@ -24,6 +24,7 @@ on top.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import replace
 from typing import Any
 
 from hunterx.domain.adaptive_mission_planning.enums import (
@@ -363,6 +364,7 @@ class MissionOrchestrator:
         mission.add_observation(observation)
         self._populate_context(mission, observation)
         self._hypothesize_from_observation(mission, observation)
+        self._link_findings_to_hypotheses(mission, observation)
         mission.budget.executions_used += 1
         mission.budget.time_used_seconds = _elapsed_seconds(mission)
         mission.context.tool_executions.append(
@@ -382,6 +384,34 @@ class MissionOrchestrator:
         )
         self._trace_mission(mission, MissionEventType.MISSION_OBSERVATION_CREATED, observation_id=observation.observation_id)
         return observation
+
+    def _link_findings_to_hypotheses(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
+        """Attach the hypothesis that explains a candidate finding.
+
+        The candidate finding and the hypothesis are both derived from the same
+        observation; recording ``hypothesis_id`` on the finding lets the runner
+        promote the finding only when its explaining hypothesis is validated —
+        a tool output is never a vulnerability by itself.
+        """
+        observation_id = observation.observation_id
+        hypothesis = next(
+            (
+                hypothesis
+                for hypothesis in mission.hypotheses
+                if observation_id and observation_id in hypothesis.supporting_evidence
+            ),
+            None,
+        )
+        if hypothesis is None:
+            return
+        for finding in mission.context.findings:
+            if finding.get("stage") != "candidate":
+                continue
+            refs = finding.get("evidence_refs") or ()
+            if observation_id not in refs:
+                continue
+            if finding.get("hypothesis_id") in (None, ""):
+                finding["hypothesis_id"] = hypothesis.hypothesis_id
 
     def record_negative(
         self,
@@ -447,13 +477,24 @@ class MissionOrchestrator:
         proof_strategy: str = "",
         behavior_class: BehaviorClass = BehaviorClass.NOVEL_CANDIDATE,
         proposed_by: str = "orchestrator",
+        provenance_hint: dict[str, Any] | None = None,
     ) -> MissionHypothesis:
         """Create and register a hypothesis (idempotent by statement)."""
         mission = self.get(mission_id)
         for existing in mission.hypotheses:
             if existing.statement == statement:
+                # The hypothesis already exists: merge the new supporting
+                # evidence so independent observations accumulate on one
+                # hypothesis (drives SUPPORTED → VALIDATED), instead of a fresh
+                # duplicate per observation.
+                merged_supporting = tuple(dict.fromkeys(existing.supporting_evidence + tuple(supporting)))
+                if merged_supporting and merged_supporting != existing.supporting_evidence:
+                    merged = replace(existing, supporting_evidence=merged_supporting, updated_at=utcnow_iso())
+                    mission.upsert_hypothesis(merged)
+                    return merged
                 return existing
         category_enum = _coerce_category(category)
+        provenance = {"created_by": proposed_by, **(provenance_hint or {})}
         hypothesis = self.hypothesis_loop.hypothesize(
             mission_id=mission_id,
             statement=statement,
@@ -466,6 +507,7 @@ class MissionOrchestrator:
             behavior_class=behavior_class,
             proposed_by=proposed_by,
         )
+        hypothesis = replace(hypothesis, provenance=provenance)
         mission.upsert_hypothesis(hypothesis)
         self._record_trace(
             mission,
@@ -609,12 +651,21 @@ class MissionOrchestrator:
         return decision
 
     def _candidates_from_plan(self, mission: OrchestratedMission) -> tuple[CandidateAction, ...]:
-        """Build candidate actions from the adaptive mission's ready actions."""
+        """Build candidate actions from the adaptive mission's ready actions.
+
+        An action explicitly bound to an open hypothesis (the replanning layer
+        links a NEW_HYPOTHESIS_CREATED validation node to its hypothesis) is
+        marked with ``hypothesis_id`` so the decision engine can rank evidence-
+        driven probes above unrelated work.
+        """
         if self.planning is None:
             return ()
         ready = self.planning.next_parallel_wave(mission.mission_id)
         candidates: list[CandidateAction] = []
         for action in ready:
+            linked = ""
+            if action.hypothesis_id and mission.hypothesis(action.hypothesis_id) is not None:
+                linked = action.hypothesis_id
             candidates.append(
                 CandidateAction(
                     action_id=action.action_id,
@@ -625,11 +676,12 @@ class MissionOrchestrator:
                     attack_surface_expansion=0.3,
                     finding_validation_potential=0.2 if "validate" in action.action_type.value else 0.1,
                     evidence_improvement=0.3,
-                    hypothesis_discrimination=0.2 if action.hypothesis_id else 0.1,
+                    hypothesis_discrimination=0.2 if linked else 0.1,
                     coverage_improvement=0.3,
                     cost=action.cost,
                     dependencies=action.depends_on,
                     reliability=max(0.5, 1.0 - action.risk),
+                    hypothesis_id=linked,
                 )
             )
         return tuple(candidates)
@@ -1039,8 +1091,14 @@ class MissionOrchestrator:
                 category=category,
                 supporting=(observation.observation_id,),
                 confidence=max(0.2, min(1.0, observation.confidence or 0.4)),
+                priority=_priority_for_hypothesis(category, observation.observation_type),
                 proposed_by=f"observation:{observation.tool_id or 'tool'}",
                 behavior_class=behavior_class,
+                provenance_hint={
+                    "observation_id": observation.observation_id,
+                    "observation_type": observation.observation_type,
+                    "asset_key": asset_key,
+                },
             )
         except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
             return
@@ -1442,6 +1500,51 @@ def _coerce_category(category: HypothesisType | str) -> HypothesisType:
         return HypothesisType(normalized)
     except ValueError:
         return HypothesisType.UNKNOWN_BEHAVIOR
+
+
+#: Category → hypothesis priority. Evidence that implies a weakness (injection,
+#: XSS, SSRF, ...) is high-value; discovery facts (asset/service) are low-value.
+_HYPOTHESIS_PRIORITY: dict[str, float] = {
+    "injection": 0.75,
+    "xss": 0.75,
+    "ssrf": 0.75,
+    "ssti": 0.75,
+    "xxe": 0.75,
+    "lfi": 0.75,
+    "rce": 0.80,
+    "idor": 0.75,
+    "api": 0.70,
+    "graphql": 0.70,
+    "secret_exposure": 0.70,
+    "auth": 0.65,
+    "authorization": 0.65,
+    "technology": 0.55,
+    "service": 0.55,
+    "endpoint": 0.60,
+    "parameter": 0.65,
+    "asset": 0.35,
+    "dns": 0.35,
+    "unknown_behavior": 0.50,
+}
+
+
+def _priority_for_hypothesis(category: HypothesisType, observation_type: str) -> float:
+    """Return an evidence-based priority for a hypothesis.
+
+    A vulnerability-class hypothesis is high-value so it drives the next
+    decision and blocks premature coverage-based stopping; a pure discovery
+    fact (asset / service / technology) is deprioritized because it carries no
+    weakness implication.
+    """
+    normalized_type = (observation_type or "").lower()
+    if normalized_type == "vulnerability":
+        return 0.75
+    if normalized_type == "parameter":
+        return 0.65
+    if normalized_type in ("endpoint", "url", "api", "graphql"):
+        return 0.60
+    key = str(category.value if isinstance(category, HypothesisType) else category).lower()
+    return _HYPOTHESIS_PRIORITY.get(key, 0.5)
 
 
 def _elapsed_seconds(mission: OrchestratedMission) -> int:

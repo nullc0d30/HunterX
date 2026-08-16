@@ -1,0 +1,315 @@
+{
+  "note": "Profile behavior matrix. The brief names bugbounty/bug_hunter/pentester/red_teamer/real_world_hacker do not exist as profile identifiers; the real objective vocabulary is listed.",
+  "runtime_mission_type": "bug-bounty (hardcoded at platform/assembler.py:816,838)",
+  "profiles": [
+    {
+      "objective": "attack_surface_discovery",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "certificate_enumeration",
+        "dns_enumeration",
+        "endpoint_enumeration",
+        "port_discovery",
+        "service_detection",
+        "subdomain_enumeration",
+        "technology_fingerprint"
+      ],
+      "validation_depth": "discovery",
+      "proof_required": false,
+      "risk_tolerance": 0.3,
+      "completion_criteria": [
+        "coverage_ratio>=0.9",
+        "no_open_discovery_gaps"
+      ],
+      "initial_capability_chain": [
+        "subdomain_enumeration",
+        "dns_enumeration",
+        "port_discovery",
+        "service_detection",
+        "technology_fingerprint",
+        "certificate_enumeration",
+        "endpoint_enumeration"
+      ]
+    },
+    {
+      "objective": "web_security_assessment",
+      "allowed_capabilities": [
+        "endpoint_enumeration",
+        "idor",
+        "lfi",
+        "parameter_discovery",
+        "rce",
+        "sql_injection",
+        "ssti",
+        "technology_fingerprint",
+        "vulnerability_scanning",
+        "xss",
+        "xxe"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.5,
+      "completion_criteria": [
+        "hypotheses_validated",
+        "coverage_ratio>=0.8"
+      ],
+      "initial_capability_chain": [
+        "endpoint_enumeration",
+        "content_discovery",
+        "parameter_discovery",
+        "technology_fingerprint",
+        "vulnerability_scanning"
+      ]
+    },
+    {
+      "objective": "api_security_assessment",
+      "allowed_capabilities": [
+        "api_mapping",
+        "api_security",
+        "authentication_analysis",
+        "authorization_analysis",
+        "endpoint_enumeration",
+        "graphql_enumeration",
+        "graphql_security",
+        "idor",
+        "parameter_discovery"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.5,
+      "completion_criteria": [
+        "api_surface_mapped",
+        "authorization_tested"
+      ],
+      "initial_capability_chain": [
+        "api_mapping",
+        "endpoint_enumeration",
+        "parameter_discovery",
+        "authentication_analysis",
+        "authorization_analysis"
+      ]
+    },
+    {
+      "objective": "cloud_security_assessment",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "cloud_ownership_mapping",
+        "secret_detection",
+        "vulnerability_scanning"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.4,
+      "completion_criteria": [
+        "cloud_surface_mapped",
+        "exposures_assessed"
+      ],
+      "initial_capability_chain": [
+        "cloud_ownership_mapping",
+        "asset_discovery",
+        "secret_detection",
+        "vulnerability_scanning"
+      ]
+    },
+    {
+      "objective": "network_security_assessment",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "port_discovery",
+        "service_detection",
+        "technology_fingerprint",
+        "vulnerability_scanning"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.6,
+      "completion_criteria": [
+        "coverage_ratio>=0.9",
+        "services_identified"
+      ],
+      "initial_capability_chain": [
+        "asset_discovery",
+        "port_discovery",
+        "service_detection",
+        "technology_fingerprint",
+        "vulnerability_scanning"
+      ]
+    },
+    {
+      "objective": "vulnerability_discovery",
+      "allowed_capabilities": [
+        "dependency_check",
+        "technology_fingerprint",
+        "vulnerability_scanning"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.6,
+      "completion_criteria": [
+        "hypotheses_ranked",
+        "high_confidence_hypotheses_validated"
+      ],
+      "initial_capability_chain": [
+        "technology_fingerprint",
+        "vulnerability_scanning",
+        "dependency_check"
+      ]
+    },
+    {
+      "objective": "bug_bounty_assessment",
+      "allowed_capabilities": [
+        "endpoint_enumeration",
+        "idor",
+        "lfi",
+        "parameter_discovery",
+        "proof_validation",
+        "sql_injection",
+        "ssrf",
+        "ssti",
+        "vulnerability_scanning",
+        "xss",
+        "xxe"
+      ],
+      "validation_depth": "proof",
+      "proof_required": true,
+      "risk_tolerance": 0.2,
+      "completion_criteria": [
+        "scope_correct",
+        "high_confidence_proved",
+        "report_ready_evidence"
+      ],
+      "initial_capability_chain": [
+        "endpoint_enumeration",
+        "parameter_discovery",
+        "vulnerability_scanning"
+      ]
+    },
+    {
+      "objective": "pentest_assessment",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "endpoint_enumeration",
+        "idor",
+        "lfi",
+        "parameter_discovery",
+        "port_discovery",
+        "proof_validation",
+        "rce",
+        "service_detection",
+        "sql_injection",
+        "ssrf",
+        "ssti",
+        "technology_fingerprint",
+        "vulnerability_scanning",
+        "xss",
+        "xxe"
+      ],
+      "validation_depth": "proof",
+      "proof_required": true,
+      "risk_tolerance": 0.7,
+      "completion_criteria": [
+        "attack_paths_analyzed",
+        "validated_findings",
+        "remediation_ready_reporting"
+      ],
+      "initial_capability_chain": [
+        "asset_discovery",
+        "endpoint_enumeration",
+        "parameter_discovery",
+        "vulnerability_scanning"
+      ]
+    },
+    {
+      "objective": "red_team_simulation",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "authorization_analysis",
+        "endpoint_enumeration",
+        "parameter_discovery",
+        "port_discovery",
+        "proof_validation",
+        "subdomain_enumeration",
+        "vulnerability_scanning"
+      ],
+      "validation_depth": "validation",
+      "proof_required": false,
+      "risk_tolerance": 0.8,
+      "completion_criteria": [
+        "objectives_reached",
+        "detection_opportunities_documented"
+      ],
+      "initial_capability_chain": [
+        "asset_discovery",
+        "endpoint_enumeration",
+        "authorization_analysis"
+      ]
+    },
+    {
+      "objective": "target_monitoring",
+      "allowed_capabilities": [
+        "asset_discovery",
+        "certificate_enumeration",
+        "dns_enumeration",
+        "subdomain_enumeration",
+        "technology_fingerprint"
+      ],
+      "validation_depth": "discovery",
+      "proof_required": false,
+      "risk_tolerance": 0.2,
+      "completion_criteria": [
+        "changes_detected",
+        "history_maintained"
+      ],
+      "initial_capability_chain": [
+        "asset_discovery",
+        "subdomain_enumeration",
+        "technology_fingerprint"
+      ]
+    },
+    {
+      "objective": "finding_validation",
+      "allowed_capabilities": [
+        "idor",
+        "lfi",
+        "proof_validation",
+        "rce",
+        "replay",
+        "sql_injection",
+        "ssrf",
+        "ssti",
+        "vulnerability_scanning",
+        "xss",
+        "xxe"
+      ],
+      "validation_depth": "proof",
+      "proof_required": true,
+      "risk_tolerance": 0.3,
+      "completion_criteria": [
+        "findings_validated",
+        "false_positives_filtered"
+      ],
+      "initial_capability_chain": [
+        "vulnerability_scanning",
+        "proof_validation"
+      ]
+    },
+    {
+      "objective": "proof_collection",
+      "allowed_capabilities": [
+        "proof_validation",
+        "replay"
+      ],
+      "validation_depth": "proof",
+      "proof_required": true,
+      "risk_tolerance": 0.3,
+      "completion_criteria": [
+        "proof_replay_validated",
+        "report_ready_evidence"
+      ],
+      "initial_capability_chain": [
+        "proof_validation",
+        "replay"
+      ]
+    }
+  ]
+}
