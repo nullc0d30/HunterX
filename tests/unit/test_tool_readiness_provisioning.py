@@ -10,6 +10,10 @@ is stubbed — no real package is ever installed.
 
 from __future__ import annotations
 
+import sys
+
+import pytest
+
 from hunterx.tools.readiness.definitions import ToolDefinitionBuilder
 from hunterx.tools.readiness.models import (
     ToolReadiness,
@@ -95,7 +99,9 @@ class TestSupportedInstallationMethod:
         outcome = provisioner.install(_definition("nmap", platform))
 
         assert outcome.method is not None and outcome.method.kind == "apt"
-        assert runner.calls[0] == ["sudo", "apt-get", "install", "-y", "nmap"]
+        # ``sudo -n`` fails fast when passwordless elevation is unavailable
+        # instead of hanging on a password prompt.
+        assert runner.calls[0] == ["sudo", "-n", "apt-get", "install", "-y", "nmap"]
 
     def test_go_method_uses_static_module_path(self) -> None:
         platform = linux_platform(is_root=True)
@@ -119,6 +125,58 @@ class TestSupportedInstallationMethod:
 
         assert "install" in runner.calls[0]
         assert "--user" in runner.calls[0]
+
+    def test_pip_inside_venv_omits_user_flag(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Regression: inside a virtualenv ``pip install --user`` is rejected
+        # ("User site-packages are not visible in this virtualenv"), so the
+        # provisioner must install into the venv without ``--user``.
+        monkeypatch.setenv("VIRTUAL_ENV", "/tmp/some-venv")
+        platform = linux_platform(is_root=False)
+        runner = StubRunner({})
+        discovery = StubDiscovery(after=ToolReadinessStatus.AVAILABLE)
+        provisioner = _provisioner(discovery, platform, runner)
+
+        provisioner.install(_definition("sqlmap", platform))
+
+        assert runner.calls[0] == [sys.executable, "-m", "pip", "install", "sqlmap"]
+        assert "--user" not in runner.calls[0]
+
+    def test_apt_uses_non_interactive_sudo_for_non_root(self) -> None:
+        # Regression: ``sudo`` without ``-n`` hangs on a password prompt in
+        # non-interactive runtimes; elevation-requiring installs must fail fast.
+        platform = linux_platform(is_root=False)
+        runner = StubRunner({})
+        discovery = StubDiscovery(after=ToolReadinessStatus.AVAILABLE)
+        provisioner = _provisioner(discovery, platform, runner)
+
+        provisioner.install(_definition("nmap", platform))
+
+        assert runner.calls[0][0] == "sudo"
+        assert runner.calls[0][1] == "-n"
+
+
+class TestGitBasedInstalls:
+    def test_python_git_script_wires_entry_wrapper(self) -> None:
+        from hunterx.tools.readiness.provisioner import _git_python_script
+
+        script = _git_python_script("https://example.com/repo.git", "toolname", "tool.py")
+        assert "https://example.com/repo.git" in script
+        assert "tool.py" in script
+        assert "HUNTERX_TOOL_BIN" in script
+
+    def test_git_pip_script_installs_package(self) -> None:
+        from hunterx.tools.readiness.provisioner import _git_pip_script
+
+        script = _git_pip_script("https://example.com/netexec.git", "netexec")
+        assert "https://example.com/netexec.git" in script
+        assert "pip install" in script
+
+    def test_trivy_script_uses_official_installer(self) -> None:
+        from hunterx.tools.readiness.provisioner import _STATIC_SCRIPTS
+
+        script = _STATIC_SCRIPTS.get("trivy", "")
+        assert script
+        assert "aquasecurity/trivy/main/contrib/install.sh" in script
 
 
 class TestSuccessfulInstallation:
@@ -195,11 +253,11 @@ class TestUnsupportedPlatform:
         discovery = StubDiscovery(after=ToolReadinessStatus.AVAILABLE)
         provisioner = _provisioner(discovery, platform, runner)
 
-        # 'trivy' gained a deterministic go install method.
+        # 'trivy' gained a deterministic install method (official script).
         outcome = provisioner.install(_definition("trivy", platform))
 
-        assert outcome.method is not None and outcome.method.kind == "go"
-        assert runner.calls[0][:3] == ["go", "install", "-v"]
+        assert outcome.method is not None and outcome.method.kind == "script"
+        assert runner.calls[0][0] == "bash"
 
 
 class TestIdempotency:

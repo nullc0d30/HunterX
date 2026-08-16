@@ -40,7 +40,7 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="pip", package="bbot"),
     ),
     "theharvester": (
-        InstallMethod(kind="pip", package="theHarvester"),
+        InstallMethod(kind="script", name="theharvester-git", platforms=("linux", "darwin")),
     ),
     "urlfinder": (
         InstallMethod(kind="go", name="github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest"),
@@ -58,7 +58,18 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="go", name="github.com/tomnomnom/assetfinder@latest"),
     ),
     "findomain": (
-        InstallMethod(kind="cargo", package="findomain"),
+        InstallMethod(
+            kind="prebuilt",
+            name="https://github.com/Findomain/Findomain/releases/latest/download/findomain-linux.zip",
+            package="findomain-linux.zip!findomain",
+            platforms=("linux",),
+        ),
+        InstallMethod(
+            kind="prebuilt",
+            name="https://github.com/Findomain/Findomain/releases/latest/download/findomain-osx-x86_64.zip",
+            package="findomain-osx-x86_64.zip!findomain",
+            platforms=("darwin",),
+        ),
         InstallMethod(kind="brew", package="findomain", platforms=("darwin",)),
     ),
     "dnsx": (
@@ -174,34 +185,30 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="pipx", package="arjun"),
     ),
     "paramspider": (
-        InstallMethod(kind="pip", package="paramspider"),
-        InstallMethod(kind="pipx", package="paramspider"),
+        InstallMethod(kind="script", name="paramspider-git", platforms=("linux", "darwin")),
     ),
     "ghauri": (
-        InstallMethod(kind="pip", package="ghauri"),
-        InstallMethod(kind="pipx", package="ghauri"),
+        InstallMethod(kind="script", name="ghauri-git", platforms=("linux", "darwin")),
     ),
     "commix": (
         InstallMethod(kind="pip", package="commix"),
         InstallMethod(kind="pipx", package="commix"),
     ),
     "sstimap": (
-        InstallMethod(kind="pip", package="sstimap"),
-        InstallMethod(kind="pipx", package="sstimap"),
+        InstallMethod(kind="script", name="sstimap-git", platforms=("linux", "darwin")),
     ),
     "graphqlmap": (
-        InstallMethod(kind="pip", package="graphqlmap"),
-        InstallMethod(kind="pipx", package="graphqlmap"),
+        InstallMethod(kind="script", name="graphqlmap-git", platforms=("linux", "darwin")),
     ),
     "inql": (
         InstallMethod(kind="pip", package="inql"),
         InstallMethod(kind="pipx", package="inql"),
     ),
     "xssstrike": (
-        InstallMethod(kind="pip", package="xssstrike"),
+        InstallMethod(kind="script", name="xssstrike-git", platforms=("linux", "darwin")),
     ),
     "tplmap": (
-        InstallMethod(kind="pip", package="tplmap"),
+        InstallMethod(kind="script", name="tplmap-git", platforms=("linux", "darwin")),
     ),
     "mitmproxy": (
         InstallMethod(kind="pip", package="mitmproxy"),
@@ -245,6 +252,7 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="go", name="github.com/google/osv-scanner/cmd/osv-scanner@latest"),
     ),
     "trivy": (
+        InstallMethod(kind="script", name="trivy", platforms=("linux", "darwin")),
         InstallMethod(kind="go", name="github.com/aquasecurity/trivy/cmd/trivy@latest"),
         InstallMethod(kind="brew", package="aquasecurity/trivy/trivy", platforms=("darwin",)),
     ),
@@ -291,15 +299,13 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="go", name="github.com/aquasecurity/kube-bench@latest"),
     ),
     "netexec": (
-        InstallMethod(kind="pipx", package="netexec"),
-        InstallMethod(kind="pip", package="netexec"),
+        InstallMethod(kind="script", name="netexec-git", platforms=("linux", "darwin")),
     ),
     "impacket": (
         InstallMethod(kind="pip", package="impacket"),
     ),
     "enum4linux-ng": (
-        InstallMethod(kind="pipx", package="enum4linux-ng"),
-        InstallMethod(kind="pip", package="enum4linux-ng"),
+        InstallMethod(kind="script", name="enum4linux-ng-git", platforms=("linux", "darwin")),
     ),
     "linkfinder": (
         InstallMethod(kind="script", name="linkfinder", platforms=("linux", "darwin")),
@@ -428,6 +434,20 @@ TOOL_CLASSIFICATIONS: dict[str, dict[str, str]] = {
             "'hunterx tools check'."
         ),
     },
+    "crobat": {
+        "status": "manual_only",
+        "cli_only": "true",
+        "expected_identity": "crobat subdomain enumeration (Go)",
+        "homepage": "https://github.com/cgboal/crobat",
+        "reason": (
+            "crobat's upstream repository (github.com/cgboal/crobat) has been "
+            "deleted, so the declared 'go install' method cannot resolve a module."
+        ),
+        "remediation": (
+            "Use an alternative subdomain-enumeration provider (subfinder, amass, "
+            "assetfinder, findomain) or obtain crobat from a maintained mirror."
+        ),
+    },
     "metasploit": {
         "status": "",
         "cli_only": "true",
@@ -460,7 +480,7 @@ TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "subfinder": {"executable": "subfinder", "version_command": ("-version",), "version_regex": r"(?:version)\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "amass": {"executable": "amass", "version_command": ("-version",), "version_regex": r"v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "assetfinder": {"executable": "assetfinder", "version_command": ("-h",)},
-    "findomain": {"executable": "findomain", "version_command": ("-v",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
+    "findomain": {"executable": "findomain", "version_command": ("--version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "dnsx": {"executable": "dnsx", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "massdns": {"executable": "massdns", "version_command": ("-h",)},
     "shuffledns": {"executable": "shuffledns", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
@@ -531,7 +551,7 @@ TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "xxeinjector": {"executable": "xxeinjector", "version_command": ("-h",)},
     "enum4linux-ng": {"executable": "enum4linux-ng", "version_command": ("-h",)},
     "netexec": {"executable": "nxc", "aliases": ("netexec",), "version_command": ("--version",), "version_regex": r"NetExec\s+v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
-    "impacket": {"executable": "impacket-smbclient", "aliases": ("secretsdump", "psexec"), "version_command": ("-h",)},
+    "impacket": {"executable": "impacket-smbclient", "aliases": ("impacket-secretsdump", "impacket-psexec", "secretsdump.py", "psexec.py", "smbclient.py"), "version_command": ("-h",)},
     "ldapsearch": {"executable": "ldapsearch", "version_command": ("-VV",), "version_regex": r"ldapsearch\s+([0-9]+\.[0-9]+)"},
     "rpcclient": {"executable": "rpcclient", "version_command": ("-V",), "version_regex": r"([0-9]+\.[0-9]+\.[0-9]+)"},
     "snmpwalk": {"executable": "snmpwalk", "version_command": ("-V",), "version_regex": r"version:\s*([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},

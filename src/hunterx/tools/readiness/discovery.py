@@ -351,10 +351,28 @@ class ToolDiscovery:
             if not resolved_path:
                 resolved_path = self._resolve_in_user_dirs(candidate)
             if not resolved_path:
+                # The managed tools dir / active venv bin may not be on PATH when
+                # the CLI is invoked directly (outside the launcher wrapper).
+                # Search them explicitly so provisioned tools are discovered.
+                resolved_path = self._resolve_in_preferred_dirs(candidate)
+            if not resolved_path:
                 continue
             collisions = self._collision_report(candidate, resolved_path)
             return candidate, resolved_path, collisions
         return None
+
+    def _resolve_in_preferred_dirs(self, candidate: str) -> str:
+        """Resolve ``candidate`` in the preferred HunterX tool directories.
+
+        Mirrors the launcher precedence (managed tools dir, then go bin, then
+        the active venv bin) so a tool installed by the provisioner is found
+        even when the caller did not run through the launcher wrapper.
+        """
+        for directory in preferred_tool_directories():
+            resolved = self._resolve_in_directory(directory, candidate)
+            if resolved is not None:
+                return resolved
+        return ""
 
     def _resolve_in_user_dirs(self, candidate: str) -> str:
         """Resolve ``candidate`` in the user-level script directories."""
