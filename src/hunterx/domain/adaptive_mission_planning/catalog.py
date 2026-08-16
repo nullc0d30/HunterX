@@ -58,17 +58,22 @@ _DISCOVERY_CHAINS: dict[MissionObjective, tuple[str, ...]] = {
     ),
     MissionObjective.VULNERABILITY_DISCOVERY: (
         "technology_fingerprint",
+        "endpoint_enumeration",
+        "content_discovery",
+        "parameter_discovery",
         "vulnerability_scanning",
         "dependency_check",
     ),
     MissionObjective.BUG_BOUNTY_ASSESSMENT: (
         "endpoint_enumeration",
+        "content_discovery",
         "parameter_discovery",
         "vulnerability_scanning",
     ),
     MissionObjective.PENTEST_ASSESSMENT: (
         "asset_discovery",
         "endpoint_enumeration",
+        "content_discovery",
         "parameter_discovery",
         "vulnerability_scanning",
     ),

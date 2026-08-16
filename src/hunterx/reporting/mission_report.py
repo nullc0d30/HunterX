@@ -207,7 +207,7 @@ def build_mission_text_report(
     attack_paths = _context_entries(mission, "attack_paths")
     if attack_paths:
         for key, entry in attack_paths[: _MAX_ROWS]:
-            lines.append(f"  - {_entry_text(key, entry)}")
+            lines.append(f"  - {_attack_path_text(key, entry)}")
     else:
         lines.append("  (none recorded)")
 
@@ -403,9 +403,34 @@ def _mission_coverage_cells(mission: Any) -> list[dict[str, Any]]:
 def _context_entries(mission: Any, name: str) -> list[tuple[str, dict[str, Any]]]:
     context = _attr(mission, "context")
     entries = _attr(context, name)
-    if not isinstance(entries, dict):
-        return []
-    return [(str(key), value) for key, value in entries.items() if isinstance(value, dict)]
+    if isinstance(entries, dict):
+        return [(str(key), value) for key, value in entries.items() if isinstance(value, dict)]
+    if isinstance(entries, list):
+        return [
+            (str(item.get("key") or item.get("asset_key") or item.get("path_id") or index), item)
+            for index, item in enumerate(entries)
+            if isinstance(item, dict)
+        ]
+    return []
+
+
+def _attack_path_text(key: str, entry: dict[str, Any]) -> str:
+    """Render an attack path entry as its step chain plus state/score."""
+    steps = entry.get("steps")
+    if isinstance(steps, list):
+        chain = " -> ".join(
+            str(step.get("asset_key") or step.get("key") or "") for step in steps if isinstance(step, dict)
+        )
+        base = chain or str(key)
+    else:
+        base = str(key)
+    state = str(entry.get("state") or "hypothetical")
+    score = entry.get("score")
+    detail = f" [{state}"
+    if score is not None:
+        detail += f", score {_scalar(score)}"
+    detail += "]"
+    return f"{base}{detail}"
 
 
 def _entry_text(key: str, entry: dict[str, Any]) -> str:

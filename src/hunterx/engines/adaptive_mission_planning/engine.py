@@ -257,7 +257,11 @@ class AdaptiveMissionPlanningEngine:
         """Add approved proposals to the mission graph and return them.
 
         Every proposal is re-checked against the mission policy gates before
-        being scheduled; a rejected proposal is never scheduled.
+        being scheduled; a rejected proposal is never scheduled. Replay
+        protection is enforced at the replan boundary and at action-selection
+        time; proposals that merely re-state an already-planned action are
+        still scheduled here so the decision API stays a pure "propose + add"
+        surface.
         """
         mission = self.get_mission(mission_id)
         scheduled: list[ActionProposal] = []

@@ -187,12 +187,17 @@ class MissionExecutionService:
         event_bus: Any | None = None,
         readiness: Any | None = None,
         ai_suggester: Any | None = None,
+        finding_service: Any | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
         self._engine = execution_engine
         self._event_bus = event_bus
         self._readiness = readiness
+        #: Vulnerability finding orchestration service (optional). When wired, a
+        #: probe-verified hypothesis produces a full finding record with
+        #: vulnerability evidence, reproduction, PoC, replay and report-ready.
+        self._finding_service = finding_service
         #: Capabilities vetted by the mission preflight. Replanned capabilities
         #: outside this set are re-checked before execution (Defect 3).
         self._preflight_capabilities: set[str] = set()
@@ -322,7 +327,7 @@ class MissionExecutionService:
             "cycles_run": len(cycles),
             "cycles": cycles,
             "planning_state": mission.mission.state.value,
-            "status": "degraded" if preflight is not None and preflight.status.value == "degraded" else "completed",
+            "status": _run_status(mission, preflight),
             "preflight": preflight.to_dict() if preflight is not None else None,
             "executions_used": mission.budget.executions_used,
             "observations": len(mission.observations),
@@ -480,6 +485,11 @@ class MissionExecutionService:
                 )
                 self._replan_from_observation(mission_id, capability, raw, observation=ingested)
                 self._sync_phase(mission_id)
+                # Attack paths are intelligence derived from the discovered
+                # surface — recorded as the mission moves through
+                # discovery → hypothesis → probe (never triggers execution).
+                with contextlib.suppress(Exception):  # attack-path recording is best-effort
+                    self._orchestration.record_attack_paths(mission_id)
                 self._publish_tool_completed(
                     mission_id, action_id, capability, tool_id, target, result, outcome="evidence"
                 )
@@ -942,27 +952,75 @@ class MissionExecutionService:
     ) -> None:
         """Update hypotheses the executed probe was designed to test.
 
+        Every class-specific hypothesis supported by the observation is assessed
+        (not just the highest-priority one), so a crawler URL with several
+        query parameters (``?to=``, ``?q=``) drives a targeted probe for each.
         A meaningful result is supporting evidence; an explicit negative is
         contradicting evidence. When a hypothesis reaches SUPPORTED it is
         independently verified, and when it validates the linked CANDIDATE
-        finding is promoted to ``verified``. This closes the
-        OBSERVE → HYPOTHESIZE → PROBE → REASSESS → VALIDATE → FINDING loop so a
-        probe result genuinely drives the next state.
+        finding is promoted to ``verified``.
         """
-        mission = None
-        try:
-            mission = self._orchestration.get(mission_id)
-        except Exception:  # noqa: BLE001 - best-effort assessment
-            return
         action = None
         try:
             action = self._planning.get_action(mission_id, action_id)
         except Exception:  # noqa: BLE001 - best-effort lookup
             action = None
-        hypothesis_id = getattr(action, "hypothesis_id", "") if action is not None else ""
-        if not hypothesis_id:
-            hypothesis_id = self._hypothesis_from_observation(mission_id, observation)
-        if not hypothesis_id:
+        bound = getattr(action, "hypothesis_id", "") if action is not None else ""
+        hypothesis_ids = self._hypotheses_from_observation(mission_id, observation)
+        if bound and bound not in hypothesis_ids:
+            hypothesis_ids.insert(0, bound)
+        # Attack-surface-derived hypotheses (created from the endpoint/parameter
+        # context) carry no observation reference; assess them too so their
+        # targeted differential probes actually run.
+        for hypothesis_id in self._unbound_vulnerability_hypotheses(mission_id):
+            if hypothesis_id not in hypothesis_ids:
+                hypothesis_ids.append(hypothesis_id)
+        for hypothesis_id in hypothesis_ids[:12]:
+            self._assess_hypothesis(
+                mission_id,
+                hypothesis_id=hypothesis_id,
+                action_id=action_id,
+                observation=observation,
+                raw=raw,
+                result=result,
+            )
+
+    def _unbound_vulnerability_hypotheses(self, mission_id: str) -> list[str]:
+        """Return open vulnerability-class hypotheses with no bound action.
+
+        Used so targeted probes are scheduled for hypotheses derived from the
+        attack-surface model even when no observation directly references them.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort
+            return []
+        bound = {action.hypothesis_id for action in graph.actions.values() if action.hypothesis_id}
+        result: list[str] = []
+        for hypothesis in mission.hypotheses:
+            if hypothesis.hypothesis_id in bound:
+                continue
+            if hypothesis.state.value in ("validated", "refuted", "disproved", "rejected"):
+                continue
+            if (hypothesis.provenance or {}).get("vulnerability_class"):
+                result.append(hypothesis.hypothesis_id)
+        return result
+
+    def _assess_hypothesis(
+        self,
+        mission_id: str,
+        *,
+        hypothesis_id: str,
+        action_id: str,
+        observation: Any,
+        raw: dict[str, Any],
+        result: Any,
+    ) -> None:
+        """Assess a single hypothesis against the observation/probe evidence."""
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort assessment
             return
         hypothesis = mission.hypothesis(hypothesis_id)
         if hypothesis is None:
@@ -1039,12 +1097,18 @@ class MissionExecutionService:
                 },
             )
         if new_state == "supported":
-            with contextlib.suppress(Exception):
-                verified = self._orchestration.verify_hypothesis(mission_id, hypothesis_id)
-                verified_state = verified.get("state") if isinstance(verified, dict) else getattr(verified, "state", "")
-                verified_state = getattr(verified_state, "value", verified_state)
-                if verified_state == "validated":
-                    self._promote_findings_for_hypothesis(mission_id, hypothesis_id)
+            # Independent verification is the only evidence that may validate
+            # a hypothesis. Meaningful scanner output moves a hypothesis to
+            # SUPPORTED but can never validate it: without a supporting
+            # differential-probe verdict the finding stays CANDIDATE/SUPPORTED
+            # and never becomes a verified/validated vulnerability.
+            if verdict is not None and verdict.supported:
+                with contextlib.suppress(Exception):
+                    verified = self._orchestration.verify_hypothesis(mission_id, hypothesis_id)
+                    verified_state = verified.get("state") if isinstance(verified, dict) else getattr(verified, "state", "")
+                    verified_state = getattr(verified_state, "value", verified_state)
+                    if verified_state == "validated":
+                        self._promote_findings_for_hypothesis(mission_id, hypothesis_id)
         elif new_state in ("refuted", "disproved", "rejected"):
             # The hypothesis was disproven by the probe: no finding promotion.
             statement = updated.get("statement") if isinstance(updated, dict) else getattr(updated, "statement", "")
@@ -1113,6 +1177,24 @@ class MissionExecutionService:
             )
             responses = ProbeExecutor().execute(probe, target=execution_target)
             verdict = engine.analyze_probe(vulnerability_class, probe, responses)
+            # Persist the probe execution as a first-class observation. This
+            # records that a TARGETED PROBE ran and what it observed — it is
+            # advisory probe evidence, NOT vulnerability evidence. Vulnerability
+            # evidence (BEHAVIORAL_DIFFERENTIAL / ...) is only persisted on the
+            # finding record when the verdict supports the class.
+            self._orchestration.record_probe(
+                mission_id,
+                vulnerability_class=vulnerability_class,
+                endpoint=execution_target,
+                parameter=parameter,
+                signal=verdict.signal.value,
+                supported=verdict.supported,
+                contradicted=verdict.contradicted,
+                notes=verdict.notes,
+                payload_count=len(probe.payloads),
+                response_summary=_probe_response_summary(responses),
+                evidence_ref=f"probe:{vulnerability_class}:{execution_target}",
+            )
             self._publish(
                 "vulnerability.probe.completed",
                 {
@@ -1135,7 +1217,10 @@ class MissionExecutionService:
 
         A tool output is never a vulnerability: the finding is only promoted
         when the evidence-driven hypothesis that explains it has been
-        independently validated.
+        independently validated. When a validated hypothesis has no matching
+        candidate finding (e.g. it was derived from a discovered parameter), a
+        verified finding is created from the hypothesis itself — always with
+        the probe/observation provenance.
         """
         try:
             mission = self._orchestration.get(mission_id)
@@ -1145,6 +1230,9 @@ class MissionExecutionService:
         if hypothesis is None:
             return
         asset_key = str((hypothesis.provenance or {}).get("asset_key", ""))
+        endpoint = str((hypothesis.provenance or {}).get("endpoint") or "")
+        parameter = str((hypothesis.provenance or {}).get("parameter") or "")
+        promoted = False
         for finding in list(mission.context.findings):
             if finding.get("stage") != "candidate":
                 continue
@@ -1177,6 +1265,146 @@ class MissionExecutionService:
                         "hypothesis_id": hypothesis_id,
                     },
                 )
+                promoted = True
+        if not promoted:
+            # A validated hypothesis with no candidate finding (parameter-derived)
+            # becomes a verified finding with full provenance.
+            vulnerability_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+            if vulnerability_class:
+                with contextlib.suppress(Exception):
+                    finding = self._orchestration.register_finding(
+                        mission_id,
+                        vulnerability_class=vulnerability_class,
+                        title=f"{vulnerability_class} on {endpoint or asset_key}",
+                        description=(
+                            f"validated by a differential probe ({hypothesis.statement}); "
+                            f"hypothesis {hypothesis_id}"
+                        ),
+                        asset_key=endpoint or asset_key or mission.context.target_id or "target",
+                        target=mission.context.target_id or "",
+                        severity="high",
+                        tool="hunterx-capability",
+                        stage="verified",
+                        evidence_refs=(hypothesis_id, *hypothesis.supporting_evidence),
+                        confidence=hypothesis.confidence,
+                    )
+                    if isinstance(finding, dict) and finding.get("finding_id"):
+                        self._publish(
+                            "vulnerability.finding.validated",
+                            {
+                                "mission_id": mission_id,
+                                "finding_id": finding["finding_id"],
+                                "vulnerability_class": vulnerability_class,
+                                "hypothesis_id": hypothesis_id,
+                                "parameter": parameter,
+                            },
+                        )
+        # Bridge to the finding orchestration service: the validated,
+        # probe-verified hypothesis also produces the full finding record
+        # (vulnerability evidence, reproduction, PoC, real replay,
+        # report-ready). The finding is downstream of the actual probe
+        # verdict — it is never fabricated from the target alone.
+        self._materialize_validated_finding(mission_id, hypothesis)
+
+    def _materialize_validated_finding(self, mission_id: str, hypothesis: Any) -> None:
+        """Create the full validated finding through the finding service.
+
+        The finding service re-runs the targeted differential probe as the
+        explicit verification step, persists vulnerability evidence, builds
+        reproduction + PoC, replays the probe against the target (real
+        re-execution) and only then marks the finding REPORT_READY. If the
+        probe no longer supports the class, the finding stays at
+        CANDIDATE/SUPPORTED — no success is fabricated.
+        """
+        service = self._finding_service
+        if service is None:
+            return
+        try:
+            vulnerability_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+            if not vulnerability_class:
+                return
+            endpoint = str((hypothesis.provenance or {}).get("endpoint") or "")
+            parameter = str((hypothesis.provenance or {}).get("parameter") or "")
+            mission = self._orchestration.get(mission_id)
+            if not endpoint:
+                endpoint = mission.context.target_id or ""
+            if not endpoint:
+                return
+            class_value = vulnerability_class.replace("-", "_")
+            finding = service.create_finding(
+                mission_id=mission_id,
+                target_id=mission.context.target_id or "",
+                asset_id="",
+                asset=endpoint,
+                vulnerability_class=class_value,
+                title=f"{vulnerability_class} on {endpoint}",
+                description=(
+                    f"validated by a targeted differential probe ({hypothesis.statement}); "
+                    f"hypothesis {hypothesis.hypothesis_id}"
+                ),
+                severity="high",
+                tool="hunterx-capability",
+                endpoints=(endpoint,),
+                parameters=(parameter,) if parameter else (),
+                observations=[
+                    {
+                        "kind": "detection_signature",
+                        "value": f"candidate from hypothesis {hypothesis.hypothesis_id}",
+                        "quality": "medium",
+                        "source": "mission",
+                    }
+                ],
+                provenance=f"hypothesis:{hypothesis.hypothesis_id}",
+            )
+        except Exception as exc:  # noqa: BLE001 - materialization is best-effort
+            self._publish("finding.materialization.failed", {"mission_id": mission_id, "reason": str(exc)})
+            return
+        try:
+            result = service.complete_validated_finding(finding["finding_id"])
+        except Exception as exc:  # noqa: BLE001 - best-effort completion
+            result = {"error": str(exc)}
+        # When the finding service confirms report-readiness, reflect it on the
+        # mission-context finding so the mission dashboard/report are truthful.
+        report_ready = bool(
+            isinstance(result, dict)
+            and result.get("validated")
+            and result.get("report_ready", {}).get("transition", {}).get("allowed")
+        )
+        if report_ready:
+            with contextlib.suppress(Exception):  # best-effort context sync
+                target_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+                target_asset = endpoint or ""
+                for context_finding in mission.context.findings:
+                    if context_finding.get("vulnerability_class") != target_class:
+                        continue
+                    finding_asset = str(context_finding.get("asset_key") or "")
+                    if finding_asset != target_asset and target_asset != finding_asset:
+                        continue
+                    self._orchestration.register_finding(
+                        mission_id,
+                        finding_id=context_finding["finding_id"],
+                        vulnerability_class=context_finding.get("vulnerability_class", ""),
+                        title=context_finding.get("title", ""),
+                        description=context_finding.get("description", ""),
+                        asset_key=finding_asset,
+                        target=context_finding.get("target", ""),
+                        severity=context_finding.get("severity", "info"),
+                        tool=context_finding.get("tool", ""),
+                        stage="report_ready",
+                        evidence_refs=tuple(context_finding.get("evidence_refs") or ()),
+                        confidence=context_finding.get("confidence", 0.0) or 0.0,
+                    )
+                    break
+        self._publish(
+            "finding.materialized",
+            {
+                "mission_id": mission_id,
+                "finding_id": finding["finding_id"],
+                "status": result.get("status") if isinstance(result, dict) else "error",
+                "report_ready": report_ready,
+                "result": result,
+            },
+        )
 
     def _check_replanned_readiness(self, mission_id: str) -> None:
         """Re-check readiness for capabilities the preflight did not vet.
@@ -1305,6 +1533,8 @@ class MissionExecutionService:
 
     def _finalize_run(self, mission_id: str) -> None:
         """Finalize the mission run (idempotent) so no run stays ``running``."""
+        with contextlib.suppress(Exception):  # attack-path recording is best-effort
+            self._orchestration.record_attack_paths(mission_id)
         with contextlib.suppress(Exception):  # finalization is the terminal step
             self._orchestration.finalize(mission_id)
 
@@ -1384,6 +1614,48 @@ def _is_explicit_negative(result: Any) -> bool:
     if isinstance(json_value, list):
         return len(json_value) == 0
     return False
+
+
+def _probe_response_summary(responses: list[dict[str, Any]]) -> dict[str, Any]:
+    """Summarize probe responses (status + bounded body length) for recording.
+
+    Only status codes and lengths are captured — never raw secret-bearing
+    bodies — so the probe observation proves the differential without leaking
+    sensitive response content.
+    """
+    return {
+        "responses": [
+            {
+                "status": int(response.get("status") or 0),
+                "body_length": len(str(response.get("body") or "")),
+                "elapsed_ms": int(response.get("elapsed_ms") or 0),
+            }
+            for response in (responses or [])
+        ]
+    }
+
+
+def _run_status(mission: Any, preflight: Any | None) -> str:
+    """Derive the truthful run status from the finalized mission outcome.
+
+    The status distinguishes completed / blocked / exhausted / failed /
+    cancelled and never claims success when the objectives are incomplete.
+    """
+    if preflight is not None and preflight.status.value == "degraded":
+        return "degraded"
+    outcome = getattr(mission, "outcome", None)
+    if outcome is None:
+        return "blocked"
+    if outcome.objectives_complete:
+        return "completed"
+    stop_condition = getattr(outcome, "stop_condition", "") or ""
+    if stop_condition in ("resource_budget_exhausted", "time_budget_exhausted"):
+        return "exhausted"
+    if stop_condition == "unrecoverable_failure":
+        return "failed"
+    if stop_condition == "operator_cancelled":
+        return "cancelled"
+    return "blocked"
 
 
 def _next_forward_state(current: MissionState) -> MissionState | None:

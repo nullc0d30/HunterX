@@ -28,6 +28,7 @@ from hunterx.tools.vuln.injection import (
     XXEinjectorAdapter,
 )
 from hunterx.tools.vuln.nuclei import NucleiAdapter
+from hunterx.tools.vuln.osv_scanner import OsvScannerAdapter
 from hunterx.tools.vuln.providers import (
     AdvisoryAdapter,
     CweAdapter,
@@ -60,6 +61,7 @@ VULNERABILITY_SCANNER_IDS: tuple[str, ...] = (
     "sstimap",
     "xxeinjector",
     "interactsh",
+    "osv-scanner",
 )
 
 
@@ -116,6 +118,7 @@ class VulnerabilityScannerFactory:
             "sstimap": SSTImapAdapter(),
             "xxeinjector": XXEinjectorAdapter(),
             "interactsh": InteractshAdapter(),
+            "osv-scanner": OsvScannerAdapter(),
         }
 
     def create(self, tool_id: str) -> VulnerabilityScanAdapter:

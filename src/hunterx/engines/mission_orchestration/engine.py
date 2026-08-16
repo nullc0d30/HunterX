@@ -92,6 +92,14 @@ class MissionOrchestrationEngine:
 
     # -- reasoning loop -----------------------------------------------------
 
+    def record_probe(self, mission_id: str, **kwargs: Any) -> MissionObservation:
+        """Record a targeted differential probe execution as an observation."""
+        return self.orchestrator.record_probe(mission_id, **kwargs)
+
+    def record_attack_paths(self, mission_id: str) -> list[dict[str, Any]]:
+        """Record attack paths derived from the discovered attack surface."""
+        return self.orchestrator.record_attack_paths(mission_id)
+
     def ingest_result(self, mission_id: str, **kwargs: Any) -> MissionObservation:
         """Ingest and normalize a tool result."""
         return self.orchestrator.ingest_result(mission_id, **kwargs)
@@ -107,6 +115,10 @@ class MissionOrchestrationEngine:
     def verify_hypothesis(self, mission_id: str, hypothesis_id: str, **kwargs: Any) -> MissionHypothesis:
         """Verify a supported hypothesis."""
         return self.orchestrator.verify_hypothesis(mission_id, hypothesis_id, **kwargs)
+
+    def refute_hypothesis(self, mission_id: str, hypothesis_id: str, **kwargs: Any) -> MissionHypothesis:
+        """Refute a hypothesis whose class-specific probe found no signal."""
+        return self.orchestrator.refute_hypothesis(mission_id, hypothesis_id, **kwargs)
 
     def decide_next(self, mission_id: str, **kwargs: Any) -> MissionDecision | None:
         """Select the next action by information gain."""

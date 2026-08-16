@@ -875,6 +875,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
         readiness=tool_readiness,
         ai_suggester=_build_ai_suggester(settings),
+        finding_service=vulnerability_finding_service,
     )
 
     # -- observability -------------------------------------------------------

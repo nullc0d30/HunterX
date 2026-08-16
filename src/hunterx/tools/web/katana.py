@@ -67,7 +67,7 @@ class KatanaAdapter(WebToolAdapter):
         depth = self._param_int(context, "depth", 3)
         argv.extend(["-d", str(depth)])
         argv.append("-jc")
-        argv.extend(["-silent", "-json"])
+        argv.extend(["-silent"])
         scope = context.parameters.get("scope")
         if isinstance(scope, str) and scope:
             argv.extend(["-cs", scope])
@@ -150,11 +150,22 @@ class KatanaAdapter(WebToolAdapter):
     # -- helpers --------------------------------------------------------------
 
     def _parse_line(self, line: str) -> dict[str, Any] | None:
-        """Parse one katana JSON-lines record (guarding malformed input)."""
-        try:
-            record = json.loads(line)
-        except (json.JSONDecodeError, TypeError):
+        """Parse one katana output line (JSON-lines record or plain URL).
+
+        Current katana emits one plain URL per line by default (the ``-json``
+        flag was removed in newer releases); both forms are accepted so the
+        crawler's observations are never discarded.
+        """
+        stripped = line.strip()
+        if not stripped:
             return None
+        try:
+            record = json.loads(stripped)
+        except (json.JSONDecodeError, TypeError):
+            # Plain URL line (no JSON) — the most common current-katana output.
+            if " " in stripped or "\t" in stripped:
+                return None
+            return {"url": stripped}
         if not isinstance(record, dict):
             return None
         request = record.get("request")

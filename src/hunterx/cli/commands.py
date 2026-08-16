@@ -438,7 +438,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
             )
             return 130
 
-        if run.get("status") == "blocked":
+        if run.get("status") == "blocked" and run.get("preflight"):
             overview["status"] = "blocked"
             overview["reason"] = run.get("reason", "tool readiness gate blocked the mission")
             overview["preflight"] = run.get("preflight")
@@ -446,7 +446,10 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
                 list(run["preflight"].get("missing_tools", ())) if run.get("preflight") else []
             )
         else:
-            overview["status"] = "degraded" if run.get("status") == "degraded" else "executed"
+            # The run status is truthful: completed only when the objectives
+            # are complete; otherwise blocked/exhausted/failed/cancelled.
+            run_status = run.get("status") or "executed"
+            overview["status"] = "degraded" if run_status == "degraded" else run_status
             if run.get("preflight"):
                 overview["preflight"] = run["preflight"]
                 if run["preflight"].get("optional_missing"):

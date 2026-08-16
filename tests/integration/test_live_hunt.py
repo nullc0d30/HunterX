@@ -61,7 +61,7 @@ class TestLiveHuntCLI:
         assert "mission.phase.started" in event_types
         assert "coverage.updated" in event_types
         results = json.loads((tmp_path / "results.json").read_text(encoding="utf-8"))
-        assert results["status"] == "executed"
+        assert results["status"] == "completed"
         assert results["event_count"] == len(events)
         assert (tmp_path / "report.txt").read_text(encoding="utf-8")
         assert overview["artifacts"]["events"].endswith("events.jsonl")
@@ -80,5 +80,5 @@ class TestLiveHuntCLI:
         events = _read_jsonl(tmp_path / "events.jsonl")
         assert any(event["event_type"] == "mission.tool.started" for event in events)
         results = json.loads((tmp_path / "results.json").read_text(encoding="utf-8"))
-        assert results["status"] == "executed"
+        assert results["status"] == "completed"
         assert (tmp_path / "report.txt").exists()
