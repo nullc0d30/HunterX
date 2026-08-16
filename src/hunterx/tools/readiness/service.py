@@ -140,8 +140,18 @@ class ToolReadinessService:
             "available": sum(1 for v in readiness if v.status is ToolReadinessStatus.AVAILABLE),
             "missing": sum(1 for v in readiness if v.status is ToolReadinessStatus.MISSING),
             "broken": sum(1 for v in readiness if v.status is ToolReadinessStatus.BROKEN),
+            "shadowed": sum(1 for v in readiness if v.status is ToolReadinessStatus.SHADOWED),
             "outdated": sum(1 for v in readiness if v.status is ToolReadinessStatus.OUTDATED),
             "unsupported": sum(1 for v in readiness if v.status is ToolReadinessStatus.UNSUPPORTED),
+            "manual_only": sum(1 for v in readiness if v.status is ToolReadinessStatus.MANUAL_ONLY),
+            "not_cli": sum(1 for v in readiness if v.status is ToolReadinessStatus.NOT_CLI),
+            "deprecated": sum(1 for v in readiness if v.status is ToolReadinessStatus.DEPRECATED),
+            "platform_unavailable": sum(
+                1 for v in readiness if v.status is ToolReadinessStatus.PLATFORM_UNAVAILABLE
+            ),
+            "provisioning_failed": sum(
+                1 for v in readiness if v.status is ToolReadinessStatus.PROVISIONING_FAILED
+            ),
             "capabilities_ready": sum(1 for c in capabilities if c.ready),
             "capabilities_missing": sum(1 for c in capabilities if not c.ready),
         }

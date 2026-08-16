@@ -36,6 +36,15 @@ from hunterx.tools.readiness.platform import PlatformInfo
 
 _VERSION_FALLBACK = re.compile(r"(\d+\.\d+(?:\.\d+)?)")
 
+#: Windows CMD.EXE startup boilerplate injected into stderr when the working
+#: directory is a UNC path. It is shell noise, never tool output, and must be
+#: ignored before version extraction so it cannot fake-validate a wrong binary
+#: (the UNC path embeds digits that the fallback version regex would match).
+_CMD_UNC_PREAMBLE = re.compile(
+    r"^.*CMD\.EXE was started with the above path[^\n]*\n.*UNC paths are not supported\.[^\n]*(?:\n|$)",
+    re.DOTALL,
+)
+
 #: Windows executable extensions probed in user script directories.
 _WINDOWS_EXECUTABLE_EXTENSIONS = (".exe", ".cmd", ".bat")
 
@@ -149,9 +158,40 @@ class ToolDiscovery:
         """Probe one definition and return its readiness verdict."""
         if definition.kind == "inprocess":
             return self._probe_inprocess(definition)
+        # Hard catalog classifications short-circuit probing: a tool whose
+        # useful operation requires a GUI/UI (or is deprecated) is never probed
+        # and never reported as a vague ``missing``.
+        if definition.classification in (
+            ToolReadinessStatus.NOT_CLI.value,
+            ToolReadinessStatus.DEPRECATED.value,
+        ):
+            return self._readiness(
+                definition,
+                platform,
+                status=ToolReadinessStatus(definition.classification),
+                error=definition.classification_reason,
+                remediation=definition.remediation,
+            )
         executable = self._find_executable(definition)
         if executable is None:
-            return self._readiness(definition, platform, status=ToolReadinessStatus.MISSING)
+            status = self._classify_missing(definition)
+            reason = ""
+            if status is ToolReadinessStatus.MANUAL_ONLY:
+                reason = definition.classification_reason or "installation requires manual steps"
+            elif status is ToolReadinessStatus.UNSUPPORTED:
+                reason = f"no supported installation method declared for '{definition.tool_id}'"
+            elif status is ToolReadinessStatus.PLATFORM_UNAVAILABLE:
+                reason = (
+                    f"installation methods exist for '{definition.tool_id}' but none is "
+                    f"compatible with {platform.os}/{platform.distro or platform.package_manager}"
+                )
+            return self._readiness(
+                definition,
+                platform,
+                status=status,
+                error=reason,
+                remediation=definition.remediation,
+            )
         binary, path = executable[:2]
         collisions = executable[2] if len(executable) > 2 else ()
         if not self._is_executable(path):
@@ -166,14 +206,23 @@ class ToolDiscovery:
             )
         version, stdout, stderr, probe_error, command = self._detect_version(definition, binary, path)
         if probe_error:
+            status = ToolReadinessStatus.BROKEN
+            error = probe_error
+            if "did not match" in probe_error and collisions:
+                # A same-named competitor shadows the expected provider: the
+                # resolved executable is a DIFFERENT tool (e.g. the Python
+                # 'httpx' CLI vs ProjectDiscovery httpx), never the security
+                # tool HunterX expects.
+                status = ToolReadinessStatus.SHADOWED
+                error = self._shadowed_reason(definition, binary, collisions)
             return self._readiness(
                 definition,
                 platform,
-                status=ToolReadinessStatus.BROKEN,
+                status=status,
                 executable=binary,
                 path=path,
                 stderr=stderr,
-                error=probe_error,
+                error=error,
                 detected_command=command,
                 collisions=collisions,
             )
@@ -192,6 +241,40 @@ class ToolDiscovery:
             detected_command=command,
             collisions=collisions,
         )
+
+    def _shadowed_reason(self, definition: ToolDefinition, binary: str, collisions: tuple[dict[str, str], ...]) -> str:
+        """Build the SHADOWED verdict reason naming the shadowing executables."""
+        identity = definition.expected_identity or f"the expected '{definition.tool_id}' security tool"
+        shadowing = ", ".join(str(entry.get("path")) for entry in collisions) or "another same-named executable"
+        return (
+            f"resolved '{binary}' is not {identity}; it is shadowed by {shadowing}. "
+            "The launcher pins $HUNTERX_TOOL_BIN ahead of runtime/venv paths so the "
+            "security-tool provider is never the Python/npm console script."
+        )
+
+    def _classify_missing(self, definition: ToolDefinition) -> ToolReadinessStatus:
+        """Classify a tool whose executable is not present on the environment.
+
+        A tool is NEVER reported as a vague ``missing`` when the real reason is
+        a precise classification: manual-only, no install method (unsupported),
+        or install methods that do not match the current platform.
+        """
+        if definition.classification == ToolReadinessStatus.MANUAL_ONLY.value:
+            return ToolReadinessStatus.MANUAL_ONLY
+        if definition.classification == ToolReadinessStatus.PLATFORM_UNAVAILABLE.value:
+            return ToolReadinessStatus.PLATFORM_UNAVAILABLE
+        declared = self._declared_install_methods(definition.tool_id)
+        if declared and not definition.installation_methods:
+            return ToolReadinessStatus.PLATFORM_UNAVAILABLE
+        if not declared:
+            return ToolReadinessStatus.UNSUPPORTED
+        return ToolReadinessStatus.MISSING
+
+    def _declared_install_methods(self, tool_id: str) -> tuple[Any, ...]:
+        """Return the manifest-declared install methods for ``tool_id`` (all platforms)."""
+        from hunterx.tools.readiness.manifest import INSTALL_METHODS
+
+        return INSTALL_METHODS.get(tool_id, ())
 
     def mark_installed(self, tool_id: str, version: str = "") -> None:
         """Record a discovered tool as installed on the engine.
@@ -361,6 +444,8 @@ class ToolDiscovery:
 
         stdout = result.stdout
         stderr = result.stderr
+        if os.name == "nt":
+            stderr = _CMD_UNC_PREAMBLE.sub("", stderr)
         combined = f"{stdout}\n{stderr}"
         version = self._extract_version(combined, definition.version_regex)
         if not version and definition.version_regex and combined.strip():
@@ -404,6 +489,7 @@ class ToolDiscovery:
         error: str = "",
         detected_command: tuple[str, ...] = (),
         collisions: tuple[dict[str, str], ...] = (),
+        remediation: str = "",
     ) -> ToolReadiness:
         expected_version = ""
         tip = getattr(self._engine, "_intelligence", None)
@@ -414,6 +500,7 @@ class ToolDiscovery:
         from hunterx.tools.readiness.manifest import install_methods_for
 
         install_methods = install_methods_for(definition.tool_id, platform)
+        effective_remediation = remediation or definition.remediation
         return ToolReadiness(
             tool_id=definition.tool_id,
             status=status,
@@ -429,6 +516,9 @@ class ToolDiscovery:
             install_methods=install_methods,
             platform=platform.os,
             collisions=collisions,
+            expected_identity=definition.expected_identity,
+            cli_only=definition.cli_only,
+            remediation=effective_remediation,
         )
 
 

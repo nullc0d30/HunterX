@@ -1031,6 +1031,23 @@ def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> Non
         _print_check_human(report)
         return 0
 
+    def _tools_matrix(argv: list[str]) -> int:
+        """Emit the final per-tool toolchain matrix (human table or JSON)."""
+        service = _readiness()
+        report = service.check()
+        engine = getattr(service, "_engine", None)
+        rows = [_matrix_row(verdict, engine) for verdict in report.tools]
+        payload = {
+            "platform": report.platform,
+            "tools": rows,
+            "summary": report.summary,
+        }
+        if _json_flag(argv):
+            print(app.renderer.render(payload, fmt="json"))
+            return 0
+        _print_matrix_human(rows)
+        return 0
+
     def _tools_install(argv: list[str]) -> int:
         service = _readiness()
         profile = _flag(argv, "--profile", "")
@@ -1092,8 +1109,106 @@ def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> Non
 
     app.registry.register("install", _install, help_text="Establish the base HunterX environment (detect + verify tools)")
     app.registry.register("tools check", _tools_check, help_text="Show tool readiness and capability coverage")
+    app.registry.register("tools matrix", _tools_matrix, help_text="Show the final per-tool toolchain matrix (--json for machine-readable)")
     app.registry.register("tools install", _tools_install, help_text="Provision missing tools (--profile <name> or explicit tool ids)")
     app.registry.register("tools audit", _tools_audit, help_text="Show tool integration maturity (knowledge + runtime)")
+
+
+def _matrix_row(verdict: Any, engine: Any | None) -> dict[str, Any]:
+    """Build one row of the final per-tool toolchain matrix."""
+    from hunterx.tools.readiness.models import ToolReadinessStatus
+
+    definition = verdict.definition
+    adapter = None
+    if engine is not None:
+        try:
+            adapter = engine.adapter_for(verdict.tool_id)
+        except Exception:  # noqa: BLE001 - best-effort adapter lookup
+            adapter = None
+    installed = verdict.status is ToolReadinessStatus.AVAILABLE
+    capabilities = ", ".join(definition.capabilities) if definition is not None else ""
+    install_methods = ", ".join(sorted({method.kind for method in verdict.install_methods}))
+    if not install_methods and definition is not None:
+        install_methods = ", ".join(sorted({method.kind for method in definition.installation_methods}))
+    if not install_methods:
+        from hunterx.tools.readiness.manifest import INSTALL_METHODS
+
+        install_methods = ", ".join(sorted({method.kind for method in INSTALL_METHODS.get(verdict.tool_id, ())}))
+    return {
+        "tool": verdict.tool_id,
+        "cli_headless": "yes" if definition is None or definition.cli_only else "no",
+        "install_method": install_methods or "none",
+        "installed": "yes" if installed else "no",
+        "resolved_path": verdict.path,
+        "identity": verdict.expected_identity,
+        "version": verdict.version,
+        "health": verdict.health,
+        "capabilities": capabilities,
+        "adapter": "yes" if adapter is not None else "no",
+        "execution": "yes" if installed and adapter is not None else "no",
+        "final_status": _matrix_status(verdict, adapter),
+    }
+
+
+def _matrix_status(verdict: Any, adapter: Any | None) -> str:
+    """Derive the final toolchain status from the readiness verdict."""
+    from hunterx.tools.readiness.models import ToolReadinessStatus
+
+    status = verdict.status
+    if status is ToolReadinessStatus.AVAILABLE:
+        return "READY" if adapter is not None else "INTEGRATION_FAILED"
+    if status is ToolReadinessStatus.MISSING:
+        return "NOT_INSTALLED"
+    if status is ToolReadinessStatus.BROKEN:
+        return "HEALTH_CHECK_FAILED"
+    if status is ToolReadinessStatus.SHADOWED:
+        return "HEALTH_CHECK_FAILED"
+    if status is ToolReadinessStatus.OUTDATED:
+        return "OUTDATED"
+    if status is ToolReadinessStatus.MANUAL_ONLY:
+        return "MANUAL_ONLY"
+    if status is ToolReadinessStatus.NOT_CLI:
+        return "NOT_CLI"
+    if status is ToolReadinessStatus.DEPRECATED:
+        return "DEPRECATED"
+    if status is ToolReadinessStatus.PLATFORM_UNAVAILABLE:
+        return "PLATFORM_UNAVAILABLE"
+    if status is ToolReadinessStatus.UNSUPPORTED:
+        return "UNSUPPORTED"
+    if status is ToolReadinessStatus.PROVISIONING_FAILED:
+        return "INSTALLATION_FAILED"
+    return "UNKNOWN"
+
+
+def _print_matrix_human(rows: list[dict[str, Any]]) -> None:
+    """Render the final toolchain matrix as a compact human table."""
+    headers = ["TOOL", "CLI", "INSTALL", "INSTALLED", "HEALTH", "ADAPTER", "EXECUTION", "FINAL STATUS"]
+    table = [
+        [
+            row["tool"],
+            row["cli_headless"],
+            row["install_method"],
+            row["installed"],
+            row["health"],
+            row["adapter"],
+            row["execution"],
+            row["final_status"],
+        ]
+        for row in rows
+    ]
+    print()
+    print(_render_table(headers, table))
+
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row["final_status"]] = counts.get(row["final_status"], 0) + 1
+    print()
+    print("Final toolchain summary:")
+    for status, count in sorted(counts.items()):
+        print(f"  {status}: {count}")
+    print()
+    print("A tool is READY only when the full chain works: install -> discover ->")
+    print("identify -> version -> health -> capability -> adapter -> execute -> parse -> observe.")
 
 
 def _load_install_state(state_dir: str, profile: str) -> Any:
@@ -1203,12 +1318,16 @@ def _print_check_human(report: Any) -> None:
     summary = report.summary
     print()
     print(
-        f"Summary: {summary['available']}/{summary['total']} tools available, "
-        f"{summary['capabilities_missing']} capabilities missing "
-        f"({summary['broken']} broken, {summary['outdated']} outdated)."
+        f"Summary: {summary.get('available', 0)}/{summary.get('total', 0)} tools available, "
+        f"{summary.get('capabilities_missing', 0)} capabilities missing "
+        f"({summary.get('broken', 0)} broken, {summary.get('shadowed', 0)} shadowed, "
+        f"{summary.get('outdated', 0)} outdated, {summary.get('manual_only', 0)} manual-only, "
+        f"{summary.get('unsupported', 0)} unsupported, {summary.get('not_cli', 0)} not CLI)."
     )
-    if inventory.missing or inventory.broken:
+    if inventory.missing or inventory.broken or inventory.shadowed:
         print("Missing tools can be provisioned with: hunterx tools install [--profile <name>]")
+    for tool_id in inventory.shadowed:
+        print(f"[WARN] {tool_id} is shadowed by a same-named executable; the security-tool provider is not resolved.")
 
 
 def _print_capability_status(report: Any) -> None:

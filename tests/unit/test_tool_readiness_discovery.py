@@ -82,32 +82,54 @@ class TestAvailableExecutable:
 
 
 class TestMissingExecutable:
-    def test_missing_when_not_on_path(self) -> None:
-        # A tool id with no manifest spec yields no executable candidate; it is
-        # MISSING regardless of anything accidentally present on PATH.
+    def test_manifest_less_tool_is_unsupported_not_vague_missing(self) -> None:
+        # A tool id with no manifest spec and no installation method is
+        # classified UNSUPPORTED (precise reason), never a vague "missing".
         tip = tip_with(["ghosttool"])
         platform = linux_platform()
         definition = ToolDefinitionBuilder(tip, platform).build("ghosttool")
 
         verdict = make_discovery().probe(definition, platform)
 
-        assert verdict.status is ToolReadinessStatus.MISSING
+        assert verdict.status is ToolReadinessStatus.UNSUPPORTED
+        assert "no supported installation method" in verdict.reason
         assert verdict.path == ""
 
     def test_missing_distinguishes_from_broken(self, binaries: pathlib.Path) -> None:
+        # 'nmap' is declared in the manifest (installable) -> MISSING when not
+        # installed; 'ghosttool' has no install method -> UNSUPPORTED; a
+        # present-but-wrong binary -> BROKEN/SHADOWED. These are all distinct.
         discovery, definition, platform = _discovery(binaries, tool_id="ghosttool")
-        assert discovery.probe(definition, platform).status is ToolReadinessStatus.MISSING
+        assert discovery.probe(definition, platform).status is ToolReadinessStatus.UNSUPPORTED
 
         fake_executable(binaries, "nmap", "Nmap version 7.94")
         nmap_discovery, nmap_definition, _ = _discovery(binaries)
         assert nmap_discovery.probe(nmap_definition, platform).status is ToolReadinessStatus.AVAILABLE
 
+    def test_manifest_tool_not_installed_is_missing(self, tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A supported, installable tool (declared install methods) that is not
+        # yet installed is MISSING (provisionable), never unsupported. PATH is
+        # isolated to an empty directory so no host binary can leak in.
+        monkeypatch.setenv("PATH", str(tmp_path))
+        for variable in ("HUNTERX_TOOL_BIN", "HUNTERX_DATA_DIR", "GOBIN", "GOPATH", "VIRTUAL_ENV"):
+            monkeypatch.delenv(variable, raising=False)
+        tip = tip_with(["subfinder"])
+        platform = linux_platform()
+        definition = ToolDefinitionBuilder(tip, platform).build("subfinder")
+        assert definition.installation_methods
+
+        verdict = make_discovery().probe(definition, platform)
+
+        assert verdict.status is ToolReadinessStatus.MISSING
+
 
 class TestBrokenExecutable:
-    def test_wrong_binary_with_mismatched_version_pattern_is_broken(self, binaries: pathlib.Path) -> None:
+    def test_wrong_binary_with_mismatched_version_pattern_is_not_available(self, binaries: pathlib.Path) -> None:
         # A same-named binary whose version probe output does not match the
         # declared pattern (e.g. the Python 'httpx' package vs ProjectDiscovery
-        # httpx) must be BROKEN, not AVAILABLE.
+        # httpx) must NEVER be AVAILABLE. When a competing provider exists it
+        # is SHADOWED; without a competitor it is BROKEN — both are honest
+        # "the resolved executable is not the expected tool" verdicts.
         fake_executable(binaries, "httpx", "Usage: httpx [OPTIONS] URL")
         tip = tip_with(["httpx"])
         platform = linux_platform()
@@ -116,8 +138,8 @@ class TestBrokenExecutable:
 
         verdict = discovery.probe(definition, platform)
 
-        assert verdict.status is ToolReadinessStatus.BROKEN
-        assert "did not match" in verdict.error
+        assert verdict.status in (ToolReadinessStatus.BROKEN, ToolReadinessStatus.SHADOWED)
+        assert "httpx" in verdict.error
 
 
 class TestVersionDetection:
@@ -163,7 +185,10 @@ class TestInProcessTools:
 
         assert verdict.status is ToolReadinessStatus.AVAILABLE
 
-    def test_inprocess_without_adapter_is_missing(self) -> None:
+    def test_unknown_binary_tool_without_manifest_is_unsupported(self) -> None:
+        # A binary-kind tool that is neither a registered in-process adapter
+        # nor declared in the manifest has no install method: classified
+        # UNSUPPORTED with a precise reason, never a vague missing.
         from tests.framework.readiness import fake_engine
 
         tip = tip_with(["safe-validation"])
@@ -171,4 +196,4 @@ class TestInProcessTools:
 
         verdict = ToolDiscovery(fake_engine()).probe(definition, linux_platform())
 
-        assert verdict.status is ToolReadinessStatus.MISSING
+        assert verdict.status is ToolReadinessStatus.UNSUPPORTED

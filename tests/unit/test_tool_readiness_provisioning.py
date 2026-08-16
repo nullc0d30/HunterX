@@ -163,18 +163,19 @@ class TestFailedInstallation:
 
 
 class TestUnsupportedPlatform:
-    def test_unsupported_method_for_platform(self) -> None:
+    def test_manual_only_tool_is_classified_never_installed(self) -> None:
         platform = linux_platform(distro="arch", is_root=True)
         runner = StubRunner({})
         discovery = StubDiscovery()
         provisioner = _provisioner(discovery, platform, runner)
 
-        # 'kiterunner' has no install method at all.
+        # 'kiterunner' ships only as a manual release binary: classified
+        # MANUAL_ONLY with remediation, never a vague missing/unsupported.
         outcome = provisioner.install(_definition("kiterunner", platform))
 
         assert not outcome.success
-        assert outcome.status is ToolReadinessStatus.UNSUPPORTED
-        assert not runner.calls, "no command may run for an unsupported tool"
+        assert outcome.status is ToolReadinessStatus.MANUAL_ONLY
+        assert not runner.calls, "no command may run for a manual-only tool"
 
     def test_unsupported_reported_clearly_for_no_platform_method(self) -> None:
         platform = linux_platform(is_root=True)
@@ -182,10 +183,23 @@ class TestUnsupportedPlatform:
         discovery = StubDiscovery()
         provisioner = _provisioner(discovery, platform, runner)
 
-        # 'kiterunner' is a known tool with no trusted install method.
-        outcome = provisioner.install(_definition("kiterunner", platform))
+        # A tool with no install method at all is UNSUPPORTED with a reason.
+        outcome = provisioner.install(_definition("crt-sh", platform))
 
-        assert "no compatible installation method" in outcome.error or "no supported" in outcome.error
+        assert outcome.status is ToolReadinessStatus.NOT_CLI
+        assert "CLI" in outcome.error or "server" in outcome.error or "web service" in outcome.error
+
+    def test_supported_tool_missing_still_attempts_install(self) -> None:
+        platform = linux_platform(is_root=True)
+        runner = StubRunner({})
+        discovery = StubDiscovery(after=ToolReadinessStatus.AVAILABLE)
+        provisioner = _provisioner(discovery, platform, runner)
+
+        # 'trivy' gained a deterministic go install method.
+        outcome = provisioner.install(_definition("trivy", platform))
+
+        assert outcome.method is not None and outcome.method.kind == "go"
+        assert runner.calls[0][:3] == ["go", "install", "-v"]
 
 
 class TestIdempotency:

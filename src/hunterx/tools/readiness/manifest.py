@@ -245,6 +245,7 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="go", name="github.com/google/osv-scanner/cmd/osv-scanner@latest"),
     ),
     "trivy": (
+        InstallMethod(kind="go", name="github.com/aquasecurity/trivy/cmd/trivy@latest"),
         InstallMethod(kind="brew", package="aquasecurity/trivy/trivy", platforms=("darwin",)),
     ),
     "prowler": (
@@ -267,12 +268,194 @@ INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
         InstallMethod(kind="apt", package="cewl", platforms=("linux",), requires_elevation=True),
         InstallMethod(kind="brew", package="cewl", platforms=("darwin",)),
     ),
+    # -- tools with deterministic CLI install methods added for catalog completeness --
+    "crobat": (
+        InstallMethod(kind="go", name="github.com/cgboal/crobat@latest"),
+    ),
+    "gauplus": (
+        InstallMethod(kind="go", name="github.com/bp0lr/gauplus@latest"),
+    ),
+    "jsluice": (
+        InstallMethod(kind="go", name="github.com/BishopFox/jsluice/cmd/jsluice@latest"),
+    ),
+    "unicornscan": (
+        InstallMethod(kind="apt", package="unicornscan", platforms=("linux",), requires_elevation=True),
+    ),
+    "syft": (
+        InstallMethod(kind="go", name="github.com/anchore/syft/cmd/syft@latest"),
+    ),
+    "grype": (
+        InstallMethod(kind="go", name="github.com/anchore/grype/cmd/grype@latest"),
+    ),
+    "kube-bench": (
+        InstallMethod(kind="go", name="github.com/aquasecurity/kube-bench@latest"),
+    ),
+    "netexec": (
+        InstallMethod(kind="pipx", package="netexec"),
+        InstallMethod(kind="pip", package="netexec"),
+    ),
+    "impacket": (
+        InstallMethod(kind="pip", package="impacket"),
+    ),
+    "enum4linux-ng": (
+        InstallMethod(kind="pipx", package="enum4linux-ng"),
+        InstallMethod(kind="pip", package="enum4linux-ng"),
+    ),
+    "linkfinder": (
+        InstallMethod(kind="script", name="linkfinder", platforms=("linux", "darwin")),
+    ),
+    "secretfinder": (
+        InstallMethod(kind="script", name="secretfinder", platforms=("linux", "darwin")),
+    ),
+    "xnlinkfinder": (
+        InstallMethod(kind="script", name="xnlinkfinder", platforms=("linux", "darwin")),
+    ),
+    "jwt-tool": (
+        InstallMethod(kind="script", name="jwt-tool", platforms=("linux", "darwin")),
+    ),
+    # -- standard system packages (network diagnostics / exploit DB) ---------
+    "exploitdb": (
+        InstallMethod(kind="apt", package="exploitdb", platforms=("linux",), requires_elevation=True),
+    ),
+    "arp-scan": (
+        InstallMethod(kind="apt", package="arp-scan", platforms=("linux",), requires_elevation=True),
+        InstallMethod(kind="brew", package="arp-scan", platforms=("darwin",)),
+    ),
+    "fping": (
+        InstallMethod(kind="apt", package="fping", platforms=("linux",), requires_elevation=True),
+        InstallMethod(kind="brew", package="fping", platforms=("darwin",)),
+    ),
+    "ldapsearch": (
+        InstallMethod(kind="apt", package="ldap-utils", platforms=("linux",), requires_elevation=True),
+        InstallMethod(kind="brew", package="openldap", platforms=("darwin",)),
+    ),
+    "rpcclient": (
+        InstallMethod(kind="apt", package="samba-common-bin", platforms=("linux",), requires_elevation=True),
+    ),
+    "snmpwalk": (
+        InstallMethod(kind="apt", package="snmp", platforms=("linux",), requires_elevation=True),
+        InstallMethod(kind="brew", package="net-snmp", platforms=("darwin",)),
+    ),
 }
 
-#: Binary names / version probes / minimum versions per tool.
+#: Explicit non-installable classifications for tools in the supported catalog.
+#: A tool in this map is NEVER reported as an unexplained ``missing``: it is
+#: classified precisely (``not_cli`` / ``deprecated`` / ``manual_only``) with a
+#: machine-readable reason and remediation. ``platform_unavailable`` is derived
+#: at discovery time when install methods exist but none matches the platform.
+TOOL_CLASSIFICATIONS: dict[str, dict[str, str]] = {
+    "crt-sh": {
+        "status": "not_cli",
+        "cli_only": "false",
+        "expected_identity": "crt.sh certificate transparency web service",
+        "homepage": "https://crt.sh",
+        "reason": (
+            "crt.sh is a public web service (HTTPS API), not a CLI tool; "
+            "certificate enumeration is provided by findomain instead."
+        ),
+        "remediation": "certificate enumeration is covered by findomain; no CLI binary to install.",
+    },
+    "spiderfoot": {
+        "status": "not_cli",
+        "cli_only": "false",
+        "expected_identity": "SpiderFoot OSINT automation server",
+        "homepage": "https://www.spiderfoot.net",
+        "reason": (
+            "SpiderFoot's useful operation requires its long-running web/GUI "
+            "server; its CLI only drives that server and is not a self-contained "
+            "headless scan tool."
+        ),
+        "remediation": "no headless CLI-only integration; excluded from the CLI tool catalog.",
+    },
+    "openapi-parser": {
+        "status": "not_cli",
+        "cli_only": "false",
+        "expected_identity": "HunterX in-process OpenAPI parser",
+        "homepage": "",
+        "reason": (
+            "openapi-parser is an in-process parser capability (served by the "
+            "api-openapi adapter), not a standalone external CLI tool."
+        ),
+        "remediation": "no external binary; provided in-process by the api-openapi adapter.",
+    },
+    "postman-parser": {
+        "status": "not_cli",
+        "cli_only": "false",
+        "expected_identity": "HunterX in-process Postman collection parser",
+        "homepage": "",
+        "reason": (
+            "postman-parser is an in-process parser capability, not a standalone "
+            "external CLI tool."
+        ),
+        "remediation": "no external binary; provided in-process by the API adapters.",
+    },
+    "kiterunner": {
+        "status": "manual_only",
+        "cli_only": "true",
+        "expected_identity": "Assetnote Kiterunner (kr)",
+        "homepage": "https://github.com/assetnote/kiterunner",
+        "reason": "Kiterunner ships as a private GitHub release binary without a package manager.",
+        "remediation": (
+            "Download the latest 'kr' release binary from "
+            "https://github.com/assetnote/kiterunner/releases and place it on "
+            "PATH (or in $HUNTERX_TOOL_BIN), then re-run 'hunterx tools check'."
+        ),
+    },
+    "codeql": {
+        "status": "manual_only",
+        "cli_only": "true",
+        "expected_identity": "GitHub CodeQL CLI",
+        "homepage": "https://github.com/github/codeql-cli-binaries",
+        "reason": "CodeQL requires a manually downloaded release bundle plus a Java runtime.",
+        "remediation": (
+            "Download the CodeQL CLI zip from "
+            "https://github.com/github/codeql-cli-binaries/releases, extract it, "
+            "and add the 'codeql' binary to PATH, then re-run 'hunterx tools check'."
+        ),
+    },
+    "xxeinjector": {
+        "status": "manual_only",
+        "cli_only": "true",
+        "expected_identity": "enjoiz XXEinjector (Ruby)",
+        "homepage": "https://github.com/enjoiz/XXEinjector",
+        "reason": (
+            "XXEinjector is a Ruby script without a package manager; its entry "
+            "point name does not match the canonical 'xxeinjector' executable."
+        ),
+        "remediation": (
+            "Clone https://github.com/enjoiz/XXEinjector, install Ruby deps, and "
+            "symlink 'XXEinjector.rb' to 'xxeinjector' on PATH, then re-run "
+            "'hunterx tools check'."
+        ),
+    },
+    "metasploit": {
+        "status": "",
+        "cli_only": "true",
+        "expected_identity": "Rapid7 Metasploit Framework (msfconsole)",
+        "homepage": "https://www.metasploit.com",
+    },
+    "zap": {
+        "status": "",
+        "cli_only": "true",
+        "expected_identity": "OWASP ZAP (zaproxy / zap.sh)",
+        "homepage": "https://www.zaproxy.org",
+    },
+    "exploitdb": {
+        "status": "",
+        "cli_only": "true",
+        "expected_identity": "Exploit-DB (searchsploit)",
+        "homepage": "https://www.exploit-db.com",
+    },
+}
+
+
+#: Binary names / version probes / minimum versions / identity per tool.
 #: ``executable`` is the primary binary; ``aliases`` are fallbacks to probe.
 #: ``version_command`` is the static argv requesting the version.
 #: ``version_regex`` extracts the semver-ish version from stdout (group 1).
+#: ``expected_identity`` names the vendor/product HunterX expects so discovery
+#: can reject a same-named unrelated executable. ``cli_only`` is ``False`` for
+#: tools whose useful operation requires a GUI/UI or daemon.
 TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "subfinder": {"executable": "subfinder", "version_command": ("-version",), "version_regex": r"(?:version)\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "amass": {"executable": "amass", "version_command": ("-version",), "version_regex": r"v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
@@ -281,7 +464,7 @@ TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "dnsx": {"executable": "dnsx", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "massdns": {"executable": "massdns", "version_command": ("-h",)},
     "shuffledns": {"executable": "shuffledns", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
-    "httpx": {"executable": "httpx", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)", "min_version": "1.6.0"},
+    "httpx": {"executable": "httpx", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)", "min_version": "1.6.0", "expected_identity": "ProjectDiscovery httpx (Go)", "homepage": "https://github.com/projectdiscovery/httpx"},
     "whatweb": {"executable": "whatweb", "version_command": ("--version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "katana": {"executable": "katana", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "gospider": {"executable": "gospider", "version_command": ("-version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
@@ -298,7 +481,7 @@ TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "bbot": {"executable": "bbot", "version_command": ("--version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "theharvester": {"executable": "theHarvester", "version_command": ("-h",)},
     "urlfinder": {"executable": "urlfinder", "version_command": ("-version",), "version_regex": r"version\s+?v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
-    "nuclei": {"executable": "nuclei", "version_command": ("-version",), "version_regex": r"version\s*:?\s*v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)", "min_version": "3.0.0"},
+    "nuclei": {"executable": "nuclei", "version_command": ("-version",), "version_regex": r"version\s*:?\s*v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)", "min_version": "3.0.0", "expected_identity": "ProjectDiscovery nuclei (Go)", "homepage": "https://github.com/projectdiscovery/nuclei"},
     "dalfox": {"executable": "dalfox", "version_command": ("--version",), "version_regex": r"v?([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "xssstrike": {"executable": "xsstrike", "version_command": ("-h",)},
     "sqlmap": {"executable": "sqlmap", "version_command": ("--version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)", "min_version": "1.6.0"},
@@ -358,6 +541,11 @@ TOOL_BINARY_SPECS: dict[str, dict[str, object]] = {
     "unicornscan": {"executable": "unicornscan", "version_command": ("--version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "kube-bench": {"executable": "kube-bench", "version_command": ("version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
     "codeql": {"executable": "codeql", "version_command": ("version",), "version_regex": r"([0-9]+\.[0-9]+(?:\.[0-9]+)?)"},
+    # -- catalog-completion entries for the supported CLI toolchain ----------
+    "crt-sh": {"executable": "", "cli_only": "false", "expected_identity": "crt.sh certificate transparency web service", "homepage": "https://crt.sh"},
+    "crobat": {"executable": "crobat", "version_command": ("-h",)},
+    "openapi-parser": {"executable": "", "cli_only": "false", "expected_identity": "HunterX in-process OpenAPI parser", "homepage": ""},
+    "postman-parser": {"executable": "", "cli_only": "false", "expected_identity": "HunterX in-process Postman parser", "homepage": ""},
 }
 
 #: Tools that are in-process adapters (no external binary is executed).
@@ -395,7 +583,7 @@ CAPABILITY_PROVIDERS: dict[str, tuple[str, ...]] = {
     "port_discovery": ("nmap", "rustscan", "naabu", "masscan"),
     "service_detection": ("nmap", "httpx"),
     "technology_fingerprint": ("whatweb", "httpx"),
-    "certificate_enumeration": ("findomain", "crt-sh"),
+    "certificate_enumeration": ("findomain",),
     "endpoint_enumeration": ("httpx", "katana", "gospider", "hakrawler", "gau", "waybackurls"),
     "content_discovery": ("ffuf", "gobuster", "feroxbuster", "dirsearch"),
     "parameter_discovery": ("arjun", "paramspider", "ffuf"),

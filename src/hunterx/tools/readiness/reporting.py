@@ -48,8 +48,14 @@ _STATUS_MARKS: dict[ToolReadinessStatus, str] = {
     ToolReadinessStatus.AVAILABLE: _MARK_AVAILABLE,
     ToolReadinessStatus.MISSING: _MARK_MISSING,
     ToolReadinessStatus.BROKEN: _MARK_BROKEN,
+    ToolReadinessStatus.SHADOWED: _MARK_BROKEN,
     ToolReadinessStatus.OUTDATED: _MARK_OUTDATED,
     ToolReadinessStatus.UNSUPPORTED: _MARK_UNSUPPORTED,
+    ToolReadinessStatus.MANUAL_ONLY: _MARK_UNSUPPORTED,
+    ToolReadinessStatus.NOT_CLI: _MARK_UNSUPPORTED,
+    ToolReadinessStatus.DEPRECATED: _MARK_UNSUPPORTED,
+    ToolReadinessStatus.PLATFORM_UNAVAILABLE: _MARK_UNSUPPORTED,
+    ToolReadinessStatus.PROVISIONING_FAILED: _MARK_BROKEN,
 }
 
 
@@ -126,8 +132,14 @@ def render_inventory(inventory: ToolInventory, width: int = 80) -> str:
         ("Available", inventory.available, ToolReadinessStatus.AVAILABLE),
         ("Missing", inventory.missing, ToolReadinessStatus.MISSING),
         ("Broken", inventory.broken, ToolReadinessStatus.BROKEN),
+        ("Shadowed", inventory.shadowed, ToolReadinessStatus.SHADOWED),
         ("Outdated", inventory.outdated, ToolReadinessStatus.OUTDATED),
         ("Unsupported", inventory.unsupported, ToolReadinessStatus.UNSUPPORTED),
+        ("Manual only", inventory.manual_only, ToolReadinessStatus.MANUAL_ONLY),
+        ("Not CLI", inventory.not_cli, ToolReadinessStatus.NOT_CLI),
+        ("Deprecated", inventory.deprecated, ToolReadinessStatus.DEPRECATED),
+        ("Platform unavailable", inventory.platform_unavailable, ToolReadinessStatus.PLATFORM_UNAVAILABLE),
+        ("Provisioning failed", inventory.provisioning_failed, ToolReadinessStatus.PROVISIONING_FAILED),
     ]
     for label, tool_ids, status in buckets:
         if not tool_ids:
