@@ -22,6 +22,7 @@ during normal test runs.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess  # nosec B404  # guarded static command vector (see _run)
 import sys
@@ -37,7 +38,10 @@ from hunterx.tools.readiness.models import (
 from hunterx.tools.readiness.platform import PlatformInfo
 
 #: Prefix used when the process has no elevation rights but the method needs it.
-_SUDO = ("sudo",)
+#: ``-n`` makes sudo fail immediately (instead of hanging on a password prompt)
+#: when passwordless elevation is unavailable, so a tool is classified fast and
+#: honestly instead of blocking the install for the full method timeout.
+_SUDO = ("sudo", "-n")
 
 #: Hard timeout (seconds) applied per install-method kind. The manifest may
 #: override any of these with an explicit ``timeout_s`` on an ``InstallMethod``.
@@ -181,12 +185,13 @@ class ToolProvisioner:
 
         methods = self._compatible_methods(definition)
         if not methods:
+            status, reason = self._unsupported_classification(definition)
             return InstallOutcome(
                 tool_id=definition.tool_id,
                 success=False,
-                status=ToolReadinessStatus.UNSUPPORTED,
+                status=status,
                 version=current.version,
-                error=_unsupported_reason(definition, self._platform),
+                error=reason,
             )
 
         # Try each trusted method in declaration order and use the first that
@@ -340,11 +345,13 @@ class ToolProvisioner:
         if method.kind == "cargo":
             return ["cargo", "install", method.package]
         if method.kind == "pip":
-            # PEP 668 distros (Ubuntu 24.04+) refuse ``--user`` installs on the
-            # externally-managed system interpreter. The provisioner falls
-            # through to the next trusted method (typically pipx) declared for
-            # the tool, so ``pip --user`` remaining the primary contract here
-            # does not strand the tool on managed interpreters.
+            # Inside a virtualenv, ``pip install --user`` is rejected by Python
+            # ("User site-packages are not visible in this virtualenv"), so the
+            # package is installed into the active venv instead. On the system
+            # interpreter, a non-elevated install targets the user site-packages
+            # (``~/.local``) so the operator does not need root.
+            if self._in_venv():
+                return [sys.executable, "-m", "pip", "install", method.package]
             argv = [sys.executable, "-m", "pip", "install"]
             if not self._elevated() and method.package:
                 argv.append("--user")
@@ -382,6 +389,10 @@ class ToolProvisioner:
     def _elevated(self) -> bool:
         return bool(self._platform.is_root)
 
+    def _in_venv(self) -> bool:
+        """Return ``True`` when the active interpreter is a virtualenv."""
+        return sys.prefix != sys.base_prefix or bool(os.environ.get("VIRTUAL_ENV"))
+
     def _can_sudo(self) -> bool:
         return self._platform.os in ("linux", "darwin")
 
@@ -389,6 +400,38 @@ class ToolProvisioner:
         # Only auto-upgrade when a min version is declared and the installed
         # version is below it; otherwise keep the existing install.
         return False
+
+    def _unsupported_classification(
+        self, definition: ToolDefinition
+    ) -> tuple[ToolReadinessStatus, str]:
+        """Classify a tool with no compatible method on this platform.
+
+        ``PLATFORM_UNAVAILABLE`` when install methods are declared for the tool
+        but none targets the current OS; ``UNSUPPORTED`` when no method is
+        declared at all, or methods exist for the OS but their toolchain is
+        missing at runtime.
+        """
+        from hunterx.tools.readiness.manifest import INSTALL_METHODS
+
+        declared = INSTALL_METHODS.get(definition.tool_id, ())
+        os_name = self._platform.os
+        os_compatible = any(
+            os_name in method.platforms
+            or (method.platforms == ("linux",) and os_name == "linux")
+            for method in declared
+        )
+        if declared and not os_compatible:
+            return (
+                ToolReadinessStatus.PLATFORM_UNAVAILABLE,
+                (
+                    f"installation methods exist for '{definition.tool_id}' but none is "
+                    f"compatible with {os_name}/{self._platform.distro or self._platform.package_manager}"
+                ),
+            )
+        return (
+            ToolReadinessStatus.UNSUPPORTED,
+            f"no supported installation method declared for '{definition.tool_id}'",
+        )
 
 
 def _unsupported_reason(definition: ToolDefinition, platform: PlatformInfo) -> str:
@@ -421,6 +464,44 @@ def _install_error(
     return detail[:2000] or f"installer exited with code {returncode}"
 
 
+def _git_python_script(repo: str, name: str, entry: str) -> str:
+    """Return a trusted static script cloning a Python tool and wiring its entry point.
+
+    The tool is cloned into the managed tools source directory and its entry
+    script is launched through the active (or user) Python interpreter via a
+    wrapper in ``$HUNTERX_TOOL_BIN`` so it is discoverable and runnable without
+    relying on a PyPI package or a console-script build. ``repo``/``name``/
+    ``entry`` are static constants (never interpolated from user input).
+    """
+    return (
+        f'set -e; BIN="${{HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}}"; SRC="$BIN/src/{name}"; '
+        f'mkdir -p "$BIN/src"; '
+        f'git clone --depth 1 "{repo}" "$SRC" 2>/dev/null || (cd "$SRC" && git pull --ff-only) ; '
+        f'PYBIN="${{VIRTUAL_ENV:-$HOME/.hunterx/venv}}/bin/python"; [ -x "$PYBIN" ] || PYBIN=python3; '
+        f'"$PYBIN" -m pip install --quiet -r "$SRC/requirements.txt" 2>/dev/null || true; '
+        f'printf \'#!/bin/sh\\nexec "%s" "%s" "$@"\\n\' "$PYBIN" "$SRC/{entry}" > "$BIN/{name}"; '
+        f'chmod +x "$BIN/{name}"; echo "{name} installed to $BIN/{name}"'
+    )
+
+
+def _git_pip_script(repo: str, name: str) -> str:
+    """Return a trusted static script cloning and ``pip install``-ing a Python tool.
+
+    Used for tools whose CLI is a package console script (no standalone entry
+    script), e.g. NetExec's ``nxc``. The package is installed into the active
+    (or user) venv so its console script lands in the interpreter's ``bin``
+    where discovery finds it. ``repo``/``name`` are static constants.
+    """
+    return (
+        f'set -e; BIN="${{HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}}"; SRC="$BIN/src/{name}"; '
+        f'mkdir -p "$BIN/src"; '
+        f'git clone --depth 1 "{repo}" "$SRC" 2>/dev/null || (cd "$SRC" && git pull --ff-only) ; '
+        f'PYBIN="${{VIRTUAL_ENV:-$HOME/.hunterx/venv}}/bin/python"; [ -x "$PYBIN" ] || PYBIN=python3; '
+        f'"$PYBIN" -m pip install --quiet "$SRC"; '
+        f'echo "{name} installed via pip into $("$PYBIN" -c "import sys; print(sys.prefix)")"'
+    )
+
+
 #: Static, trusted shell scripts for ``script``-kind install methods. Kept
 #: intentionally minimal; every entry is a static constant (never interpolated).
 _STATIC_SCRIPTS: dict[str, str] = {
@@ -443,9 +524,9 @@ _STATIC_SCRIPTS: dict[str, str] = {
         'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
         'mkdir -p "$BIN/src"; '
         'git clone --depth 1 https://github.com/xnl-h4ck3r/xnLinkFinder.git "$BIN/src/xnLinkFinder" 2>/dev/null || true; '
-        'PY="${PYTHON:-python3}"; "$PY" -m pip install -q -r "$BIN/src/xnLinkFinder/requirements.txt" 2>/dev/null || true; '
-        'ln -sf "$BIN/src/xnLinkFinder/xnLinkFinder.py" "$BIN/xnlinkfinder"; chmod +x "$BIN/xnlinkfinder"; '
-        'echo "xnlinkfinder installed to $BIN/xnlinkfinder"'
+        'PYBIN="${VIRTUAL_ENV:-$HOME/.hunterx/venv}/bin/python"; [ -x "$PYBIN" ] || PYBIN=python3; '
+        '"$PYBIN" -m pip install --quiet "$BIN/src/xnLinkFinder"; '
+        'echo "xnlinkfinder installed via pip"'
     ),
     "jwt-tool": (
         'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; '
@@ -454,6 +535,39 @@ _STATIC_SCRIPTS: dict[str, str] = {
         'chmod +x "$BIN/src/jwt_tool/jwt_tool.py"; '
         'ln -sf "$BIN/src/jwt_tool/jwt_tool.py" "$BIN/jwt_tool"; chmod +x "$BIN/jwt_tool"; '
         'echo "jwt-tool installed to $BIN/jwt_tool"'
+    ),
+    "theharvester-git": _git_python_script(
+        "https://github.com/laramies/theHarvester.git", "theHarvester", "theHarvester.py"
+    ),
+    "paramspider-git": _git_python_script(
+        "https://github.com/devanshbatham/paramspider.git", "paramspider", "paramspider.py"
+    ),
+    "sstimap-git": _git_python_script(
+        "https://github.com/vladko312/SSTImap.git", "sstimap", "sstimap.py"
+    ),
+    "xssstrike-git": _git_python_script(
+        "https://github.com/s0md3v/XSStrike.git", "xsstrike", "xsstrike.py"
+    ),
+    "tplmap-git": _git_python_script(
+        "https://github.com/epinna/tplmap.git", "tplmap", "tplmap.py"
+    ),
+    "graphqlmap-git": _git_python_script(
+        "https://github.com/swisskyrepo/GraphQLmap.git", "graphqlmap", "graphqlmap.py"
+    ),
+    "ghauri-git": _git_pip_script(
+        "https://github.com/r0oth3x49/ghauri.git", "ghauri"
+    ),
+    "netexec-git": _git_pip_script(
+        "https://github.com/Pennyw0rth/NetExec.git", "netexec"
+    ),
+    "enum4linux-ng-git": _git_python_script(
+        "https://github.com/cddmp/enum4linux-ng.git", "enum4linux-ng", "enum4linux-ng.py"
+    ),
+    "trivy": (
+        'set -e; BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"; mkdir -p "$BIN"; '
+        'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh '
+        '| sh -s -- -b "$BIN"; '
+        'chmod +x "$BIN/trivy"; echo "trivy installed to $BIN/trivy"'
     ),
 }
 
