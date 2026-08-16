@@ -72,8 +72,10 @@ INSTALL_MODE="system"
 DO_UNINSTALL=false
 JSON_MODE=false
 # Optional dependency set installed alongside the core. Default is the full
-# v7 platform (REST API + database); --core installs only the base package.
-EXTRAS="api,db"
+# v7 platform (REST API + database + AI client transport) so the configured
+# AI provider is reachable by the installed CLI; --core installs only the
+# base package.
+EXTRAS="api,db,ai"
 # Tool-readiness installation profile provisioned after the package install.
 # Defaults to the full external toolchain; --core uses the minimal profile.
 TOOL_PROFILE="full"
@@ -482,20 +484,47 @@ install_executable() {
 #!/usr/bin/env bash
 # HunterX launcher (managed by install.sh) — pins the persistent environment.
 export HUNTERX_DATA_DIR='${DATA_DIR}'
+# Load install-local environment (AI provider, keys, config) so the installed
+# CLI resolves the configured provider regardless of the working directory.
+# The file is optional and owned by the runtime user; missing is fine.
+if [ -f "\${HUNTERX_DATA_DIR}/.env" ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source "\${HUNTERX_DATA_DIR}/.env"
+    set +a
+fi
 if [ -z "\${HUNTERX_DATABASE_URL:-}" ] && [ -z "\${HUNTERX_DB_URL:-}" ]; then
     export HUNTERX_DATABASE_URL='${DB_URL}'
     export HUNTERX_DB_URL='${DB_URL}'
+fi
+# Effective security-tool PATH order (each block prepends, so the LAST block
+# prepended ends up FIRST):
+#   1. shared HunterX tool directory (<data>/tools/bin)
+#   2. Go bin directory (GOBIN, else ~/go/bin)
+#   3. the HunterX venv
+# The venv is intentionally LAST: a same-named Python package CLI inside it
+# (e.g. the httpx package's console script) must never shadow the security
+# tool installed in the shared tool directory.
+if [ -n "${VENV_DIR:-}" ] && [ -d "${VENV_DIR}/bin" ]; then
+    case ":\${PATH:-}:" in
+        *":${VENV_DIR}/bin:"*) ;;
+        *) export PATH="${VENV_DIR}/bin:\$PATH" ;;
+    esac
+fi
+GO_BIN_DIR="\${GOBIN:-}"
+if [ -n "\${GO_BIN_DIR}" ] && [ ! -d "\${GO_BIN_DIR}" ]; then
+    GO_BIN_DIR="\${HOME}/go/bin"
+fi
+if [ -n "\${GO_BIN_DIR}" ] && [ -d "\${GO_BIN_DIR}" ]; then
+    case ":\${PATH:-}:" in
+        *":\${GO_BIN_DIR}:"*) ;;
+        *) export PATH="\${GO_BIN_DIR}:\$PATH" ;;
+    esac
 fi
 if [ -n "${TOOL_BIN_DIR:-}" ] && [ -d "${TOOL_BIN_DIR}" ]; then
     case ":\${PATH:-}:" in
         *":${TOOL_BIN_DIR}:"*) ;;
         *) export PATH="${TOOL_BIN_DIR}:\$PATH" ;;
-    esac
-fi
-if [ -n "${VENV_DIR:-}" ] && [ -d "${VENV_DIR}/bin" ]; then
-    case ":\${PATH:-}:" in
-        *":${VENV_DIR}/bin:"*) ;;
-        *) export PATH="${VENV_DIR}/bin:\$PATH" ;;
     esac
 fi
 exec "${venv_bin}/python" -P -c "from hunterx.cli import main; import sys; sys.exit(main())" "\$@"
@@ -558,6 +587,22 @@ configure_database_env() {
 
     DATA_DIR="$(dirname "$VENV_DIR")/data"
     mkdir -p "$DATA_DIR"
+
+    # Copy the project .env (AI provider, keys, config) into the install data
+    # directory so the installed launcher can source it from any working
+    # directory. Optional: a missing .env is fine and the runtime stays
+    # deterministic (no AI). Secrets are never written to profile.d.
+    local src_dir
+    src_dir="$(cd "$(dirname "$0")" && pwd)"
+    if [ -f "${src_dir}/.env" ] && [ ! -f "${DATA_DIR}/.env" ]; then
+        cp "${src_dir}/.env" "${DATA_DIR}/.env" 2>/dev/null || true
+        chmod 600 "${DATA_DIR}/.env" 2>/dev/null || true
+        # Runtime user owns it so non-root `hunterx` runs can source it too.
+        if [ "$INSTALL_MODE" = "system" ] && [ -n "${SUDO_USER:-}" ]; then
+            chown "$SUDO_USER" "${DATA_DIR}/.env" 2>/dev/null || true
+        fi
+        info "Copied configuration to ${DATA_DIR}/.env"
+    fi
 
     # Absolute SQLAlchemy URL: the leading slash of $DATA_DIR yields the
     # documented sqlite:////abs/path form. Keeps the CLI from falling back to

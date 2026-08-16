@@ -412,6 +412,25 @@ def _resolve_repository(repositories: dict[str, object], role: str) -> Any:
     return constructor()
 
 
+def _build_ai_suggester(settings: Settings) -> Any:
+    """Build the advisory AI action-suggestion producer for mission decisions.
+
+    Uses the existing AI client built from settings (``build_ai_client``). When
+    no provider is configured the client is a no-op ``NullAIClient``; the
+    mission execution path treats it as "no suggestion" and remains fully
+    deterministic. The AI is advisory only — it never selects tools, never
+    executes and never bypasses policy/sandbox/budget.
+    """
+    from hunterx.application.ai_suggestion import AIActionSuggester
+    from hunterx.infrastructure.ai import build_ai_client
+
+    try:
+        ai = build_ai_client(settings.ai)
+    except Exception:  # noqa: BLE001 - AI must never break mission composition
+        return None
+    return AIActionSuggester(ai, model=settings.ai.model)
+
+
 def _build_tidb_stores(repositories: dict[str, object]) -> TidbRepositoryFactory:
     """Build the TIDB repository factory, preferring SQL when configured.
 
@@ -855,6 +874,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         execution_engine=execution_engine,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
         readiness=tool_readiness,
+        ai_suggester=_build_ai_suggester(settings),
     )
 
     # -- observability -------------------------------------------------------

@@ -199,6 +199,11 @@ class ToolReadiness:
     definition: ToolDefinition | None = None
     install_methods: tuple[InstallMethod, ...] = ()
     platform: str = ""
+    #: Executable shadowing/collision report. Each entry describes a same-named
+    #: executable elsewhere on the PATH (or in a preferred HunterX tool
+    #: directory) that competes with the resolved provider. The probe
+    #: validates which one is actually the expected security-tool provider.
+    collisions: tuple[dict[str, str], ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-safe mapping of this readiness verdict."""
@@ -213,6 +218,7 @@ class ToolReadiness:
             "error": self.error,
             "install_methods": [method.to_dict() for method in self.install_methods],
             "platform": self.platform,
+            "collisions": [dict(entry) for entry in self.collisions],
         }
 
 

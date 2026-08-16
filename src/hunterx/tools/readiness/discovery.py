@@ -39,6 +39,49 @@ _VERSION_FALLBACK = re.compile(r"(\d+\.\d+(?:\.\d+)?)")
 #: Windows executable extensions probed in user script directories.
 _WINDOWS_EXECUTABLE_EXTENSIONS = (".exe", ".cmd", ".bat")
 
+#: Preferred search directories for security-tool executables, in order:
+#: HunterX shared tool directory, Go bin directory, then the venv. The launcher
+#: pins this same order into PATH; discovery uses it to detect and report
+#: shadowing when a same-named binary (e.g. a Python package CLI) sits earlier
+#: in the effective PATH than the expected security-tool provider.
+_LAUNCHER_ORDER_HINT = "HUNTERX_TOOL_BIN"
+
+
+def preferred_tool_directories() -> tuple[str, ...]:
+    """Return the preferred HunterX tool directories in effective order.
+
+    Order: shared tool directory (``<data>/tools/bin`` or ``HUNTERX_TOOL_BIN``),
+    Go bin (``GOBIN``/``GOPATH/bin``), then the active venv bin. Only existing
+    directories are returned.
+    """
+    directories: list[str] = []
+    tool_bin = os.environ.get(_LAUNCHER_ORDER_HINT, "")
+    if not tool_bin:
+        data_dir = os.environ.get("HUNTERX_DATA_DIR", "")
+        if data_dir:
+            tool_bin = os.path.join(data_dir, "tools", "bin")
+    if tool_bin:
+        directories.append(tool_bin)
+    go_bin = os.environ.get("GOBIN", "")
+    if go_bin:
+        directories.append(go_bin)
+    gopath = os.environ.get("GOPATH", "")
+    if gopath and gopath != os.path.expanduser("~"):
+        directories.append(os.path.join(gopath, "bin"))
+    venv = os.environ.get("VIRTUAL_ENV", "")
+    if venv:
+        directories.append(os.path.join(venv, "bin"))
+    if sys.prefix != sys.base_prefix:
+        directories.append(os.path.join(sys.prefix, "bin"))
+    unique: list[str] = []
+    for directory in directories:
+        if not directory:
+            continue
+        resolved = os.path.normpath(directory)
+        if resolved not in unique and os.path.isdir(resolved):
+            unique.append(resolved)
+    return tuple(unique)
+
 
 def user_script_directories() -> tuple[str, ...]:
     """Return the user-level script directories HunterX tools install into.
@@ -109,7 +152,8 @@ class ToolDiscovery:
         executable = self._find_executable(definition)
         if executable is None:
             return self._readiness(definition, platform, status=ToolReadinessStatus.MISSING)
-        binary, path = executable
+        binary, path = executable[:2]
+        collisions = executable[2] if len(executable) > 2 else ()
         if not self._is_executable(path):
             return self._readiness(
                 definition,
@@ -118,6 +162,7 @@ class ToolDiscovery:
                 executable=binary,
                 path=path,
                 error=f"'{path}' exists but is not executable",
+                collisions=collisions,
             )
         version, stdout, stderr, probe_error, command = self._detect_version(definition, binary, path)
         if probe_error:
@@ -130,6 +175,7 @@ class ToolDiscovery:
                 stderr=stderr,
                 error=probe_error,
                 detected_command=command,
+                collisions=collisions,
             )
         status = ToolReadinessStatus.AVAILABLE
         if version and definition.min_version and _version_lt(version, definition.min_version):
@@ -144,6 +190,7 @@ class ToolDiscovery:
             stdout=stdout,
             stderr=stderr,
             detected_command=command,
+            collisions=collisions,
         )
 
     def mark_installed(self, tool_id: str, version: str = "") -> None:
@@ -201,20 +248,75 @@ class ToolDiscovery:
             status=ToolReadinessStatus.AVAILABLE,
         )
 
-    def _find_executable(self, definition: ToolDefinition) -> tuple[str, str] | None:
+    def _find_executable(self, definition: ToolDefinition) -> tuple[str, str, tuple[dict[str, str], ...]] | None:
+        """Resolve the executable and report same-named competitors.
+
+        Returns ``(binary, path, collisions)``. Collisions are every
+        same-named executable elsewhere on the PATH or in a preferred HunterX
+        directory that competes with the resolved provider — including the
+        preferred location itself when the resolved binary is NOT the one
+        HunterX expects (executable shadowing). The version probe then
+        validates which executable is the actual security-tool provider.
+        """
         candidates = [definition.executable, *definition.aliases]
         for candidate in candidates:
             candidate = (candidate or "").strip()
             if not candidate:
                 continue
             path = shutil.which(candidate)
-            if path:
-                return candidate, os.path.realpath(path)
-            for directory in user_script_directories():
-                resolved = self._resolve_in_directory(directory, candidate)
-                if resolved is not None:
-                    return candidate, resolved
+            resolved_path = os.path.realpath(path) if path else ""
+            if not resolved_path:
+                resolved_path = self._resolve_in_user_dirs(candidate)
+            if not resolved_path:
+                continue
+            collisions = self._collision_report(candidate, resolved_path)
+            return candidate, resolved_path, collisions
         return None
+
+    def _resolve_in_user_dirs(self, candidate: str) -> str:
+        """Resolve ``candidate`` in the user-level script directories."""
+        for directory in user_script_directories():
+            resolved = self._resolve_in_directory(directory, candidate)
+            if resolved is not None:
+                return resolved
+        return ""
+
+    def _collision_report(self, candidate: str, resolved_path: str) -> tuple[dict[str, str], ...]:
+        """Return every same-named executable competing with ``resolved_path``.
+
+        Each entry is ``{"path": ..., "preferred": "true"|"false"}`` where
+        ``preferred`` marks a binary inside a preferred HunterX tool
+        directory. A preferred-dir binary that differs from the resolved one
+        is always reported so the operator sees exactly which executable would
+        run before the probe validates the provider.
+        """
+        collisions: list[dict[str, str]] = []
+        preferred = set(preferred_tool_directories())
+        seen: set[str] = set()
+        for directory in self._path_directories():
+            hit = self._resolve_in_directory(directory, candidate)
+            if hit is None or hit == resolved_path:
+                continue
+            normalized = os.path.normpath(hit)
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            collisions.append(
+                {
+                    "path": hit,
+                    "preferred": "true" if os.path.dirname(normalized) in preferred else "false",
+                }
+            )
+        return tuple(collisions)
+
+    def _path_directories(self) -> list[str]:
+        """Return the effective PATH directories (system then preferred)."""
+        directories = [os.path.normpath(d) for d in os.environ.get("PATH", "").split(os.pathsep) if d]
+        for directory in preferred_tool_directories():
+            normalized = os.path.normpath(directory)
+            if normalized not in directories:
+                directories.append(normalized)
+        return directories
 
     def _resolve_in_directory(self, directory: str, candidate: str) -> str | None:
         """Resolve ``candidate`` (with platform executable extensions) in ``directory``."""
@@ -301,6 +403,7 @@ class ToolDiscovery:
         stderr: str = "",
         error: str = "",
         detected_command: tuple[str, ...] = (),
+        collisions: tuple[dict[str, str], ...] = (),
     ) -> ToolReadiness:
         expected_version = ""
         tip = getattr(self._engine, "_intelligence", None)
@@ -325,6 +428,7 @@ class ToolDiscovery:
             definition=definition,
             install_methods=install_methods,
             platform=platform.os,
+            collisions=collisions,
         )
 
 

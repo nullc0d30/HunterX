@@ -58,7 +58,12 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 # The CLI/API resolve the same logical configuration as a native install:
 # <application root>/data/hunterx.db. HUNTERX_DATA_DIR pins that location and
 # the app's path resolver (hunterx.config.paths) derives the URL from it.
-ENV PATH="/opt/hunterx-venv/bin:${PATH}" \
+# The shared security-tool directory (<data>/tools/bin) and Go bin directory
+# come BEFORE the venv on PATH: a same-named Python package CLI inside the venv
+# (e.g. the httpx package's console script) must never shadow a security tool
+# the operator installs into the shared tool directory. The directories are
+# optional; empty PATH entries are harmless.
+ENV PATH="/opt/hunterx/tools/bin:/opt/hunterx/go/bin:/opt/hunterx-venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HUNTERX_LOG_LEVEL=INFO \

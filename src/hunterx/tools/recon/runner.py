@@ -29,11 +29,12 @@ import contextlib
 import os
 import subprocess  # nosec B404  # the runner is the single guarded subprocess seam
 import threading
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from io import BufferedReader
 
 from hunterx.domain.exceptions import ToolExecutionError, ToolTimeoutError
+from hunterx.shared.time import utcnow_iso
 
 #: Default cap for combined captured stdout/stderr of one execution.
 _DEFAULT_MAX_OUTPUT_BYTES = 32 * 1024 * 1024
@@ -45,6 +46,113 @@ _READ_CHUNK = 64 * 1024
 _DRAIN_JOIN_TIMEOUT = 5.0
 
 _NEW_PROCESS_GROUP = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0) or 0
+
+
+@dataclass(frozen=True, slots=True)
+class CommandObservation:
+    """The actual command line that was spawned, with execution context.
+
+    Produced at the single guarded subprocess seam (:class:`BinaryRunner`) so
+    observers always see the argv that really ran — never a reconstruction.
+    When the execution was bound to a mission (see :func:`bind_active_execution`)
+    the correlation fields are populated; ad-hoc executions leave them empty.
+
+    Attributes:
+        argv: the command line that was spawned (including the binary).
+        tool_id: tool id of the executing adapter.
+        mission_id: owning mission, when bound.
+        execution_id: execution id of the owning context, when bound.
+        capability: the mission capability driving the execution, when bound.
+        action_id: the mission action id, when bound.
+        target: the assessed target, when bound.
+        started_at: UTC ISO-8601 spawn timestamp.
+
+    """
+
+    argv: tuple[str, ...]
+    tool_id: str = ""
+    mission_id: str = ""
+    execution_id: str = ""
+    capability: str = ""
+    action_id: str = ""
+    target: str = ""
+    started_at: str = field(default_factory=utcnow_iso)
+
+
+CommandObserver = Callable[[CommandObservation], None]
+
+#: Registered command observers (live CLI, audit, ...). Module-level because
+#: every tool adapter constructs its own :class:`BinaryRunner`; the registry is
+#: the single hook point that sees every spawned command.
+_command_observers: list[CommandObserver] = []
+
+#: Thread-local binding of the currently executing mission step. The mission
+#: runner binds before ``engine.execute`` so observers can correlate a spawned
+#: command with its mission/execution context.
+_active_execution = threading.local()
+
+
+def register_command_observer(observer: CommandObserver) -> None:
+    """Register ``observer`` to receive every spawned command (idempotent)."""
+    if observer not in _command_observers:
+        _command_observers.append(observer)
+
+
+def unregister_command_observer(observer: CommandObserver) -> None:
+    """Remove a previously registered command observer."""
+    with contextlib.suppress(ValueError):
+        _command_observers.remove(observer)
+
+
+def bind_active_execution(
+    *,
+    tool_id: str = "",
+    mission_id: str = "",
+    execution_id: str = "",
+    capability: str = "",
+    action_id: str = "",
+    target: str = "",
+) -> None:
+    """Bind the calling thread's active mission execution for observers.
+
+    Must be paired with :func:`clear_active_execution` after the execution
+    completes. Safe to call from a thread that never runs a tool: the binding
+    is thread-local and simply stays unused.
+    """
+    _active_execution.bound = {
+        "tool_id": tool_id,
+        "mission_id": mission_id,
+        "execution_id": execution_id,
+        "capability": capability,
+        "action_id": action_id,
+        "target": target,
+    }
+
+
+def clear_active_execution() -> None:
+    """Clear the calling thread's active mission execution binding."""
+    _active_execution.bound = {}
+
+
+def _observe_command(argv: Sequence[str], tool_id: str) -> None:
+    """Notify all observers of a spawned command (best-effort, never raises).
+
+    An observer failure must never break a tool execution: observers are
+    advisory (live rendering, audit trails).
+    """
+    bound = dict(getattr(_active_execution, "bound", {}))
+    observation = CommandObservation(
+        argv=tuple(str(part) for part in argv),
+        tool_id=tool_id or str(bound.get("tool_id", "")),
+        mission_id=str(bound.get("mission_id", "")),
+        execution_id=str(bound.get("execution_id", "")),
+        capability=str(bound.get("capability", "")),
+        action_id=str(bound.get("action_id", "")),
+        target=str(bound.get("target", "")),
+    )
+    for observer in list(_command_observers):
+        with contextlib.suppress(Exception):  # noqa: BLE001 - observers are advisory
+            observer(observation)
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,6 +252,7 @@ class BinaryRunner:
         effective = timeout_s or self._default_timeout
         env = {**os.environ, **(self._env or {})}
         argv = [str(part) for part in argv]
+        _observe_command(argv, tool_id)
         process = self._spawn(argv, env)
         sink = _CaptureSink(self._max_output_bytes)
         readers = (
@@ -299,4 +408,15 @@ def _terminate_windows_tree(process: subprocess.Popen[bytes]) -> None:
         _terminate_direct(process)
 
 
-__all__ = ["BinaryRunner", "CommandResult", "guard_positional_target", "guard_option_value"]
+__all__ = [
+    "BinaryRunner",
+    "CommandObservation",
+    "CommandObserver",
+    "CommandResult",
+    "bind_active_execution",
+    "clear_active_execution",
+    "guard_option_value",
+    "guard_positional_target",
+    "register_command_observer",
+    "unregister_command_observer",
+]

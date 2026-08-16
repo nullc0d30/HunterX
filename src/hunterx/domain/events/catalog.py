@@ -101,6 +101,16 @@ def build_catalog() -> list[EventSpec]:
         _spec("mission.action.completed", EventCategory.MISSION, "A scheduled action completed"),
         _spec("mission.action.failed", EventCategory.MISSION, "A scheduled action failed"),
         _spec("mission.replan.triggered", EventCategory.MISSION, "A replanning trigger was detected"),
+        _spec(
+            "mission.preflight.completed",
+            EventCategory.MISSION,
+            "The mission tool-readiness preflight completed with a verdict",
+        ),
+        _spec(
+            "mission.tool.command",
+            EventCategory.MISSION,
+            "The actual (redacted) command line a mission tool executed",
+        ),
         _spec("mission.path.discovered", EventCategory.MISSION, "Attack paths were discovered in the attack-surface graph"),
         _spec("mission.path.validated", EventCategory.MISSION, "An attack path advanced to a validated or proved state"),
         _spec("mission.proof.required", EventCategory.MISSION, "A proof gap was recognised and a proof action planned"),

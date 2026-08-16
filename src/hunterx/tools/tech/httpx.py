@@ -165,7 +165,32 @@ def _parse_target(context: ExecutionContext, payload: Mapping[str, Any], adapter
                 evidence=evidence,
             )
         )
+
+    # A reachable URL without a technology fingerprint is still meaningful
+    # endpoint evidence: the target responded, so this must never be reported
+    # as an empty result.
+    if not observations and _is_reachable(payload):
+        url = str(payload.get("url") or "").strip() or context.target
+        if url:
+            observations.append(
+                adapter._observation(
+                    context,
+                    url,
+                    source="httpx",
+                    evidence=evidence,
+                    confidence=0.4,
+                )
+            )
     return observations
+
+
+def _is_reachable(payload: Mapping[str, Any]) -> bool:
+    """Return True when httpx successfully probed the target."""
+    if payload.get("failed") is True:
+        return False
+    if payload.get("status_code") is not None:
+        return True
+    return bool(str(payload.get("url") or "").strip())
 
 
 def _target_asset(context: ExecutionContext, payload: Mapping[str, Any]) -> tuple[str, str]:
