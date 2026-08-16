@@ -10,10 +10,12 @@ with the engine wiring in later sprints.
 
 from __future__ import annotations
 
+import contextlib
 from typing import Any
 
 import hunterx
 from hunterx.cli.app import CliApplication
+from hunterx.cli.live import LiveMissionRenderer, MissionRunRecorder
 
 
 def register_default_commands(app: CliApplication, platform: Any | None = None) -> None:
@@ -394,12 +396,48 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         return argv[0]
 
     def _hunt(argv: list[str]) -> int:
-        objective = argv[0] if argv else "full_security_assessment"
-        target = argv[1] if len(argv) > 1 else ""
+        args = _parse_hunt_args(argv)
+        objective = args["objective"]
+        target = args["target"]
+        machine_mode = args["json"]
+        output_dir = args["output"]
+
         mission = _orchestration().create_mission(objective=objective, target=target)
-        _orchestration().start(mission.mission_id)
-        run = _execution().run(mission.mission_id)
-        overview = _dashboard().overview(mission.mission_id)
+        mission_id = mission.mission_id
+
+        bus = getattr(platform, "event_bus", None)
+        recorder: MissionRunRecorder | None = None
+        renderer: LiveMissionRenderer | None = None
+        if bus is not None:
+            recorder = MissionRunRecorder(bus, mission_id=mission_id, output_dir=output_dir)
+            if not machine_mode:
+                renderer = LiveMissionRenderer(
+                    bus,
+                    mission_id=mission_id,
+                    viewer=lambda mission_id: _orchestration().get(mission_id),
+                )
+
+        _orchestration().start(mission_id)
+
+        try:
+            run = _execution().run(mission_id)
+            overview = _dashboard().overview(mission_id)
+        except KeyboardInterrupt:
+            try:
+                overview = _dashboard().overview(mission_id)
+            except Exception:  # noqa: BLE001 - best-effort summary on interrupt
+                overview = {"mission_id": mission_id, "status": "interrupted"}
+            _finalize_hunt_run(
+                app,
+                overview,
+                mission_id=mission_id,
+                recorder=recorder,
+                renderer=renderer,
+                run={"status": "interrupted"},
+                interrupted=True,
+            )
+            return 130
+
         if run.get("status") == "blocked":
             overview["status"] = "blocked"
             overview["reason"] = run.get("reason", "tool readiness gate blocked the mission")
@@ -413,8 +451,69 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
                 overview["preflight"] = run["preflight"]
                 if run["preflight"].get("optional_missing"):
                     overview["missing_optional"] = list(run["preflight"]["optional_missing"])
-        print(app.renderer.render(overview, fmt="json"))
+        _finalize_hunt_run(
+            app,
+            overview,
+            mission_id=mission_id,
+            recorder=recorder,
+            renderer=renderer,
+            run=run,
+            interrupted=False,
+        )
         return 0
+
+    def _finalize_hunt_run(
+        app: CliApplication,
+        overview: dict[str, Any],
+        *,
+        mission_id: str,
+        recorder: MissionRunRecorder | None,
+        renderer: LiveMissionRenderer | None,
+        run: dict[str, Any],
+        interrupted: bool,
+    ) -> None:
+        if recorder is not None:
+            error = "mission interrupted by user (Ctrl-C)" if interrupted else ""
+            status = "interrupted" if interrupted else str(overview.get("status", "executed"))
+            with contextlib.suppress(Exception):  # artifacts must never break the CLI
+                overview["artifacts"] = recorder.finish(
+                    overview,
+                    status=status,
+                    error=error,
+                    mission=_orchestration().get(mission_id),
+                )
+        if renderer is not None:
+            renderer.close()
+            renderer.summary(overview)
+        print(app.renderer.render(overview, fmt="json"))
+
+    def _parse_hunt_args(argv: list[str]) -> dict[str, Any]:
+        positional: list[str] = []
+        machine_mode = False
+        output_dir: str | None = None
+        index = 0
+        while index < len(argv):
+            arg = argv[index]
+            if arg in ("--json", "-j"):
+                machine_mode = True
+            elif arg in ("--output", "-o"):
+                index += 1
+                if index >= len(argv):
+                    raise SystemExit("usage: hunterx hunt [--json] [--output <dir>] <objective> [<target>]")
+                output_dir = argv[index]
+            elif arg.startswith("--output="):
+                output_dir = arg.split("=", 1)[1]
+            elif arg.startswith("-"):
+                raise SystemExit(f"unknown option '{arg}' for hunt")
+            else:
+                positional.append(arg)
+            index += 1
+        return {
+            "objective": positional[0] if positional else "full_security_assessment",
+            "target": positional[1] if len(positional) > 1 else "",
+            "json": machine_mode,
+            "output": output_dir,
+        }
 
     def _hunt_status(argv: list[str]) -> int:
         mission_id = _require_mission_id(argv)

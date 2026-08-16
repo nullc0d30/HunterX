@@ -12,6 +12,7 @@ to the execution output.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -138,6 +139,39 @@ class TestHttpxAdapter:
         names = _names(collector)
         assert "Cloudflare" in names
         assert "React" in names
+
+    def test_reachable_url_without_fingerprint_is_reported(self) -> None:
+        stdout = json.dumps(
+            {
+                "url": "http://localhost:3010",
+                "host": "localhost",
+                "port": "3010",
+                "scheme": "http",
+                "status_code": 200,
+                "failed": False,
+                "tech": [],
+            }
+        )
+        adapter = HttpxAdapter(runner=FakeRunner(stdout=stdout + "\n"))
+        collector = _collect(adapter, _context("httpx", target="http://localhost:3010"))
+        observations = _observations(collector)
+        assert len(observations) == 1, "a live URL with no fingerprint is still meaningful evidence"
+        assert str(observations[0]["asset"]) == "http://localhost:3010"
+
+    def test_failed_probe_without_fingerprint_is_empty(self) -> None:
+        stdout = json.dumps(
+            {
+                "url": "http://localhost:3010",
+                "host": "localhost",
+                "port": "3010",
+                "scheme": "http",
+                "failed": True,
+                "tech": [],
+            }
+        )
+        adapter = HttpxAdapter(runner=FakeRunner(stdout=stdout + "\n"))
+        collector = _collect(adapter, _context("httpx", target="http://localhost:3010"))
+        assert _observations(collector) == [], "a failed probe never becomes an observation"
 
 
 class TestWhatWebAdapter:

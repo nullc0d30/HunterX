@@ -17,6 +17,7 @@ tool executions.
 
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 from typing import Any
 
@@ -189,12 +190,18 @@ class MissionOrchestrationService:
         self.get(mission_id)
         mission = self._engine.finalize(mission_id)
         self._persist_mission(mission)
+        self._persist_runs(mission)
         self._persist_telemetry(mission)
         self._publish(
             "mission.completed",
             {"mission_id": mission_id, "stop": mission.outcome.stop_condition if mission.outcome else ""},
         )
         return mission.to_dict()
+
+    def sync_phase(self, mission_id: str) -> str:
+        """Synchronize the orchestration phase from the planning state."""
+        mission = self._engine.sync_phase(mission_id)
+        return mission.value
 
     # -- reasoning loop -----------------------------------------------------
 
@@ -254,6 +261,16 @@ class MissionOrchestrationService:
     def explain_next(self, mission_id: str) -> dict[str, Any]:
         """Explain the next best action."""
         return self._engine.explain_next(mission_id)
+
+    def record_ai_trace(self, mission_id: str, *, decision_id: str = "", **trace: Any) -> None:
+        """Record an AI-invocation provenance trace entry for a decision.
+
+        Best-effort observability: AI involvement (invoked, latency, suggestion,
+        acceptance) is recorded on the mission reasoning trace without affecting
+        the decision or the mission state.
+        """
+        with contextlib.suppress(Exception):  # provenance recording is best-effort
+            self._engine.record_ai_trace(mission_id, decision_id=decision_id, **trace)
 
     def explain_decision(self, mission_id: str, decision_id: str = "") -> dict[str, Any] | None:
         """Return an explainable decision record."""

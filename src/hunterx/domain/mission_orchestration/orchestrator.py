@@ -92,6 +92,7 @@ from hunterx.domain.target_intelligence.enums import (
     HypothesisType,
 )
 from hunterx.shared.ids import generate_id
+from hunterx.shared.target import has_meaningful_content
 from hunterx.shared.time import utcnow_iso
 
 
@@ -286,8 +287,15 @@ class MissionOrchestrator:
         return mission
 
     def finalize(self, mission_id: str, *, stop_condition: StopCondition | None = None) -> OrchestratedMission:
-        """Finalize a mission and record its outcome."""
+        """Finalize a mission and record its outcome.
+
+        Idempotent: an already-finalized mission (outcome recorded) is
+        returned unchanged, so every terminal runner exit path may call this
+        safely.
+        """
         mission = self.get(mission_id)
+        if mission.outcome is not None:
+            return mission
         condition = stop_condition or self.policy.evaluate_stop(mission) or StopCondition.OBJECTIVES_COMPLETE
         if self.planning is not None:
             self._advance_to_completed(mission_id)
@@ -354,6 +362,7 @@ class MissionOrchestrator:
         )
         mission.add_observation(observation)
         self._populate_context(mission, observation)
+        self._hypothesize_from_observation(mission, observation)
         mission.budget.executions_used += 1
         mission.budget.time_used_seconds = _elapsed_seconds(mission)
         mission.context.tool_executions.append(
@@ -403,6 +412,25 @@ class MissionOrchestrator:
         if record not in mission.negative_evidence:
             mission.negative_evidence.append(record)
         return record
+
+    # -- phase synchronization ---------------------------------------------
+
+    def sync_phase(self, mission_id: str) -> MissionPhase:
+        """Synchronize the orchestration phase from the planning state.
+
+        The canonical ``MissionPhase`` mirrors the Sprint 027 ``MissionState``
+        progression; the orchestration phase is derived from the meaningful
+        workflow state — never from the number of tools that ran.
+        """
+        mission = self.get(mission_id)
+        if self.planning is None:
+            return mission.current_phase
+        state = self.planning.get_mission(mission_id).state
+        mapped = _PHASE_BY_PLANNING_STATE.get(state)
+        if mapped is None:
+            return mission.current_phase
+        mission.current_phase = mapped
+        return mapped
 
     # -- hypothesis loop -----------------------------------------------------
 
@@ -958,44 +986,143 @@ class MissionOrchestrator:
 
     # -- helpers ---------------------------------------------------------------
 
+    def _hypothesize_from_observation(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
+        """Create a hypothesis from a meaningful observation (evidence-grounded).
+
+        Hypotheses are conjectures that probing can validate — they are only
+        created when the observation actually carries data supporting them, and
+        never merely because a tool ran. Creation is idempotent by statement.
+        """
+        content = observation.content
+        if not has_meaningful_content(content):
+            return
+        asset_key = observation.asset_key or mission.context.target_id or "target"
+        statement = ""
+        category: HypothesisType = HypothesisType.UNKNOWN_BEHAVIOR
+        if observation.observation_type == "vulnerability":
+            for finding in _as_list(content.get("content") or content):
+                if not isinstance(finding, dict) or not finding:
+                    continue
+                template = _template_of(finding) or "unknown"
+                statement = f"{asset_key} may be affected by {template}"
+                category = _category_for_template(template)
+                if statement:
+                    break
+        elif observation.observation_type in ("technology", "tech"):
+            name = str(content.get("name") or "").strip()
+            if name:
+                statement = f"{asset_key} runs technology {name}"
+        elif observation.observation_type in ("service", "port"):
+            service = str(content.get("service") or content.get("name") or "").strip()
+            if service:
+                statement = f"{asset_key} exposes service {service}"
+        elif observation.observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
+            for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url")]):
+                endpoint = str(endpoint).strip()
+                if endpoint:
+                    statement = f"{endpoint} is a reachable endpoint of the target"
+                    break
+        elif observation.observation_type in ("asset", "subdomain", "host", "hostname", "domain") and asset_key and asset_key != "target":
+            statement = f"{asset_key} is part of the target's attack surface"
+        if not statement:
+            return
+            return
+        behavior_class = (
+            BehaviorClass.KNOWN
+            if category is not HypothesisType.UNKNOWN_BEHAVIOR
+            else BehaviorClass.NOVEL_CANDIDATE
+        )
+        try:
+            self.add_hypothesis(
+                mission.mission_id,
+                statement=statement,
+                category=category,
+                supporting=(observation.observation_id,),
+                confidence=max(0.2, min(1.0, observation.confidence or 0.4)),
+                proposed_by=f"observation:{observation.tool_id or 'tool'}",
+                behavior_class=behavior_class,
+            )
+        except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
+            return
+
     def _populate_context(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
         """Update the target-centric context from a normalized observation.
 
         The observation content is treated as data, never as instructions. The
         context maps are keyed by (type:key) so the same target keeps a single
         authoritative record per discovered item.
+
+        An observation only creates context entities when it carries meaningful
+        evidence: an empty-but-successful result (or junk with no usable
+        values) must never fabricate phantom assets, services, technologies or
+        endpoints in the target model.
         """
         content = observation.content
+        if not has_meaningful_content(content):
+            return
         asset_key = observation.asset_key or str(content.get("key", ""))
         observation_type = observation.observation_type
 
         if observation_type in ("asset", "subdomain", "host", "hostname", "domain"):
-            mission.context.assets[f"asset:{asset_key}"] = {"key": asset_key, "content": content}
+            for discovered in _discovered_assets(content, asset_key):
+                mission.context.assets[f"asset:{discovered}"] = {"key": discovered, "content": content}
         elif observation_type in ("technology", "tech"):
-            mission.context.technologies[f"tech:{asset_key}:{content.get('name', content)}"] = {
-                "key": asset_key,
-                "content": content,
-            }
+            names = _technology_names(content)
+            for name in names:
+                if not name or not asset_key:
+                    continue
+                mission.context.technologies[f"tech:{asset_key}:{name}"] = {
+                    "key": asset_key,
+                    "content": content,
+                }
         elif observation_type in ("service", "port"):
-            mission.context.services[f"service:{asset_key}"] = {"key": asset_key, "content": content}
+            if not asset_key:
+                return
+            for key, identity in _service_entries(content, asset_key):
+                mission.context.services[key] = {"key": asset_key, "content": content, "identity": identity}
         elif observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
-            for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url") or asset_key]):
+            endpoints = [
+                str(endpoint)
+                for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url")])
+                if str(endpoint).strip()
+            ]
+            for entry in _as_list(content.get("technologies")):
+                if not isinstance(entry, dict):
+                    continue
+                url = str(entry.get("asset") or entry.get("url") or "").strip()
+                if url:
+                    endpoints.append(url)
+            for endpoint in endpoints:
+                if not str(endpoint).strip():
+                    continue
                 mission.context.endpoints[f"endpoint:{endpoint}"] = {"key": str(endpoint), "content": content}
         elif observation_type == "parameter":
-            for parameter in _as_list(content.get("parameters") or [content.get("parameter")]):
+            parameters = [
+                str(parameter)
+                for parameter in _as_list(content.get("parameters") or [content.get("parameter")])
+                if str(parameter).strip()
+            ]
+            for parameter in parameters:
                 mission.context.parameters[f"param:{asset_key}:{parameter}"] = {
                     "key": asset_key,
                     "parameter": str(parameter),
                 }
         elif observation_type == "vulnerability":
             for finding in _as_list(content.get("content") or content):
-                if isinstance(finding, dict):
-                    template = finding.get("template") or finding.get("class") or "unknown"
-                    mission.context.assets[f"finding:{asset_key}:{template}"] = {
-                        "key": asset_key,
-                        "vulnerability_class": str(template),
-                        "content": finding,
-                    }
+                if not isinstance(finding, dict) or not finding:
+                    continue
+                template = _template_of(finding) or "unknown"
+                self.register_finding(
+                    mission.mission_id,
+                    vulnerability_class=template,
+                    asset_key=asset_key or mission.context.target_id or "target",
+                    target=mission.context.target_id or "",
+                    severity=str(finding.get("severity") or "info"),
+                    tool=observation.tool_id or "",
+                    stage=FindingStage.CANDIDATE,
+                    evidence_refs=(observation.evidence_ref or observation.observation_id,),
+                    description=f"candidate from {observation.tool_id or 'tool'} observation {observation.observation_id}",
+                )
 
     def _advance_to_completed(self, mission_id: str) -> None:
         """Walk the planning state machine to COMPLETED through legal hops.
@@ -1013,6 +1140,8 @@ class MissionOrchestrator:
             return
         if current is MissionState.CANCELLED or current is MissionState.FAILED:
             return
+        if current is MissionState.CREATED:
+            self.planning.transition(mission_id, MissionState.SCOPING)
         if current is MissionState.REPORTING:
             self.planning.complete(mission_id)
             return
@@ -1049,6 +1178,24 @@ class MissionOrchestrator:
             parent_entry_id=parent_entry_id,
         )
         mission.trace.append(entry)
+
+    def record_ai_trace(self, mission_id: str, *, decision_id: str = "", **trace: Any) -> None:
+        """Record an AI-invocation provenance trace entry (best-effort).
+
+        Observability only: captures whether the AI was invoked, the suggestion
+        latency, the proposed action, the acceptance state and the final
+        ``ai_assisted`` value. Never affects the decision or mission state.
+        """
+        try:
+            mission = self.get(mission_id)
+        except Exception:  # noqa: BLE001 - provenance recording is best-effort
+            return
+        self._record_trace(
+            mission,
+            kind=ReasoningTraceKind.DECISION,
+            node_id=decision_id or mission_id,
+            content=dict(trace),
+        )
 
     def _last_entry_id(self, mission: OrchestratedMission) -> str:
         """Return the last trace entry id for parent chaining."""
@@ -1093,6 +1240,150 @@ def _as_list(value: Any) -> list[Any]:
     if isinstance(value, list):
         return value
     return [value]
+
+
+def _template_of(finding: Any) -> str:
+    """Extract the vulnerability template/class identifier from a candidate.
+
+    Accepts the canonical keys used by adapters (``template_id`` /
+    ``template_name`` from nuclei) and the generic ``template``/``class``
+    keys used elsewhere.
+    """
+    if not isinstance(finding, dict):
+        return ""
+    for key in ("template_id", "template_name", "template", "class"):
+        value = finding.get(key)
+        if value is not None:
+            return str(value).strip()
+    return ""
+
+
+def _discovered_assets(content: dict[str, Any], asset_key: str) -> list[str]:
+    """Extract the discovered asset names from a meaningful asset observation.
+
+    Subdomain/host enumeration results carry the discovered names inside the
+    content (``subdomains``, ``hosts``, ``names``, ``discoveries``); each
+    discovered name becomes its own asset entry. When the content carries no
+    names, the observation's own asset key is used.
+    """
+    names: list[str] = []
+    for key in ("subdomains", "hosts", "domains", "names"):
+        for item in _as_list(content.get(key)):
+            value = _name_of(item)
+            if value:
+                names.append(value)
+    if not names:
+        for item in _as_list(
+            content.get("discoveries")
+            or [content.get("name") or content.get("host") or content.get("key") or asset_key]
+        ):
+            value = _name_of(item)
+            if value:
+                names.append(value)
+    unique: list[str] = []
+    for name in names:
+        if name not in unique:
+            unique.append(name)
+    return unique
+
+
+def _technology_names(content: dict[str, Any]) -> list[str]:
+    """Extract distinct technology names from a technology observation.
+
+    Adapters report technologies either as a flat ``name`` or as a nested
+    list (``technologies``/``techs``) of strings or dicts carrying the
+    canonical/raw name. Every distinct name becomes its own entity.
+    """
+    names: list[str] = []
+    for item in _as_list(content.get("technologies") or content.get("techs") or [content.get("name")]):
+        if isinstance(item, dict):
+            name = str(
+                item.get("canonical_name") or item.get("raw_name") or item.get("name") or item.get("product") or ""
+            ).strip()
+        else:
+            name = str(item).strip()
+        if name:
+            names.append(name)
+    unique: list[str] = []
+    for name in names:
+        if name not in unique:
+            unique.append(name)
+    return unique
+
+
+def _service_entries(content: dict[str, Any], asset_key: str) -> list[tuple[str, str]]:
+    """Extract the distinct discovered services from a service/port observation.
+
+    Only open ports (and their fingerprints) become services. Closed/refused
+    ports and host-reachability rows never do, and a named fingerprint
+    supersedes its bare open-port entry so one service is not double-counted.
+    """
+    items: list[Any] = _as_list(content.get("observations") or [content])
+    covered: set[str] = set()
+    entries: dict[str, str] = {}
+
+    def add(proto: str, port: object | None, service: str | None) -> None:
+        proto = str(proto or "tcp")
+        if port is not None and str(port).strip():
+            if service:
+                key = f"service:{asset_key}:{proto}:{port}:{service}"
+                covered.add(f"{proto}:{port}")
+            else:
+                key = f"service:{asset_key}:{proto}:{port}"
+            identity = f"{proto}:{port}:{service}" if service else f"{proto}:{port}"
+        else:
+            key = f"service:{asset_key}:{proto}:{service or 'unknown'}"
+            identity = f"{proto}:{service or 'unknown'}"
+        entries.setdefault(key, identity)
+
+    for item in items:
+        if not isinstance(item, dict) or not item:
+            continue
+        for port in _as_list(item.get("ports")):
+            if port is not None and str(port).strip():
+                add("tcp", port, None)
+        itype = item.get("type")
+        if itype == "host":
+            continue
+        if itype not in ("service", "port"):
+            if "port" in item and ("service" in item or "name" in item):
+                itype = "service"
+            elif "port" in item:
+                itype = "port"
+            elif "service" in item or "name" in item:
+                itype = "service"
+            else:
+                continue
+        if itype == "service":
+            service = str(item.get("service") or item.get("name") or "").strip() or None
+            add(str(item.get("protocol") or "tcp"), item.get("port"), service)
+
+    for item in items:
+        if not isinstance(item, dict) or not item:
+            continue
+        itype = item.get("type")
+        if itype == "host":
+            continue
+        if itype not in ("port",):
+            if "port" in item and not ("service" in item or "name" in item):
+                itype = "port"
+            else:
+                continue
+        if item.get("state") and item.get("state") != "open":
+            continue
+        proto = str(item.get("protocol") or "tcp")
+        port = item.get("port")
+        if port is not None and str(port).strip():
+            if f"{proto}:{port}" in covered:
+                continue
+            add(proto, port, None)
+    return list(entries.items())
+
+
+def _name_of(item: Any) -> str:
+    """Return the string name of an asset item (string or ``{name, host, key}``)."""
+    value = item.get("name") or item.get("host") or item.get("key") or "" if isinstance(item, dict) else item
+    return str(value).strip()
 
 
 def _coerce_candidate(value: Any) -> CandidateAction:
@@ -1173,6 +1464,62 @@ def _promote_stage(current: str, incoming: str) -> str:
     if order.index(incoming) > order.index(current):
         return incoming
     return current
+
+
+#: Orchestration phase derived from the Sprint 027 planning state. The phase is
+#: workflow-driven — it reflects where the mission actually is, not what ran.
+_PHASE_BY_PLANNING_STATE: dict[MissionState, MissionPhase] = {
+    MissionState.CREATED: MissionPhase.TARGET_MODELING,
+    MissionState.SCOPING: MissionPhase.TARGET_MODELING,
+    MissionState.DISCOVERY: MissionPhase.RECONNAISSANCE,
+    MissionState.ENUMERATION: MissionPhase.ENUMERATION,
+    MissionState.MAPPING: MissionPhase.ATTACK_SURFACE_MAPPING,
+    MissionState.ANALYSIS: MissionPhase.TECHNOLOGY_ANALYSIS,
+    MissionState.HYPOTHESIS_GENERATION: MissionPhase.HYPOTHESIS_ANALYSIS,
+    MissionState.VALIDATION: MissionPhase.VALIDATION,
+    MissionState.PROOF: MissionPhase.PROOF,
+    MissionState.REASSESSMENT: MissionPhase.REASSESSMENT,
+    MissionState.REPORTING: MissionPhase.REPORTING,
+    MissionState.COMPLETED: MissionPhase.REPORTING,
+}
+
+
+def _category_for_template(template: str) -> HypothesisType:
+    """Map a vulnerability template/class name to a canonical hypothesis type."""
+    name = str(template or "").strip().lower()
+    if not name:
+        return HypothesisType.UNKNOWN_BEHAVIOR
+    if "xss" in name:
+        return HypothesisType.XSS
+    if "ssrf" in name:
+        return HypothesisType.SSRF
+    if "ssti" in name:
+        return HypothesisType.SSTI
+    if "xxe" in name:
+        return HypothesisType.XXE
+    if "lfi" in name or "rfi" in name or "path traversal" in name:
+        return HypothesisType.LFI
+    if "rce" in name or "code execution" in name or "command injection" in name:
+        return HypothesisType.RCE
+    if "sql" in name or "injection" in name:
+        return HypothesisType.INJECTION
+    if "idor" in name or "access control" in name:
+        return HypothesisType.IDOR
+    if "secret" in name or "credential" in name:
+        return HypothesisType.SECRET_EXPOSURE
+    if "auth" in name:
+        return HypothesisType.AUTHENTICATION_ISSUE
+    if "authorization" in name:
+        return HypothesisType.AUTHORIZATION_ISSUE
+    if "api" in name:
+        return HypothesisType.API_SECURITY
+    if "graphql" in name:
+        return HypothesisType.GRAPHQL_SECURITY
+    if "dependency" in name or "cve-" in name:
+        return HypothesisType.DEPENDENCY_VULNERABILITY
+    if "missing" in name or "misconfig" in name or "default" in name or "header" in name:
+        return HypothesisType.MISCONFIGURATION
+    return HypothesisType.UNKNOWN_BEHAVIOR
 
 
 __all__ = ["MissionOrchestrator"]

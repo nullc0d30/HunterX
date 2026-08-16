@@ -34,6 +34,16 @@ from hunterx.domain.adaptive_mission_planning.enums import (
 from hunterx.domain.execution import ExecutionStatus
 from hunterx.domain.target_intelligence.enums import CoverageState
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
+from hunterx.shared.target import (
+    has_meaningful_content,
+    normalize_target,
+    target_for_adapter,
+    target_type_for,
+)
+from hunterx.tools.recon.runner import (
+    bind_active_execution,
+    clear_active_execution,
+)
 from hunterx.tools.sdk.context import ExecutionContextBuilder
 from hunterx.tools.sdk.engine import ExecutionEngine
 
@@ -94,6 +104,57 @@ _CAPABILITY_BY_TRIGGER: dict[ReplanTrigger, str] = {
     ReplanTrigger.NEW_HYPOTHESIS_CREATED: "vulnerability_scanning",
 }
 
+#: Canonical MissionState the planning engine advances through as work is
+#: completed. ``_advance_state`` walks one legal hop per exhausted plan so the
+#: mission never gets stuck in reassessment while work remains.
+_FORWARD_STATES: tuple[MissionState, ...] = (
+    MissionState.SCOPING,
+    MissionState.DISCOVERY,
+    MissionState.ENUMERATION,
+    MissionState.MAPPING,
+    MissionState.ANALYSIS,
+    MissionState.HYPOTHESIS_GENERATION,
+    MissionState.VALIDATION,
+    MissionState.PROOF,
+    MissionState.REASSESSMENT,
+    MissionState.REPORTING,
+    MissionState.COMPLETED,
+)
+
+#: Capability → planning state mapping used to move out of REASSESSMENT into
+#: the phase that actually contains the next scheduled work.
+_STATE_BY_CAPABILITY: dict[str, MissionState] = {
+    "asset_discovery": MissionState.DISCOVERY,
+    "subdomain_enumeration": MissionState.DISCOVERY,
+    "dns_enumeration": MissionState.DISCOVERY,
+    "port_discovery": MissionState.ENUMERATION,
+    "service_detection": MissionState.ENUMERATION,
+    "technology_fingerprint": MissionState.ANALYSIS,
+    "certificate_enumeration": MissionState.MAPPING,
+    "endpoint_enumeration": MissionState.MAPPING,
+    "content_discovery": MissionState.MAPPING,
+    "parameter_discovery": MissionState.ANALYSIS,
+    "api_mapping": MissionState.MAPPING,
+    "authentication_analysis": MissionState.ANALYSIS,
+    "authorization_analysis": MissionState.VALIDATION,
+    "vulnerability_scanning": MissionState.HYPOTHESIS_GENERATION,
+    "sql_injection": MissionState.VALIDATION,
+    "xss": MissionState.VALIDATION,
+    "ssrf": MissionState.VALIDATION,
+    "ssti": MissionState.VALIDATION,
+    "xxe": MissionState.VALIDATION,
+    "lfi": MissionState.VALIDATION,
+    "rce": MissionState.VALIDATION,
+    "idor": MissionState.VALIDATION,
+    "api_security": MissionState.VALIDATION,
+    "graphql_security": MissionState.VALIDATION,
+    "secret_detection": MissionState.VALIDATION,
+    "dependency_check": MissionState.VALIDATION,
+    "cloud_ownership_mapping": MissionState.MAPPING,
+    "proof_validation": MissionState.PROOF,
+    "replay": MissionState.PROOF,
+}
+
 
 class MissionExecutionService:
     """Drive one or many adaptive mission execution cycles.
@@ -116,12 +177,22 @@ class MissionExecutionService:
         execution_engine: ExecutionEngine | None = None,
         event_bus: Any | None = None,
         readiness: Any | None = None,
+        ai_suggester: Any | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
         self._engine = execution_engine
         self._event_bus = event_bus
         self._readiness = readiness
+        #: Capabilities vetted by the mission preflight. Replanned capabilities
+        #: outside this set are re-checked before execution (Defect 3).
+        self._preflight_capabilities: set[str] = set()
+        #: Advisory AI action-suggestion producer (None keeps the mission
+        #: fully deterministic — the AI is never required for execution).
+        self._ai_suggester = ai_suggester
+        #: Last orchestration phase announced via ``mission.phase.started`` so
+        #: phase changes are emitted once (live CLI visibility).
+        self._last_phase: str = ""
 
     # -- public API ---------------------------------------------------------
 
@@ -131,12 +202,24 @@ class MissionExecutionService:
         Returns a JSON-safe cycle outcome describing the decision, the tool
         execution attempt and its outcome. Never marks a running mission as
         complete just because a single cycle finished.
+
+        When an AI suggestion producer is wired, an advisory suggestion is
+        requested and passed to the decision engine. The deterministic engine
+        remains the final authority; a rejected or unavailable AI proposal is
+        ignored and the deterministic planner continues.
         """
         mission = self._orchestration.get(mission_id)
         if mission.mission.state.is_terminal:
             return self._cycle_outcome(mission_id, status="skipped", reason="mission terminal")
         self._approve_ready_actions(mission_id)
-        decision = self._orchestration.decide_next(mission_id)
+        ai_suggestion, ai_reason, ai_trace = self._request_ai_suggestion(mission_id)
+        decision = self._orchestration.decide_next(
+            mission_id,
+            ai_suggestion=ai_suggestion,
+            ai_reason=ai_reason,
+        )
+        if decision is not None and ai_trace:
+            self._record_ai_trace(mission_id, decision, ai_trace)
         if decision is None:
             if self._advance_state(mission_id):
                 return self._cycle_outcome(
@@ -160,17 +243,34 @@ class MissionExecutionService:
 
         The loop stops when the mission reaches a terminal state, the execution
         budget is exhausted, no actionable decision remains, or ``max_cycles``
-        is reached. The mission is never marked completed merely because the
-        initial discovery plan has been walked.
+        is reached. Completion is never claimed merely because the initial
+        discovery plan has been walked: only the terminal exit finalizes the
+        mission.
 
         When a tool-readiness service is wired, a mission preflight runs first:
         required capabilities without an available provider (and whose
         provisioning fails) return a structured ``blocked`` outcome and the
         mission never enters active execution. Missing optional capabilities
         degrade the outcome but do not stop the loop.
+
+        Every terminal exit path finalizes the mission: the run record is
+        marked COMPLETED with a ``finished_at`` timestamp and the planning
+        state walks to COMPLETED, so no mission is ever left ``running`` when
+        the runner returns.
         """
         preflight = self._preflight(mission_id, auto_provision=auto_provision)
+        if preflight is not None:
+            self._publish(
+                "mission.preflight.completed",
+                {
+                    "mission_id": mission_id,
+                    "status": preflight.status.value,
+                    "reason": getattr(preflight, "blocked_reason", "") or "",
+                },
+            )
         if preflight is not None and not preflight.may_execute:
+            self._publish("mission.blocked", {"mission_id": mission_id, "reason": preflight.blocked_reason})
+            self._finalize_run(mission_id)
             return {
                 "mission_id": mission_id,
                 "cycles_run": 0,
@@ -205,6 +305,7 @@ class MissionExecutionService:
             stop = self._orchestration.stop_condition(mission_id)
             if stop and stop.get("stop_condition"):
                 break
+        self._finalize_run(mission_id)
         self._record_telemetry(mission_id)
         mission = self._orchestration.get(mission_id)
         return {
@@ -241,6 +342,7 @@ class MissionExecutionService:
             pass
         if not capabilities:
             return None
+        self._preflight_capabilities = set(capabilities)
         try:
             return readiness.preflight(
                 capabilities,
@@ -301,7 +403,27 @@ class MissionExecutionService:
             )
 
         try:
-            pipeline = engine.execute(self._build_context(mission_id, tool_id, target, parameters))
+            context = self._build_context(mission_id, tool_id, target, parameters)
+            bind_active_execution(
+                tool_id=tool_id,
+                mission_id=mission_id,
+                execution_id=context.execution_id,
+                capability=capability,
+                action_id=action_id,
+                target=target,
+            )
+            self._publish(
+                "mission.tool.started",
+                {
+                    "mission_id": mission_id,
+                    "action_id": action_id,
+                    "tool_id": tool_id,
+                    "capability": capability,
+                    "target": target,
+                    "execution_id": context.execution_id,
+                },
+            )
+            pipeline = engine.execute(context)
         except Exception as exc:  # noqa: BLE001 - surfaced as a structured failure
             return self._fail_execution(
                 mission_id,
@@ -310,6 +432,8 @@ class MissionExecutionService:
                 tool_id=tool_id,
                 error=str(exc),
             )
+        finally:
+            clear_active_execution()
         return self._handle_execution(mission_id, action_id, capability, tool_id, target, pipeline)
 
     def _handle_execution(
@@ -332,8 +456,60 @@ class MissionExecutionService:
                 raw=raw,
             )
             self._planning.get_action(mission_id, action_id).mark(ActionStatus.COMPLETED)
-            self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
-            self._replan_from_observation(mission_id, capability, raw)
+            meaningful = has_meaningful_content(raw.get("content"))
+            if meaningful:
+                self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+                self._replan_from_observation(mission_id, capability, raw)
+                self._sync_phase(mission_id)
+                self._publish_tool_completed(
+                    mission_id, action_id, capability, tool_id, target, result, outcome="evidence"
+                )
+                return self._cycle_outcome(
+                    mission_id,
+                    status="completed",
+                    action_id=action_id,
+                    capability=capability,
+                    tool_id=tool_id,
+                    observation_type=raw.get("observation_type", ""),
+                )
+            if _is_explicit_negative(result):
+                self._orchestration.record_negative(
+                    mission_id,
+                    asset_key=target,
+                    capability=capability,
+                    kind="tested",
+                    tool_id=tool_id,
+                    outcome="explicit empty result",
+                    notes="tool executed successfully and reported no findings",
+                )
+                self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+                self._sync_phase(mission_id)
+                self._publish_tool_completed(
+                    mission_id, action_id, capability, tool_id, target, result, outcome="negative"
+                )
+                return self._cycle_outcome(
+                    mission_id,
+                    status="completed",
+                    action_id=action_id,
+                    capability=capability,
+                    tool_id=tool_id,
+                    observation_type=raw.get("observation_type", ""),
+                    negative_evidence=True,
+                )
+            # An empty-but-successful execution carries no evidence: it is an
+            # uninformative result, never an assessment of the target.
+            self._record_coverage(
+                mission_id,
+                target,
+                capability,
+                tool_id,
+                state=CoverageState.NOT_ASSESSED,
+                notes="empty/uninformative result; no meaningful evidence",
+            )
+            self._sync_phase(mission_id)
+            self._publish_tool_completed(
+                mission_id, action_id, capability, tool_id, target, result, outcome="uninformative"
+            )
             return self._cycle_outcome(
                 mission_id,
                 status="completed",
@@ -341,6 +517,7 @@ class MissionExecutionService:
                 capability=capability,
                 tool_id=tool_id,
                 observation_type=raw.get("observation_type", ""),
+                uninformative=True,
             )
         return self._fail_execution(
             mission_id,
@@ -409,7 +586,25 @@ class MissionExecutionService:
             outcome="tool failure",
             notes=error[:500],
         )
-        self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+        # A failed/blocked execution is NOT an assessment: leaving the cell
+        # NOT_ASSESSED keeps it uncovered so it can never satisfy a coverage
+        # target as if the capability had actually been exercised. Only a
+        # genuinely successful execution records TESTED coverage.
+        self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.NOT_ASSESSED)
+        self._publish(
+            "mission.tool.failed",
+            {
+                "mission_id": mission_id,
+                "action_id": action_id,
+                "tool_id": tool_id,
+                "capability": capability,
+                "target": target,
+                "error": error[:2000],
+                "failure_kind": failure_kind,
+                "status": status_value,
+                "exit_code": exit_code,
+            },
+        )
         return self._cycle_outcome(
             mission_id,
             status="failed",
@@ -429,12 +624,113 @@ class MissionExecutionService:
         target: str,
         parameters: dict[str, Any] | None,
     ) -> Any:
-        builder = (
-            ExecutionContextBuilder(tool_id=tool_id, target=target)
+        """Build the execution context with a scheme-aware per-tool target.
+
+        The raw mission target (e.g. ``http://localhost:3010``) is normalized
+        once and handed to each adapter in the shape its descriptor declares:
+        web tools receive the full URL, host/domain/network tools receive the
+        bare host. Passing a URL to a host tool silently produces empty results
+        — a false "no findings" — so the shape must match the tool, never the
+        operator's typing.
+        """
+        spec = normalize_target(target)
+        declared = self._declared_targets(tool_id)
+        effective_target = target_for_adapter(spec, declared)
+        return (
+            ExecutionContextBuilder(tool_id=tool_id, target=effective_target)
             .with_mission(mission_id)
+            .with_target_type(target_type_for(spec, declared))
+            .with_permissions(self._permissions_for(tool_id))
             .with_parameters(dict(parameters or {}))
+        ).build()
+
+    def _declared_targets(self, tool_id: str) -> tuple[str, ...]:
+        """Return the target kinds the tool's adapter declares."""
+        engine = self._engine
+        adapter_for = getattr(engine, "adapter_for", None)
+        if engine is None or adapter_for is None:
+            return ()
+        adapter = adapter_for(tool_id)
+        if adapter is None:
+            return ()
+        descriptor = getattr(adapter, "descriptor", None)
+        if descriptor is None:
+            return ()
+        targets = getattr(descriptor, "targets", ())
+        return tuple(targets) if targets else ()
+
+    def _permissions_for(self, tool_id: str) -> tuple[str, ...]:
+        """Return the permissions the selected tool's adapter declares.
+
+        The sandbox denies any execution whose context does not explicitly
+        grant the adapter-requested permission flags (network/filesystem/...).
+        Without this the mission runner would create a context with an empty
+        permission set and every network-capable tool would be rejected before
+        it can run. This mirrors the adapter-permission resolution used by the
+        ad-hoc tool execution and chain-execution paths.
+
+        Engines that do not expose the adapter API (deterministic test fakes)
+        fall back to a no-permission context — they do not enforce the sandbox,
+        so the granted set is only relevant for the real execution engine.
+        """
+        engine = self._engine
+        adapter_for = getattr(engine, "adapter_for", None)
+        if engine is None or adapter_for is None:
+            return ("none",)
+        adapter = adapter_for(tool_id)
+        if adapter is None:
+            return ("none",)
+        requested = tuple(getattr(getattr(adapter, "descriptor", None), "permissions", ()) or ())
+        # An adapter with no declared permissions is a no-permission execution.
+        return requested or ("none",)
+
+    def _request_ai_suggestion(self, mission_id: str) -> tuple[str, str, dict[str, Any]]:
+        """Request an advisory AI suggestion for the next action.
+
+        Returns ``(suggestion_action_id, suggestion_reason, trace)``. When no
+        AI producer is wired, or the producer/response fails, the suggestion is
+        empty and the mission continues deterministically. The ``trace`` dict
+        records AI invocation/provenance for telemetry (empty when not invoked).
+        """
+        if self._ai_suggester is None:
+            return "", "", {}
+        mission = self._orchestration.get(mission_id)
+        candidates = self._ready_candidates(mission)
+        suggestion = self._ai_suggester.suggest(mission, candidates)
+        trace = {
+            "ai_invoked": suggestion.invoked,
+            "ai_latency_ms": suggestion.latency_ms,
+            "ai_suggestion": suggestion.action_id,
+            "ai_reason": suggestion.reason,
+            "ai_error": suggestion.error,
+            "ai_usable": suggestion.usable,
+        }
+        return suggestion.action_id, suggestion.reason, trace
+
+    def _ready_candidates(self, mission: Any) -> list[Any]:
+        """Return the currently ready candidate actions for the mission plan."""
+        if self._planning is None:
+            return []
+        try:
+            graph = self._planning.get_plan(mission.mission_id)
+            return graph.ready_actions(approved_only=True)
+        except Exception:  # noqa: BLE001 - candidate collection is best-effort
+            return []
+
+    def _record_ai_trace(self, mission_id: str, decision: Any, trace: dict[str, Any]) -> None:
+        """Record the AI-invocation provenance for a decision (best-effort).
+
+        The decision may be a dict (application layer) or a domain decision
+        record; both expose ``ai_assisted``. The trace is recorded on the
+        mission via the orchestration engine's reasoning-trace facility.
+        """
+        decision_id = decision.get("decision_id", "") if isinstance(decision, dict) else getattr(decision, "decision_id", "")
+        trace = dict(trace)
+        trace["ai_assisted"] = (
+            decision.get("ai_assisted", False) if isinstance(decision, dict) else getattr(decision, "ai_assisted", False)
         )
-        return builder.build()
+        with contextlib.suppress(Exception):  # provenance recording is best-effort
+            self._orchestration.record_ai_trace(mission_id, decision_id=decision_id, **trace)
 
     def _observation_from_result(self, capability: str, result: Any) -> dict[str, Any]:
         """Project a tool execution result into a normalized observation dict.
@@ -478,6 +774,7 @@ class MissionExecutionService:
         tool_id: str,
         *,
         state: CoverageState,
+        notes: str = "",
     ) -> None:
         with contextlib.suppress(Exception):  # coverage is best-effort telemetry
             self._orchestration.record_coverage(
@@ -487,19 +784,37 @@ class MissionExecutionService:
                 state=state,
                 tool_id=tool_id,
                 confidence=0.7 if state is CoverageState.TESTED else 0.0,
+                notes=notes,
             )
+            # Live coverage visibility: announce tested cells and any cell
+            # with an explanation. The initial NOT_ASSESSED seed pass carries
+            # no notes and stays silent (no fake progress).
+            if state is CoverageState.TESTED or notes:
+                self._publish(
+                    "coverage.updated",
+                    {
+                        "mission_id": mission_id,
+                        "asset_key": asset_key or "target",
+                        "capability": capability,
+                        "state": state.value,
+                        "tool_id": tool_id,
+                        "notes": notes,
+                    },
+                )
 
     def _replan_from_observation(self, mission_id: str, capability: str, raw: dict[str, Any]) -> None:
         """Let the planner reconsider the mission from the new observation.
 
         Replanning is deduplicated: a capability already present in the live
-        graph (non-terminal) is never scheduled twice.
+        graph (non-terminal) is never scheduled twice. Replanning only fires on
+        observations that carry meaningful evidence — an empty result never
+        schedules follow-on work.
         """
         trigger = _TRIGGER_BY_OBSERVATION.get(str(raw.get("observation_type", "")))
         if trigger is None:
             return
         content = raw.get("content")
-        if not content:
+        if not content or not has_meaningful_content(content):
             return
         new_capability = _CAPABILITY_BY_TRIGGER.get(trigger, "")
         if new_capability:
@@ -518,31 +833,277 @@ class MissionExecutionService:
             )
         except Exception:  # noqa: BLE001 - replanning must never break the loop
             pass
+        # Replanned work may introduce capabilities the preflight never vetted:
+        # re-check readiness before any of it is allowed to execute.
+        self._check_replanned_readiness(mission_id)
+
+    def _check_replanned_readiness(self, mission_id: str) -> None:
+        """Re-check readiness for capabilities the preflight did not vet.
+
+        The preflight gate only sees the initial plan. A replan that schedules
+        a new capability (e.g. vulnerability scanning) must re-probe its
+        providers before execution: an unavailable provider leaves the cell
+        NOT_ASSESSED with a clear reason, a broken provider records the actual
+        probe failure. No negative evidence is manufactured here.
+        """
+        readiness = self._readiness
+        if readiness is None:
+            return
+        graph = self._planning.get_plan(mission_id)
+        probe = getattr(readiness, "check", None)
+        if not callable(probe):
+            return
+        for action in list(graph.actions.values()):
+            if action.status.is_terminal:
+                continue
+            capability = action.capability
+            if capability in self._preflight_capabilities:
+                continue
+            tool_ids = _candidate_tools(action)
+            if not tool_ids:
+                # A freshly replanned action has no bound candidates yet (the
+                # capability-aware selector binds them at approval time): fall
+                # back to the capability's default candidate families so the
+                # readiness verdict is the true ground truth for the plan.
+                tools = getattr(self._planning, "tools", None)
+                candidates = getattr(tools, "default_candidates", None) if tools is not None else None
+                if isinstance(candidates, dict):
+                    tool_ids = [str(tool) for tool in candidates.get(capability, ())]
+            if not tool_ids:
+                continue
+            verdict = None
+            try:
+                report = probe(list(tool_ids), sync_engine=True)
+                by_tool = {v.tool_id: v for v in report.tools}
+                verdict = next((by_tool[t] for t in tool_ids if t in by_tool), None)
+            except Exception:  # noqa: BLE001 - readiness probing is best-effort
+                verdict = None
+            if verdict is not None and verdict.status.value == "available":
+                continue
+            reason = _readiness_reason(action.capability, verdict)
+            with contextlib.suppress(Exception):  # action may already be terminal
+                action.mark(ActionStatus.FAILED)
+                self._planning.record_failure(
+                    mission_id,
+                    action.action_id,
+                    tool_id=str(action.selected_tool or ""),
+                    error=reason,
+                )
+            self._record_coverage(
+                mission_id,
+                self._orchestration.get(mission_id).context.target_id or "target",
+                capability,
+                str(action.selected_tool or ""),
+                state=CoverageState.NOT_ASSESSED,
+                notes=reason,
+            )
 
     def _advance_state(self, mission_id: str) -> bool:
-        """Advance the planning state when the current plan is exhausted.
+        """Advance the planning state toward the phase that holds the work.
 
-        Returns ``True`` when the mission moved toward reassessment so the
-        loop can re-decide (replanned follow-ons may now be ready).
+        Returns ``True`` when the mission moved forward so the loop can
+        re-decide. Advancement follows the canonical MissionState progression:
+        a reassessed plan with remaining work moves into the phase that
+        contains it; a plan with work in a later phase walks one legal hop
+        toward it; an exhausted plan walks one hop forward.
         """
         mission = self._planning.get_mission(mission_id)
-        non_terminal = [action for action in mission.graph.actions.values() if not action.status.is_terminal]
-        if non_terminal:
+        state = mission.state
+        if state is MissionState.COMPLETED:
             return False
-        if mission.state is MissionState.REASSESSMENT:
+        non_terminal = [action for action in mission.graph.actions.values() if not action.status.is_terminal]
+        if state is MissionState.REASSESSMENT:
+            if not non_terminal:
+                return False
+            target = _state_for_actions(non_terminal)
+            if target is None or target is state:
+                return False
+            try:
+                self._planning.transition(mission_id, target)
+                self._sync_phase(mission_id)
+                return True
+            except Exception:  # noqa: BLE001 - state advance is best-effort
+                return False
+        if non_terminal:
+            work_state = _state_for_actions(non_terminal)
+            if work_state is None or work_state is state:
+                return False
+            if _state_rank(work_state) <= _state_rank(state):
+                return False
+            target = _next_forward_state(state)
+            if target is None or target is MissionState.COMPLETED:
+                return False
+            if _state_rank(target) > _state_rank(work_state):
+                return False
+            try:
+                self._planning.transition(mission_id, target)
+                self._sync_phase(mission_id)
+                return True
+            except Exception:  # noqa: BLE001 - state advance is best-effort
+                return False
+        target = _next_forward_state(state)
+        if target is None or target is MissionState.COMPLETED:
             return False
         try:
-            self._planning.transition(mission_id, MissionState.REASSESSMENT)
+            self._planning.transition(mission_id, target)
+            self._sync_phase(mission_id)
             return True
         except Exception:  # noqa: BLE001 - state advance is best-effort
             return False
+
+    def _sync_phase(self, mission_id: str) -> None:
+        """Synchronize the orchestration phase from the planning workflow state."""
+        with contextlib.suppress(Exception):  # phase sync is best-effort
+            phase = self._orchestration.sync_phase(mission_id)
+            if phase and phase != self._last_phase:
+                self._last_phase = phase
+                self._publish(
+                    "mission.phase.started",
+                    {"mission_id": mission_id, "phase": phase, "phase_kind": phase},
+                )
+
+    def _finalize_run(self, mission_id: str) -> None:
+        """Finalize the mission run (idempotent) so no run stays ``running``."""
+        with contextlib.suppress(Exception):  # finalization is the terminal step
+            self._orchestration.finalize(mission_id)
 
     def _record_telemetry(self, mission_id: str) -> None:
         with contextlib.suppress(Exception):  # telemetry is best-effort
             self._orchestration.record_telemetry(mission_id)
 
+    def _publish_tool_completed(
+        self,
+        mission_id: str,
+        action_id: str,
+        capability: str,
+        tool_id: str,
+        target: str,
+        result: Any,
+        *,
+        outcome: str,
+    ) -> None:
+        """Publish the ``mission.tool.completed`` event for a finished tool."""
+        self._publish(
+            "mission.tool.completed",
+            {
+                "mission_id": mission_id,
+                "action_id": action_id,
+                "tool_id": tool_id,
+                "capability": capability,
+                "target": target,
+                "execution_id": getattr(result, "execution_id", ""),
+                "duration_ms": getattr(result, "duration_ms", 0) or 0,
+                "exit_code": getattr(getattr(result, "output", None), "exit_code", 0),
+                "outcome": outcome,
+            },
+        )
+
+    def _publish(self, event_type: str, payload: dict[str, Any]) -> None:
+        """Publish a runner-level event on the wired bus (best-effort).
+
+        Event delivery is advisory for execution: a misbehaving subscriber (or
+        a missing bus) must never break the mission loop, so publishing is
+        best-effort and swallows failures.
+        """
+        bus = self._event_bus
+        if bus is None:
+            return
+        from hunterx.domain.events import DomainEvent
+
+        with contextlib.suppress(Exception):  # event delivery must never break execution
+            bus.publish(
+                DomainEvent(
+                    event_type=event_type,
+                    payload=payload,
+                    source="application.mission_execution",
+                    mission_id=str(payload.get("mission_id") or ""),
+                )
+            )
+
     def _cycle_outcome(self, mission_id: str, **fields: Any) -> dict[str, Any]:
         return {"mission_id": mission_id, **fields}
+
+
+def _is_explicit_negative(result: Any) -> bool:
+    """Return ``True`` for a structured, well-formed empty tool result.
+
+    An explicit negative is a tool that executed successfully and produced
+    structured output (JSON) reporting nothing — e.g. ``subfinder -d host``
+    returning an empty JSON document. An empty stdout-only result is
+    uninformative, never a validated negative.
+    """
+    output = getattr(result, "output", None)
+    if output is None:
+        return False
+    if getattr(output, "json", None) is None:
+        return False
+    json_value = output.json
+    if isinstance(json_value, dict):
+        return not has_meaningful_content(json_value)
+    if isinstance(json_value, list):
+        return len(json_value) == 0
+    return False
+
+
+def _next_forward_state(current: MissionState) -> MissionState | None:
+    """Return the next canonical forward state reachable from ``current``."""
+    from hunterx.domain.adaptive_mission_planning.state import can_transition
+
+    try:
+        index = _FORWARD_STATES.index(current)
+    except ValueError:
+        return None
+    for candidate in _FORWARD_STATES[index + 1 :]:
+        if candidate is MissionState.REASSESSMENT:
+            continue
+        if candidate is MissionState.COMPLETED:
+            if can_transition(current, candidate):
+                return candidate
+            continue
+        if can_transition(current, candidate):
+            return candidate
+    return None
+
+
+def _state_for_actions(actions: list[Any]) -> MissionState | None:
+    """Return the earliest planning state that contains the given work."""
+    states: list[MissionState] = []
+    for action in actions:
+        state = _STATE_BY_CAPABILITY.get(str(getattr(action, "capability", "")))
+        if state is not None and state not in states:
+            states.append(state)
+    if not states:
+        return None
+    return min(states, key=_state_rank)
+
+
+def _state_rank(state: MissionState) -> int:
+    """Return the canonical forward rank of a planning state."""
+    try:
+        return _FORWARD_STATES.index(state)
+    except ValueError:
+        return len(_FORWARD_STATES)
+
+
+def _candidate_tools(action: Any) -> list[str]:
+    """Return the candidate tool ids of an action (selected first)."""
+    selected = str(getattr(action, "selected_tool", "") or "")
+    if selected:
+        return [selected]
+    candidates = tuple(getattr(action, "tool_candidate_set", ()) or ())
+    return [str(tool) for tool in candidates] if candidates else []
+
+
+def _readiness_reason(capability: str, verdict: Any) -> str:
+    """Return a clear reason for an unavailable replanned capability."""
+    status = getattr(verdict, "status", None)
+    status_value = getattr(status, "value", status) if status is not None else "unavailable"
+    if verdict is None or status_value in ("missing", "unknown", "unavailable"):
+        return f"capability '{capability}' has no available provider after replan; not assessed"
+    error = getattr(verdict, "error", "")
+    if error:
+        return f"capability '{capability}' provider probe failed: {error}"
+    return f"capability '{capability}' provider unavailable ({status_value}); not assessed"
 
 
 __all__ = ["MissionExecutionService"]

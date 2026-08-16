@@ -37,7 +37,9 @@ class TestHuntCLI:
         assert isinstance(created, dict)
         assert created.get("mission_id")
         assert created["objective"] == "bug_bounty_hunt"
-        assert created["current_phase"] == "target_modeling"
+        # ``hunt`` runs the mission to completion, so the final phase reflects
+        # the finished workflow (REPORTING) — never a stuck target_modeling.
+        assert created["current_phase"] == "reporting"
 
     def test_hunt_status_surface(self, app: CliApplication, capsys: pytest.CaptureFixture[str]) -> None:
         mission_id = str(self._run(app, capsys, "hunt", "api_assessment", "https://api.example.com")["mission_id"])

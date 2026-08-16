@@ -110,7 +110,13 @@ class TestMissionStartsExecution:
 
         result = runner.run(mission.mission_id, max_cycles=16)
 
-        assert mission.mission.state.value != "completed"
+        # A terminal runner exit finalizes the mission: terminal state, an
+        # outcome record and a completed run with a finish timestamp.
+        assert mission.mission.state.value == "completed"
+        assert mission.outcome is not None
+        assert mission.runs, "a run record must exist"
+        assert mission.runs[-1].status.value == "completed"
+        assert mission.runs[-1].finished_at, "the run must record a finish timestamp"
         assert result["cycles_run"] >= 1
         assert mission.decisions, "an initial decision must be generated"
         assert fake.calls, "a tool execution must be attempted"
@@ -237,7 +243,10 @@ class TestCLIIntegration:
         assert overview["counts"]["observations"] > 0
         assert overview["counts"]["negative_evidence"] >= 0
         assert overview["coverage_ratio"] > 0.0
-        assert overview["planning_state"] != "completed"
+        # The runner finalizes every terminal exit: the mission is never left
+        # running when the CLI returns.
+        assert overview["planning_state"] == "completed"
+        assert overview["outcome"] is not None
 
 
 class _PassingReadiness:

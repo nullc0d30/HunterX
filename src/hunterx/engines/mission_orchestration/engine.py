@@ -22,7 +22,7 @@ from typing import Any
 from hunterx.domain.mission_orchestration.baseline import BaselineObservation
 from hunterx.domain.mission_orchestration.confidence import ConfidenceResult
 from hunterx.domain.mission_orchestration.decision import MissionDecision
-from hunterx.domain.mission_orchestration.enums import StopCondition
+from hunterx.domain.mission_orchestration.enums import MissionPhase, StopCondition
 from hunterx.domain.mission_orchestration.gap import KnowledgeGap
 from hunterx.domain.mission_orchestration.mission import OrchestratedMission
 from hunterx.domain.mission_orchestration.models import (
@@ -85,6 +85,10 @@ class MissionOrchestrationEngine:
     def finalize(self, mission_id: str, **kwargs: Any) -> OrchestratedMission:
         """Finalize a mission."""
         return self.orchestrator.finalize(mission_id, **kwargs)
+
+    def sync_phase(self, mission_id: str) -> MissionPhase:
+        """Synchronize the orchestration phase from the planning state."""
+        return self.orchestrator.sync_phase(mission_id)
 
     # -- reasoning loop -----------------------------------------------------
 
@@ -191,6 +195,10 @@ class MissionOrchestrationEngine:
     def stop_condition(self, mission_id: str) -> StopCondition | None:
         """Evaluate the mission stop conditions."""
         return self.orchestrator.stop_condition(mission_id)
+
+    def record_ai_trace(self, mission_id: str, *, decision_id: str = "", **trace: Any) -> None:
+        """Record an AI-invocation provenance trace entry (best-effort)."""
+        return self.orchestrator.record_ai_trace(mission_id, decision_id=decision_id, **trace)
 
     def telemetry(self, mission_id: str) -> dict[str, Any]:
         """Return the latest telemetry snapshot."""
