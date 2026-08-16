@@ -846,14 +846,16 @@ class MissionExecutionService:
         if not content or not has_meaningful_content(content):
             return
         new_capability = _CAPABILITY_BY_TRIGGER.get(trigger, "")
-        detail: dict[str, Any] = {}
+        details: list[dict[str, Any]] = []
         if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
-            hypothesis_id = self._hypothesis_from_observation(mission_id, observation)
-            if hypothesis_id:
-                detail["hypothesis_id"] = hypothesis_id
-                detail["capability"] = "vulnerability_scanning"
-        if new_capability:
-            graph = self._planning.get_plan(mission_id)
+            for hypothesis_id in self._hypotheses_from_observation(mission_id, observation):
+                details.append({"hypothesis_id": hypothesis_id, "capability": "vulnerability_scanning"})
+        elif new_capability:
+            details = [{}]
+        if not details:
+            return
+        graph = self._planning.get_plan(mission_id)
+        for detail in details:
             if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
                 # Per-hypothesis validation actions are distinct: dedup against
                 # ANY existing action bound to the SAME hypothesis (terminal or
@@ -862,24 +864,24 @@ class MissionExecutionService:
                     action.hypothesis_id == detail.get("hypothesis_id")
                     for action in graph.actions.values()
                 ):
-                    return
+                    continue
             elif any(action.capability == new_capability for action in graph.actions.values()):
                 # Generic follow-on capabilities are scheduled at most once.
                 return
-        try:
-            mission = self._orchestration.get(mission_id)
-            self._planning.replan_for_change(
-                mission_id,
-                trigger=trigger,
-                asset_key=mission.context.target_id,
-                detail=detail or None,
-                reason=f"observation from {capability}",
-            )
-        except Exception:  # noqa: BLE001 - replanning must never break the loop
-            pass
-        # Replanned work may introduce capabilities the preflight never vetted:
-        # re-check readiness before any of it is allowed to execute.
-        self._check_replanned_readiness(mission_id)
+            try:
+                mission = self._orchestration.get(mission_id)
+                self._planning.replan_for_change(
+                    mission_id,
+                    trigger=trigger,
+                    asset_key=mission.context.target_id,
+                    detail=detail or None,
+                    reason=f"observation from {capability}",
+                )
+            except Exception:  # noqa: BLE001 - replanning must never break the loop
+                continue
+            # Replanned work may introduce capabilities the preflight never
+            # vetted: re-check readiness before any of it executes.
+            self._check_replanned_readiness(mission_id)
 
     def _hypothesis_from_observation(self, mission_id: str, observation: Any | None) -> str:
         """Return the hypothesis supported by ``observation``, if any.
@@ -903,6 +905,30 @@ class MissionExecutionService:
         if not candidates:
             return ""
         return sorted(candidates, key=lambda h: (-h.priority, -h.confidence))[0].hypothesis_id
+
+    def _hypotheses_from_observation(self, mission_id: str, observation: Any | None) -> list[str]:
+        """Return every hypothesis supported by ``observation``.
+
+        Multiple candidates in one observation produce multiple class-specific
+        hypotheses; each gets its own targeted validation action so chaining
+        across classes works (not just the highest-priority one).
+        """
+        if observation is None:
+            return []
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort lookup
+            return []
+        observation_id = _observation_id(observation)
+        candidates = [
+            hypothesis
+            for hypothesis in mission.hypotheses
+            if observation_id and observation_id in hypothesis.supporting_evidence
+        ]
+        return [
+            hypothesis.hypothesis_id
+            for hypothesis in sorted(candidates, key=lambda h: (-h.priority, -h.confidence))[:40]
+        ]
 
     def _assess_hypotheses_after_observation(
         self,
@@ -945,27 +971,73 @@ class MissionExecutionService:
             # A settled hypothesis is never downgraded by further observations.
             return
         observation_id = _observation_id(observation)
-        try:
-            if has_meaningful_content(raw.get("content")):
-                updated = self._orchestration.update_hypothesis(
-                    mission_id,
-                    hypothesis_id,
-                    supporting=(observation_id,) if observation_id else (),
-                    tested_action=action_id,
-                )
-            elif _is_explicit_negative(result):
-                updated = self._orchestration.update_hypothesis(
-                    mission_id,
-                    hypothesis_id,
-                    contradicting=(observation_id,) if observation_id else (),
-                    tested_action=action_id,
-                )
+        supporting: tuple[str, ...] = ()
+        contradicting: tuple[str, ...] = ()
+        # Class-specific differential analysis: when the hypothesis targets a
+        # vulnerability class and the mission target is an authorized loopback
+        # host, the capability engine runs a baseline-vs-payload probe and the
+        # verdict (not "any tool output") decides support or contradiction.
+        verdict = self._differential_verdict(mission_id, hypothesis)
+        if verdict is not None:
+            vulnerability_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+            if verdict.supported:
+                # The differential probe is independent evidence, distinct from
+                # the tool observation that created the hypothesis.
+                probe_ref = f"probe:{vulnerability_class}:{str((hypothesis.provenance or {}).get('endpoint') or '')}"
+                supporting = tuple(dict.fromkeys(filter(None, (observation_id, probe_ref))))
+            elif verdict.contradicted:
+                # A class-specific probe found no signal: the hypothesis for
+                # that class is refuted (honest negative), never validated.
+                with contextlib.suppress(Exception):
+                    self._orchestration.refute_hypothesis(
+                        mission_id,
+                        hypothesis_id,
+                        reason=verdict.notes,
+                        tested_action=action_id,
+                    )
+                    self._publish(
+                        "vulnerability.hypothesis.updated",
+                        {
+                            "mission_id": mission_id,
+                            "hypothesis_id": hypothesis_id,
+                            "vulnerability_class": vulnerability_class,
+                            "state": "refuted",
+                            "signal": verdict.signal.value,
+                        },
+                    )
+                return
             else:
                 return
+        elif has_meaningful_content(raw.get("content")):
+            supporting = (observation_id,) if observation_id else ()
+        elif _is_explicit_negative(result):
+            contradicting = (observation_id,) if observation_id else ()
+        else:
+            return
+        try:
+            updated = self._orchestration.update_hypothesis(
+                mission_id,
+                hypothesis_id,
+                supporting=supporting,
+                contradicting=contradicting,
+                tested_action=action_id,
+            )
         except Exception:  # noqa: BLE001 - hypothesis updates must never break the loop
             return
         new_state = updated.get("state") if isinstance(updated, dict) else getattr(updated, "state", "")
         new_state = getattr(new_state, "value", new_state)
+        vulnerability_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+        if verdict is not None and vulnerability_class:
+            self._publish(
+                "vulnerability.hypothesis.updated",
+                {
+                    "mission_id": mission_id,
+                    "hypothesis_id": hypothesis_id,
+                    "vulnerability_class": vulnerability_class,
+                    "state": new_state,
+                    "signal": verdict.signal.value,
+                },
+            )
         if new_state == "supported":
             with contextlib.suppress(Exception):
                 verified = self._orchestration.verify_hypothesis(mission_id, hypothesis_id)
@@ -986,6 +1058,78 @@ class MissionExecutionService:
                 },
             )
 
+    def _differential_verdict(self, mission_id: str, hypothesis: Any) -> Any | None:
+        """Run a class-specific differential probe for a vulnerability hypothesis.
+
+        Returns a :class:`ProbeVerdict`, or ``None`` when the hypothesis is not
+        class-specific, no probe can be built, or the target is not an
+        authorized loopback host. The verdict is advisory evidence for the
+        hypothesis state — it never fabricates a finding by itself.
+        """
+        provenance = dict(hypothesis.provenance or {})
+        vulnerability_class = str(provenance.get("vulnerability_class") or "")
+        if not vulnerability_class:
+            return None
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort
+            return None
+        target = mission.context.target_id or ""
+        if not target:
+            return None
+        endpoint = str(provenance.get("endpoint") or target)
+        parameter = str(provenance.get("parameter") or "")
+        evidence = {
+            "target": target,
+            "endpoint": endpoint,
+            "parameter": parameter,
+            "confidence": hypothesis.confidence,
+        }
+        try:
+            from hunterx.domain.vulnerability_capability.engine import VulnerabilityCapabilityEngine
+            from hunterx.domain.vulnerability_capability.probe_executor import ProbeExecutor
+
+            engine = VulnerabilityCapabilityEngine()
+            probe = engine.build_probe(vulnerability_class, evidence)
+            if probe is None:
+                return None
+            from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
+
+            # Scope guard on the mission target, but execute the probe against
+            # the specific endpoint (which carries the path/parameter surface).
+            if not is_loopback_target(target):
+                return None
+            execution_target = endpoint or target
+            if not is_loopback_target(execution_target):
+                return None
+            self._publish(
+                "vulnerability.probe.started",
+                {
+                    "mission_id": mission_id,
+                    "vulnerability_class": vulnerability_class,
+                    "endpoint": execution_target,
+                    "parameter": parameter,
+                },
+            )
+            responses = ProbeExecutor().execute(probe, target=execution_target)
+            verdict = engine.analyze_probe(vulnerability_class, probe, responses)
+            self._publish(
+                "vulnerability.probe.completed",
+                {
+                    "mission_id": mission_id,
+                    "vulnerability_class": vulnerability_class,
+                    "signal": verdict.signal.value,
+                    "supported": verdict.supported,
+                    "contradicted": verdict.contradicted,
+                    "notes": verdict.notes,
+                },
+            )
+            return verdict
+        except PermissionError:
+            return None
+        except Exception:  # noqa: BLE001 - differential probing is best-effort
+            return None
+
     def _promote_findings_for_hypothesis(self, mission_id: str, hypothesis_id: str) -> None:
         """Promote CANDIDATE findings linked to a validated hypothesis to verified.
 
@@ -1004,9 +1148,10 @@ class MissionExecutionService:
         for finding in list(mission.context.findings):
             if finding.get("stage") != "candidate":
                 continue
-            if hypothesis_id and finding.get("hypothesis_id") not in (None, "", hypothesis_id):
+            finding_hypothesis = finding.get("hypothesis_id")
+            if finding_hypothesis and finding_hypothesis != hypothesis_id:
                 continue
-            if asset_key and finding.get("asset_key") not in (None, "", asset_key):
+            if not finding_hypothesis and asset_key and finding.get("asset_key") not in (None, "", asset_key):
                 continue
             with contextlib.suppress(Exception):
                 self._orchestration.register_finding(
@@ -1022,6 +1167,15 @@ class MissionExecutionService:
                     stage="verified",
                     evidence_refs=tuple(finding.get("evidence_refs") or ()),
                     confidence=finding.get("confidence", 0.0) or 0.0,
+                )
+                self._publish(
+                    "vulnerability.finding.validated",
+                    {
+                        "mission_id": mission_id,
+                        "finding_id": finding["finding_id"],
+                        "vulnerability_class": finding.get("vulnerability_class", ""),
+                        "hypothesis_id": hypothesis_id,
+                    },
                 )
 
     def _check_replanned_readiness(self, mission_id: str) -> None:

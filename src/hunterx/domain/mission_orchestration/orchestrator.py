@@ -55,6 +55,7 @@ from hunterx.domain.mission_orchestration.decision import (
 from hunterx.domain.mission_orchestration.enums import (
     BehaviorClass,
     FindingStage,
+    HypothesisState,
     MissionEventType,
     MissionPhase,
     MissionRunStatus,
@@ -386,24 +387,25 @@ class MissionOrchestrator:
         return observation
 
     def _link_findings_to_hypotheses(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
-        """Attach the hypothesis that explains a candidate finding.
+        """Attach the hypothesis that explains each candidate finding.
 
         The candidate finding and the hypothesis are both derived from the same
         observation; recording ``hypothesis_id`` on the finding lets the runner
-        promote the finding only when its explaining hypothesis is validated —
-        a tool output is never a vulnerability by itself.
+        promote the finding only when ITS explaining hypothesis is validated.
+        Linking is by vulnerability class (and endpoint), so one observation
+        with many classes never lets a single validated hypothesis promote
+        findings of other classes.
         """
         observation_id = observation.observation_id
-        hypothesis = next(
-            (
-                hypothesis
-                for hypothesis in mission.hypotheses
-                if observation_id and observation_id in hypothesis.supporting_evidence
-            ),
-            None,
-        )
-        if hypothesis is None:
-            return
+        class_hypotheses: dict[tuple[str, str], str] = {}
+        for hypothesis in mission.hypotheses:
+            if observation_id and observation_id not in hypothesis.supporting_evidence:
+                continue
+            provenance = hypothesis.provenance or {}
+            class_id = str(provenance.get("vulnerability_class") or "")
+            endpoint = str(provenance.get("endpoint") or "")
+            if class_id:
+                class_hypotheses[(class_id, endpoint)] = hypothesis.hypothesis_id
         for finding in mission.context.findings:
             if finding.get("stage") != "candidate":
                 continue
@@ -411,7 +413,9 @@ class MissionOrchestrator:
             if observation_id not in refs:
                 continue
             if finding.get("hypothesis_id") in (None, ""):
-                finding["hypothesis_id"] = hypothesis.hypothesis_id
+                class_id = str(finding.get("vulnerability_class") or "")
+                endpoint = str(finding.get("asset_key") or "")
+                finding["hypothesis_id"] = class_hypotheses.get((class_id, endpoint)) or class_hypotheses.get((class_id, ""))
 
     def record_negative(
         self,
@@ -548,7 +552,6 @@ class MissionOrchestrator:
         )
         self._trace_mission(mission, MissionEventType.MISSION_HYPOTHESIS_UPDATED, hypothesis_id=hypothesis_id, state=updated.state.value)
         return updated
-
     def verify_hypothesis(
         self,
         mission_id: str,
@@ -568,6 +571,43 @@ class MissionOrchestrator:
             kind=ReasoningTraceKind.HYPOTHESIS,
             node_id=hypothesis_id,
             content={"state": updated.state.value, "verification": "independent"},
+        )
+        self._trace_mission(mission, MissionEventType.MISSION_HYPOTHESIS_UPDATED, hypothesis_id=hypothesis_id, state=updated.state.value)
+        return updated
+
+    def refute_hypothesis(
+        self,
+        mission_id: str,
+        hypothesis_id: str,
+        *,
+        reason: str = "",
+        tested_action: str = "",
+    ) -> MissionHypothesis:
+        """Refute a hypothesis whose class-specific probe found no signal.
+
+        A contradicted differential verdict means the specific weakness class
+        was not observed — the hypothesis is REFUTED (honest negative), never
+        silently dropped and never validated. The candidate finding stays
+        candidate.
+        """
+        mission = self.get(mission_id)
+        hypothesis = mission.hypothesis(hypothesis_id)
+        if hypothesis is None:
+            raise KeyError(hypothesis_id)
+        tested_actions = tuple(dict.fromkeys(hypothesis.tested_actions + ((tested_action,) if tested_action else ())))
+        updated = replace(
+            hypothesis,
+            state=HypothesisState.REFUTED,
+            tested_actions=tested_actions,
+            updated_at=utcnow_iso(),
+            provenance={**hypothesis.provenance, "refuted_by_probe": reason or "no class-specific signal"},
+        )
+        mission.upsert_hypothesis(updated)
+        self._record_trace(
+            mission,
+            kind=ReasoningTraceKind.HYPOTHESIS,
+            node_id=hypothesis_id,
+            content={"state": updated.state.value, "reason": reason},
         )
         self._trace_mission(mission, MissionEventType.MISSION_HYPOTHESIS_UPDATED, hypothesis_id=hypothesis_id, state=updated.state.value)
         return updated
@@ -1049,59 +1089,70 @@ class MissionOrchestrator:
         if not has_meaningful_content(content):
             return
         asset_key = observation.asset_key or mission.context.target_id or "target"
-        statement = ""
-        category: HypothesisType = HypothesisType.UNKNOWN_BEHAVIOR
+        proposed: list[tuple[str, HypothesisType, dict[str, Any]]] = []
         if observation.observation_type == "vulnerability":
-            for finding in _as_list(content.get("content") or content):
-                if not isinstance(finding, dict) or not finding:
+            # Every candidate produces its own class-specific hypothesis so
+            # multiple classes in one observation chain into separate probes.
+            for candidate in _vulnerability_candidates(content):
+                if not isinstance(candidate, dict) or not candidate:
                     continue
-                template = _template_of(finding) or "unknown"
-                statement = f"{asset_key} may be affected by {template}"
-                category = _category_for_template(template)
+                class_id = _vulnerability_class_of(candidate)
+                endpoint = _candidate_field(candidate, "endpoint")
+                parameter = _candidate_field(candidate, "parameter")
+                statement = f"{endpoint or asset_key} may be affected by {class_id}"
+                category = _category_for_template(class_id)
+                extra: dict[str, Any] = {}
+                if class_id != "unknown":
+                    extra = {
+                        "vulnerability_class": class_id,
+                        "endpoint": endpoint or "",
+                        "parameter": parameter or "",
+                    }
                 if statement:
-                    break
+                    proposed.append((statement, category, extra))
         elif observation.observation_type in ("technology", "tech"):
             name = str(content.get("name") or "").strip()
             if name:
-                statement = f"{asset_key} runs technology {name}"
+                proposed.append((f"{asset_key} runs technology {name}", HypothesisType.UNKNOWN_BEHAVIOR, {}))
         elif observation.observation_type in ("service", "port"):
             service = str(content.get("service") or content.get("name") or "").strip()
             if service:
-                statement = f"{asset_key} exposes service {service}"
+                proposed.append((f"{asset_key} exposes service {service}", HypothesisType.UNKNOWN_BEHAVIOR, {}))
         elif observation.observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
             for endpoint in _as_list(content.get("endpoints") or content.get("urls") or content.get("routes") or [content.get("endpoint") or content.get("url")]):
                 endpoint = str(endpoint).strip()
                 if endpoint:
-                    statement = f"{endpoint} is a reachable endpoint of the target"
+                    proposed.append((f"{endpoint} is a reachable endpoint of the target", HypothesisType.UNKNOWN_BEHAVIOR, {}))
                     break
         elif observation.observation_type in ("asset", "subdomain", "host", "hostname", "domain") and asset_key and asset_key != "target":
-            statement = f"{asset_key} is part of the target's attack surface"
-        if not statement:
+            proposed.append((f"{asset_key} is part of the target's attack surface", HypothesisType.UNKNOWN_BEHAVIOR, {}))
+        if not proposed:
             return
-            return
-        behavior_class = (
-            BehaviorClass.KNOWN
-            if category is not HypothesisType.UNKNOWN_BEHAVIOR
-            else BehaviorClass.NOVEL_CANDIDATE
-        )
-        try:
-            self.add_hypothesis(
-                mission.mission_id,
-                statement=statement,
-                category=category,
-                supporting=(observation.observation_id,),
-                confidence=max(0.2, min(1.0, observation.confidence or 0.4)),
-                priority=_priority_for_hypothesis(category, observation.observation_type),
-                proposed_by=f"observation:{observation.tool_id or 'tool'}",
-                behavior_class=behavior_class,
-                provenance_hint={
-                    "observation_id": observation.observation_id,
-                    "observation_type": observation.observation_type,
-                    "asset_key": asset_key,
-                },
+        for statement, category, provenance_extra in proposed:
+            behavior_class = (
+                BehaviorClass.KNOWN
+                if category is not HypothesisType.UNKNOWN_BEHAVIOR
+                else BehaviorClass.NOVEL_CANDIDATE
             )
-        except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
-            return
+            try:
+                self.add_hypothesis(
+                    mission.mission_id,
+                    statement=statement,
+                    category=category,
+                    supporting=(observation.observation_id,),
+                    confidence=max(0.2, min(1.0, observation.confidence or 0.4)),
+                    priority=_priority_for_hypothesis(category, observation.observation_type),
+                    proposed_by=f"observation:{observation.tool_id or 'tool'}",
+                    behavior_class=behavior_class,
+                    provenance_hint={
+                        "observation_id": observation.observation_id,
+                        "observation_type": observation.observation_type,
+                        "asset_key": asset_key,
+                        **provenance_extra,
+                    },
+                )
+            except Exception:  # noqa: BLE001 - hypothesis creation is best-effort
+                continue
 
     def _populate_context(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
         """Update the target-centric context from a normalized observation.
@@ -1166,14 +1217,16 @@ class MissionOrchestrator:
                     "parameter": str(parameter),
                 }
         elif observation_type == "vulnerability":
-            for finding in _as_list(content.get("content") or content):
+            for finding in _vulnerability_candidates(content):
                 if not isinstance(finding, dict) or not finding:
                     continue
-                template = _template_of(finding) or "unknown"
+                class_id = _vulnerability_class_of(finding)
+                endpoint = _candidate_field(finding, "endpoint")
+                parameter = _candidate_field(finding, "parameter")
                 self.register_finding(
                     mission.mission_id,
-                    vulnerability_class=template,
-                    asset_key=asset_key or mission.context.target_id or "target",
+                    vulnerability_class=class_id,
+                    asset_key=endpoint or asset_key or mission.context.target_id or "target",
                     target=mission.context.target_id or "",
                     severity=str(finding.get("severity") or "info"),
                     tool=observation.tool_id or "",
@@ -1181,6 +1234,11 @@ class MissionOrchestrator:
                     evidence_refs=(observation.evidence_ref or observation.observation_id,),
                     description=f"candidate from {observation.tool_id or 'tool'} observation {observation.observation_id}",
                 )
+                if parameter:
+                    mission.context.parameters[f"param:{endpoint or asset_key}:{parameter}"] = {
+                        "key": endpoint or asset_key,
+                        "parameter": parameter,
+                    }
 
     def _advance_to_completed(self, mission_id: str) -> None:
         """Walk the planning state machine to COMPLETED through legal hops.
@@ -1314,6 +1372,43 @@ def _template_of(finding: Any) -> str:
         if value is not None:
             return str(value).strip()
     return ""
+
+
+def _vulnerability_candidates(content: Any) -> list[Any]:
+    """Flatten a scanner observation payload into candidate records.
+
+    Scanner adapters emit ``{"candidates": [...], "count": N}``; nuclei emits
+    ``{"findings": [...]}``; some paths use ``content["content"]``. All of
+    these are flattened into one candidate list so every candidate reaches the
+    hypothesis/finding pipeline with its real class.
+    """
+    if isinstance(content, list):
+        return content
+    if not isinstance(content, dict):
+        return []
+    for key in ("candidates", "findings", "vulnerabilities", "content"):
+        value = content.get(key)
+        if isinstance(value, list):
+            return value
+    return [content]
+
+
+def _vulnerability_class_of(candidate: Any) -> str:
+    """Return the canonical vulnerability class of a candidate record."""
+    if not isinstance(candidate, dict):
+        return "unknown"
+    value = candidate.get("vulnerability_class")
+    if value:
+        return str(value).strip()
+    return _template_of(candidate) or "unknown"
+
+
+def _candidate_field(candidate: Any, name: str) -> str:
+    """Return a candidate field (endpoint/parameter/...) as a string."""
+    if not isinstance(candidate, dict):
+        return ""
+    value = candidate.get(name) or candidate.get(f"{name}_id") or ""
+    return str(value).strip()
 
 
 def _discovered_assets(content: dict[str, Any], asset_key: str) -> list[str]:

@@ -862,6 +862,47 @@ def build_catalog() -> list[EventSpec]:
         _spec("hypothesis.succeeded", EventCategory.VULNERABILITY, "A hypothesis was validated/proven"),
         _spec("risk.changed", EventCategory.VULNERABILITY, "Target risk changed"),
         _spec("finding.recurred", EventCategory.VULNERABILITY, "A previously remediated finding recurred"),
+        # -- vulnerability capability engine (differential probes) ------------
+        _spec(
+            "vulnerability.hypothesis.created",
+            EventCategory.VULNERABILITY,
+            "A vulnerability capability created a class-specific hypothesis",
+        ),
+        _spec(
+            "vulnerability.probe.started",
+            EventCategory.VULNERABILITY,
+            "A targeted differential probe started against an authorized target",
+        ),
+        _spec(
+            "vulnerability.probe.completed",
+            EventCategory.VULNERABILITY,
+            "A targeted differential probe completed with a verdict",
+        ),
+        _spec(
+            "vulnerability.hypothesis.updated",
+            EventCategory.VULNERABILITY,
+            "A vulnerability hypothesis was updated by a probe verdict",
+        ),
+        _spec(
+            "vulnerability.validation.started",
+            EventCategory.VULNERABILITY,
+            "Independent validation of a vulnerability hypothesis began",
+        ),
+        _spec(
+            "vulnerability.validation.completed",
+            EventCategory.VULNERABILITY,
+            "Independent validation of a vulnerability hypothesis completed",
+        ),
+        _spec(
+            "vulnerability.finding.validated",
+            EventCategory.VULNERABILITY,
+            "A vulnerability candidate was promoted to a validated finding",
+        ),
+        _spec(
+            "vulnerability.attack_path.updated",
+            EventCategory.VULNERABILITY,
+            "A validated finding updated the attack-path model",
+        ),
         # -- system ----------------------------------------------------------
         _spec("system.started", EventCategory.SYSTEM, "A platform component started"),
         _spec("system.stopped", EventCategory.SYSTEM, "A platform component stopped"),

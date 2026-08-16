@@ -178,6 +178,7 @@ class LiveMissionRenderer:
         self._closed = False
         self._seen_cells: set[str] = set()
         bus.subscribe("mission.*", self._on_event)
+        bus.subscribe("vulnerability.*", self._on_event)
         bus.subscribe("tool.command", self._on_event)
         bus.subscribe("coverage.updated", self._on_event)
         self._render_mission_header()
@@ -268,6 +269,8 @@ class LiveMissionRenderer:
         self._closed = True
         with contextlib.suppress(Exception):  # teardown is best-effort
             self._bus.unsubscribe("mission.*", self._on_event)
+        with contextlib.suppress(Exception):  # teardown is best-effort
+            self._bus.unsubscribe("vulnerability.*", self._on_event)
         with contextlib.suppress(Exception):  # teardown is best-effort
             self._bus.unsubscribe("tool.command", self._on_event)
         with contextlib.suppress(Exception):  # teardown is best-effort
@@ -396,6 +399,53 @@ class LiveMissionRenderer:
             label += f" — {self._truncate(str(notes))}"
         return label
 
+    def _render_vulnerability_hypothesis(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        statement = payload.get("statement", "")
+        label = f"[HYPOTHESIS] {class_id}"
+        if statement:
+            label += f": {self._truncate(str(statement))}"
+        return label
+
+    def _render_vulnerability_probe_started(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        endpoint = payload.get("endpoint", "")
+        parameter = payload.get("parameter", "")
+        label = f"[PROBE] testing {class_id}"
+        if endpoint:
+            label += f" at {endpoint}"
+        if parameter:
+            label += f"?{parameter}=..."
+        return label
+
+    def _render_vulnerability_probe_completed(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        signal = payload.get("signal", "")
+        notes = payload.get("notes", "")
+        label = f"[ANALYSIS] {class_id}"
+        if signal and signal != "none":
+            label += f" — {signal} signal"
+        if notes:
+            label += f" ({self._truncate(str(notes))})"
+        return label
+
+    def _render_vulnerability_updated(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        state = payload.get("state", "")
+        label = f"[REASSESS] {class_id} -> {state}"
+        return label
+
+    def _render_validation_started(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        return f"[VALIDATION] confirming {class_id} with an independent probe"
+
+    def _render_finding_validated(self, payload: dict[str, Any]) -> str:
+        class_id = payload.get("vulnerability_class", "")
+        return f"[FINDING] {class_id} validated"
+
+    def _render_attack_path_updated(self, payload: dict[str, Any]) -> str:
+        return "[PATH] validated finding updated the attack-path model"
+
     def _render_blocked(self, payload: dict[str, Any]) -> str:
         reason = payload.get("reason", "")
         label = "[BLOCKED] mission blocked by tool readiness gate"
@@ -490,6 +540,14 @@ _EVENT_HANDLERS: dict[str, Callable[[LiveMissionRenderer, dict[str, Any]], str]]
     "coverage.updated": LiveMissionRenderer._render_coverage,
     "mission.completed": LiveMissionRenderer._render_completed,
     "mission.blocked": LiveMissionRenderer._render_blocked,
+    "vulnerability.hypothesis.created": LiveMissionRenderer._render_vulnerability_hypothesis,
+    "vulnerability.probe.started": LiveMissionRenderer._render_vulnerability_probe_started,
+    "vulnerability.probe.completed": LiveMissionRenderer._render_vulnerability_probe_completed,
+    "vulnerability.hypothesis.updated": LiveMissionRenderer._render_vulnerability_updated,
+    "vulnerability.validation.started": LiveMissionRenderer._render_validation_started,
+    "vulnerability.validation.completed": LiveMissionRenderer._render_vulnerability_updated,
+    "vulnerability.finding.validated": LiveMissionRenderer._render_finding_validated,
+    "vulnerability.attack_path.updated": LiveMissionRenderer._render_attack_path_updated,
 }
 
 
@@ -523,6 +581,7 @@ class MissionRunRecorder:
         self._started_epoch = time.time()
         self._finished = False
         bus.subscribe("mission.*", self._on_event)
+        bus.subscribe("vulnerability.*", self._on_event)
         bus.subscribe("tool.command", self._on_event)
         bus.subscribe("coverage.updated", self._on_event)
         register_command_observer(self._publish_command)
