@@ -62,6 +62,8 @@ class CandidateAction:
     cost: float = 0.1
     dependencies: tuple[str, ...] = ()
     reliability: float = 0.9
+    #: Hypothesis this action is designed to test (evidence-driven probes only).
+    hypothesis_id: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -198,17 +200,19 @@ class MissionDecisionEngine:
         ``tool reliability`` is a multiplicative factor on information gain.
         """
         weights = self._weights(inp.strategy)
+        open_by_id = {hypothesis.hypothesis_id: hypothesis for hypothesis in inp.hypotheses}
         results: list[tuple[CandidateAction, dict[str, float]]] = []
         for candidate in inp.candidates:
             failure_factor = self._failure_factor(candidate, inp.negative_evidence)
             reliability = candidate.reliability * failure_factor
             information_gain = candidate.expected_information_gain * reliability
+            hypothesis_discrimination = self._hypothesis_factor(candidate, open_by_id)
             factors = {
                 "information_gain": information_gain,
                 "attack_surface_expansion": candidate.attack_surface_expansion,
                 "finding_validation_potential": candidate.finding_validation_potential,
                 "evidence_improvement": candidate.evidence_improvement,
-                "hypothesis_discrimination": candidate.hypothesis_discrimination,
+                "hypothesis_discrimination": hypothesis_discrimination,
                 "coverage_improvement": candidate.coverage_improvement,
                 "cost": _cost_penalty(candidate.cost),
             }
@@ -218,6 +222,24 @@ class MissionDecisionEngine:
             factors["total"] = total
             results.append((candidate, factors))
         return sorted(results, key=lambda item: (-item[1]["total"], -item[0].expected_information_gain))
+
+    @staticmethod
+    def _hypothesis_factor(
+        candidate: CandidateAction,
+        open_by_id: dict[str, MissionHypothesis],
+    ) -> float:
+        """Return how well ``candidate`` pursues the open hypotheses.
+
+        A candidate explicitly bound to an open hypothesis is boosted by that
+        hypothesis's priority/confidence, so evidence genuinely drives the next
+        action instead of a fixed capability order. The factor is bounded in
+        ``[0, 1]``.
+        """
+        if candidate.hypothesis_id:
+            hypothesis = open_by_id.get(candidate.hypothesis_id)
+            if hypothesis is not None:
+                return max(candidate.hypothesis_discrimination, round(hypothesis.priority * hypothesis.confidence, 3))
+        return candidate.hypothesis_discrimination
 
     def _weights(self, strategy: StrategyKind) -> dict[str, float]:
         """Return the normalized factor weights for ``strategy``."""
