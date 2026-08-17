@@ -128,6 +128,7 @@ class ToolReadinessService:
         """
         definitions = self.definitions(tool_ids)
         readiness = self._discovery.discover(definitions, self._platform)
+        readiness = self._apply_invocation_checks(readiness)
         if sync_engine:
             for verdict in readiness:
                 if verdict.status is ToolReadinessStatus.AVAILABLE:
@@ -171,6 +172,89 @@ class ToolReadinessService:
         if verdict.status is ToolReadinessStatus.AVAILABLE:
             self._discovery.mark_installed(tool_id, verdict.version)
         return verdict
+
+    # -- adapter invocation health ------------------------------------------
+
+    def _apply_invocation_checks(self, readiness: list[ToolReadiness]) -> list[ToolReadiness]:
+        """Downgrade tools whose adapter invocation is unusable.
+
+        "binary exists" does not mean "tool is healthy": a registered adapter
+        may build an argument line the binary rejects. For adapters that opt
+        into invocation verification (``INVOCATION_VERIFIABLE``), the adapter's
+        own argv is run against a local dead-end target with a short timeout;
+        an argument-parsing failure (exit code 2 with a usage error) marks the
+        tool BROKEN. Network failures/timing out are NOT treated as broken —
+        only a CLI contract violation is.
+        """
+        if self._engine is None:
+            return readiness
+        checked: list[ToolReadiness] = []
+        for verdict in readiness:
+            if verdict.status is not ToolReadinessStatus.AVAILABLE:
+                checked.append(verdict)
+                continue
+            adapter = self._engine.adapter_for(verdict.tool_id)
+            if adapter is None or not getattr(adapter, "INVOCATION_VERIFIABLE", False):
+                checked.append(verdict)
+                continue
+            broken = self._invocation_is_broken(adapter, verdict.tool_id)
+            if broken is None:
+                checked.append(verdict)
+                continue
+            checked.append(
+                ToolReadiness(
+                    tool_id=verdict.tool_id,
+                    status=ToolReadinessStatus.BROKEN,
+                    executable=verdict.executable,
+                    path=verdict.path,
+                    version=verdict.version,
+                    error=broken,
+                    detected_command=getattr(verdict, "detected_command", ""),
+                )
+            )
+        return checked
+
+    def _invocation_is_broken(self, adapter: Any, tool_id: str) -> str | None:
+        """Return a broken reason when the adapter argv is rejected, else None.
+
+        The check is deliberately minimal and local: the adapter's argv is run
+        against a dead-end loopback URL with a short timeout so only a CLI
+        argument-contract violation (usage error / unrecognized argument) is
+        reported. No network scan is performed.
+        """
+        import subprocess
+
+        from hunterx.domain.execution import ExecutionContext
+
+        if not hasattr(adapter, "build_argv"):
+            return None
+        try:
+            context = ExecutionContext(
+                tool_id=tool_id,
+                target="http://127.0.0.1:1/",
+                timeout_seconds=5,
+                parameters={"method": "GET"},
+            )
+            argv = adapter.build_argv(context)
+        except Exception:  # noqa: BLE001 - adapter contract errors are not a broken invocation
+            return None
+        if not argv:
+            return None
+        try:
+            proc = subprocess.run(argv, capture_output=True, text=True, timeout=10)
+        except (subprocess.TimeoutExpired, OSError):
+            # Timed out (the binary ran, so the CLI contract was accepted) or
+            # the process could not spawn (already classified by discovery).
+            return None
+        output = f"{proc.stdout or ''}\n{proc.stderr or ''}".lower()
+        if proc.returncode == 2 and (
+            "usage" in output or "unrecognized argument" in output or "expected one argument" in output
+        ):
+            return (
+                f"adapter invocation for '{tool_id}' is invalid (the binary rejected the "
+                f"adapter command with an argument-parsing error)"
+            )
+        return None
 
     # -- capability coverage ------------------------------------------------
 
@@ -330,12 +414,23 @@ class ToolReadinessService:
         """Return the importance level for each mission capability."""
         return self._preflight.levels_for(capabilities)
 
+    def mission_profile_tools(self, objective: str) -> tuple[str, ...]:
+        """Return the tools the selected assessment profile explicitly relies on.
+
+        The profile is the mission objective; unknown objectives contribute no
+        profile-required tools (they stay globally-optional).
+        """
+        from hunterx.tools.readiness.manifest import MISSION_PROFILE_TOOLS
+
+        return MISSION_PROFILE_TOOLS.get(objective, ())
+
     def preflight(
         self,
         capabilities: list[str],
         *,
         mission_id: str = "",
         auto_provision: bool = True,
+        profile_tools: tuple[str, ...] = (),
     ) -> PreflightResult:
         """Compute the mission preflight verdict for ``capabilities``.
 
@@ -343,7 +438,9 @@ class ToolReadinessService:
         returns a ``BLOCKED`` verdict (or, when ``auto_provision`` succeeds,
         a ``PASS``/``DEGRADED`` verdict). Missing recommended/optional
         capabilities produce a ``DEGRADED`` verdict — the mission may run
-        with reduced coverage.
+        with reduced coverage. Tools listed in ``profile_tools`` (the selected
+        assessment profile) are provisioned when absent so the mission does
+        not silently rely on them.
         """
         return self._preflight.run(
             self,
@@ -351,6 +448,7 @@ class ToolReadinessService:
             mission_id=mission_id,
             auto_provision=auto_provision,
             provisioner=self._provisioner,
+            profile_tools=profile_tools,
         )
 
     # -- integration audit --------------------------------------------------

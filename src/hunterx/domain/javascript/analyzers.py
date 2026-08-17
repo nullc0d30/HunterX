@@ -21,6 +21,7 @@ false-positive handling.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from hunterx.domain.javascript.models import (
@@ -263,7 +264,7 @@ class EndpointAnalyzer:
                 continue
             if _is_asset_path(value) or _has_route_params(value):
                 continue
-            key = f"path:{value}"
+            key = f"ep:{value}"
             if key in seen:
                 continue
             seen.add(key)
@@ -282,6 +283,62 @@ class EndpointAnalyzer:
                     mission_id=context.mission_id,
                 )
             )
+
+        # template-literal paths: ``${host}/api/users/${id}`` embeds the literal
+        # path ``/api/users/`` (and query templates such as ``/search?q=${q}``
+        # embed ``/search?q=``). SPA frameworks assemble API URLs this way, so a
+        # template-literal scan is required to surface REST/search endpoints that
+        # are never present as static string literals.
+        for token, value in _token_values(source, self._tokenizer, context.file):
+            for fragment in _template_path_fragments(value):
+                if not _looks_like_path(fragment) or _is_asset_path(fragment) or _has_route_params(fragment):
+                    continue
+                key = f"ep:{fragment}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                findings.append(
+                    JSEndpoint(
+                        url=fragment,
+                        method="GET",
+                        kind=EndpointKind.CUSTOM,
+                        api_type=ApiType.REST,
+                        evidence=(_evidence(source, token.offset, None, context),),
+                        confidence=0.5,
+                        source=context.source_label,
+                        tool_id=context.tool_id,
+                        target_key=context.target_key,
+                        correlation_id=context.correlation_id,
+                        mission_id=context.mission_id,
+                    )
+                )
+
+        # raw-source template-literal scan: covers templates the tokenizer
+        # desynchronisation above swallows (escaped backticks in large embedded
+        # CSS/HTML templates can consume the surrounding backticks).
+        for value, offset in _raw_template_literals(source):
+            for fragment in _template_path_fragments(value):
+                if not _looks_like_path(fragment) or _is_asset_path(fragment) or _has_route_params(fragment):
+                    continue
+                key = f"ep:{fragment}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                findings.append(
+                    JSEndpoint(
+                        url=fragment,
+                        method="GET",
+                        kind=EndpointKind.CUSTOM,
+                        api_type=ApiType.REST,
+                        evidence=(_evidence(source, offset, None, context),),
+                        confidence=0.5,
+                        source=context.source_label,
+                        tool_id=context.tool_id,
+                        target_key=context.target_key,
+                        correlation_id=context.correlation_id,
+                        mission_id=context.mission_id,
+                    )
+                )
         return findings
 
 
@@ -990,11 +1047,48 @@ def _domain_of_url(value: str) -> str:
 
 def _looks_like_path(value: str) -> bool:
     """Return ``True`` when ``value`` looks like an API/route path segment."""
-    if any(char in value for char in ("\n", "\r", " ")):
+    if any(char in value for char in ("\n", "\r", " ", "`", ",")):
         return False
     if not value.startswith("/"):
         return False
-    return len(value) > 1
+    if len(value) <= 1:
+        return False
+    # Pure-numeric segments (e.g. Angular template ``uf(``,...,``/160``)``
+    # validator length arguments) are not endpoints.
+    return not re.fullmatch(r"/[\d]+", value)
+
+
+def _template_path_fragments(value: str) -> list[str]:
+    """Return path-like fragments embedded in a template literal.
+
+    Splits on ``${...}`` expression boundaries so a template such as
+    ``${host}/api/users/${id}`` yields the literal path ``/api/users/``, and a
+    query template such as ``${host}/search?q=${q}`` yields ``/search?q=``.
+    This is how SPA frameworks assemble API/search URLs that never exist as
+    static string literals.
+    """
+    fragments: list[str] = []
+    for part in re.split(r"\$\{[^}]*\}", value or ""):
+        part = part.strip()
+        if not part.startswith("/") or part.startswith("//"):
+            continue
+        fragments.append(part)
+    return fragments
+
+
+_TEMPLATE_LITERAL = re.compile(r"`(?:[^`\\]|\\.)*`")
+
+
+def _raw_template_literals(source: str) -> list[tuple[str, int]]:
+    """Return ``(value, offset)`` for every template literal in ``source``.
+
+    The token stream is authoritative when it parses cleanly, but minified
+    bundles (large embedded CSS/HTML templates with escaped backticks) can
+    desynchronise the tokenizer so that later template literals — and the
+    API/search paths they embed — are never emitted. Scanning the raw source
+    directly is robust against that desynchronisation.
+    """
+    return [(match.group(0)[1:-1], match.start() + 1) for match in _TEMPLATE_LITERAL.finditer(source)]
 
 
 def _is_asset_path(value: str) -> bool:

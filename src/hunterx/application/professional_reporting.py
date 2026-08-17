@@ -321,7 +321,7 @@ class ProfessionalReportingService:
     def remediate(self, finding_id: str) -> dict[str, Any]:
         """Build and persist an evidence-based remediation plan."""
         record = self._get_record(finding_id)
-        root_causes = self._repo(FindingRootCause).list_by("finding_id", finding_id, limit=100)
+        root_causes = self._root_causes_for_finding(finding_id)
         root_cause_id = ""
         root_cause_desc = ""
         if root_causes:
@@ -1435,18 +1435,18 @@ class ProfessionalReportingService:
         return records[-1].score if records else 0.0
 
     def _root_cause_ids(self, finding_id: str) -> tuple[str, ...]:
-        by_field = self._repo(FindingRootCause).list_by("finding_id", finding_id, limit=1000)
-        matched = [item for item in by_field if finding_id in (item.related_finding_ids or [])]
-        if by_field or matched:
-            return tuple(item.root_cause_id for item in (matched or by_field))
-        # Fallback: scan mission-scoped root causes for membership.
+        return tuple(item.root_cause_id for item in self._root_causes_for_finding(finding_id))
+
+    def _root_causes_for_finding(self, finding_id: str) -> list[Any]:
+        """Return the root causes whose ``related_finding_ids`` include ``finding_id``.
+
+        ``FindingRootCause`` is mission-scoped: it carries ``related_finding_ids``
+        (a list) rather than a single ``finding_id`` column, so membership is
+        resolved against the owning mission and filtered in-process.
+        """
         record = self._get_record(finding_id)
         candidates = self._repo(FindingRootCause).list_by("mission_id", record.mission_id, limit=1000)
-        return tuple(
-            item.root_cause_id
-            for item in candidates
-            if finding_id in (item.related_finding_ids or [])
-        )
+        return [item for item in candidates if finding_id in (item.related_finding_ids or [])]
 
     def _pocs(self, finding_id: str) -> Sequence[Any]:
         return self._repo(FindingPoC).list_by("finding_id", finding_id, limit=1000)

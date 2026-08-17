@@ -136,7 +136,10 @@ class FakeReadinessService:
     def profile_tools(self, profile: str):
         return ("sqlmap",)
 
-    def preflight(self, capabilities, *, mission_id="", auto_provision=True):  # noqa: ANN001
+    def mission_profile_tools(self, objective: str):
+        return ()
+
+    def preflight(self, capabilities, *, mission_id="", auto_provision=True, profile_tools=()):  # noqa: ANN001
         if self._blocked:
             return PreflightResult(
                 status=PreflightStatus.BLOCKED,

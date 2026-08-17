@@ -18,15 +18,18 @@ on the JSON payload without touching the network.
 from __future__ import annotations
 
 import abc
+import time
 
 from hunterx.domain.execution import ExecutionContext, ExecutionOutput
 from hunterx.domain.javascript.analyzers import AnalyzeContext
 from hunterx.domain.javascript.models import JSAcquisition, JSAssetAnalysis, JSAssetKind, findings_from_payload
 from hunterx.domain.tools import ToolDescriptor
+from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
 from hunterx.plugins.sdk.results import EvidenceResult, FindingResult
 from hunterx.tools.adapter import ToolOutput
 from hunterx.tools.sdk.adapter import ToolAdapter
 from hunterx.tools.sdk.output import OutputCollector
+from hunterx.tools.web.httpclient import HttpPageFetcher
 
 
 class JavaScriptToolAdapter(ToolAdapter, abc.ABC):
@@ -58,12 +61,21 @@ class JavaScriptToolAdapter(ToolAdapter, abc.ABC):
         """Analyze the supplied script content and emit the JS payload."""
         params = context.parameters or {}
         source = _param_str(params.get("content"))
-        url = _param_str(params.get("url"))
+        url = _param_str(params.get("url")) or (context.target or "")
         if not source and not url:
             collector.set_exit_code(1)
             collector.attach_stderr("no script content or URL provided")
             collector.set_json({"javascript": {"analyses": []}})
             return
+        if not source and url:
+            # The mission schedules JS analysis against a discovered script
+            # asset; acquire the script content in-process (loopback-only).
+            source, ok = _fetch_script(url)
+            if not ok:
+                collector.set_exit_code(1)
+                collector.attach_stderr(f"failed to acquire script content from {url}")
+                collector.set_json({"javascript": {"analyses": []}})
+                return
         acquisition = self._acquisition(context, url)
         analyze_context = AnalyzeContext(
             file=url or "inline",
@@ -192,6 +204,36 @@ def _severity(finding: object) -> str:
             return "high" if value == "critical" else value if value != "info" else "low"
     confidence = getattr(finding, "confidence", 0) or 0
     return "medium" if confidence >= 0.9 else "low"
+
+
+def _fetch_script(url: str) -> tuple[str, bool]:
+    """Acquire script content for ``url`` (loopback-only) or return empty.
+
+    A bounded retry absorbs transient connection resets from busy local
+    servers (Juice Shop and other dev targets close idle/loaded connections
+    aggressively), so script acquisition is robust inside a mission run.
+    The retry window must be wider than the reset storm: after a heavy
+    toolchain burst (katana/arjun/nuclei) a busy server keeps resetting new
+    connections for several seconds, and a 3-attempt flat retry exhausts its
+    budget inside that window, permanently losing the asset. Five attempts
+    with linear backoff (0.5-2.5s sleeps) ride out the storm while staying
+    strictly bounded — no unbounded retry is possible.
+    """
+    if not is_loopback_target(url):
+        return "", False
+    for attempt in range(5):
+        try:
+            page = HttpPageFetcher().fetch(url)
+        except Exception:  # noqa: BLE001 - acquisition failures must never escape
+            time.sleep(0.5 * (attempt + 1))
+            continue
+        if page.status_code == 200 and page.content:
+            return page.content, True
+        if page.status_code == 200:
+            return "", False
+        # status 0 = connection/transport failure; retry against the busy server.
+        time.sleep(0.5 * (attempt + 1))
+    return "", False
 
 
 def _origin_of(url: str) -> str:

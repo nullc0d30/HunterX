@@ -59,6 +59,7 @@ _OBSERVATION_TYPE: dict[str, str] = {
     "certificate_enumeration": "dns_record",
     "endpoint_enumeration": "endpoint",
     "content_discovery": "endpoint",
+    "javascript_analysis": "javascript",
     "parameter_discovery": "parameter",
     "api_mapping": "api",
     "authentication_analysis": "auth",
@@ -91,6 +92,7 @@ _TRIGGER_BY_OBSERVATION: dict[str, ReplanTrigger] = {
     "endpoint": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "url": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "api": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
+    "javascript": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "parameter": ReplanTrigger.NEW_PARAMETER_DISCOVERED,
     "vulnerability": ReplanTrigger.NEW_HYPOTHESIS_CREATED,
 }
@@ -104,6 +106,17 @@ _CAPABILITY_BY_TRIGGER: dict[ReplanTrigger, str] = {
     ReplanTrigger.NEW_HYPOTHESIS_CREATED: "vulnerability_scanning",
 }
 
+def _as_list(value: Any) -> list[Any]:
+    """Return ``value`` as a list (single values are wrapped)."""
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    return [value]
+
+
 def _observation_id(observation: Any) -> str:
     """Return the observation id from either a model or its serialized dict."""
     if observation is None:
@@ -111,6 +124,48 @@ def _observation_id(observation: Any) -> str:
     if isinstance(observation, dict):
         return str(observation.get("observation_id") or "")
     return str(getattr(observation, "observation_id", "") or "")
+
+
+def _javascript_asset_urls(content: Any) -> list[str]:
+    """Return script asset URLs (``*.js``/``*.mjs``) from an observation payload.
+
+    Walks the discovery payload shapes (crawler ``crawl.urls`` records,
+    ``urls``/``endpoints`` lists, direct ``url`` keys) and keeps only script
+    paths — the assets the in-process javascript analysis capability should
+    mine.
+    """
+    urls: list[str] = []
+    candidates: list[str] = []
+    if isinstance(content, list):
+        candidates = [str(entry) for entry in content if entry]
+    elif isinstance(content, dict):
+        for key in ("urls", "endpoints"):
+            candidates.extend(_urls_from_entries(content.get(key)))
+        crawl = content.get("crawl")
+        if isinstance(crawl, dict):
+            candidates.extend(_urls_from_entries(crawl.get("urls")))
+    else:
+        return urls
+    for url in candidates:
+        from urllib.parse import urlsplit
+
+        try:
+            path = urlsplit(url).path
+        except (ValueError, TypeError):
+            continue
+        if path.endswith(".js") or path.endswith(".mjs"):
+            urls.append(url)
+    return list(dict.fromkeys(urls))
+
+
+def _urls_from_entries(value: Any) -> list[str]:
+    """Return the string URLs of a discovery entries list (dicts or strings)."""
+    urls: list[str] = []
+    for entry in _as_list(value):
+        item = entry.get("url") or entry.get("endpoint") if isinstance(entry, dict) else entry
+        if item:
+            urls.append(str(item).strip())
+    return urls
 
 
 #: Canonical MissionState the planning engine advances through as work is
@@ -318,6 +373,16 @@ class MissionExecutionService:
             idle = 0
             stop = self._orchestration.stop_condition(mission_id)
             if stop and stop.get("stop_condition"):
+                # A numerical coverage/completion signal must not claim
+                # completion while the plan still carries untested work
+                # (replan-scheduled discovery such as javascript analysis, or
+                # hypothesis-driven validation): keep executing until that work
+                # is discharged.
+                if (
+                    stop.get("stop_condition") in ("coverage_target_achieved", "high_value_hypotheses_resolved")
+                    and self._has_pending_plan_work(mission_id)
+                ):
+                    continue
                 break
         self._finalize_run(mission_id)
         self._record_telemetry(mission_id)
@@ -357,11 +422,20 @@ class MissionExecutionService:
         if not capabilities:
             return None
         self._preflight_capabilities = set(capabilities)
+        profile_tools: tuple[str, ...] = ()
+        try:
+            mission = self._orchestration.get(mission_id)
+            objective = getattr(getattr(mission, "mission", None), "objective", "")
+            objective_value = objective.value if hasattr(objective, "value") else str(objective or "")
+            profile_tools = tuple(readiness.mission_profile_tools(objective_value))
+        except Exception:  # noqa: BLE001 - profile resolution is best-effort
+            profile_tools = ()
         try:
             return readiness.preflight(
                 capabilities,
                 mission_id=mission_id,
                 auto_provision=auto_provision,
+                profile_tools=profile_tools,
             )
         except Exception:  # noqa: BLE001 - preflight must never crash the runner
             return None
@@ -395,6 +469,10 @@ class MissionExecutionService:
         mission = self._orchestration.get(mission_id)
         target = mission.context.target_id
         action = self._planning.get_action(mission_id, action_id)
+        # Replan actions bound to a specific asset (e.g. a discovered script
+        # URL) execute against that asset; generic chain actions (no asset) run
+        # against the mission target.
+        target = action.asset or target
         action.mark(ActionStatus.RUNNING)
 
         if not tool_id:
@@ -795,6 +873,25 @@ class MissionExecutionService:
         for action in graph.actions.values():
             self._record_coverage(mission_id, target, action.capability, "", state=CoverageState.NOT_ASSESSED)
 
+    def _has_pending_plan_work(self, mission_id: str) -> bool:
+        """Return ``True`` when the plan still holds untested discovery work.
+
+        Only non-hypothesis-bound actions count as pending discovery work
+        (replan-scheduled surface expansion such as javascript analysis, or
+        unstarted chain capabilities). Hypothesis-bound validation nodes are
+        already accounted for by the policy's open-hypothesis gates, so a
+        mission with only those left may legitimately complete.
+        """
+        try:
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        return any(
+            action.status in (ActionStatus.PROPOSED, ActionStatus.APPROVED, ActionStatus.RUNNING)
+            and not action.hypothesis_id
+            for action in graph.actions.values()
+        )
+
     def _record_coverage(
         self,
         mission_id: str,
@@ -862,9 +959,31 @@ class MissionExecutionService:
                 details.append({"hypothesis_id": hypothesis_id, "capability": "vulnerability_scanning"})
         elif new_capability:
             details = [{}]
+        graph = self._planning.get_plan(mission_id)
+        # Script assets a crawler observation surfaces (``*.js``/``*.mjs``) are
+        # scheduled for in-process javascript analysis — one action per asset —
+        # so SPA bundles are mined for API/search endpoints. This must run
+        # BEFORE the generic follow-on dedup below, which may already have the
+        # chain-scheduled capability in the graph.
+        if trigger is ReplanTrigger.NEW_ENDPOINT_DISCOVERED:
+            for js_url in _javascript_asset_urls(content):
+                if any(
+                    action.capability == "javascript_analysis" and action.asset == js_url
+                    for action in graph.actions.values()
+                ):
+                    continue
+                try:
+                    self._planning.replan_for_change(
+                        mission_id,
+                        trigger=ReplanTrigger.JAVASCRIPT_ANALYSIS,
+                        asset_key=js_url,
+                        reason=f"script asset observed from {capability}",
+                    )
+                    self._check_replanned_readiness(mission_id)
+                except Exception:  # noqa: BLE001 - replanning must never break the loop
+                    continue
         if not details:
             return
-        graph = self._planning.get_plan(mission_id)
         for detail in details:
             if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
                 # Per-hypothesis validation actions are distinct: dedup against
@@ -1148,6 +1267,8 @@ class MissionExecutionService:
             "endpoint": endpoint,
             "parameter": parameter,
             "confidence": hypothesis.confidence,
+            "observed_status": str(provenance.get("observed_status") or ""),
+            "proof_marker": str(provenance.get("proof_marker") or ""),
         }
         try:
             from hunterx.domain.vulnerability_capability.engine import VulnerabilityCapabilityEngine
@@ -1355,6 +1476,7 @@ class MissionExecutionService:
                     }
                 ],
                 provenance=f"hypothesis:{hypothesis.hypothesis_id}",
+                scope=_finding_scope_for_hypothesis(hypothesis, endpoint),
             )
         except Exception as exc:  # noqa: BLE001 - materialization is best-effort
             self._publish("finding.materialization.failed", {"mission_id": mission_id, "reason": str(exc)})
@@ -1633,6 +1755,34 @@ def _probe_response_summary(responses: list[dict[str, Any]]) -> dict[str, Any]:
             for response in (responses or [])
         ]
     }
+
+
+def _finding_scope_for_hypothesis(hypothesis: Any, endpoint: str) -> dict[str, Any] | None:
+    """Derive the finding scope from an access/response-differential hypothesis.
+
+    Carries the observed status, the proof marker and the mutation request/method
+    so the finding service can probe, verify and reproduce the bypass.
+    """
+    provenance = dict(hypothesis.provenance or {})
+    if str(provenance.get("vulnerability_class") or "") != "http-access-differential":
+        return None
+    observed_status = provenance.get("observed_status")
+    proof_marker = provenance.get("proof_marker")
+    scope: dict[str, Any] = {}
+    if observed_status:
+        scope["observed_status"] = str(observed_status)
+    if proof_marker:
+        scope["proof_marker"] = str(proof_marker)
+        try:
+            from urllib.parse import urlsplit
+
+            path = urlsplit(endpoint).path or "/"
+            scope["reproduction_request"] = f"{endpoint}{'' if endpoint.endswith('/') else '/'}"
+            scope["reproduction_method"] = "GET"
+            scope["mutation_path"] = path + "/"
+        except (ValueError, TypeError):
+            pass
+    return scope or None
 
 
 def _run_status(mission: Any, preflight: Any | None) -> str:

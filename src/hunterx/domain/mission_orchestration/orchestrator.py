@@ -1394,11 +1394,19 @@ class MissionOrchestrator:
                 proposed.append((f"{asset_key} exposes service {service}", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
         elif observation.observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
             for endpoint in _endpoint_urls(content):
+                # JS analysis surfaces relative paths (``/rest/...``) that must
+                # resolve against the mission target so downstream probes stay
+                # absolute and loopback-checkable; third-party references are
+                # not the target's attack surface and are skipped.
+                if observation.observation_type == "javascript":
+                    endpoint = _resolve_endpoint(str(endpoint), asset_key)
+                    if not endpoint or not _same_origin(endpoint, asset_key):
+                        continue
                 proposed.append((f"{endpoint} is a reachable endpoint of the target", HypothesisType.UNKNOWN_BEHAVIOR, {"endpoint": endpoint}, 0.0))
                 # Query parameters on the discovered surface drive targeted
                 # hypotheses (e.g. ``/redirect?to=`` → open redirect).
                 for parameter in _url_query_parameters(endpoint):
-                    class_id, class_priority = _class_for_parameter(parameter)
+                    class_id, class_priority = _class_for_surface(parameter)
                     if not class_id:
                         continue
                     proposed.append(
@@ -1413,12 +1421,12 @@ class MissionOrchestrator:
             proposed.append((f"{asset_key} is part of the target's attack surface", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
         elif observation.observation_type == "parameter":
             parameters = [
-                str(parameter)
+                str(parameter).strip()
                 for parameter in _as_list(content.get("parameters") or [content.get("parameter")])
-                if str(parameter).strip()
+                if parameter is not None and str(parameter).strip()
             ]
             for parameter in parameters:
-                class_id, class_priority = _class_for_parameter(parameter)
+                class_id, class_priority = _class_for_surface(parameter)
                 if not class_id:
                     continue
                 proposed.append(
@@ -1483,7 +1491,7 @@ class MissionOrchestrator:
             parameter = str(param_entry.get("parameter") or "")
             if not endpoint or not parameter:
                 continue
-            class_id, class_priority = _class_for_parameter(parameter)
+            class_id, class_priority = _class_for_surface(parameter)
             if not class_id:
                 continue
             statement = f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}"
@@ -1494,6 +1502,33 @@ class MissionOrchestrator:
                     {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
                     class_priority,
                 )
+            )
+        # Restricted/error HTTP statuses on discovered endpoints are candidate
+        # access-control / routing / proxy discrepancies: a 401/402/403/404/
+        # 405/502 response marks a resource that may be reachable through an
+        # alternate representation. The hypothesis describes the potential
+        # discrepancy (never "got a status code"), and the capability probe
+        # independently confirms meaningful access or honestly refutes it.
+        for endpoint_entry in mission.context.endpoints.values():
+            if not isinstance(endpoint_entry, dict):
+                continue
+            endpoint = str(endpoint_entry.get("key") or "")
+            status = endpoint_entry.get("status")
+            if not endpoint or status not in (401, 402, 403, 404, 405, 502):
+                continue
+            statement = (
+                f"The resource on {endpoint} returned {status} and may be reachable "
+                f"through an alternate representation (access-control/routing/proxy discrepancy)"
+            )
+            extra: dict[str, Any] = {
+                "vulnerability_class": "http-access-differential",
+                "endpoint": endpoint,
+                "observed_status": int(status),
+            }
+            if endpoint_entry.get("proof_marker"):
+                extra["proof_marker"] = str(endpoint_entry["proof_marker"])
+            proposed.append(
+                (statement, HypothesisType.AUTHORIZATION_ISSUE, extra, 0.7)
             )
         for statement, category, provenance_extra, explicit_priority in proposed:
             if self._has_open_hypothesis(
@@ -1587,10 +1622,27 @@ class MissionOrchestrator:
                 url = str(entry.get("asset") or entry.get("url") or "").strip()
                 if url:
                     endpoints.append(url)
+            status = content.get("status_code") if isinstance(content, dict) else None
+            proof_marker = content.get("proof_marker") if isinstance(content, dict) else None
             for endpoint in endpoints:
                 if not str(endpoint).strip():
                     continue
-                mission.context.endpoints[f"endpoint:{endpoint}"] = {"key": str(endpoint), "content": content}
+                # JS analysis surfaces relative paths (``/rest/...``) that must
+                # resolve against the mission target so downstream probes stay
+                # absolute and loopback-checkable. Third-party references a JS
+                # bundle embeds (SoundCloud embeds, public RPC endpoints, SVG
+                # namespaces, ...) are NOT the target's attack surface and are
+                # skipped.
+                if observation_type == "javascript":
+                    endpoint = _resolve_endpoint(str(endpoint), mission.context.target_id)
+                    if not endpoint or not _same_origin(endpoint, mission.context.target_id):
+                        continue
+                entry: dict[str, Any] = {"key": str(endpoint), "content": content}
+                if status is not None:
+                    entry["status"] = int(status)
+                if proof_marker:
+                    entry["proof_marker"] = str(proof_marker)
+                mission.context.endpoints[f"endpoint:{endpoint}"] = entry
                 # Query parameters on the discovered URL become parameter
                 # context so downstream capabilities can target them.
                 for parameter in _url_query_parameters(str(endpoint)):
@@ -1599,10 +1651,13 @@ class MissionOrchestrator:
                         "parameter": parameter,
                     }
         elif observation_type == "parameter":
+            raw = content.get("parameters")
+            if raw is None:
+                raw = content.get("parameter")
             parameters = [
-                str(parameter)
-                for parameter in _as_list(content.get("parameters") or [content.get("parameter")])
-                if str(parameter).strip()
+                str(parameter).strip()
+                for parameter in _as_list(raw)
+                if parameter is not None and str(parameter).strip()
             ]
             for parameter in parameters:
                 mission.context.parameters[f"param:{asset_key}:{parameter}"] = {
@@ -1900,6 +1955,23 @@ def _class_for_parameter(name: str) -> tuple[str, float]:
     return "", 0.0
 
 
+def _class_for_surface(name: str) -> tuple[str, float]:
+    """Return the class a discovered input should be probed for.
+
+    A named parameter maps to its semantic class (``q`` → SQL injection,
+    ``cmd`` → command injection, ...). An unclassified discovered input is a
+    candidate *reflection* surface and therefore derives a cross-site scripting
+    hypothesis: the XSS capability independently probes for unescaped
+    reflection, so a non-reflecting input is honestly contradicted rather than
+    ever flagged. This is the attack-surface → XSS derivation — it is driven by
+    actual discovered parameters, never by a hardcoded endpoint.
+    """
+    class_id, priority = _class_for_parameter(name)
+    if class_id:
+        return class_id, priority
+    return "xss", 0.6
+
+
 def _is_ipv4(value: str) -> bool:
     """Return ``True`` when ``value`` is an IPv4 literal."""
     import ipaddress
@@ -1907,6 +1979,35 @@ def _is_ipv4(value: str) -> bool:
     try:
         ipaddress.IPv4Address(value)
         return True
+    except (ValueError, TypeError):
+        return False
+
+
+def _resolve_endpoint(url: str, target: str) -> str:
+    """Resolve a relative endpoint against the mission target origin.
+
+    In-process javascript analysis yields relative paths (``/rest/...``) that
+    must become absolute loopback URLs before they are probed. Already-absolute
+    URLs (other origins, absolute links) pass through untouched.
+    """
+    from urllib.parse import urljoin, urlsplit
+
+    if not url or not target:
+        return ""
+    try:
+        if urlsplit(url).scheme:
+            return url
+        return urljoin(target, url)
+    except (ValueError, TypeError):
+        return ""
+
+
+def _same_origin(url: str, target: str) -> bool:
+    """Return ``True`` when ``url`` shares the scheme+netloc of ``target``."""
+    from urllib.parse import urlsplit
+
+    try:
+        return urlsplit(url)[:2] == urlsplit(target)[:2]
     except (ValueError, TypeError):
         return False
 
@@ -1925,7 +2026,10 @@ def _url_query_parameters(url: str) -> list[str]:
         query = urlsplit(url).query
     except (ValueError, TypeError):
         return []
-    return [str(name) for name, _ in parse_qsl(query) if str(name).strip()]
+    # ``keep_blank_values`` keeps parameters whose value is empty (e.g. a JS
+    # template ``?q=${expr}`` records ``q`` with an empty placeholder value) —
+    # the parameter name is real surface regardless of the recorded value.
+    return [str(name) for name, _ in parse_qsl(query, keep_blank_values=True) if str(name).strip()]
 
 
 def _endpoint_urls(content: Any) -> list[str]:
@@ -1944,6 +2048,15 @@ def _endpoint_urls(content: Any) -> list[str]:
         crawl = content.get("crawl")
         if isinstance(crawl, dict):
             entries.extend(_as_list(crawl.get("urls")))
+        # In-process javascript analysis payload: ``{"javascript": {"analyses": [
+        #   {"endpoints": [{"url": ...}, ...], ...}, ...]}}``.
+        javascript = content.get("javascript")
+        if isinstance(javascript, dict):
+            for analysis in _as_list(javascript.get("analyses")):
+                if not isinstance(analysis, dict):
+                    continue
+                for key in ("endpoints", "routes"):
+                    entries.extend(_as_list(analysis.get(key)))
         for key in ("endpoint", "url"):
             value = content.get(key)
             if value:
@@ -2268,7 +2381,7 @@ def _category_for_template(template: str) -> HypothesisType:
         return HypothesisType.SECRET_EXPOSURE
     if "auth" in name:
         return HypothesisType.AUTHENTICATION_ISSUE
-    if "authorization" in name:
+    if "authorization" in name or "access" in name:
         return HypothesisType.AUTHORIZATION_ISSUE
     if "api" in name:
         return HypothesisType.API_SECURITY
