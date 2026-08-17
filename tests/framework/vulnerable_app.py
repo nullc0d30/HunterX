@@ -30,7 +30,7 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlsplit(self.path)
         params = {key: values[0] for key, values in parse_qs(parsed.query).items()}
-        value = params.get("q") or params.get("name") or params.get("file") or params.get("cmd") or params.get("id") or params.get("url") or ""
+        value = params.get("q") or params.get("name") or params.get("file") or params.get("cmd") or params.get("id") or params.get("url") or params.get("msg") or ""
         path = parsed.path
         self._dispatch(path, value, headers=self.headers)
 
@@ -48,6 +48,12 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
         elif path == "/vuln/echo":
             self._xss(value, vulnerable=True)
         elif path == "/safe/echo":
+            self._xss(value, vulnerable=False)
+        elif path == "/vuln/reflect":
+            # Generic reflection surface for an unclassified parameter: the
+            # input is reflected unescaped (XSS reflection signal).
+            self._xss(value, vulnerable=True)
+        elif path == "/safe/reflect":
             self._xss(value, vulnerable=False)
         elif path == "/vuln/greet":
             self._ssti(value, vulnerable=True)
@@ -123,6 +129,49 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
             self._cloud(vulnerable=False)
         elif path.startswith("/callback-"):
             self._respond(200, f"ssrf-callback:{path[10:]}")
+        # -- HTTP access / response differential fixtures --------------------
+        # 403/authorization bypass: the protected resource is restricted on its
+        # canonical path but served via an alternate (normalized) representation.
+        elif path in ("/protected", "/protected/", "/protected/.", "/protected/./"):
+            self._protected_bypass(path)
+        elif path in ("/safe/protected", "/safe/protected/", "/safe/protected/."):
+            self._respond(403, "forbidden")
+        # 404/hidden-resource bypass: the hidden resource is only served via an
+        # alternate representation.
+        elif path in ("/hidden", "/hidden/", "/hidden/.", "/hidden/./"):
+            self._hidden_bypass(path)
+        elif path in ("/safe/hidden", "/safe/hidden/", "/safe/hidden/."):
+            self._respond(404, "not found")
+        # Negative fixtures: status/length changes WITHOUT meaningful access.
+        elif path in ("/statusbypass", "/statusbypass/"):
+            if path == "/statusbypass/":
+                self._respond(200, "ok")
+            else:
+                self._respond(403, "forbidden")
+        elif path in ("/lengthonly", "/lengthonly/"):
+            if path == "/lengthonly/":
+                self._respond(200, "forbidden but this is a longer generic message body")
+            else:
+                self._respond(403, "forbidden")
+        elif path in ("/error", "/error/", "/error/."):
+            if path == "/error":
+                self._respond(502, "bad gateway")
+            else:
+                self._respond(503, "bad gateway variant")
+        else:
+            self._respond(404, "not found")
+
+    # -- HTTP access / response differential handlers ------------------------
+
+    def _protected_bypass(self, path: str) -> None:
+        if path in ("/protected/", "/protected/.", "/protected/./"):
+            self._respond(200, "PROTECTED hxbypass_protected role=admin data=classified")
+        else:
+            self._respond(403, "forbidden")
+
+    def _hidden_bypass(self, path: str) -> None:
+        if path in ("/hidden/", "/hidden/.", "/hidden/./"):
+            self._respond(200, "HIDDEN hxbypass_hidden flag=supersecret")
         else:
             self._respond(404, "not found")
 

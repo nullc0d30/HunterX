@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 
+from hunterx.application.professional_reporting import ProfessionalReportingService
 from hunterx.domain.entities.tidb.finding_orchestration import (
     FindingRootCause,
 )
@@ -213,6 +214,62 @@ def test_duplicate_root_cause_one_root_cause_many_locations() -> None:
     correlation = service.finding_correlation(report["report_id"])
     assert correlation["root_cause_groups"] == [root.root_cause_id]
     assert any(relation["relation"] == "finding->asset" for relation in correlation["relations"])
+
+
+def test_generate_report_with_sql_backed_root_cause() -> None:
+    """Regression: ``generate_report`` must not fail on the SQL-backed store.
+
+    ``FindingRootCause`` is mission-scoped (it carries ``related_finding_ids``,
+    not a single ``finding_id`` column); the reporting service must resolve
+    membership via mission + ``related_finding_ids`` instead of querying a
+    nonexistent column (which the SQL repository rejects).
+    """
+    pytest.importorskip("sqlalchemy")
+    from hunterx.config.settings import DatabaseSettings
+    from hunterx.infrastructure.db.sql.crud import SqlTidbRepositoryFactory
+    from hunterx.infrastructure.db.sql.factory import SessionFactory
+    from hunterx.infrastructure.event_bus import InMemoryEventBus
+    from hunterx.reporting.exporter import ReportExporter
+
+    factory = SessionFactory(DatabaseSettings(url="sqlite:///:memory:"))
+    factory.create_all()
+    try:
+        stores = SqlTidbRepositoryFactory(factory)
+        service = ProfessionalReportingService(
+            stores=stores,
+            event_bus=InMemoryEventBus(),
+            exporter=ReportExporter(),
+        )
+        finding_id = create_finding(stores, _reportable_scenario())
+        root = FindingRootCause(
+            root_cause_id=generate_id(),
+            mission_id="mission-1",
+            related_finding_ids=[finding_id],
+            affected_assets=["app.example.com"],
+            description="shared root cause",
+            evidence_ids=[],
+        )
+        stores.repository_for(FindingRootCause).save(root)
+
+        remediation = service.remediate(finding_id)
+        assert remediation is not None
+        assert remediation.get("root_cause_id") == root.root_cause_id
+
+        report = service.generate_report(finding_id, template="bug_bounty")
+        assert report["status"] == "report_generated"
+        assert root.root_cause_id in report["root_causes"]
+        # Required report content for exactly the validated finding.
+        intelligence = report["intelligence"]
+        assert intelligence["vulnerability_class"] == _reportable_scenario()["vulnerability_class"]
+        assert intelligence["target_id"] == "https://app.example.com/login"
+        assert report["evidence_bundle"]["artifacts"]
+        assert report["impact"]
+        assert intelligence["confidence"]
+        assert report["poc"]
+        assert report["remediation"]["root_cause_id"] == root.root_cause_id
+        assert report["executive_summary"]["finding_count"] == 1
+    finally:
+        factory.dispose()
 
 
 def test_retest_lifecycle_fix_verified_evidence_retained() -> None:

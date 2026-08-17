@@ -606,6 +606,7 @@ CAPABILITY_PROVIDERS: dict[str, tuple[str, ...]] = {
     "certificate_enumeration": ("findomain",),
     "endpoint_enumeration": ("httpx", "katana", "gospider", "hakrawler", "gau", "waybackurls"),
     "content_discovery": ("katana", "ffuf", "gobuster", "feroxbuster", "dirsearch"),
+    "javascript_analysis": ("javascript", "linkfinder", "xnlinkfinder"),
     "parameter_discovery": ("arjun", "paramspider", "ffuf"),
     "api_mapping": ("katana", "kiterunner"),
     "authentication_analysis": ("httpx", "nuclei"),
@@ -641,6 +642,7 @@ CAPABILITY_LEVELS: dict[str, CapabilityLevel] = {
     "certificate_enumeration": CapabilityLevel.OPTIONAL,
     "endpoint_enumeration": CapabilityLevel.REQUIRED,
     "content_discovery": CapabilityLevel.REQUIRED,
+    "javascript_analysis": CapabilityLevel.RECOMMENDED,
     "parameter_discovery": CapabilityLevel.REQUIRED,
     "api_mapping": CapabilityLevel.OPTIONAL,
     "authentication_analysis": CapabilityLevel.RECOMMENDED,
@@ -753,6 +755,25 @@ def install_methods_for(tool_id: str, platform: PlatformInfo) -> tuple[InstallMe
     )
 
 
+#: Tools each mission objective ("selected assessment profile") explicitly
+#: relies on. These are the tools the preflight provisions when absent, even if
+#: a REQUIRED capability could fall back to a different provider — so the
+#: profile's intended toolchain is available before the mission depends on it.
+#: Tools NOT listed here stay globally-optional: they are only provisioned when
+#: a REQUIRED capability has no other available provider.
+MISSION_PROFILE_TOOLS: dict[str, tuple[str, ...]] = {
+    "attack_surface_discovery": ("subfinder", "dnsx", "nmap", "httpx", "whatweb", "katana"),
+    "bug_bounty_assessment": ("httpx", "katana", "ffuf", "arjun", "nuclei"),
+    "web_security_assessment": ("httpx", "katana", "ffuf", "arjun", "nuclei", "whatweb"),
+    "api_security_assessment": ("httpx", "katana", "arjun", "nuclei"),
+    "pentest_assessment": ("httpx", "katana", "ffuf", "arjun", "nuclei"),
+    "vulnerability_discovery": ("httpx", "katana", "whatweb", "nuclei", "osv-scanner"),
+    "finding_validation": ("nuclei", "proof-replay"),
+    "proof_collection": ("proof-replay",),
+    "red_team_simulation": ("httpx", "nuclei"),
+    "target_monitoring": ("subfinder", "whatweb", "httpx"),
+}
+
 #: Tools HunterX publicly claims to integrate (the supported external toolchain).
 #: The integration audit and CI completeness gate are enforced against this set.
 CLAIMED_EXTERNAL_TOOLS: tuple[str, ...] = (
@@ -771,6 +792,7 @@ __all__ = [
     "CLAIMED_EXTERNAL_TOOLS",
     "INPROCESS_TOOLS",
     "INSTALL_METHODS",
+    "MISSION_PROFILE_TOOLS",
     "PROFILES",
     "PROFILE_TOOLS",
     "TOOL_BINARY_SPECS",

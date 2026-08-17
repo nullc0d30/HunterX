@@ -88,6 +88,8 @@ class ReplanningEngine:
             changes = self._on_new_technology(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.NEW_ENDPOINT_DISCOVERED:
             changes = self._on_new_endpoint(graph, signal, mission_id)
+        elif signal.trigger is ReplanTrigger.JAVASCRIPT_ANALYSIS:
+            changes = self._on_javascript_analysis(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
             changes = self._on_new_hypothesis(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.CONFLICTING_EVIDENCE:
@@ -231,6 +233,27 @@ class ReplanningEngine:
                 action_id=params.action_id,
                 node=params,
                 reason="new endpoint discovered; schedule parameter discovery",
+            )
+        ]
+
+    def _on_javascript_analysis(self, graph: AdaptiveExecutionGraph, signal: ReplanSignal, mission_id: str) -> list[PlanDeltaChange]:
+        asset = signal.asset_key or "asset"
+        node = ActionNode(
+            mission_id=mission_id,
+            action_type=ActionType.DISCOVER_PARAMETERS,
+            asset=asset,
+            capability="javascript_analysis",
+            expected_information_gain=0.7,
+            expected_evidence=(f"evidence:javascript_analysis:{asset}",),
+            status=ActionStatus.PROPOSED,
+            provenance={"source": "replan", "trigger": signal.trigger.value},
+        )
+        return [
+            PlanDeltaChange(
+                kind=PlanDeltaKind.ADD_ACTION,
+                action_id=node.action_id,
+                node=node,
+                reason="script asset discovered; schedule javascript analysis",
             )
         ]
 

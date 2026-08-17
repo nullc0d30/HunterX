@@ -103,6 +103,22 @@ class TestAdapter:
         adapter.run(_context(content="", url=""), collector)
         assert collector.build().exit_code != 0
 
+    def test_endpoint_extraction_deduplicates_and_filters_junk(self) -> None:
+        adapter = JavaScriptAnalyzerAdapter()
+        collector = OutputCollector()
+        source = (
+            "const a = this.http.get(`/api/Feedbacks`);"
+            "const b = this.http.get(`/api/Feedbacks`);"
+            "const c = this.http.get(`${this.host}/rest/products/search?q=${e}`);"
+            "const d = this.http.get(`/160`);"
+        )
+        adapter.run(_context(content=source, url="https://example.com/app.js"), collector)
+        endpoints = [ep["url"] for ep in _analyses(collector)[0]["endpoints"]]
+        assert len(endpoints) == len(set(endpoints)), "identical endpoints must be emitted once"
+        assert endpoints.count("/api/Feedbacks") == 1
+        assert "/rest/products/search?q=" in endpoints
+        assert not any(ep.startswith("/160") for ep in endpoints), "pure-numeric validator args are not endpoints"
+
 
 class TestRegistry:
     def test_factory_builds_one_adapter(self) -> None:

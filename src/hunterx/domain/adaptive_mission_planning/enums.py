@@ -187,6 +187,7 @@ class ReplanTrigger(StrEnum):
     NEW_TECHNOLOGY_DISCOVERED = "new_technology_discovered"
     NEW_ENDPOINT_DISCOVERED = "new_endpoint_discovered"
     NEW_PARAMETER_DISCOVERED = "new_parameter_discovered"
+    JAVASCRIPT_ANALYSIS = "javascript_analysis"
     NEW_HYPOTHESIS_CREATED = "new_hypothesis_created"
     HYPOTHESIS_CONFIDENCE_CHANGED = "hypothesis_confidence_changed"
     CONFLICTING_EVIDENCE = "conflicting_evidence"

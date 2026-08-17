@@ -96,11 +96,16 @@ class MissionPreflight:
         mission_id: str = "",
         auto_provision: bool = True,
         provisioner: Any | None = None,
+        profile_tools: tuple[str, ...] = (),
     ) -> PreflightResult:
         """Compute the preflight verdict for ``capabilities``.
 
         ``readiness`` is a :class:`ToolReadinessService` used to probe tools
-        and (optionally) provision missing providers.
+        and (optionally) provision missing providers. ``profile_tools`` are the
+        tools the selected assessment profile explicitly relies on; when
+        ``auto_provision`` is enabled they are provisioned before the mission
+        is allowed to depend on them (independent of per-capability fallbacks),
+        while tools outside the profile stay globally-optional.
 
         Returns:
             :class:`PreflightResult` — the mission may execute when
@@ -129,26 +134,45 @@ class MissionPreflight:
             and not any(tool_id in available for tool_id in self._resolver.providers_for(capability))
         ]
 
-        if required_missing and auto_provision and provisioner is not None:
-            provision_attempted = True
-            for capability in required_missing:
-                for tool_id in self._resolver.providers_for(capability):
-                    if tool_id in available:
-                        continue
-                    definition = readiness.definition(tool_id)
-                    if definition is None:
-                        continue
-                    outcome = provisioner.install(definition, verify=True)
-                    if outcome.success and outcome.skipped:
-                        available.add(tool_id)
-                        continue
-                    if outcome.success:
+        if auto_provision and provisioner is not None:
+            # 1. Provision REQUIRED-level capabilities that have no provider.
+            if required_missing:
+                provision_attempted = True
+                for capability in required_missing:
+                    for tool_id in self._resolver.providers_for(capability):
+                        if tool_id in available:
+                            continue
+                        definition = readiness.definition(tool_id)
+                        if definition is None:
+                            continue
+                        outcome = provisioner.install(definition, verify=True)
+                        if outcome.success and outcome.skipped:
+                            available.add(tool_id)
+                            continue
+                        if outcome.success:
+                            provisioned.append(tool_id)
+                            available.add(tool_id)
+                        else:
+                            provision_failures.append(tool_id)
+                        if tool_id in available:
+                            break
+            # 2. Provision the tools the selected profile explicitly relies
+            #    on (e.g. katana/nuclei for a web profile) even when the
+            #    capability could fall back to another provider.
+            for tool_id in profile_tools:
+                if tool_id in available:
+                    continue
+                definition = readiness.definition(tool_id)
+                if definition is None:
+                    continue
+                provision_attempted = True
+                outcome = provisioner.install(definition, verify=True)
+                if outcome.success:
+                    if tool_id not in provisioned:
                         provisioned.append(tool_id)
-                        available.add(tool_id)
-                    else:
-                        provision_failures.append(tool_id)
-                    if tool_id in available:
-                        break
+                    available.add(tool_id)
+                elif tool_id not in provision_failures:
+                    provision_failures.append(tool_id)
 
         required_missing = [
             capability

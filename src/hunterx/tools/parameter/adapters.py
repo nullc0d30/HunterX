@@ -11,18 +11,28 @@ shared runner seam and emit canonical parameter records.
 
 from __future__ import annotations
 
+import contextlib
 import json
+import os
 import re
+import tempfile
 from typing import Any
 
 from hunterx.domain.execution import ExecutionContext
 from hunterx.domain.tools import ToolDescriptor
 from hunterx.tools.parameter.base import ParameterToolAdapter
-from hunterx.tools.recon.runner import CommandResult
+from hunterx.tools.recon.runner import BinaryRunner, CommandResult
 
 _ARJUN_VERSION = "2.2.6"
 _PARAMSPIDER_VERSION = "1.0.0"
 _KITERUNNER_VERSION = "1.0.0"
+
+
+def _arjun_uid() -> str:
+    """Return a short unique suffix for an arjun temp report file."""
+    import uuid
+
+    return uuid.uuid4().hex[:8]
 
 #: Matches ``name=value`` pairs inside discovered URLs.
 _PARAM_RE = re.compile(r"[?&]([A-Za-z0-9_\-\.\[\]]+)=([^&#]*)")
@@ -32,6 +42,10 @@ _ARJUN_KEY_RE = re.compile(r'^"([^"]+)"\s*:\s*(\[.*\])$')
 
 class ArjunAdapter(ParameterToolAdapter):
     """SDK adapter for ``arjun`` HTTP parameter discovery."""
+
+    #: Arjun's CLI contract is verified by running its actual invocation (the
+    #: health check catches a broken command even when the binary is installed).
+    INVOCATION_VERIFIABLE = True
 
     descriptor = ToolDescriptor(
         name="arjun",
@@ -48,9 +62,25 @@ class ArjunAdapter(ParameterToolAdapter):
         },
     )
 
+    def __init__(self, runner: BinaryRunner | None = None) -> None:
+        super().__init__(runner=runner)
+        self._json_path: str = ""
+
     def build_argv(self, context: ExecutionContext) -> list[str]:
-        """Build argv."""
-        argv = ["arjun", "-u", context.target, "-oJ", "-q"]
+        """Build argv.
+
+        ``-oJ`` is arjun's documented JSON-output flag and REQUIRES a file
+        argument (``arjun -h``: ``-o, -oJ JSON_FILE``); without it arjun exits
+        with an argparse usage error. Arjun writes its JSON parameter report to
+        that file (``-q`` silences the progress), and the adapter reads it back
+        in :meth:`parse_output`.
+        """
+        if not self._json_path:
+            self._json_path = os.path.join(
+                tempfile.gettempdir(),
+                f"hunterx-arjun-{context.correlation_id or context.execution_id or _arjun_uid()}.json",
+            )
+        argv = ["arjun", "-u", context.target, "-oJ", self._json_path, "-q"]
         method = str(context.parameters.get("method") or "GET").upper()
         if method == "POST":
             argv.append("-m")
@@ -66,6 +96,12 @@ class ArjunAdapter(ParameterToolAdapter):
     def parse_output(self, context: ExecutionContext, result: CommandResult) -> list[dict[str, Any]]:
         """Parse output."""
         records: list[dict[str, Any]] = []
+        payload = self._read_json_report()
+        if isinstance(payload, dict):
+            records = self._records_from_dict(payload, context, from_file=True)
+            if records:
+                return records
+        # stdout fallback: arjun JSON dict or per-line ``name: [values]``.
         text = result.stdout
         if not text.strip():
             return records
@@ -74,17 +110,59 @@ class ArjunAdapter(ParameterToolAdapter):
         except (json.JSONDecodeError, TypeError, ValueError):
             payload = None
         if isinstance(payload, dict):
-            for name, values in payload.items():
-                if not isinstance(name, str):
-                    continue
-                records.append(_parameter_record(name, values, context, method=str(context.parameters.get("method") or "GET")))
-            return records
-        # Arjun also prints a per-line ``name: [values]`` summary.
+            records = self._records_from_dict(payload, context, from_file=False)
+            if records:
+                return records
         for line in text.splitlines():
             match = _ARJUN_KEY_RE.match(line.strip())
             if match:
                 records.append(_parameter_record(match.group(1), match.group(2), context, method="GET"))
         return records
+
+    @staticmethod
+    def _records_from_dict(
+        payload: dict[str, Any], context: ExecutionContext, *, from_file: bool
+    ) -> list[dict[str, Any]]:
+        """Extract parameter records from either arjun report shape.
+
+        * JSON report file (``-oJ``): ``{url: {headers, method, params: [..]}}``.
+        * stdout JSON: ``{parameter_name: [values, ...]}``.
+        """
+        records: list[dict[str, Any]] = []
+        for key, value in payload.items():
+            if isinstance(value, dict) and from_file:
+                for name in value.get("params") or ():
+                    if not isinstance(name, str) or not name:
+                        continue
+                    records.append(
+                        _parameter_record(
+                            name,
+                            [],
+                            context,
+                            endpoint=str(key or context.target),
+                            method=str(value.get("method") or context.parameters.get("method") or "GET"),
+                        )
+                    )
+            elif isinstance(value, list) and isinstance(key, str):
+                records.append(_parameter_record(key, value, context, method="GET"))
+        return records
+
+    def cleanup(self, context: ExecutionContext) -> None:
+        """Remove the temporary arjun JSON report file."""
+        if self._json_path:
+            with contextlib.suppress(OSError):
+                os.remove(self._json_path)
+            self._json_path = ""
+
+    def _read_json_report(self) -> dict[str, Any] | None:
+        """Return the parsed arjun JSON report, or ``None`` when absent."""
+        if not self._json_path or not os.path.exists(self._json_path):
+            return None
+        try:
+            with open(self._json_path, encoding="utf-8") as handle:
+                return json.load(handle)
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
+            return None
 
 
 class ParamspiderAdapter(ParameterToolAdapter):

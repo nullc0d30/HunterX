@@ -152,7 +152,7 @@
         "validation": "sufficient_for_validation"
       },
       "expected_state": "validated",
-      "expected_confidence_level": "low"
+      "expected_confidence_level": "medium"
     },
     {
       "id": "lfi_resource_access",
@@ -514,3 +514,4 @@
     }
   ]
 }
+
