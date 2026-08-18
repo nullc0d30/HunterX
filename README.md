@@ -23,7 +23,7 @@ assessment** and **professional reporting** into a single workflow.
 [![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/r/nullc0d30/hunterx)
 [![PyPI](https://img.shields.io/pypi/v/hunterxsec?style=flat-square&logo=pypi&label=pypi)](https://pypi.org/project/hunterxsec/)
 [![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
-[![Listed in Awesome Red Teaming](https://img.shields.io/badge/Awesome%20Red%20Teaming-Listed-informational?style=for-the-badge)](https://github.com/0xMrNiko/Awesome-Red-Teaming)
+[![Listed in Awesome Red Teaming](https://img.shields.io/badge/Awesome%20Red%20Teaming-Listed-informational?style=for-the-badge)](https://github.com/0xMrNiko/Awesome-Red-Teaming?style=flat-square)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
 
 **Less noise. More verified findings.**
