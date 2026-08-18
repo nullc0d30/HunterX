@@ -24,6 +24,8 @@ assessment** and **professional reporting** into a single workflow.
 [![PyPI](https://img.shields.io/pypi/v/hunterxsec?style=flat-square&logo=pypi&label=pypi)](https://pypi.org/project/hunterxsec/)
 [![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
 [![Awesome Red Teaming](https://img.shields.io/badge/Awesome%20Red%20Teaming-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/0xMrNiko/Awesome-Red-Teaming)
+[![Awesome AI in Cybersecurity](https://img.shields.io/badge/Awesome%20AI%20in%20Cybersecurity-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/ElNiak/awesome-ai-cybersecurity)
+[![Awesome AI for Security](https://img.shields.io/badge/Awesome%20AI%20for%20Security-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/AmanPriyanshu/Awesome-AI-For-Security)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
 
 **Less noise. More verified findings.**
