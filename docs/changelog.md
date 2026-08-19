@@ -10,6 +10,19 @@ description: >-
 
 > Full changelog maintained at [CHANGELOG.md](https://github.com/nullc0d30/HunterX/blob/main/CHANGELOG.md).
 
+## Unreleased
+
+- **AI provider/model routing closure** — runtime adapters for OpenAI,
+  Anthropic/Claude, DeepSeek, OpenRouter, Google Gemini and xAI/Grok behind the
+  generic AI interface, with independent provider/model selection and truthful
+  provider errors
+- **Generic HTTP access/status differential** capability through the finding
+  lifecycle, with status-only changes never promoted
+- **Authenticated CLI missions** — session propagation into discovery/probes/tools
+  and truthful rejection of failed login redirects
+- **Autonomous mission lifecycle closure** — continuation past the first finding,
+  zero-finding honesty, artifact reconciliation and a secret-free event stream
+
 ## v7.0.0 (2026-08-12)
 
 ### Major Features

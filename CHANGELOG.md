@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- Multi-provider AI routing closure: runtime adapters for OpenAI, Anthropic/Claude,
+  DeepSeek, OpenRouter, Google Gemini and xAI/Grok behind the existing generic
+  `AIPort` abstraction — shared OpenAI-compatible transport where appropriate,
+  native wire formats for Anthropic and Gemini, independent provider/model
+  selection, per-provider API endpoints and credentials, truthful provider
+  errors (auth, payment, invalid model, rate limit, outage, timeout) and no
+  silent provider/model fallback
+- Generic HTTP status/access-control differential capability
+  (`http-access-differential`) through the existing capability engine, finding
+  bridge and REPORT_READY lifecycle, with status-only changes never promoted
+- Authenticated CLI missions: generic session establishment, session propagation
+  into discovery/probes/tools, truthful rejection of failed login redirects
+- Finding-service bridge verified through the real CLI mission path (validated →
+  evidence → reproduction → PoC → replay → proved → REPORT_READY)
+- Full autonomous mission lifecycle closure: continuation past the first
+  validated finding, zero-finding honesty, artifact reconciliation
+  (report.txt / results.json / events.jsonl) and a secret-free event stream
+
+### Fixed
+- A failed login POST that 302-redirects to the login page (with a fresh session
+  id) is no longer misjudged as an established session
+- CLI event recorder now includes masked `auth.*` session events in events.jsonl
+- ffuf adapter fails closed on a missing wordlist instead of emitting an invalid
+  `-w ''` invocation
+
+---
+
 ## [7.0.0] — 2026-08-12
 
 ### Added
