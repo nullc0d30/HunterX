@@ -196,8 +196,14 @@ class SQLmapAdapter(VulnerabilityScanAdapter):
 
     def build_argv(self, context: ExecutionContext) -> list[str]:
         """Build argv."""
+        from hunterx.tools.headers import header_args
+
         target = str(context.parameters.get("url") or context.target)
         argv = ["sqlmap", "-u", target, "--batch"]
+        header_argv = header_args(context)
+        if header_argv:
+            values = [header_argv[i + 1] for i in range(0, len(header_argv), 2)]
+            argv += ["--headers", ", ".join(values)]
         data = context.parameters.get("data")
         if isinstance(data, str) and data:
             argv += ["--data", data]

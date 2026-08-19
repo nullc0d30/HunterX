@@ -69,6 +69,8 @@ class HttpxAdapter(TechToolAdapter):
 
     def build_argv(self, context: ExecutionContext) -> list[str]:
         """Build the ``httpx`` command line for ``context``."""
+        from hunterx.tools.headers import header_args
+
         argv = [
             "httpx",
             "-u",
@@ -78,6 +80,7 @@ class HttpxAdapter(TechToolAdapter):
             "-silent",
             "-no-fallback",
         ]
+        argv.extend(header_args(context))
         if self._param_bool(context, "cdn", True):
             argv.append("-cdn")
         if self._param_bool(context, "tls_grab", True):

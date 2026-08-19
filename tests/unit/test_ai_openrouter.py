@@ -18,11 +18,11 @@ from hunterx.infrastructure.ai import OpenRouterClient
 class _FakeResponse:
     def __init__(self, payload: object, *, status: int = 200) -> None:
         self._payload = payload
-        self._status = status
+        self.status_code = status
 
     def raise_for_status(self) -> None:
-        if self._status >= 400:
-            raise RuntimeError(f"HTTP {self._status}")
+        if self.status_code >= 400:
+            raise RuntimeError(f"HTTP {self.status_code}")
 
     def json(self) -> object:
         return self._payload
@@ -101,11 +101,26 @@ class TestSecurity:
         assert "sk-test-key" not in rendered
         assert "api_key" in rendered
 
-    def test_http_errors_propagate_without_key(self) -> None:
+    def test_http_errors_are_truthful_and_key_free(self) -> None:
+        from hunterx.domain.exceptions import OperationError
+
         client, _ = _client(_FakeResponse({}, status=401))
-        with pytest.raises(RuntimeError) as excinfo:
+        with pytest.raises(OperationError) as excinfo:
             client.complete("p")
-        assert "sk-test-key" not in str(excinfo.value)
+        message = str(excinfo.value)
+        assert "authentication failed" in message
+        assert "401" in message
+        assert "sk-test-key" not in message
+
+    def test_rate_limit_and_unavailable_are_distinguished(self) -> None:
+        from hunterx.domain.exceptions import OperationError
+
+        client, _ = _client(_FakeResponse({}, status=429))
+        with pytest.raises(OperationError, match="rate limited"):
+            client.complete("p")
+        client2, _ = _client(_FakeResponse({}, status=502))
+        with pytest.raises(OperationError, match="provider unavailable"):
+            client2.complete("p")
 
 
 class TestHealth:

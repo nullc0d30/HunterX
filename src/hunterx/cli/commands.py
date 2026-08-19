@@ -11,6 +11,7 @@ with the engine wiring in later sprints.
 from __future__ import annotations
 
 import contextlib
+import os
 from typing import Any
 
 import hunterx
@@ -420,7 +421,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         _orchestration().start(mission_id)
 
         try:
-            run = _execution().run(mission_id)
+            run = _execution().run(mission_id, parameters=_auth_parameters_from_env())
             overview = _dashboard().overview(mission_id)
         except KeyboardInterrupt:
             try:
@@ -517,6 +518,20 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
             "json": machine_mode,
             "output": output_dir,
         }
+
+    def _auth_parameters_from_env() -> dict[str, Any]:
+        """Read the approved credential configuration from the environment.
+
+        The ``HUNTERX_AUTH_*`` variables are the sanctioned way to supply
+        credentials to a mission. Values are consumed at mission start and
+        never printed, logged or persisted.
+        """
+        login_url = os.environ.get("HUNTERX_AUTH_LOGIN_URL", "").strip()
+        username = os.environ.get("HUNTERX_AUTH_USERNAME", "").strip()
+        password = os.environ.get("HUNTERX_AUTH_PASSWORD", "")
+        if not login_url or not username or not password:
+            return {}
+        return {"auth": {"login_url": login_url, "username": username, "password": password}}
 
     def _hunt_status(argv: list[str]) -> int:
         mission_id = _require_mission_id(argv)

@@ -37,8 +37,12 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         length = int(self.headers.get("Content-Length") or 0)
         body = self.rfile.read(length).decode("utf-8", "replace") if length else ""
+        # Form-encoded bodies dispatch on their first field, mirroring a
+        # real form POST (DVWA's exec.php reads the ``ip`` form field).
         parsed = urlsplit(self.path)
-        self._dispatch(parsed.path, body, headers=self.headers)
+        params = {key: values[0] for key, values in parse_qs(body).items()}
+        value = next(iter(params.values()), body)
+        self._dispatch(parsed.path, value, headers=self.headers)
 
     def _dispatch(self, path: str, value: str, headers=None) -> None:  # noqa: ANN001
         if path == "/vuln/search":
@@ -158,20 +162,93 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
                 self._respond(502, "bad gateway")
             else:
                 self._respond(503, "bad gateway variant")
+        elif path in ("/", "/index.html"):
+            self._respond(200, self._index())
         else:
             self._respond(404, "not found")
 
     # -- HTTP access / response differential handlers ------------------------
 
+    @staticmethod
+    def _index() -> str:
+        """Return a crawlable index linking the fixture endpoints.
+
+        A real (non-fake) mission discovers the surface by crawling this page:
+        every linked endpoint becomes a discovered URL that the parameter
+        discovery phase then fetches (recording its HTTP status) and the
+        access/response-differential capability assesses.
+        """
+        links = (
+            "/protected",
+            "/safe/protected",
+            "/hidden",
+            "/safe/hidden",
+            "/statusbypass",
+            "/lengthonly",
+            "/error",
+            "/vuln/search",
+            "/safe/search",
+            "/vuln/echo",
+            "/safe/echo",
+            "/vuln/reflect",
+            "/safe/reflect",
+            "/vuln/greet",
+            "/safe/greet",
+            "/vuln/read",
+            "/safe/read",
+            "/vuln/run",
+            "/safe/run",
+            "/vuln/nosql",
+            "/safe/nosql",
+            "/vuln/redirect",
+            "/safe/redirect",
+            "/vuln/cors",
+            "/safe/cors",
+            "/vuln/secrets",
+            "/safe/secrets",
+            "/vuln/headers",
+            "/safe/headers",
+            "/vuln/version",
+            "/safe/version",
+            "/vuln/deps",
+            "/safe/deps",
+            "/vuln/parse",
+            "/safe/parse",
+            "/vuln/resource",
+            "/safe/resource",
+            "/vuln/account",
+            "/safe/account",
+            "/vuln/admin",
+            "/safe/admin",
+            "/vuln/api/export",
+            "/safe/api/export",
+            "/vuln/graphql",
+            "/safe/graphql",
+            "/vuln/fetch",
+            "/safe/fetch",
+            "/vuln/cloud/meta",
+            "/safe/cloud/meta",
+        )
+        body = "\n".join(f'<a href="{link}">{link}</a>' for link in links)
+        return f"<html><body><h1>index</h1>{body}</body></html>"
+
     def _protected_bypass(self, path: str) -> None:
         if path in ("/protected/", "/protected/.", "/protected/./"):
-            self._respond(200, "PROTECTED hxbypass_protected role=admin data=classified")
+            self._respond(
+                200,
+                "PROTECTED hxbypass_protected role=admin data=classified account=alice session=authorized "
+                "resource=/admin/accounts billing=premium tier=enterprise last_login=2026-01-01 access_grants=[admin,audit,ops]",
+            )
         else:
             self._respond(403, "forbidden")
 
     def _hidden_bypass(self, path: str) -> None:
         if path in ("/hidden/", "/hidden/.", "/hidden/./"):
-            self._respond(200, "HIDDEN hxbypass_hidden flag=supersecret")
+            self._respond(
+                200,
+                "HIDDEN hxbypass_hidden flag=supersecret backup_key=rotated-42 doc=internal-design spec_version=2.1 "
+                "owner=platform-team review=approved encrypted_at_rest=true rotation_due=2027-03-01 classification=restricted",
+            )
         else:
             self._respond(404, "not found")
 

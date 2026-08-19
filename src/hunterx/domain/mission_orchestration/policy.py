@@ -97,7 +97,11 @@ class MissionPolicyEngine:
         ):
             return StopCondition.TIME_BUDGET_EXHAUSTED
 
-        if StopCondition.FINDINGS_VALIDATED in conditions and self._all_findings_validated(mission):
+        if (
+            StopCondition.FINDINGS_VALIDATED in conditions
+            and self._all_findings_validated(mission)
+            and not self._has_open_high_value_hypotheses(mission)
+        ):
             return StopCondition.FINDINGS_VALIDATED
 
         if StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED in conditions and self._high_value_resolved(mission):
@@ -127,14 +131,43 @@ class MissionPolicyEngine:
         )
 
     @staticmethod
+    def _is_high_value(hypothesis: Any) -> bool:
+        """Return ``True`` when a hypothesis is high-value work.
+
+        High-priority hypotheses (``priority >= 0.75``) always qualify. An
+        OPEN class-specific vulnerability hypothesis (a concrete sql-injection
+        / xss / lfi / command-injection / ... candidate with a probeable
+        provenance class) is the engine's own discovered work too: the hunt
+        never stops on a validated finding while a derived vulnerability
+        candidate is still untested.
+        """
+        if hypothesis.priority >= 0.75:
+            return True
+        if hypothesis.state.value not in (
+            "proposed",
+            "supported",
+            "weakly_supported",
+            "inconclusive",
+            "novel_behavior",
+        ):
+            return False
+        provenance = hypothesis.provenance or {}
+        vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
+        if not vulnerability_class:
+            return False
+        from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
+
+        return is_vulnerability_class(vulnerability_class)
+
+    @staticmethod
     def _high_value_resolved(mission: OrchestratedMission) -> bool:
-        """Return ``True`` when high-priority hypotheses exist and all resolved.
+        """Return ``True`` when high-value hypotheses exist and all resolved.
 
         A mission with no high-value hypotheses is NOT considered complete by
         this condition (the condition only fires when there was real work).
         """
         high_value = [
-            hypothesis for hypothesis in mission.hypotheses if hypothesis.priority >= 0.75
+            hypothesis for hypothesis in mission.hypotheses if MissionPolicyEngine._is_high_value(hypothesis)
         ]
         if not high_value:
             return False
@@ -151,15 +184,16 @@ class MissionPolicyEngine:
 
     @staticmethod
     def _has_open_high_value_hypotheses(mission: OrchestratedMission) -> bool:
-        """Return ``True`` when a high-priority hypothesis is still unresolved.
+        """Return ``True`` when a high-value hypothesis is still unresolved.
 
         Coverage measures what was tested — it does NOT prove the target is
         secure. A coverage percentage must never let the mission terminate
-        while a high-value hypothesis (priority >= 0.75) remains open, so
+        while a high-value hypothesis (priority >= 0.75 or an open
+        class-specific vulnerability candidate) remains open, so
         ``COVERAGE_TARGET_ACHIEVED`` is gated on this predicate.
         """
         return any(
-            hypothesis.priority >= 0.75
+            MissionPolicyEngine._is_high_value(hypothesis)
             and hypothesis.state.value
             in ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
             for hypothesis in mission.hypotheses

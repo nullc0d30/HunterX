@@ -584,6 +584,7 @@ class MissionRunRecorder:
         bus.subscribe("vulnerability.*", self._on_event)
         bus.subscribe("tool.command", self._on_event)
         bus.subscribe("coverage.updated", self._on_event)
+        bus.subscribe("auth.*", self._on_event)
         register_command_observer(self._publish_command)
 
     # -- event capture ------------------------------------------------------

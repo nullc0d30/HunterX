@@ -1406,41 +1406,53 @@ class MissionOrchestrator:
                 # Query parameters on the discovered surface drive targeted
                 # hypotheses (e.g. ``/redirect?to=`` → open redirect).
                 for parameter in _url_query_parameters(endpoint):
-                    class_id, class_priority = _class_for_surface(parameter)
-                    if not class_id:
-                        continue
-                    proposed.append(
-                        (
-                            f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}",
-                            _category_for_template(class_id),
-                            {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
-                            class_priority,
+                    for class_id, class_priority in _classes_for_surface(parameter):
+                        proposed.append(
+                            (
+                                f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}",
+                                _category_for_template(class_id),
+                                {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
+                                class_priority,
+                            )
                         )
-                    )
         elif observation.observation_type in ("asset", "subdomain", "host", "hostname", "domain") and asset_key and asset_key != "target":
             proposed.append((f"{asset_key} is part of the target's attack surface", HypothesisType.UNKNOWN_BEHAVIOR, {}, 0.0))
         elif observation.observation_type == "parameter":
-            parameters = [
-                str(parameter).strip()
-                for parameter in _as_list(content.get("parameters") or [content.get("parameter")])
-                if parameter is not None and str(parameter).strip()
-            ]
+            parameters: list[str] = []
+            methods: dict[str, str] = {}
+            raw = content.get("parameters") if isinstance(content, dict) else None
+            if raw is None:
+                raw = content.get("parameter") if isinstance(content, dict) else None
+            for parameter in _as_list(raw):
+                if isinstance(parameter, dict):
+                    name = str(parameter.get("name") or parameter.get("parameter") or "").strip()
+                    if name:
+                        parameters.append(name)
+                        method = str(parameter.get("method") or "").strip().upper()
+                        if method in ("POST", "PUT"):
+                            methods[name] = method
+                elif parameter is not None:
+                    name = str(parameter).strip()
+                    if name:
+                        parameters.append(name)
             for parameter in parameters:
-                class_id, class_priority = _class_for_surface(parameter)
-                if not class_id:
-                    continue
-                proposed.append(
-                    (
-                        f"The '{parameter}' parameter on {asset_key} may be susceptible to {class_id}",
-                        _category_for_template(class_id),
-                        {
-                            "vulnerability_class": class_id,
-                            "endpoint": asset_key,
-                            "parameter": str(parameter),
-                        },
-                        class_priority,
+                for class_id, class_priority in _classes_for_surface(parameter):
+                    provenance_extra: dict[str, Any] = {
+                        "vulnerability_class": class_id,
+                        "endpoint": asset_key,
+                        "parameter": str(parameter),
+                    }
+                    method = methods.get(parameter)
+                    if method:
+                        provenance_extra["method"] = method
+                    proposed.append(
+                        (
+                            f"The '{parameter}' parameter on {asset_key} may be susceptible to {class_id}",
+                            _category_for_template(class_id),
+                            provenance_extra,
+                            class_priority,
+                        )
                     )
-                )
         if not proposed:
             return
         for statement, category, provenance_extra, explicit_priority in proposed:
@@ -1491,18 +1503,24 @@ class MissionOrchestrator:
             parameter = str(param_entry.get("parameter") or "")
             if not endpoint or not parameter:
                 continue
-            class_id, class_priority = _class_for_surface(parameter)
-            if not class_id:
-                continue
-            statement = f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}"
-            proposed.append(
-                (
-                    statement,
-                    _category_for_template(class_id),
-                    {"vulnerability_class": class_id, "endpoint": endpoint, "parameter": parameter},
-                    class_priority,
+            method = str(param_entry.get("method") or "").strip().upper()
+            for class_id, class_priority in _classes_for_surface(parameter):
+                provenance_extra: dict[str, Any] = {
+                    "vulnerability_class": class_id,
+                    "endpoint": endpoint,
+                    "parameter": parameter,
+                }
+                if method in ("POST", "PUT"):
+                    provenance_extra["method"] = method
+                statement = f"The '{parameter}' parameter on {endpoint} may be susceptible to {class_id}"
+                proposed.append(
+                    (
+                        statement,
+                        _category_for_template(class_id),
+                        provenance_extra,
+                        class_priority,
+                    )
                 )
-            )
         # Restricted/error HTTP statuses on discovered endpoints are candidate
         # access-control / routing / proxy discrepancies: a 401/402/403/404/
         # 405/502 response marks a resource that may be reachable through an
@@ -1616,6 +1634,11 @@ class MissionOrchestrator:
                 mission.context.services[key] = {"key": asset_key, "content": content, "identity": identity}
         elif observation_type in ("endpoint", "url", "api", "graphql", "javascript", "route"):
             endpoints = _endpoint_urls(content)
+            records = [
+                entry
+                for entry in _endpoint_records(content)
+                if isinstance(entry, dict) and (entry.get("parameters") or entry.get("method"))
+            ]
             for entry in _as_list(content.get("technologies")):
                 if not isinstance(entry, dict):
                     continue
@@ -1633,7 +1656,7 @@ class MissionOrchestrator:
                 # bundle embeds (SoundCloud embeds, public RPC endpoints, SVG
                 # namespaces, ...) are NOT the target's attack surface and are
                 # skipped.
-                if observation_type == "javascript":
+                if observation.observation_type == "javascript":
                     endpoint = _resolve_endpoint(str(endpoint), mission.context.target_id)
                     if not endpoint or not _same_origin(endpoint, mission.context.target_id):
                         continue
@@ -1650,20 +1673,60 @@ class MissionOrchestrator:
                         "key": str(endpoint),
                         "parameter": parameter,
                     }
+                # Structured records (crawler API endpoints / form actions)
+                # carry ``parameters`` and an explicit HTTP ``method``; a
+                # POST/PUT form field must be probed through a request body,
+                # which the downstream probes honor via the recorded method.
+                for record in records:
+                    record_url = str(
+                        record.get("url") or record.get("endpoint") or record.get("path") or ""
+                    ).strip()
+                    if record_url != str(endpoint):
+                        continue
+                    method = str(record.get("method") or "").strip().upper()
+                    for param in _as_list(record.get("parameters")):
+                        if not isinstance(param, dict):
+                            continue
+                        name = str(param.get("name") or "").strip()
+                        if not name:
+                            continue
+                        param_entry: dict[str, Any] = {
+                            "key": str(endpoint),
+                            "parameter": name,
+                        }
+                        if method in ("POST", "PUT"):
+                            param_entry["method"] = method
+                        mission.context.parameters[f"param:{endpoint}:{name}"] = param_entry
         elif observation_type == "parameter":
             raw = content.get("parameters")
             if raw is None:
                 raw = content.get("parameter")
-            parameters = [
-                str(parameter).strip()
-                for parameter in _as_list(raw)
-                if parameter is not None and str(parameter).strip()
-            ]
-            for parameter in parameters:
-                mission.context.parameters[f"param:{asset_key}:{parameter}"] = {
-                    "key": asset_key,
-                    "parameter": str(parameter),
+            # Arjun's payload nests its findings: ``{"parameters": {"findings":
+            # [{"name", "endpoint", "method"}, ...]}}``.
+            if isinstance(raw, dict):
+                raw = raw.get("findings") or raw.get("parameters") or []
+            parameter_records: list[dict[str, str]] = []
+            for item in _as_list(raw):
+                if isinstance(item, dict):
+                    name = str(item.get("name") or item.get("parameter") or "").strip()
+                    endpoint = str(item.get("endpoint") or asset_key or "").strip()
+                    method = str(item.get("method") or "").strip().upper()
+                    if name:
+                        parameter_records.append(
+                            {"name": name, "endpoint": endpoint, "method": method}
+                        )
+                elif item is not None and str(item).strip():
+                    parameter_records.append(
+                        {"name": str(item).strip(), "endpoint": asset_key, "method": ""}
+                    )
+            for record in parameter_records:
+                entry: dict[str, Any] = {
+                    "key": record["endpoint"],
+                    "parameter": record["name"],
                 }
+                if record["method"] in ("POST", "PUT"):
+                    entry["method"] = record["method"]
+                mission.context.parameters[f"param:{record['endpoint']}:{record['name']}"] = entry
         elif observation_type == "vulnerability":
             for finding in _vulnerability_candidates(content):
                 if not isinstance(finding, dict) or not finding:
@@ -1871,9 +1934,15 @@ def _is_vulnerability_signal(candidate: Any) -> bool:
     / DNS / SPF / MX fingerprinting, robots.txt, WHOIS / RDAP lookups, ...) are
     observations/intelligence — they never become candidate findings or
     vulnerability hypotheses. Only a class the engine recognizes as a real
-    vulnerability may enter the candidate pipeline.
+    vulnerability may enter the candidate pipeline. Candidates explicitly
+    rated informational (``severity: info``) are also intelligence even when
+    their template happens to canonicalize to a real class (e.g. nuclei
+    ``http-missing-security-headers``): a generic per-page detection must
+    never become a validated, report-ready finding by itself.
     """
     if not isinstance(candidate, dict) or not candidate:
+        return False
+    if str(candidate.get("severity") or "").strip().lower() in ("info", "informational", "none"):
         return False
     raw = candidate.get("vulnerability_class") or _template_of(candidate)
     raw = str(raw).strip() or "unknown"
@@ -1906,9 +1975,14 @@ def _candidate_field(candidate: Any, name: str) -> str:
 #: object-lookup ``id`` → IDOR/BOLA, a server-side ``url`` → SSRF, a redirect
 #: ``to`` → open redirect, a search ``q`` → SQL injection, a ``file`` → LFI, a
 #: ``cmd`` → command injection, ``password``/``username`` → authentication).
-#: The engine never runs every class against an endpoint.
-_PARAMETER_CLASS_HINTS: dict[str, tuple[str, float]] = {
-    "id": ("idor", 0.8),
+#: The engine never runs every class against an endpoint. A hint may list
+#: several candidate classes; the engine derives one hypothesis per candidate
+#: so a semantically ambiguous input (``id`` → IDOR *and* SQL injection) is
+#: assessed by every capability its name implies — each candidate is then
+#: honestly refuted or validated by differential probing.
+_PARAMETER_CLASS_HINTS: dict[str, tuple[tuple[str, float], ...]] = {
+    "id": (("idor", 0.8), ("sql-injection", 0.6)),
+    "userid": ("idor", 0.7),
     "uid": ("idor", 0.8),
     "user_id": ("idor", 0.8),
     "resource": ("idor", 0.7),
@@ -1933,10 +2007,14 @@ _PARAMETER_CLASS_HINTS: dict[str, tuple[str, float]] = {
     "dir": ("lfi", 0.7),
     "filename": ("lfi", 0.7),
     "document": ("lfi", 0.7),
+    "page": ("lfi", 0.65),
     "cmd": ("command-injection", 0.8),
     "command": ("command-injection", 0.8),
     "exec": ("command-injection", 0.8),
     "run": ("command-injection", 0.7),
+    "ip": ("command-injection", 0.8),
+    "host": ("command-injection", 0.7),
+    "hostname": ("command-injection", 0.7),
     "username": ("authentication", 0.7),
     "password": ("authentication", 0.7),
     "login": ("authentication", 0.7),
@@ -1946,30 +2024,56 @@ _PARAMETER_CLASS_HINTS: dict[str, tuple[str, float]] = {
 }
 
 
-def _class_for_parameter(name: str) -> tuple[str, float]:
-    """Return ``(canonical_class, priority)`` implied by a parameter name."""
+def _hint_matches(hint: str, name: str) -> bool:
+    """Return ``True`` when ``hint`` denotes the parameter ``name``.
+
+    Matching is token-based: ``hint`` must equal the whole name or one of its
+    ``_``/``-``/``/``-separated tokens (``user_id`` → ``id``, ``callback-url``
+    → ``callback``). Substring matching would misclassify short hints (``ip``
+    would hit ``api``/``skip``, ``id`` would hit ``ids``) and fabricate
+    attacker-injected hypotheses on unrelated parameters.
+    """
+    import re
+
     normalized = (name or "").lower()
-    for hint, (class_id, priority) in _PARAMETER_CLASS_HINTS.items():
-        if hint in normalized:
-            return class_id, priority
-    return "", 0.0
+    if hint == normalized:
+        return True
+    return any(hint == token for token in re.split(r"[^a-z0-9]+", normalized))
 
 
-def _class_for_surface(name: str) -> tuple[str, float]:
-    """Return the class a discovered input should be probed for.
+def _classes_for_surface(name: str) -> list[tuple[str, float]]:
+    """Return every candidate ``(canonical_class, priority)`` for ``name``.
 
-    A named parameter maps to its semantic class (``q`` → SQL injection,
-    ``cmd`` → command injection, ...). An unclassified discovered input is a
-    candidate *reflection* surface and therefore derives a cross-site scripting
+    A named parameter maps to the semantic classes its name implies; a hint
+    with several candidates yields one class per entry (``id`` → IDOR, then
+    SQL injection). An unclassified discovered input is a candidate
+    *reflection* surface and therefore derives a cross-site scripting
     hypothesis: the XSS capability independently probes for unescaped
     reflection, so a non-reflecting input is honestly contradicted rather than
     ever flagged. This is the attack-surface → XSS derivation — it is driven by
     actual discovered parameters, never by a hardcoded endpoint.
     """
-    class_id, priority = _class_for_parameter(name)
-    if class_id:
-        return class_id, priority
-    return "xss", 0.6
+    for hint, candidates in _PARAMETER_CLASS_HINTS.items():
+        if _hint_matches(hint, name):
+            if candidates and isinstance(candidates[0], tuple):
+                return list(candidates)
+            return [tuple(candidates)]
+    return [("xss", 0.6)]
+
+
+def _class_for_parameter(name: str) -> tuple[str, float]:
+    """Return ``(primary_canonical_class, priority)`` implied by a parameter name."""
+    for hint, candidates in _PARAMETER_CLASS_HINTS.items():
+        if _hint_matches(hint, name):
+            if candidates and isinstance(candidates[0], tuple):
+                return candidates[0]
+            return tuple(candidates)
+    return "", 0.0
+
+
+def _class_for_surface(name: str) -> tuple[str, float]:
+    """Return the primary class a discovered input should be probed for."""
+    return _classes_for_surface(name)[0]
 
 
 def _is_ipv4(value: str) -> bool:
@@ -2032,12 +2136,13 @@ def _url_query_parameters(url: str) -> list[str]:
     return [str(name) for name, _ in parse_qsl(query, keep_blank_values=True) if str(name).strip()]
 
 
-def _endpoint_urls(content: Any) -> list[str]:
-    """Extract discovered endpoint URLs from an observation payload.
+def _endpoint_records(content: Any) -> list[Any]:
+    """Extract the raw discovered-endpoint records from an observation payload.
 
     Handles the shapes emitted by the discovery adapters: ``endpoints``/``urls``/
-    ``routes`` lists, katana's ``crawl.urls`` records, and direct ``endpoint``/
-    ``url`` keys. Never fabricates a URL from a missing value.
+    ``routes`` lists, katana's ``crawl.urls`` records, direct ``endpoint``/``url``
+    keys, and the in-process crawler's ``APIEndpoint`` records (``url`` +
+    ``method`` + ``parameters``). Never fabricates a URL from a missing value.
     """
     entries: list[Any] = []
     if isinstance(content, list):
@@ -2061,8 +2166,13 @@ def _endpoint_urls(content: Any) -> list[str]:
             value = content.get(key)
             if value:
                 entries.append(value)
+    return entries
+
+
+def _endpoint_urls(content: Any) -> list[str]:
+    """Extract discovered endpoint URLs from an observation payload."""
     urls: list[str] = []
-    for entry in entries:
+    for entry in _endpoint_records(content):
         if isinstance(entry, dict):
             value = entry.get("url") or entry.get("endpoint") or entry.get("path")
             if value:

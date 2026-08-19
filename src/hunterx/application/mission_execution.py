@@ -31,9 +31,12 @@ from hunterx.domain.adaptive_mission_planning.enums import (
     MissionState,
     ReplanTrigger,
 )
+from hunterx.domain.auth.session import AuthenticatedSession
 from hunterx.domain.execution import ExecutionStatus
+from hunterx.domain.mission_orchestration.orchestrator import _endpoint_urls
 from hunterx.domain.target_intelligence.enums import CoverageState
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
+from hunterx.shared.masking import mask_value
 from hunterx.shared.target import (
     has_meaningful_content,
     normalize_target,
@@ -262,6 +265,14 @@ class MissionExecutionService:
         #: Last orchestration phase announced via ``mission.phase.started`` so
         #: phase changes are emitted once (live CLI visibility).
         self._last_phase: str = ""
+        #: Authenticated session established for the active mission (in-memory
+        #: only, never persisted). ``None`` means no credentials were supplied
+        #: or establishment failed; the scope label distinguishes the two.
+        self._session: AuthenticatedSession | None = None
+        #: ``True`` once session establishment has been attempted.
+        self._auth_attempted: bool = False
+        #: Masked establishment outcome shared with events (never raw secrets).
+        self._auth_outcome: dict[str, Any] | None = None
 
     # -- public API ---------------------------------------------------------
 
@@ -356,6 +367,8 @@ class MissionExecutionService:
             }
         cycles: list[dict[str, Any]] = []
         idle = 0
+        self._parameters = parameters or {}
+        self._establish_auth_session(mission_id, parameters)
         self._seed_coverage(mission_id)
         for _ in range(1, max_cycles + 1):
             mission = self._orchestration.get(mission_id)
@@ -379,7 +392,8 @@ class MissionExecutionService:
                 # hypothesis-driven validation): keep executing until that work
                 # is discharged.
                 if (
-                    stop.get("stop_condition") in ("coverage_target_achieved", "high_value_hypotheses_resolved")
+                    stop.get("stop_condition")
+                    in ("coverage_target_achieved", "high_value_hypotheses_resolved", "findings_validated")
                     and self._has_pending_plan_work(mission_id)
                 ):
                     continue
@@ -580,6 +594,99 @@ class MissionExecutionService:
                     observation_type=raw.get("observation_type", ""),
                 )
             if _is_explicit_negative(result):
+                form_raw: dict[str, Any] | None = None
+                observed_status: int | None = None
+                if capability == "parameter_discovery":
+                    # Arjun enumerated no URL query parameters on this
+                    # endpoint — but the page may still carry HTML form
+                    # fields (POST forms are invisible to arjun). Extract
+                    # them in-process so form-based surfaces produce
+                    # parameter hypotheses and body-carrying probes. The
+                    # observed HTTP status is recorded too: a restricted
+                    # endpoint (404/401/402/502/...) becomes an
+                    # access-control signal for the http-access-differential
+                    # capability.
+                    form_raw, observed_status = self._form_field_observation(mission_id, target)
+                if (
+                    observed_status is not None
+                    and observed_status >= 400
+                    and capability == "parameter_discovery"
+                ):
+                    # A restricted endpoint observed on the target surface is a
+                    # candidate access barrier: record its status so the
+                    # orchestrator derives an http-access-differential
+                    # hypothesis that the capability probe verifies honestly.
+                    status_raw: dict[str, Any] = {
+                        "observation_type": "endpoint",
+                        "content": {"status_code": int(observed_status), "endpoint": target},
+                        "tool_id": "crawler",
+                        "confidence": 1.0,
+                    }
+                    status_observation = self._orchestration.ingest_result(
+                        mission_id,
+                        tool_id="crawler",
+                        action_id=action_id,
+                        asset_key=target,
+                        raw=status_raw,
+                    )
+                    # Probe the freshly derived access-control hypothesis in the
+                    # same cycle: the differential probe decides meaningful
+                    # access (never a status change alone).
+                    self._assess_hypotheses_after_observation(
+                        mission_id,
+                        action_id=action_id,
+                        capability=capability,
+                        observation=status_observation,
+                        raw=status_raw,
+                        result=result,
+                    )
+                if form_raw:
+                    ingested = self._orchestration.ingest_result(
+                        mission_id,
+                        tool_id="crawler",
+                        action_id=action_id,
+                        asset_key=target,
+                        raw=form_raw,
+                    )
+                    self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+                    self._assess_hypotheses_after_observation(
+                        mission_id,
+                        action_id=action_id,
+                        capability=capability,
+                        observation=ingested,
+                        raw=form_raw,
+                        result=result,
+                    )
+                    self._replan_from_observation(mission_id, capability, form_raw, observation=ingested)
+                    self._sync_phase(mission_id)
+                    self._publish_tool_completed(
+                        mission_id, action_id, capability, "crawler", target, result, outcome="evidence"
+                    )
+                    return self._cycle_outcome(
+                        mission_id,
+                        status="completed",
+                        action_id=action_id,
+                        capability=capability,
+                        tool_id="crawler",
+                        observation_type="parameter",
+                    )
+                if observed_status is not None and observed_status >= 400:
+                    # The endpoint is restricted but carried no forms: the
+                    # status observation above already fed the access-control
+                    # hypothesis derivation; record coverage and move on.
+                    self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+                    self._sync_phase(mission_id)
+                    self._publish_tool_completed(
+                        mission_id, action_id, capability, "crawler", target, result, outcome="evidence"
+                    )
+                    return self._cycle_outcome(
+                        mission_id,
+                        status="completed",
+                        action_id=action_id,
+                        capability=capability,
+                        tool_id="crawler",
+                        observation_type="endpoint",
+                    )
                 self._orchestration.record_negative(
                     mission_id,
                     asset_key=target,
@@ -743,12 +850,23 @@ class MissionExecutionService:
         spec = normalize_target(target)
         declared = self._declared_targets(tool_id)
         effective_target = target_for_adapter(spec, declared)
+        merged = dict(parameters or {})
+        # Credentials are an execution-time input, never tool parameters: strip
+        # the raw auth block and inject only the value-bearing session surface
+        # (cookies/headers) so every tool context carries the authenticated
+        # scope while raw secrets never reach contexts, events or dashboards.
+        merged.pop("auth", None)
+        session = self._session
+        if session is not None and session.established:
+            merged["cookies"] = dict(session.cookies)
+            if session.headers:
+                merged["headers"] = dict(session.headers)
         return (
             ExecutionContextBuilder(tool_id=tool_id, target=effective_target)
             .with_mission(mission_id)
             .with_target_type(target_type_for(spec, declared))
             .with_permissions(self._permissions_for(tool_id))
-            .with_parameters(dict(parameters or {}))
+            .with_parameters(merged)
         ).build()
 
     def _declared_targets(self, tool_id: str) -> tuple[str, ...]:
@@ -857,6 +975,96 @@ class MissionExecutionService:
             "confidence": 0.7 if content else 0.0,
         }
 
+    def _establish_auth_session(
+        self,
+        mission_id: str,
+        parameters: dict[str, Any] | None,
+    ) -> None:
+        """Establish an authenticated session when credentials are configured.
+
+        Reads the ``auth`` parameter block (``login_url``, ``username``,
+        ``password``, optional ``extra_fields``) supplied through the approved
+        env/config mechanism, performs a generic form login against the
+        loopback target and keeps the session in memory for the mission. The
+        outcome is published (masked) and recorded on the mission as an
+        observation — an explicit failure is an honest negative, never a
+        blocker.
+        """
+        self._auth_attempted = False
+        self._session = None
+        self._auth_outcome = None
+        auth = parameters.get("auth") if isinstance(parameters, dict) else None
+        if not isinstance(auth, dict):
+            return
+        login_url = str(auth.get("login_url") or "").strip()
+        username = str(auth.get("username") or "").strip()
+        password = str(auth.get("password") or "")
+        if not login_url or not username or not password:
+            self._auth_outcome = {"status": "skipped", "reason": "incomplete auth configuration"}
+            self._publish(
+                "auth.session.skipped",
+                {"mission_id": mission_id, "reason": "incomplete auth configuration"},
+            )
+            return
+        try:
+            from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
+
+            if not is_loopback_target(login_url):
+                self._auth_outcome = {
+                    "status": "refused",
+                    "reason": "login target is not a loopback target",
+                }
+                self._publish(
+                    "auth.session.refused",
+                    {"mission_id": mission_id, "reason": "login target is not a loopback target"},
+                )
+                return
+        except Exception:  # noqa: BLE001 - guard degrades to attempt
+            pass
+        self._auth_attempted = True
+        session = AuthenticatedSession(error="session establishment not attempted")
+        try:
+            from hunterx.application.session import SessionService
+
+            session = SessionService().establish(
+                login_url=login_url,
+                username=username,
+                password=password,
+                extra_fields=auth.get("extra_fields") if isinstance(auth.get("extra_fields"), dict) else None,
+            )
+        except Exception as exc:  # noqa: BLE001 - establishment failures are recorded, never raised
+            session = AuthenticatedSession(origin="", login_url=login_url, error=str(exc))
+        self._session = session if session.established else None
+        self._auth_outcome = {
+            "status": "established" if session.established else "failed",
+            "origin": session.origin,
+            "reason": "" if session.established else session.error,
+        }
+        self._publish(
+            "auth.session.established" if session.established else "auth.session.failed",
+            {
+                "mission_id": mission_id,
+                "login_url": login_url,
+                "scope": session.scope_label(),
+                "username": mask_value(session.username, reveal_head=1, reveal_tail=0),
+                "reason": "" if session.established else session.error,
+            },
+        )
+        with contextlib.suppress(Exception):  # observation recording is best-effort
+            self._orchestration.ingest_result(
+                mission_id,
+                capability="authentication_analysis",
+                result={
+                    "kind": "auth_session",
+                    "content": (
+                        f"authenticated session established for {session.origin}"
+                        if session.established
+                        else f"authentication failed for {login_url}: {session.error}"
+                    ),
+                },
+                tool_id="session-service",
+            )
+
     def _seed_coverage(self, mission_id: str) -> None:
         """Seed the coverage matrix from the plan's capabilities.
 
@@ -881,6 +1089,12 @@ class MissionExecutionService:
         unstarted chain capabilities). Hypothesis-bound validation nodes are
         already accounted for by the policy's open-hypothesis gates, so a
         mission with only those left may legitimately complete.
+
+        Pending authenticated work is represented here too: when credentials
+        are configured, session establishment runs before the first discovery
+        cycle, so the authenticated discovery pass is exactly this plan's
+        pending actions — the gate never lets the mission complete while that
+        authenticated work is still pending.
         """
         try:
             graph = self._planning.get_plan(mission_id)
@@ -957,6 +1171,19 @@ class MissionExecutionService:
         if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
             for hypothesis_id in self._hypotheses_from_observation(mission_id, observation):
                 details.append({"hypothesis_id": hypothesis_id, "capability": "vulnerability_scanning"})
+        elif trigger is ReplanTrigger.NEW_ENDPOINT_DISCOVERED:
+            # Per-endpoint parameter discovery: every freshly discovered URL
+            # gets its own DISCOVER_PARAMETERS action (deduplicated by
+            # capability+asset below), so a multi-page surface is enumerated
+            # parameter-by-parameter instead of a single mission-level run on
+            # the target root. The planner's ``_on_new_endpoint`` already binds
+            # the action to ``asset_key``, which is how the per-endpoint arjun
+            # invocations reach each page's own form/URL surface.
+            details = [
+                {"endpoint": str(url)}
+                for url in _endpoint_urls(content)
+                if str(url).strip()
+            ]
         elif new_capability:
             details = [{}]
         graph = self._planning.get_plan(mission_id)
@@ -985,6 +1212,7 @@ class MissionExecutionService:
         if not details:
             return
         for detail in details:
+            replan_asset = ""
             if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
                 # Per-hypothesis validation actions are distinct: dedup against
                 # ANY existing action bound to the SAME hypothesis (terminal or
@@ -994,15 +1222,28 @@ class MissionExecutionService:
                     for action in graph.actions.values()
                 ):
                     continue
-            elif any(action.capability == new_capability for action in graph.actions.values()):
-                # Generic follow-on capabilities are scheduled at most once.
-                return
+            elif detail.get("endpoint"):
+                # Per-endpoint follow-on (parameter discovery on a discovered
+                # URL): dedup by capability+asset so each endpoint is scheduled
+                # at most once while every endpoint still gets its own action.
+                endpoint = str(detail["endpoint"])
+                if any(
+                    action.capability == new_capability and action.asset == endpoint
+                    for action in graph.actions.values()
+                ):
+                    continue
+                replan_asset = endpoint
+            else:
+                if any(action.capability == new_capability for action in graph.actions.values()):
+                    # Generic follow-on capabilities are scheduled at most once.
+                    continue
+                replan_asset = ""
             try:
                 mission = self._orchestration.get(mission_id)
                 self._planning.replan_for_change(
                     mission_id,
                     trigger=trigger,
-                    asset_key=mission.context.target_id,
+                    asset_key=replan_asset or mission.context.target_id,
                     detail=detail or None,
                     reason=f"observation from {capability}",
                 )
@@ -1270,6 +1511,12 @@ class MissionExecutionService:
             "observed_status": str(provenance.get("observed_status") or ""),
             "proof_marker": str(provenance.get("proof_marker") or ""),
         }
+        # A POST-discovered form field must be probed through a request body:
+        # the provenance records the method (``POST``/``PUT``) the surface was
+        # observed with, and the capability builds body-carrying probes.
+        method = str(provenance.get("method") or "").strip().upper()
+        if method in ("POST", "PUT"):
+            evidence["method"] = method
         try:
             from hunterx.domain.vulnerability_capability.engine import VulnerabilityCapabilityEngine
             from hunterx.domain.vulnerability_capability.probe_executor import ProbeExecutor
@@ -1287,6 +1534,12 @@ class MissionExecutionService:
             execution_target = endpoint or target
             if not is_loopback_target(execution_target):
                 return None
+            # An established session reaches the authenticated surface: attach
+            # the session cookies/headers to the probe so the differential runs
+            # authenticated (an anonymous probe would hit the login wall and
+            # produce a false negative).
+            if self._session is not None and self._session.established:
+                probe = self._with_session_headers(probe)
             self._publish(
                 "vulnerability.probe.started",
                 {
@@ -1294,9 +1547,43 @@ class MissionExecutionService:
                     "vulnerability_class": vulnerability_class,
                     "endpoint": execution_target,
                     "parameter": parameter,
+                    "scope": "authenticated"
+                    if self._session is not None and self._session.established
+                    else "anonymous",
                 },
             )
             responses = ProbeExecutor().execute(probe, target=execution_target)
+            if (
+                self._session is not None
+                and self._session.established
+                and _landed_on_auth_wall(responses)
+            ):
+                # An established session can expire mid-mission (an authenticated
+                # crawl can touch a logout endpoint). The login wall is never
+                # target evidence: re-establish the session and retry the probe
+                # once so the differential runs against the real surface.
+                self._establish_auth_session(mission_id, self._parameters)
+                if self._session is not None and self._session.established:
+                    probe = self._with_session_headers(probe)
+                    responses = ProbeExecutor().execute(probe, target=execution_target)
+                if _landed_on_auth_wall(responses):
+                    # The session could not be re-established: record the probe
+                    # honestly as inconclusive (no signal was evaluated against
+                    # the login wall) and leave the hypothesis open.
+                    self._orchestration.record_probe(
+                        mission_id,
+                        vulnerability_class=vulnerability_class,
+                        endpoint=execution_target,
+                        parameter=parameter,
+                        signal="unauthenticated",
+                        supported=False,
+                        contradicted=False,
+                        notes="probe landed on the authentication wall; session could not be re-established",
+                        payload_count=len(probe.payloads),
+                        response_summary=_probe_response_summary(responses),
+                        evidence_ref=f"probe:{vulnerability_class}:{execution_target}",
+                    )
+                    return None
             verdict = engine.analyze_probe(vulnerability_class, probe, responses)
             # Persist the probe execution as a first-class observation. This
             # records that a TARGETED PROBE ran and what it observed — it is
@@ -1332,6 +1619,104 @@ class MissionExecutionService:
             return None
         except Exception:  # noqa: BLE001 - differential probing is best-effort
             return None
+
+    def _with_session_headers(self, probe: Any) -> Any:
+        """Return a copy of ``probe`` carrying the established session headers.
+
+        Existing probe headers are kept; the session ``Cookie`` (and any extra
+        session headers) are merged in last so nothing the class-specific probe
+        already set is overwritten.
+        """
+        from dataclasses import replace
+
+        session = self._session
+        if session is None or not session.established:
+            return probe
+        headers: list[tuple[str, str]] = list(getattr(probe, "headers", ()) or ())
+        cookie = session.cookie_header()
+        if cookie:
+            headers = [pair for pair in headers if pair[0].lower() != "cookie"]
+            headers.append(("Cookie", cookie))
+        for name, value in session.headers:
+            if any(existing[0].lower() == name.lower() for existing in headers):
+                continue
+            headers.append((name, value))
+        return replace(probe, headers=tuple(headers))
+
+    def _session_probe_headers(self) -> tuple[tuple[str, str], ...]:
+        """Return the session's probe headers (empty tuple when no session).
+
+        Used to pass the authenticated scope into the finding service's
+        verification and replay probes.
+        """
+        session = self._session
+        if session is None or not session.established:
+            return ()
+        headers: list[tuple[str, str]] = []
+        cookie = session.cookie_header()
+        if cookie:
+            headers.append(("Cookie", cookie))
+        headers.extend(session.headers)
+        return tuple(headers)
+
+    def _form_field_observation(
+        self, mission_id: str, endpoint: str
+    ) -> tuple[dict[str, Any] | None, int | None]:
+        """Return ``(parameter_observation, observed_status)`` for ``endpoint``.
+
+        Arjun enumerates URL query parameters; HTML form fields (notably POST
+        forms) are invisible to it, so a form-only surface (e.g. a POST-only
+        command-execution form) never produces a parameter hypothesis and is
+        never assessed. The in-process HTML parser extracts form field names —
+        generically, for any form-based endpoint — so body-carrying
+        differential probes can assess those surfaces. The observed HTTP
+        status is returned alongside (even when no forms exist) so a
+        restricted endpoint (404/401/402/502/...) is recorded as an
+        access-control signal for the http-access-differential capability.
+        ``(None, None)`` when the endpoint cannot be fetched.
+        """
+        try:
+            from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
+            from hunterx.domain.web.parsers import extract_forms
+            from hunterx.tools.web.httpclient import HttpPageFetcher
+
+            if not is_loopback_target(endpoint):
+                return None, None
+            cookies = (
+                dict(self._session.cookies)
+                if self._session is not None and self._session.established
+                else None
+            )
+            fetcher = HttpPageFetcher()
+            page = fetcher.fetch(endpoint, cookies=cookies) if cookies else fetcher.fetch(endpoint)
+            for _hop in range(5):
+                if not page.is_redirect or not page.redirect_url or not is_loopback_target(page.redirect_url):
+                    break
+                page = fetcher.fetch(page.redirect_url, cookies=cookies) if cookies else fetcher.fetch(page.redirect_url)
+            status = page.status_code
+            if page.status_code != 200 or not page.content:
+                return None, status
+            findings: list[dict[str, str]] = []
+            for form in extract_forms(page.content, endpoint):
+                action = str(form.get("action") or endpoint)
+                method = str(form.get("method") or "GET").upper()
+                for field in form.get("fields") or []:
+                    name = str(field.get("name") or "").strip()
+                    if name:
+                        findings.append({"name": name, "endpoint": action, "method": method})
+            if not findings:
+                return None, status
+            return (
+                {
+                    "observation_type": "parameter",
+                    "content": {"parameters": {"findings": findings}},
+                    "tool_id": "crawler",
+                    "confidence": 1.0,
+                },
+                status,
+            )
+        except Exception:  # noqa: BLE001 - form extraction is best-effort discovery
+            return None, None
 
     def _promote_findings_for_hypothesis(self, mission_id: str, hypothesis_id: str) -> None:
         """Promote CANDIDATE findings linked to a validated hypothesis to verified.
@@ -1452,37 +1837,55 @@ class MissionExecutionService:
             if not endpoint:
                 return
             class_value = vulnerability_class.replace("-", "_")
-            finding = service.create_finding(
-                mission_id=mission_id,
-                target_id=mission.context.target_id or "",
-                asset_id="",
-                asset=endpoint,
-                vulnerability_class=class_value,
-                title=f"{vulnerability_class} on {endpoint}",
-                description=(
-                    f"validated by a targeted differential probe ({hypothesis.statement}); "
-                    f"hypothesis {hypothesis.hypothesis_id}"
-                ),
-                severity="high",
-                tool="hunterx-capability",
-                endpoints=(endpoint,),
-                parameters=(parameter,) if parameter else (),
-                observations=[
-                    {
-                        "kind": "detection_signature",
-                        "value": f"candidate from hypothesis {hypothesis.hypothesis_id}",
-                        "quality": "medium",
-                        "source": "mission",
-                    }
-                ],
-                provenance=f"hypothesis:{hypothesis.hypothesis_id}",
-                scope=_finding_scope_for_hypothesis(hypothesis, endpoint),
-            )
+            provenance = f"hypothesis:{hypothesis.hypothesis_id}"
+            existing = [
+                item
+                for item in service.list_findings(mission_id)
+                if item.get("provenance") == provenance
+            ]
+            if existing:
+                finding = existing[0]
+            else:
+                finding = service.create_finding(
+                    mission_id=mission_id,
+                    target_id=mission.context.target_id or "",
+                    asset_id="",
+                    asset=endpoint,
+                    vulnerability_class=class_value,
+                    title=f"{vulnerability_class} on {endpoint}",
+                    description=(
+                        f"validated by a targeted differential probe ({hypothesis.statement}); "
+                        f"hypothesis {hypothesis.hypothesis_id}"
+                    ),
+                    severity="high",
+                    tool="hunterx-capability",
+                    endpoints=(endpoint,),
+                    parameters=(parameter,) if parameter else (),
+                    observations=[
+                        {
+                            "kind": "detection_signature",
+                            "value": f"candidate from hypothesis {hypothesis.hypothesis_id}",
+                            "quality": "medium",
+                            "source": "mission",
+                        }
+                    ],
+                    provenance=provenance,
+                    scope=_finding_scope_for_hypothesis(hypothesis, endpoint),
+                )
         except Exception as exc:  # noqa: BLE001 - materialization is best-effort
             self._publish("finding.materialization.failed", {"mission_id": mission_id, "reason": str(exc)})
             return
+        if str(finding.get("status") or "") == "report_ready":
+            self._publish(
+                "finding.materialized",
+                {"mission_id": mission_id, "finding_id": finding["finding_id"], "status": "report_ready", "report_ready": True, "result": {}},
+            )
+            return
         try:
-            result = service.complete_validated_finding(finding["finding_id"])
+            result = service.complete_validated_finding(
+                finding["finding_id"],
+                probe_headers=self._session_probe_headers(),
+            )
         except Exception as exc:  # noqa: BLE001 - best-effort completion
             result = {"error": str(exc)}
         # When the finding service confirms report-readiness, reflect it on the
@@ -1736,6 +2139,16 @@ def _is_explicit_negative(result: Any) -> bool:
     if isinstance(json_value, list):
         return len(json_value) == 0
     return False
+
+
+def _landed_on_auth_wall(responses: list[dict[str, Any]]) -> bool:
+    """Return ``True`` when probe responses landed on the authentication wall.
+
+    An authenticated probe whose final (post-redirect) responses resolve to a
+    login page means the session was lost mid-mission — the login page is not
+    target evidence and must never be evaluated as one.
+    """
+    return any("login" in str(response.get("url") or "") for response in (responses or []))
 
 
 def _probe_response_summary(responses: list[dict[str, Any]]) -> dict[str, Any]:

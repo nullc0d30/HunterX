@@ -308,8 +308,27 @@ class CrawlerAdapter(WebToolAdapter):
         return [target]
 
     def _fetch_page(self, url: str, timeout: float, context: ExecutionContext) -> FetchedPage:
-        """Fetch ``url`` through the injectable seam, never raising."""
+        """Fetch ``url`` through the injectable seam, never raising.
+
+        Session cookies/headers configured on the execution context are
+        attached to the request so the crawl reaches the authenticated
+        surface. Fake seams that accept only ``(url, timeout)`` keep working
+        via the ``TypeError`` fallback.
+        """
+        kwargs: dict[str, object] = {}
+        cookies = context.parameters.get("cookies")
+        if cookies:
+            kwargs["cookies"] = dict(cookies) if isinstance(cookies, dict) else cookies
+        headers = context.parameters.get("headers")
+        if isinstance(headers, dict) and headers:
+            kwargs["headers"] = headers
         try:
+            if kwargs:
+                return self._fetch(url, timeout, **kwargs)
+            return self._fetch(url, timeout)
+        except TypeError:
+            # A minimal fake seam without keyword support: fall back to the
+            # plain call rather than breaking the crawl.
             return self._fetch(url, timeout)
         except Exception as exc:  # noqa: BLE001 - fetch failures become empty pages
             return FetchedPage(url=url, error=f"fetch failed: {exc}", fetched_at=self._now())

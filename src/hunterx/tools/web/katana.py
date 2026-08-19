@@ -63,6 +63,8 @@ class KatanaAdapter(WebToolAdapter):
 
     def build_argv(self, context: ExecutionContext) -> list[str]:
         """Build the katana command line for ``context``."""
+        from hunterx.tools.headers import header_args
+
         argv = ["katana", "-u", context.target]
         depth = self._param_int(context, "depth", 3)
         argv.extend(["-d", str(depth)])
@@ -76,6 +78,7 @@ class KatanaAdapter(WebToolAdapter):
             argv.extend(["-ef", ",".join(str(item).lstrip(".") for item in extensions)])
         else:
             argv.extend(["-ef", _DEFAULT_EXCLUDED_EXTENSIONS])
+        argv.extend(header_args(context))
         return argv
 
     def run(self, context: ExecutionContext, collector: OutputCollector) -> None:

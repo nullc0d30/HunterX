@@ -5,8 +5,9 @@ keywords: HunterX AI configuration, OpenRouter, AI provider, API key, .env, HUNT
 description: >-
   Enable AI in HunterX v7. Configure AI providers, models and API keys with a
   local .env file, run HunterX with AI enabled, use the same configuration with
-  Docker, keep API keys secure, and troubleshoot common problems. OpenRouter is
-  the currently implemented provider adapter.
+  Docker, keep API keys secure, and troubleshoot common problems. Supported
+  runtime providers: OpenAI, Anthropic/Claude, DeepSeek, OpenRouter, Gemini and
+  xAI/Grok.
 ---
 
 # AI Configuration
@@ -139,55 +140,104 @@ If `HUNTERX_AI_MODEL` is left empty, HunterX defaults to
 
 ## Supported providers
 
-HunterX's **configuration layer** supports API keys for these providers:
+HunterX has a runtime adapter for every provider its configuration layer
+recognizes:
 
 ```text
-HUNTERX_AI_OPENAI_KEY
-HUNTERX_AI_ANTHROPIC_KEY
-HUNTERX_AI_OPENROUTER_KEY
-HUNTERX_AI_GEMINI_KEY
-HUNTERX_AI_DEEPSEEK_KEY
-HUNTERX_AI_GROK_KEY
+HUNTERX_AI_OPENAI_KEY        -> provider=openai       (OpenAI, api.openai.com)
+HUNTERX_AI_ANTHROPIC_KEY     -> provider=anthropic    (Anthropic/Claude, api.anthropic.com)
+HUNTERX_AI_DEEPSEEK_KEY      -> provider=deepseek     (DeepSeek, api.deepseek.com)
+HUNTERX_AI_OPENROUTER_KEY    -> provider=openrouter   (OpenRouter, openrouter.ai)
+HUNTERX_AI_GEMINI_KEY        -> provider=gemini       (Google Gemini, generativelanguage.googleapis.com)
+HUNTERX_AI_GROK_KEY          -> provider=grok         (xAI/Grok, api.x.ai)
 ```
 
-> HunterX's configuration layer supports credentials for multiple AI providers.
-> The current live AI provider adapter is **OpenRouter**. Additional providers
-> can be integrated through the same provider abstraction.
+- **OpenAI, DeepSeek, OpenRouter and xAI/Grok** share the OpenAI-compatible
+  chat-completions transport (each with its own API base URL and bearer key).
+- **Anthropic/Claude** uses the Anthropic Messages API (`/v1/messages`, header
+  `x-api-key`).
+- **Gemini** uses Google's `generateContent` REST API (header `x-goog-api-key`).
 
-This distinction matters:
+Each provider resolves its own endpoint: selecting `provider=openai` sends the
+request to `api.openai.com`, `provider=deepseek` to `api.deepseek.com`, and so
+on. A request is never silently rerouted to another provider.
 
-- **Configuration support** — `AISettings` can read a key for each of the six
-  providers above. A key placed in `.env` will be loaded and masked correctly.
-- **Implemented runtime adapter** — only **OpenRouter** currently has a working
-  HTTP adapter. Selecting another provider will raise a clear configuration
-  error telling you the provider is recognized but has no adapter yet.
+### Select provider and model independently
 
-In other words: only set `HUNTERX_AI_PROVIDER=openrouter` today. The other
-variables are reserved for future adapters and are documented so you know they
-exist.
+`HUNTERX_AI_PROVIDER` and `HUNTERX_AI_MODEL` are independent:
+
+```env
+# OpenAI
+HUNTERX_AI_PROVIDER=openai
+HUNTERX_AI_MODEL=gpt-4o-mini
+HUNTERX_AI_OPENAI_KEY=...
+
+# Anthropic / Claude
+HUNTERX_AI_PROVIDER=anthropic
+HUNTERX_AI_MODEL=claude-3-5-sonnet-latest
+HUNTERX_AI_ANTHROPIC_KEY=...
+
+# DeepSeek
+HUNTERX_AI_PROVIDER=deepseek
+HUNTERX_AI_MODEL=deepseek-chat
+HUNTERX_AI_DEEPSEEK_KEY=...
+
+# OpenRouter (any OpenRouter model slug)
+HUNTERX_AI_PROVIDER=openrouter
+HUNTERX_AI_MODEL=deepseek/deepseek-chat
+HUNTERX_AI_OPENROUTER_KEY=...
+
+# Google Gemini
+HUNTERX_AI_PROVIDER=gemini
+HUNTERX_AI_MODEL=gemini-1.5-flash
+HUNTERX_AI_GEMINI_KEY=...
+
+# xAI / Grok
+HUNTERX_AI_PROVIDER=grok
+HUNTERX_AI_MODEL=grok-2-latest
+HUNTERX_AI_GROK_KEY=...
+```
+
+The model value is passed verbatim to the selected provider's API. If the model
+is invalid for that provider, the provider returns an error which HunterX reports
+truthfully (`invalid model or API endpoint`); it is never silently rewritten to
+another model, and HunterX never silently switches providers.
+
+Each provider also accepts an optional custom base URL through its adapter
+constructor for proxies/tests; production use relies on the provider's default
+endpoint.
 
 ## AI configuration variables
 
 | Variable | Purpose | Required |
 |---|---|---|
-| `HUNTERX_AI_PROVIDER` | AI provider (`openrouter`) | No |
-| `HUNTERX_AI_MODEL` | Model identifier (e.g. `deepseek/deepseek-chat`) | No |
+| `HUNTERX_AI_PROVIDER` | AI provider (`openai` \| `anthropic` \| `deepseek` \| `openrouter` \| `gemini` \| `grok`) | No |
+| `HUNTERX_AI_MODEL` | Model identifier (provider-specific) | No |
 | `HUNTERX_AI_OPENROUTER_KEY` | OpenRouter API key | No |
 | `HUNTERX_AI_OPENAI_KEY` | OpenAI API key | No |
 | `HUNTERX_AI_ANTHROPIC_KEY` | Anthropic API key | No |
 | `HUNTERX_AI_GEMINI_KEY` | Gemini API key | No |
 | `HUNTERX_AI_DEEPSEEK_KEY` | DeepSeek API key | No |
-| `HUNTERX_AI_GROK_KEY` | Grok API key | No |
+| `HUNTERX_AI_GROK_KEY` | Grok/xAI API key | No |
 
 All variables are optional because AI is optional. The provider you select must
-have a key configured **and** an implemented runtime adapter:
+have a key configured and a runtime adapter:
 
 - No provider set → AI stays disabled (`NullAIClient`).
-- Provider set without its API key → clear configuration error.
-- Provider set without an implemented adapter → clear configuration error.
+- Provider set without its API key → clear configuration error naming the
+  provider and the `HUNTERX_AI_<PROVIDER>_KEY` variable.
+- Unknown provider → clear configuration error listing the supported providers.
+- Invalid key / invalid model / rate limit / provider outage / timeout are each
+  reported truthfully; HunterX never silently switches provider or model and
+  never reports success when the provider failed.
 
 API keys are masked everywhere (settings dumps, `hunterx config` output,
-`repr()` and logs) and are never written back to diagnostics.
+`repr()` and logs) and are never written back to diagnostics, events or reports.
+
+> **Cost policy:** HunterX does not currently define a `FREE_MODE_ONLY`
+> configuration flag. There is therefore no free-mode gate to bypass; the
+> selected provider and model are passed through exactly as configured. If you
+> need cost control, choose an inexpensive model in `HUNTERX_AI_MODEL`.
 
 ## Run HunterX with AI enabled
 
