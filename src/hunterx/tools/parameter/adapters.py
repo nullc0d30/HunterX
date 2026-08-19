@@ -69,18 +69,23 @@ class ArjunAdapter(ParameterToolAdapter):
     def build_argv(self, context: ExecutionContext) -> list[str]:
         """Build argv.
 
-        ``-oJ`` is arjun's documented JSON-output flag and REQUIRES a file
-        argument (``arjun -h``: ``-o, -oJ JSON_FILE``); without it arjun exits
-        with an argparse usage error. Arjun writes its JSON parameter report to
-        that file (``-q`` silences the progress), and the adapter reads it back
-        in :meth:`parse_output`.
+        ``-o`` is arjun's JSON-output flag and REQUIRES a file argument
+        (``arjun -h``: ``-o JSON_FILE``); without it arjun exits with an
+        argparse usage error. Arjun writes its JSON parameter report to that
+        file (``-q`` silences the progress), and the adapter reads it back in
+        :meth:`parse_output`. Headers use the modern ``--headers`` flag
+        (``-H`` was removed in arjun 2.2.7+; passing it makes every
+        authenticated invocation exit with an argparse usage error).
         """
         if not self._json_path:
             self._json_path = os.path.join(
                 tempfile.gettempdir(),
                 f"hunterx-arjun-{context.correlation_id or context.execution_id or _arjun_uid()}.json",
             )
-        argv = ["arjun", "-u", context.target, "-oJ", self._json_path, "-q"]
+        argv = ["arjun", "-u", context.target, "-o", self._json_path, "-q"]
+        from hunterx.tools.headers import header_args
+
+        argv.extend(header_args(context, flag="--headers"))
         method = str(context.parameters.get("method") or "GET").upper()
         if method == "POST":
             argv.append("-m")

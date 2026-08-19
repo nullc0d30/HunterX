@@ -6,7 +6,10 @@
 Concrete providers implement :class:`~hunterx.domain.ports.services.AIPort`:
 
 - :class:`NullAIClient` — safe fallback when no provider is configured.
-- :class:`OpenRouterClient` — the first real provider (OpenRouter).
+- :class:`OpenAIClient`, :class:`DeepSeekClient`, :class:`OpenRouterClient`,
+  :class:`XAIClient` — OpenAI-compatible chat-completions providers sharing a
+  common transport.
+- :class:`AnthropicClient`, :class:`GeminiClient` — protocol-specific adapters.
 
 The :func:`build_ai_client` factory maps :class:`AISettings` to the right
 adapter; the composition root injects the result through the platform.
@@ -28,9 +31,23 @@ from __future__ import annotations
 from hunterx.infrastructure.ai.factory import build_ai_client
 from hunterx.infrastructure.ai.null import NullAIClient
 from hunterx.infrastructure.ai.openrouter import OpenRouterClient
+from hunterx.infrastructure.ai.providers import (
+    AnthropicClient,
+    DeepSeekClient,
+    GeminiClient,
+    OpenAIClient,
+    OpenAICompatibleClient,
+    XAIClient,
+)
 
 __all__ = [
+    "AnthropicClient",
+    "DeepSeekClient",
+    "GeminiClient",
     "NullAIClient",
+    "OpenAIClient",
+    "OpenAICompatibleClient",
     "OpenRouterClient",
+    "XAIClient",
     "build_ai_client",
 ]

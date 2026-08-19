@@ -107,8 +107,11 @@ class NucleiAdapter(VulnerabilityScanAdapter):
 
     def build_argv(self, context: ExecutionContext) -> list[str]:
         """Build the ``nuclei`` command line for ``context``."""
+        from hunterx.tools.headers import header_args
+
         target = str(context.parameters.get("url") or context.target)
         argv = ["nuclei", "-u", target, "-jsonl"]
+        argv.extend(header_args(context))
         templates = context.parameters.get("templates")
         if isinstance(templates, str) and templates:
             argv += ["-t", templates]

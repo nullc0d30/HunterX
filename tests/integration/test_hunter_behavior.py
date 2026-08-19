@@ -266,6 +266,44 @@ class TestHNoDumpOnlyBehavior:
         assert stop is StopCondition.COVERAGE_TARGET_ACHIEVED
 
 
+class TestHFindingsStopBehavior:
+    def test_findings_stop_is_blocked_while_high_value_hypotheses_open(self) -> None:
+        runner, orchestration, mission_id = _runner(FakeExecutionEngine(outputs=dict(_MEANINGFUL_OUTPUTS)))
+        policy = MissionPolicyEngine()
+        orchestration.add_hypothesis(
+            mission_id,
+            statement="The /api/search id parameter may be susceptible to SQL injection",
+            category="injection",
+            priority=0.8,
+            confidence=0.7,
+            supporting=("observation-a",),
+        )
+        mission = orchestration.get(mission_id)
+        mission.policy = dataclasses.replace(
+            mission.policy,
+            stop_conditions=(StopCondition.FINDINGS_VALIDATED, StopCondition.RESOURCE_BUDGET_EXHAUSTED),
+        )
+        mission.context.findings = [{"finding_id": "f1", "stage": "report_ready"}]
+
+        stop = policy.evaluate_stop(mission)
+
+        assert stop is None
+
+    def test_findings_stop_fires_when_no_high_value_hypotheses_open(self) -> None:
+        runner, orchestration, mission_id = _runner(FakeExecutionEngine(outputs=dict(_MEANINGFUL_OUTPUTS)))
+        policy = MissionPolicyEngine()
+        mission = orchestration.get(mission_id)
+        mission.policy = dataclasses.replace(
+            mission.policy,
+            stop_conditions=(StopCondition.FINDINGS_VALIDATED, StopCondition.RESOURCE_BUDGET_EXHAUSTED),
+        )
+        mission.context.findings = [{"finding_id": "f1", "stage": "report_ready"}]
+
+        stop = policy.evaluate_stop(mission)
+
+        assert stop is StopCondition.FINDINGS_VALIDATED
+
+
 class TestILiveCliReflectsReasoning:
     def test_cli_stderr_shows_reasoning_events(self, capsys) -> None:  # noqa: ANN001
         platform = build_platform()

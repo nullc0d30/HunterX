@@ -79,11 +79,14 @@ class FfufAdapter(ContentToolAdapter):
         """Build the ``ffuf`` command line for ``context``.
 
         The command line is assembled from typed parameters only. ``url`` and
-        ``wordlist`` are required and validated by the enforcement gate before
-        this adapter runs.
+        ``wordlist`` are required: a missing wordlist would emit an invalid
+        ``-w ''`` invocation that ffuf rejects with a usage error, so the
+        adapter fails closed like its sibling content adapters.
         """
         url = str(context.target)
-        wordlist = str(context.parameters.get("wordlist") or "")
+        wordlist = context.parameters.get("wordlist")
+        if not isinstance(wordlist, str) or not wordlist.strip():
+            raise ValueError("ffuf requires a 'wordlist' parameter")
         argv = ["ffuf", "-u", url, "-w", wordlist, "-o", "-", "-of", "json", "-s"]
         matcher = str(context.parameters.get("matcher") or _DEFAULT_MATCHER)
         argv += ["-mc", matcher]

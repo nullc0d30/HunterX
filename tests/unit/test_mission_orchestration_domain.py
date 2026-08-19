@@ -318,6 +318,58 @@ class TestPolicies:
         assert allowed.allowed is True
         assert blocked.allowed is False
 
+    def test_findings_validated_blocked_while_high_value_hypothesis_open(self) -> None:
+        mission = new_orchestrated_mission()
+        mission.context.remaining_objectives = ["bug_bounty_assessment"]
+        mission.context.findings = [{"finding_id": "f1", "stage": "report_ready"}]
+        mission.upsert_hypothesis(
+            MissionHypothesis(
+                mission_id=mission.mission_id,
+                statement="The /api/search q parameter may be susceptible to SQL injection",
+                category=HypothesisType.INJECTION,
+                priority=0.8,
+            )
+        )
+        engine = MissionPolicyEngine()
+        stop = engine.evaluate_stop(mission)
+        assert stop is None
+
+    def test_findings_validated_fires_when_no_high_value_hypotheses_open(self) -> None:
+        mission = new_orchestrated_mission()
+        mission.context.remaining_objectives = ["bug_bounty_assessment"]
+        mission.context.findings = [{"finding_id": "f1", "stage": "report_ready"}]
+        engine = MissionPolicyEngine()
+        assert engine.evaluate_stop(mission) is StopCondition.FINDINGS_VALIDATED
+
+    def test_findings_validated_fires_once_high_value_hypotheses_resolved(self) -> None:
+        mission = new_orchestrated_mission()
+        mission.context.remaining_objectives = ["bug_bounty_assessment"]
+        mission.context.findings = [{"finding_id": "f1", "stage": "report_ready"}]
+        mission.upsert_hypothesis(
+            MissionHypothesis(
+                mission_id=mission.mission_id,
+                statement="The /api/search q parameter may be susceptible to SQL injection",
+                category=HypothesisType.INJECTION,
+                priority=0.8,
+                state=HypothesisState.REFUTED,
+            )
+        )
+        engine = MissionPolicyEngine()
+        assert engine.evaluate_stop(mission) is StopCondition.FINDINGS_VALIDATED
+
+    def test_findings_validated_never_fires_without_findings(self) -> None:
+        mission = new_orchestrated_mission()
+        mission.context.remaining_objectives = ["bug_bounty_assessment"]
+        engine = MissionPolicyEngine()
+        assert engine.evaluate_stop(mission) is None
+
+    def test_findings_validated_requires_terminal_findings(self) -> None:
+        mission = new_orchestrated_mission()
+        mission.context.remaining_objectives = ["bug_bounty_assessment"]
+        mission.context.findings = [{"finding_id": "f1", "stage": "candidate"}]
+        engine = MissionPolicyEngine()
+        assert engine.evaluate_stop(mission) is None
+
 
 class TestTelemetry:
     def test_snapshot_produces_metrics(self) -> None:

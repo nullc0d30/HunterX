@@ -30,6 +30,13 @@ from hunterx.domain.exceptions import ConfigurationError
 from hunterx.domain.ports.services import AIPort
 from hunterx.infrastructure.ai.null import NullAIClient
 from hunterx.infrastructure.ai.openrouter import OpenRouterClient
+from hunterx.infrastructure.ai.providers import (
+    AnthropicClient,
+    DeepSeekClient,
+    GeminiClient,
+    OpenAIClient,
+    XAIClient,
+)
 
 #: Providers whose API key is accepted by :class:`AISettings`.
 _KNOWN_PROVIDERS: frozenset[str] = frozenset(
@@ -37,8 +44,15 @@ _KNOWN_PROVIDERS: frozenset[str] = frozenset(
 )
 
 #: Providers with a concrete adapter implemented in the infrastructure layer.
+#: OpenAI, DeepSeek, OpenRouter and xAI/Grok share the OpenAI-compatible
+#: transport; Anthropic and Gemini use their own protocol adapters.
 _ADAPTERS: dict[str, type[Any]] = {
+    "openai": OpenAIClient,
+    "anthropic": AnthropicClient,
+    "deepseek": DeepSeekClient,
     "openrouter": OpenRouterClient,
+    "gemini": GeminiClient,
+    "grok": XAIClient,
 }
 
 
