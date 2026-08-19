@@ -13,8 +13,33 @@ from __future__ import annotations
 import sys
 from collections.abc import Sequence
 
+import hunterx
+
 from hunterx.cli.registry import CommandRegistry
 from hunterx.cli.render import OutputRenderer
+
+
+#: HunterX CLI startup banner (presentation only). The ASCII logo and the
+#: branding lines are literal and deterministic; only the version line is
+#: interpolated from the canonical package version.
+_STARTUP_BANNER = """\
+██╗  ██╗██╗   ██╗███╗   ██╗████████╗███████╗██████╗ ██╗  ██╗
+██║  ██║██║   ██║████╗  ██║╚══██╔══╝██╔════╝██╔══██╗╚██╗██╔╝
+███████║██║   ██║██╔██╗ ██║   ██║   █████╗  ██████╔╝ ╚███╔╝
+██╔══██║██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗ ██╔██╗
+██║  ██║╚██████╔╝██║ ╚████║   ██║   ███████╗██║  ██║██╔╝ ██╗
+╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+
+       AI-POWERED SECURITY ORCHESTRATION & INTELLIGENCE PLATFORM
+                            HunterX v{version}
+
+       Observe → Hypothesize → Probe → Verify
+
+       Developed & Engineered by
+       Ahmed Awad (AKA NullC0d3)
+
+[INFO] HunterX Environment Bootstrapper
+[INFO] System Mode · Profile: Full"""
 
 
 class CliApplication:
@@ -31,6 +56,10 @@ class CliApplication:
         self.registry = CommandRegistry()
         self.renderer = OutputRenderer()
         self.program_name = program_name
+
+    def banner(self) -> str:
+        """Return the startup banner with the canonical version interpolated."""
+        return _STARTUP_BANNER.format(version=hunterx.__version__)
 
     def run(self, argv: Sequence[str]) -> int:
         """Dispatch ``argv`` to a command and return its exit code."""
@@ -52,7 +81,7 @@ class CliApplication:
             return 130
 
     def help_text(self) -> str:
-        """Render a simple command list for the help message."""
+        """Render the startup banner followed by the command list."""
         lines = [f"Usage: {self.program_name} <command> [args...]", ""]
         for name in self.registry.names():
             command = self.registry.get(name)
@@ -61,7 +90,7 @@ class CliApplication:
         lines.append("")
         lines.append("HunterX is an authorized cybersecurity testing and research platform.")
         lines.append("Obtain appropriate authorization before testing any system.")
-        return "\n".join(lines)
+        return f"{self.banner()}\n\n{chr(10).join(lines)}"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
