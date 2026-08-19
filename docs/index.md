@@ -370,7 +370,7 @@ description: >-
   </div>
   <div class="lp-card-grid">
     <div class="lp-card"><span class="lp-card-icon">&#128279;</span><h3>Security Tools</h3><p>92 registered tools across recon, scanning, crawling, fuzzing, parameters, validation, secrets, SAST, proxies, exploitation and knowledge resources.</p></div>
-    <div class="lp-card"><span class="lp-card-icon">&#129302;</span><h3>AI Providers</h3><p>LLM-native reasoning through a decoupled AI provider layer.</p></div>
+    <div class="lp-card"><span class="lp-card-icon">&#129302;</span><h3>AI Providers</h3><p>OpenAI, Anthropic/Claude, DeepSeek, OpenRouter, Google Gemini and xAI/Grok — provider and model selected independently, each with its own API key and endpoint.</p></div>
     <div class="lp-card"><span class="lp-card-icon">&#128267;</span><h3>CI/CD</h3><p>Docker images, SARIF export for GitHub CodeQL, and a REST API for pipeline integration.</p></div>
     <div class="lp-card"><span class="lp-card-icon">&#128451;</span><h3>Persistence</h3><p>SQL (SQLite default, PostgreSQL supported) via TIDB with Alembic migrations.</p></div>
   </div>
@@ -426,6 +426,9 @@ description: >-
         <span class="link-icon">&#128308;</span>
         <div><div class="link-text">OWASP Community</div><div class="link-desc">Listed in the OWASP Vulnerability Scanning Tools catalog</div></div>
       </a>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="https://github.com/sponsors/nullc0d30" class="primary" target="_blank" rel="noopener">&#9829; Support HunterX on GitHub Sponsors</a>
     </div>
   </div>
 </div>

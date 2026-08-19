@@ -110,7 +110,7 @@ share or commit it.
 
 ## Configure OpenRouter
 
-OpenRouter is the currently implemented AI provider adapter. To use it:
+To use OpenRouter:
 
 1. Create an account at <https://openrouter.ai>.
 2. Create an API key at <https://openrouter.ai/keys>.

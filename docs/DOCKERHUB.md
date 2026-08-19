@@ -185,6 +185,39 @@ Configuration is resolved in this order (each level overrides the previous):
 | `HUNTERX_CONFIG` | *(empty)* | Path to a YAML profile file |
 | `HUNTERX_ENVIRONMENT` | `production` | Environment name (`dev`, `staging`, `production`) |
 
+### AI provider configuration (optional)
+
+AI is optional: with no provider configured HunterX runs on a safe `NullAIClient`
+fallback. Provider and model are selected independently; each provider uses its
+own key variable:
+
+| Provider | `HUNTERX_AI_PROVIDER` | `HUNTERX_AI_MODEL` (example) | API key variable |
+|---|---|---|---|
+| OpenAI | `openai` | `gpt-4o-mini` | `HUNTERX_AI_OPENAI_KEY` |
+| Anthropic / Claude | `anthropic` | `claude-3-5-sonnet-latest` | `HUNTERX_AI_ANTHROPIC_KEY` |
+| DeepSeek | `deepseek` | `deepseek-chat` | `HUNTERX_AI_DEEPSEEK_KEY` |
+| OpenRouter | `openrouter` | `deepseek/deepseek-chat` | `HUNTERX_AI_OPENROUTER_KEY` |
+| Google Gemini | `gemini` | `gemini-1.5-flash` | `HUNTERX_AI_GEMINI_KEY` |
+| xAI / Grok | `grok` | `grok-2-latest` | `HUNTERX_AI_GROK_KEY` |
+
+Each provider resolves its own API endpoint (for example `openai` → `api.openai.com`,
+`deepseek` → `api.deepseek.com`, `openrouter` → `openrouter.ai`); HunterX never
+silently reroutes one provider to another and never rewrites the configured
+model. Missing credentials, invalid keys, invalid models, rate limits and
+provider outages are reported truthfully. Every provider route is implemented
+and unit-tested; live completion requires your own credential for the selected
+provider.
+
+Example:
+
+```bash
+docker run --rm \
+  -e HUNTERX_AI_PROVIDER=openai \
+  -e HUNTERX_AI_MODEL=gpt-4o-mini \
+  -e HUNTERX_AI_OPENAI_KEY=YOUR_API_KEY \
+  nullc0d30/hunterx:7.0.0 config
+```
+
 Example:
 
 ```bash
@@ -246,5 +279,13 @@ See [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/) and 
 - Security: [Security Policy](https://nullc0d30.github.io/HunterX/security/)
 - Responsible Use: [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/)
 - Report issues: [GitHub Issues](https://github.com/nullc0d30/HunterX/issues)
+- AI Configuration: [AI Configuration](https://nullc0d30.github.io/HunterX/configuration/ai/)
+
+## Support HunterX
+
+If HunterX is useful to your authorized security work, consider supporting its
+continued development:
+
+[GitHub Sponsors](https://github.com/sponsors/nullc0d30) — [![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30)](https://github.com/sponsors/nullc0d30)
 
 HunterX is created and maintained by [Ahmed Awad (NullC0d3)](https://github.com/nullc0d30), released under the Apache License 2.0.

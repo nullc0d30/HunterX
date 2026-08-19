@@ -28,6 +28,7 @@ assessment** and **professional reporting** into a single workflow.
 [![Awesome AI in Cybersecurity](https://img.shields.io/badge/Awesome%20AI%20in%20Cybersecurity-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/ElNiak/awesome-ai-cybersecurity)
 [![Awesome AI for Security](https://img.shields.io/badge/Awesome%20AI%20for%20Security-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/AmanPriyanshu/Awesome-AI-For-Security)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30?style=flat-square&logo=github)](https://github.com/sponsors/nullc0d30)
 
 **Less noise. More verified findings.**
 
@@ -576,9 +577,9 @@ report that no AI provider is configured when invoked.
 To enable AI-assisted reasoning:
 
 1. Copy the template: `cp .env.example .env`
-2. Add your provider
-3. Add your model
-4. Add your API key
+2. Set `HUNTERX_AI_PROVIDER` to your provider
+3. Set `HUNTERX_AI_MODEL` to the model you want
+4. Set the matching `HUNTERX_AI_<PROVIDER>_KEY`
 5. Run HunterX
 
 `.env.example` is a template. `.env` is your private, local configuration file
@@ -586,24 +587,44 @@ that holds your real API key. It is already ignored by Git and must **never** be
 committed. Never paste API keys into source files, GitHub issues, pull
 requests, screenshots, logs, or public documentation.
 
-For **OpenRouter** (the currently implemented provider adapter), edit `.env`:
+### Supported AI providers
+
+HunterX ships a runtime adapter for every provider its configuration layer
+recognizes. Provider and model are selected **independently**:
+
+| Provider | `HUNTERX_AI_PROVIDER` | `HUNTERX_AI_MODEL` (example) | API key variable |
+|---|---|---|---|
+| OpenAI | `openai` | `gpt-4o-mini` | `HUNTERX_AI_OPENAI_KEY` |
+| Anthropic / Claude | `anthropic` | `claude-3-5-sonnet-latest` | `HUNTERX_AI_ANTHROPIC_KEY` |
+| DeepSeek | `deepseek` | `deepseek-chat` | `HUNTERX_AI_DEEPSEEK_KEY` |
+| OpenRouter | `openrouter` | `deepseek/deepseek-chat` | `HUNTERX_AI_OPENROUTER_KEY` |
+| Google Gemini | `gemini` | `gemini-1.5-flash` | `HUNTERX_AI_GEMINI_KEY` |
+| xAI / Grok | `grok` | `grok-2-latest` | `HUNTERX_AI_GROK_KEY` |
+
+Example:
 
 ```env
-HUNTERX_AI_PROVIDER=openrouter
-HUNTERX_AI_MODEL=deepseek/deepseek-chat
-HUNTERX_AI_OPENROUTER_KEY=YOUR_API_KEY
+HUNTERX_AI_PROVIDER=openai
+HUNTERX_AI_MODEL=gpt-4o-mini
+HUNTERX_AI_OPENAI_KEY=YOUR_API_KEY
 ```
 
-- `HUNTERX_AI_PROVIDER` — where the API request is sent (`openrouter`).
-- `HUNTERX_AI_MODEL` — which model HunterX asks the provider to use. The model
-  name is not a key.
-- `HUNTERX_AI_OPENROUTER_KEY` — the secret credential used to authenticate the
-  request. Get one at <https://openrouter.ai/keys>.
+- `HUNTERX_AI_PROVIDER` — where the API request is sent. Selecting `openai`
+  sends requests to `api.openai.com`, `deepseek` to `api.deepseek.com`,
+  `openrouter` to `openrouter.ai`, and so on. HunterX never silently reroutes
+  one provider to another.
+- `HUNTERX_AI_MODEL` — the model identifier HunterX asks the provider to use.
+  It is passed through verbatim and never silently rewritten.
+- The matching `HUNTERX_AI_<PROVIDER>_KEY` — the secret credential for that
+  provider. A provider without its key reports a clear configuration error; an
+  invalid key, invalid model, rate limit or outage is reported truthfully. AI
+  failure never stops a mission — advisory suggestions degrade to
+  "no suggestion" and the deterministic planner continues.
 
-HunterX's configuration layer also accepts keys for OpenAI, Anthropic, Gemini,
-DeepSeek and Grok (`HUNTERX_AI_OPENAI_KEY`, `HUNTERX_AI_ANTHROPIC_KEY`,
-`HUNTERX_AI_GEMINI_KEY`, `HUNTERX_AI_DEEPSEEK_KEY`, `HUNTERX_AI_GROK_KEY`) for
-future adapters — **OpenRouter is the live implemented adapter**.
+> **Live completion vs. routing.** Every provider route is implemented and
+> unit-tested with mocked HTTP. Live completion requires your own API
+> credential for the selected provider; without one the provider is not
+> exercised live.
 
 Verify the setup with `hunterx config` (the API key is masked), then run your
 missions normally.
@@ -1083,6 +1104,16 @@ researcher.
 
 - GitHub: [nullc0d30](https://github.com/nullc0d30)
 - Repository: [nullc0d30/HunterX](https://github.com/nullc0d30/HunterX)
+
+## Support HunterX
+
+If HunterX is useful to your authorized security work, consider supporting its
+continued development.
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30?style=for-the-badge&logo=github)](https://github.com/sponsors/nullc0d30)
+
+Sponsorships help keep HunterX open source: maintenance, documentation,
+security research and new integrations.
 
 ## Star / Follow / Contribute
 
