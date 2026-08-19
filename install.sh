@@ -1063,12 +1063,23 @@ PYEOF
 
 show_banner() {
     echo ""
-    echo "  _   _             _             __  __"
-    echo " | | | |_   _ _ __ | |_ ___ _ __  \ \/ /"
-    echo " | |_| | | | | '_ \| __/ _ \ '__|  \  /"
-    echo " |  _  | |_| | | | | ||  __/ |     /  \\"
-    echo " |_| |_|\__,_|_| |_|\__\___|_|    /_/\_\\"
-    echo " HunterX v7 -- AI-Powered Security Orchestration & Intelligence Platform"
+    echo "██╗  ██╗██╗   ██╗███╗   ██╗████████╗███████╗██████╗ ██╗  ██╗"
+    echo "██║  ██║██║   ██║████╗  ██║╚══██╔══╝██╔════╝██╔══██╗╚██╗██╔╝"
+    echo "███████║██║   ██║██╔██╗ ██║   ██║   █████╗  ██████╔╝ ╚███╔╝"
+    echo "██╔══██║██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗ ██╔██╗"
+    echo "██║  ██║╚██████╔╝██║ ╚████║   ██║   ███████╗██║  ██║██╔╝ ██╗"
+    echo "╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝"
+    echo ""
+    echo "       AI-POWERED SECURITY ORCHESTRATION & INTELLIGENCE PLATFORM"
+    echo "                            HunterX v7.0.0"
+    echo ""
+    echo "       Observe → Hypothesize → Probe → Verify"
+    echo ""
+    echo "       Developed & Engineered by"
+    echo "       Ahmed Awad (AKA NullC0d3)"
+    echo ""
+    echo "[INFO] HunterX Environment Bootstrapper"
+    echo "[INFO] System Mode · Profile: Full"
     echo ""
 }
 
@@ -1134,8 +1145,6 @@ main() {
     fi
 
     show_banner
-    info "HunterX Environment Bootstrapper (${INSTALL_MODE} mode, profile: ${TOOL_PROFILE})"
-    echo ""
 
     if [ "$INSTALL_MODE" = "system" ] && [ "$(id -u)" -ne 0 ]; then
         warn "System-wide installation recommended as root."
