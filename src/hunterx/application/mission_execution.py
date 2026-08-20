@@ -280,6 +280,7 @@ class MissionExecutionService:
         attack_surface: AttackSurfaceService | None = None,
         adaptive_attack: AdaptiveAttackService | None = None,
         adaptive_attack_factory: Any | None = None,
+        model_attacker: Any | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
@@ -296,6 +297,13 @@ class MissionExecutionService:
         #: Advisory AI action-suggestion producer (None keeps the mission
         #: fully deterministic — the AI is never required for execution).
         self._ai_suggester = ai_suggester
+        #: Autonomous model-driven attacker (Phase 7). When wired, the connected
+        #: model participates in the real attack loop each cycle: it reasons,
+        #: produces attack hypotheses, every accepted hypothesis becomes a real
+        #: assessment task on the attack-surface queue, results and findings
+        #: feed back into its reasoning, and a finding never terminates the
+        #: mission. ``None`` keeps the mission fully deterministic.
+        self._model_attacker = model_attacker
         #: Last orchestration phase announced via ``mission.phase.started`` so
         #: phase changes are emitted once (live CLI visibility).
         self._last_phase: str = ""
@@ -421,6 +429,14 @@ class MissionExecutionService:
         self._seed_coverage(mission_id)
         self._build_attack_surface(mission_id)
         self._build_adaptive_attack(mission_id)
+        if self._model_attacker is not None:
+            with contextlib.suppress(Exception):  # the model attacker must never break the loop
+                self._model_attacker.bind(
+                    self._attack_surface,
+                    mission_id=mission_id,
+                    session=self._session,
+                    adaptive=self._adaptive_attack,
+                )
         for _ in range(1, max_cycles + 1):
             mission = self._orchestration.get(mission_id)
             if mission.mission.state.is_terminal:
@@ -429,7 +445,28 @@ class MissionExecutionService:
                 break
             cycle = self.execute_cycle(mission_id, parameters=parameters)
             cycles.append(cycle)
+            # Model-driven attack step: the connected model reasons over the
+            # observed surface, its accepted hypotheses become real assessment
+            # tasks that are discharged by the ordinary capability execution
+            # engine, and results/findings feed back into its reasoning. A
+            # finding never terminates the mission — the attacker only reports
+            # genuine exhaustion when no work remains.
+            if self._model_attacker is not None:
+                try:
+                    attacker_step = self._model_attacker.step()
+                except Exception:  # noqa: BLE001 - a model failure must never break the loop
+                    attacker_step = {"status": "model_unavailable", "pending": True}
+                cycles.append(
+                    {
+                        "status": "model_attacker",
+                        "detail": attacker_step.get("status"),
+                        "completion_reason": attacker_step.get("completion_reason", ""),
+                    }
+                )
             if cycle.get("status") in ("idle", "skipped"):
+                if self._model_attacker is not None and not self._model_attacker.exhausted():
+                    idle = 0
+                    continue
                 idle += 1
                 if idle >= max_idle_cycles:
                     break
@@ -453,16 +490,26 @@ class MissionExecutionService:
                 # converting a defensive response into a success stop.
                 if self._adaptive_blocked():
                     continue
+                # The model attacker still holds real work: keep the loop alive.
+                if self._model_attacker is not None and not self._model_attacker.exhausted():
+                    continue
                 break
             # Phase 1 exhaustion gate: the attack surface is only complete when
             # discovery, dynamic re-discovery, all applicable capability×surface
             # combinations, the assessment queue and the verification queue are
-            # exhausted and no new attack paths remain.
-            if self._surface_exhausted(mission_id):
+            # exhausted and no new attack paths remain. With a model attacker
+            # wired, its own genuine-exhaustion check is part of the gate.
+            if self._surface_exhausted(mission_id) and (
+                self._model_attacker is None or self._model_attacker.exhausted()
+            ):
                 break
         surface_report = self._surface_exhaustion_report(mission_id)
         if self._adaptive_blocked():
             finalize_condition: StopCondition | None = StopCondition.BLOCKED
+        elif self._model_attacker is not None and not self._model_attacker.exhausted():
+            # A resource ceiling or an unavailable model while work remains is
+            # never reported as completion.
+            finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
         else:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
         self._finalize_run(mission_id, stop_condition=finalize_condition)
@@ -482,6 +529,7 @@ class MissionExecutionService:
             "coverage_ratio": mission.coverage_ratio(),
             "surface": surface_report.to_dict() if surface_report is not None else None,
             "adaptive_attack": self._adaptive_attack.snapshot() if self._adaptive_attack is not None else None,
+            "model_attacker": self._model_attacker.report() if self._model_attacker is not None else None,
         }
 
     # -- decision / execution -----------------------------------------------

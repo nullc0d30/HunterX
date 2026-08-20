@@ -431,6 +431,32 @@ def _build_ai_suggester(settings: Settings) -> Any:
     return AIActionSuggester(ai, model=settings.ai.model)
 
 
+def _build_model_attacker(settings: Settings, *, finding_service: Any) -> Any:
+    """Build the autonomous model-driven attacker (Phase 7).
+
+    The attacker is wired only when a real AI provider is configured — the
+    connected model then participates in the attack loop as an active attack
+    component (hypothesis generation → real assessment tasks → observation →
+    learning), never as a reporting component. Without a configured provider
+    the mission stays fully deterministic: there is no model to reason with,
+    so nothing is fabricated and nothing is silently marked exhausted.
+    """
+    from hunterx.application.capability_finding import CapabilityFindingPipeline
+    from hunterx.application.model_attacker import ModelAttacker
+    from hunterx.domain.model_attacker.reasoner import ModelReasoner
+    from hunterx.infrastructure.ai import build_ai_client
+
+    if not str(settings.ai.provider or "").strip():
+        return None
+    try:
+        ai = build_ai_client(settings.ai)
+    except Exception:  # noqa: BLE001 - an unconfigured model must never break composition
+        return None
+    reasoner = ModelReasoner(ai, model=settings.ai.model)
+    pipeline = CapabilityFindingPipeline(finding_service)
+    return ModelAttacker(reasoner, finding_pipeline=pipeline)
+
+
 def _build_tidb_stores(repositories: dict[str, object]) -> TidbRepositoryFactory:
     """Build the TIDB repository factory, preferring SQL when configured.
 
@@ -876,6 +902,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         readiness=tool_readiness,
         ai_suggester=_build_ai_suggester(settings),
         finding_service=vulnerability_finding_service,
+        model_attacker=_build_model_attacker(settings, finding_service=vulnerability_finding_service),
     )
 
     # -- observability -------------------------------------------------------
