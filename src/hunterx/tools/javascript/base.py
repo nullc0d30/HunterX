@@ -210,10 +210,10 @@ def _fetch_script(url: str) -> tuple[str, bool]:
     """Acquire script content for ``url`` (loopback-only) or return empty.
 
     A bounded retry absorbs transient connection resets from busy local
-    servers (Juice Shop and other dev targets close idle/loaded connections
-    aggressively), so script acquisition is robust inside a mission run.
+    servers (dev/test targets close idle or loaded connections aggressively),
+    so script acquisition is robust inside a mission run.
     The retry window must be wider than the reset storm: after a heavy
-    toolchain burst (katana/arjun/nuclei) a busy server keeps resetting new
+    toolchain burst a busy server keeps resetting new
     connections for several seconds, and a 3-attempt flat retry exhausts its
     budget inside that window, permanently losing the asset. Five attempts
     with linear backoff (0.5-2.5s sleeps) ride out the storm while staying

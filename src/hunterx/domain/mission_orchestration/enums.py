@@ -115,6 +115,7 @@ class StopCondition(StrEnum):
     COVERAGE_TARGET_ACHIEVED = "coverage_target_achieved"
     HIGH_VALUE_HYPOTHESES_RESOLVED = "high_value_hypotheses_resolved"
     FINDINGS_VALIDATED = "findings_validated"
+    ATTACK_SURFACE_EXHAUSTED = "attack_surface_exhausted"
     RESOURCE_BUDGET_EXHAUSTED = "resource_budget_exhausted"
     TIME_BUDGET_EXHAUSTED = "time_budget_exhausted"
     OPERATOR_CANCELLED = "operator_cancelled"

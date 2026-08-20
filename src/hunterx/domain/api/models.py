@@ -616,8 +616,10 @@ class ApiAuthObservation:
     confidence: float = 1.0
     source: str = "spec"
     tool_id: str = ""
+    target_key: str = ""
     correlation_id: str = ""
     mission_id: str = ""
+    execution_id: str = ""
     record_id: str = field(default_factory=generate_id, kw_only=True)
 
     def key(self) -> str:
@@ -642,6 +644,7 @@ class ApiAuthObservation:
             "confidence": self.confidence,
             "source": self.source,
             "tool_id": self.tool_id,
+            "target_key": self.target_key,
             "correlation_id": self.correlation_id,
             "mission_id": self.mission_id,
         }
@@ -663,8 +666,10 @@ class ApiAuthObservation:
             confidence=float(payload.get("confidence") or 1.0),
             source=str(payload.get("source") or "spec"),
             tool_id=str(payload.get("tool_id") or ""),
+            target_key=str(payload.get("target_key") or ""),
             correlation_id=str(payload.get("correlation_id") or ""),
             mission_id=str(payload.get("mission_id") or ""),
+            execution_id=str(payload.get("execution_id") or ""),
             record_id=str(payload.get("record_id") or generate_id()),
         )
 
