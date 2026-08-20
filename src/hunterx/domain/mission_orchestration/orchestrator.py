@@ -2445,6 +2445,7 @@ _SUCCESS_STOP_CONDITIONS = frozenset(
         StopCondition.COVERAGE_TARGET_ACHIEVED,
         StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED,
         StopCondition.FINDINGS_VALIDATED,
+        StopCondition.ATTACK_SURFACE_EXHAUSTED,
     }
 )
 

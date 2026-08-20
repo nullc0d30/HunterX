@@ -9,11 +9,11 @@ Security tools take the mission target in one of two shapes:
 - host/domain/network tools (``nmap``, ``subfinder``, ``dnsx``, ...) need a
   bare hostname, IP or domain.
 
-Passing a full URL (``http://localhost:3010``) to a host tool silently yields
-empty results — the tool runs, finds nothing and reports success. This module
-normalizes the raw mission target into a structured :class:`TargetSpec` so the
-execution runner can hand every adapter the shape its descriptor declares,
-instead of stripping the scheme globally or passing the URL verbatim.
+Passing a full URL (``http://host.example:8080/app``) to a host tool silently
+yields empty results — the tool runs, finds nothing and reports success. This
+module normalizes the raw mission target into a structured :class:`TargetSpec`
+so the execution runner can hand every adapter the shape its descriptor
+declares, instead of stripping the scheme globally or passing the URL verbatim.
 """
 
 from __future__ import annotations

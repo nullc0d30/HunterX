@@ -25,16 +25,26 @@ from __future__ import annotations
 import contextlib
 from typing import Any
 
+from hunterx.application.adaptive_attack import AdaptiveAttackService
+from hunterx.application.attack_surface import AttackSurfaceService
 from hunterx.application.mission_orchestration import MissionOrchestrationService
+from hunterx.domain.adaptive_attack.enums import AttackState
 from hunterx.domain.adaptive_mission_planning.enums import (
     ActionStatus,
     MissionState,
     ReplanTrigger,
 )
+from hunterx.domain.attack_surface.enums import (
+    AssessmentStatus,
+    CompletionVerdict,
+    VerificationState,
+)
 from hunterx.domain.auth.session import AuthenticatedSession
 from hunterx.domain.execution import ExecutionStatus
+from hunterx.domain.mission_orchestration.enums import StopCondition
 from hunterx.domain.mission_orchestration.orchestrator import _endpoint_urls
 from hunterx.domain.target_intelligence.enums import CoverageState
+from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
 from hunterx.shared.masking import mask_value
 from hunterx.shared.target import (
@@ -127,6 +137,27 @@ def _observation_id(observation: Any) -> str:
     if isinstance(observation, dict):
         return str(observation.get("observation_id") or "")
     return str(getattr(observation, "observation_id", "") or "")
+
+
+def _observed_status(result: Any) -> int | None:
+    """Extract an observed HTTP status from an execution result's JSON payload.
+
+    Tool outputs may carry a ``status_code``/``status`` for the target; a
+    non-zero value is fed into the adaptive controller as target feedback.
+    """
+    output = getattr(result, "output", None)
+    if output is None:
+        return None
+    data = getattr(output, "json", None)
+    if not isinstance(data, dict):
+        return None
+    for key in ("status_code", "status"):
+        value = data.get(key)
+        if isinstance(value, int) and value > 0:
+            return value
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+    return None
 
 
 def _javascript_asset_urls(content: Any) -> list[str]:
@@ -246,6 +277,9 @@ class MissionExecutionService:
         readiness: Any | None = None,
         ai_suggester: Any | None = None,
         finding_service: Any | None = None,
+        attack_surface: AttackSurfaceService | None = None,
+        adaptive_attack: AdaptiveAttackService | None = None,
+        adaptive_attack_factory: Any | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
@@ -273,6 +307,21 @@ class MissionExecutionService:
         self._auth_attempted: bool = False
         #: Masked establishment outcome shared with events (never raw secrets).
         self._auth_outcome: dict[str, Any] | None = None
+        #: Target-agnostic attack-surface model/mapper/queue/gate for the active
+        #: mission. Built per-mission unless injected (Phase 1). Never blocks
+        #: the loop: every touch is best-effort.
+        self._attack_surface: AttackSurfaceService | None = attack_surface
+        #: Latest attack-surface exhaustion report (``None`` when not wired).
+        self._surface_report: Any | None = None
+        #: Aggressive-but-bounded adaptive attack controller (Phase 2). Built
+        #: per-mission unless injected. Feeds execution outcomes back into the
+        #: target-feedback state machine (aggression/pacing/backoff/retry).
+        self._adaptive_attack: AdaptiveAttackService | None = adaptive_attack
+        #: Optional per-mission factory ``(mission_id, target_key) -> service``
+        #: for wiring a custom adaptive controller (tests/instrumentation).
+        self._adaptive_attack_factory: Any | None = adaptive_attack_factory
+        #: Bounded ceiling for a single pacing wait applied by the runner.
+        self._pacing_cap_s: float = 5.0
 
     # -- public API ---------------------------------------------------------
 
@@ -370,6 +419,8 @@ class MissionExecutionService:
         self._parameters = parameters or {}
         self._establish_auth_session(mission_id, parameters)
         self._seed_coverage(mission_id)
+        self._build_attack_surface(mission_id)
+        self._build_adaptive_attack(mission_id)
         for _ in range(1, max_cycles + 1):
             mission = self._orchestration.get(mission_id)
             if mission.mission.state.is_terminal:
@@ -397,8 +448,24 @@ class MissionExecutionService:
                     and self._has_pending_plan_work(mission_id)
                 ):
                     continue
+                # A target that persistently blocks the assessment is never
+                # "complete": keep a reduced (throttled) presence instead of
+                # converting a defensive response into a success stop.
+                if self._adaptive_blocked():
+                    continue
                 break
-        self._finalize_run(mission_id)
+            # Phase 1 exhaustion gate: the attack surface is only complete when
+            # discovery, dynamic re-discovery, all applicable capability×surface
+            # combinations, the assessment queue and the verification queue are
+            # exhausted and no new attack paths remain.
+            if self._surface_exhausted(mission_id):
+                break
+        surface_report = self._surface_exhaustion_report(mission_id)
+        if self._adaptive_blocked():
+            finalize_condition: StopCondition | None = StopCondition.BLOCKED
+        else:
+            finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
+        self._finalize_run(mission_id, stop_condition=finalize_condition)
         self._record_telemetry(mission_id)
         mission = self._orchestration.get(mission_id)
         return {
@@ -413,6 +480,8 @@ class MissionExecutionService:
             "decisions": len(mission.decisions),
             "tool_executions": len(mission.context.tool_executions),
             "coverage_ratio": mission.coverage_ratio(),
+            "surface": surface_report.to_dict() if surface_report is not None else None,
+            "adaptive_attack": self._adaptive_attack.snapshot() if self._adaptive_attack is not None else None,
         }
 
     # -- decision / execution -----------------------------------------------
@@ -488,6 +557,7 @@ class MissionExecutionService:
         # against the mission target.
         target = action.asset or target
         action.mark(ActionStatus.RUNNING)
+        self._attack_pace(mission_id)
 
         if not tool_id:
             return self._fail_execution(
@@ -552,6 +622,14 @@ class MissionExecutionService:
         pipeline: Any,
     ) -> dict[str, Any]:
         result = pipeline.result
+        self._attack_observe(
+            "",
+            status_code=_observed_status(result),
+            duration_ms=getattr(result, "duration_ms", 0) or 0,
+            error=result.error or "",
+            failure_kind=result.failure_kind.value if result.failure_kind else "",
+            source="execution",
+        )
         if result.ok:
             raw = self._observation_from_result(capability, result)
             ingested = self._orchestration.ingest_result(
@@ -561,6 +639,7 @@ class MissionExecutionService:
                 asset_key=target,
                 raw=raw,
             )
+            self._surface_feedback(mission_id, raw, capability, target)
             self._planning.get_action(mission_id, action_id).mark(ActionStatus.COMPLETED)
             meaningful = has_meaningful_content(raw.get("content"))
             if meaningful:
@@ -582,6 +661,7 @@ class MissionExecutionService:
                 # discovery → hypothesis → probe (never triggers execution).
                 with contextlib.suppress(Exception):  # attack-path recording is best-effort
                     self._orchestration.record_attack_paths(mission_id)
+                self._surface_attack_paths(mission_id)
                 self._publish_tool_completed(
                     mission_id, action_id, capability, tool_id, target, result, outcome="evidence"
                 )
@@ -629,6 +709,7 @@ class MissionExecutionService:
                         asset_key=target,
                         raw=status_raw,
                     )
+                    self._surface_feedback(mission_id, status_raw, capability, target)
                     # Probe the freshly derived access-control hypothesis in the
                     # same cycle: the differential probe decides meaningful
                     # access (never a status change alone).
@@ -648,6 +729,7 @@ class MissionExecutionService:
                         asset_key=target,
                         raw=form_raw,
                     )
+                    self._surface_feedback(mission_id, form_raw, capability, target)
                     self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
                     self._assess_hypotheses_after_observation(
                         mission_id,
@@ -764,6 +846,13 @@ class MissionExecutionService:
         """
         mission = self._orchestration.get(mission_id)
         target = mission.context.target_id
+        self._attack_observe(
+            mission_id,
+            status_code=None,
+            error=error,
+            failure_kind=failure_kind,
+            source="execution",
+        )
         self._orchestration.ingest_result(
             mission_id,
             tool_id=tool_id or "",
@@ -840,12 +929,12 @@ class MissionExecutionService:
     ) -> Any:
         """Build the execution context with a scheme-aware per-tool target.
 
-        The raw mission target (e.g. ``http://localhost:3010``) is normalized
-        once and handed to each adapter in the shape its descriptor declares:
-        web tools receive the full URL, host/domain/network tools receive the
-        bare host. Passing a URL to a host tool silently produces empty results
-        — a false "no findings" — so the shape must match the tool, never the
-        operator's typing.
+        The raw mission target (e.g. ``http://host.example:8080/app``) is
+        normalized once and handed to each adapter in the shape its descriptor
+        declares: web tools receive the full URL, host/domain/network tools
+        receive the bare host. Passing a URL to a host tool silently produces
+        empty results — a false "no findings" — so the shape must match the
+        tool, never the operator's typing.
         """
         spec = normalize_target(target)
         declared = self._declared_targets(tool_id)
@@ -861,6 +950,10 @@ class MissionExecutionService:
             merged["cookies"] = dict(session.cookies)
             if session.headers:
                 merged["headers"] = dict(session.headers)
+        # The adaptive controller's bounded aggression tier is exposed to tool
+        # adapters so richer applicable strategies are selected while healthy.
+        if self._adaptive_attack is not None:
+            merged["aggression"] = self._adaptive_attack.aggression_level().value
         return (
             ExecutionContextBuilder(tool_id=tool_id, target=effective_target)
             .with_mission(mission_id)
@@ -1553,6 +1646,7 @@ class MissionExecutionService:
                 },
             )
             responses = ProbeExecutor().execute(probe, target=execution_target)
+            self._probe_feedback(responses)
             if (
                 self._session is not None
                 and self._session.established
@@ -1566,6 +1660,7 @@ class MissionExecutionService:
                 if self._session is not None and self._session.established:
                     probe = self._with_session_headers(probe)
                     responses = ProbeExecutor().execute(probe, target=execution_target)
+                    self._probe_feedback(responses)
                 if _landed_on_auth_wall(responses):
                     # The session could not be re-established: record the probe
                     # honestly as inconclusive (no signal was evaluated against
@@ -2056,12 +2151,280 @@ class MissionExecutionService:
                     {"mission_id": mission_id, "phase": phase, "phase_kind": phase},
                 )
 
-    def _finalize_run(self, mission_id: str) -> None:
+    def _build_attack_surface(self, mission_id: str) -> None:
+        """Build (or keep) the per-mission attack-surface service.
+
+        The surface model is mission-scoped; an injected instance is reused,
+        otherwise a fresh one is built for the active mission's target.
+        """
+        if self._attack_surface is not None:
+            return
+        with contextlib.suppress(Exception):  # surface modelling must never block the loop
+            mission = self._orchestration.get(mission_id)
+            target_key = mission.context.target_id or "target"
+            self._attack_surface = AttackSurfaceService(
+                mission_id=mission_id,
+                target_key=target_key,
+                event_bus=self._event_bus,
+            )
+
+    def _build_adaptive_attack(self, mission_id: str) -> None:
+        """Build (or keep) the per-mission adaptive attack controller.
+
+        The controller is mission-scoped; an injected instance or a wired
+        factory is used, otherwise a fresh one is built for the active
+        mission's target.
+        """
+        if self._adaptive_attack is not None:
+            return
+        with contextlib.suppress(Exception):  # adaptive control must never block the loop
+            mission = self._orchestration.get(mission_id)
+            target_key = mission.context.target_id or "target"
+            if self._adaptive_attack_factory is not None:
+                self._adaptive_attack = self._adaptive_attack_factory(mission_id, target_key)
+            else:
+                self._adaptive_attack = AdaptiveAttackService(
+                    mission_id=mission_id,
+                    target_key=target_key,
+                    event_bus=self._event_bus,
+                )
+
+    def _adaptive_blocked(self) -> bool:
+        """Return ``True`` when the adaptive controller is in ``BLOCKED``.
+
+        A persistently blocking target must never be reported as a success
+        stop — blocking is blocking, not completion.
+        """
+        service = self._adaptive_attack
+        if service is None:
+            return False
+        with contextlib.suppress(Exception):
+            return service.attack_state() is AttackState.BLOCKED
+        return False
+
+    def _attack_observe(
+        self,
+        mission_id: str,
+        *,
+        status_code: int | None = None,
+        duration_ms: int = 0,
+        error: str = "",
+        failure_kind: str = "",
+        body_hint: str = "",
+        source: str = "execution",
+    ) -> None:
+        """Feed an execution outcome into the adaptive attack controller.
+
+        Defensive responses (429/403/5xx/timeout/connection/latency/WAF)
+        throttle the engine; they are target feedback, never mission
+        completion. Any failure degrades to no-op.
+        """
+        service = self._adaptive_attack
+        if service is None:
+            return
+        with contextlib.suppress(Exception):
+            service.observe(
+                status_code=status_code,
+                duration_ms=duration_ms,
+                error=error,
+                failure_kind=failure_kind,
+                body_hint=body_hint,
+                source=source,
+            )
+
+    def _attack_pace(self, mission_id: str) -> None:
+        """Apply the adaptive controller's bounded pacing before the next step.
+
+        Pacing is only enforced when the controller is wired and requests it
+        (throttled/backing-off/blocked states); the wait is capped so a
+        defensive target can never cause an uncontrolled stall.
+        """
+        service = self._adaptive_attack
+        if service is None or not service.enforce_pacing:
+            return
+        delay = service.pacing_seconds()
+        if delay <= 0:
+            return
+        import time
+
+        time.sleep(min(delay, self._pacing_cap_s))
+
+    def _probe_feedback(self, responses: Any) -> None:
+        """Feed differential-probe responses into the adaptive controller."""
+        service = self._adaptive_attack
+        if service is None or not responses:
+            return
+        status = 0
+        duration = 0
+        for response in responses:
+            if not isinstance(response, dict):
+                continue
+            response_status = int(response.get("status") or 0)
+            if response_status in (429, 403) or response_status >= 500:
+                status = response_status
+            duration = max(duration, int(response.get("elapsed_ms") or 0))
+        if status:
+            self._attack_observe("", status_code=status, duration_ms=duration, source="probe")
+        elif duration:
+            self._attack_observe("", duration_ms=duration, source="probe")
+
+    def _surface_feedback(
+        self,
+        mission_id: str,
+        raw: dict[str, Any],
+        capability: str,
+        target: str,
+    ) -> None:
+        """Feed an observation into the attack-surface model (best-effort).
+
+        The surface service classifies the observation, upserts surface nodes,
+        maps ``Capability × Surface × Context`` and schedules assessment tasks.
+        Any failure degrades to no-op so the mission loop is never blocked by
+        surface modelling.
+        """
+        surface = self._attack_surface
+        if surface is None:
+            return
+        with contextlib.suppress(Exception):
+            session_state = ""
+            if self._session is not None:
+                session_state = str(getattr(self._session, "state", "") or "")
+            surface.on_observation(
+                observation_type=str(raw.get("observation_type", "")),
+                content=raw.get("content"),
+                asset_key=target,
+                capability=capability,
+                source="mission_execution",
+                session_state=session_state,
+            )
+            self._discharge_assessments(surface, capability, target, has_meaningful_content(raw.get("content")), mission_id)
+            self._surface_report = surface.exhaustion()
+
+    def _discharge_assessments(
+        self,
+        surface: AttackSurfaceService,
+        capability: str,
+        target: str,
+        meaningful: bool,
+        mission_id: str,
+    ) -> None:
+        """Execute queued assessments — real probes on probeable targets.
+
+        Loopback targets run through the capability execution engine so every
+        queued ``Capability × Surface × Context`` assessment is discharged with
+        real differential probes and an honest verdict. Non-probeable targets
+        fall back to evidence-backed bookkeeping so remote missions can still
+        reach exhaustion. Any failure degrades to no-op (never blocks the loop).
+        """
+        if not capability:
+            return
+        if is_loopback_target(target):
+            self._execute_assessments(surface, mission_id, target)
+            return
+        self._settle_assessments(surface, capability, target, meaningful)
+
+    def _execute_assessments(self, surface: AttackSurfaceService, mission_id: str, target: str) -> None:
+        """Run every ready assessment through the capability execution engine."""
+        from hunterx.application.capability_execution import CapabilityExecutionEngine
+
+        engine = CapabilityExecutionEngine(
+            mission_id=mission_id,
+            target_key=target,
+            surface=surface,
+            adaptive=self._adaptive_attack,
+        )
+        engine.execute_ready(session=self._session)
+
+    def _settle_assessments(
+        self,
+        surface: AttackSurfaceService,
+        capability: str,
+        target: str,
+        meaningful: bool,
+    ) -> None:
+        """Discharge queued assessments a completed capability actually covered.
+
+        When the planner executes a capability against an asset, the
+        corresponding ``(surface, capability)`` assessment is discharged:
+        evidence-backed observations settle it ``VERIFIED``, empty ones
+        ``NOT_APPLICABLE``. Discharging is what lets the completion gate reach
+        exhaustion once every mapped combination has been evaluated.
+        """
+        if not capability:
+            return
+        node_keys = {node.key for node in surface.graph.nodes() if node.name == str(target)}
+        if not node_keys:
+            return
+        state = VerificationState.VERIFIED if meaningful else VerificationState.NOT_APPLICABLE
+        for task in surface.queue.tasks():
+            if task.capability_id != capability or task.surface_key not in node_keys:
+                continue
+            surface.queue.mark(task.task_id, AssessmentStatus.COMPLETED)
+            surface.queue.settle(task.task_id, state)
+        for node_key in node_keys:
+            for assignment in surface.graph.assignments_for(node_key):
+                if assignment.capability_id == capability:
+                    assignment.mark(AssessmentStatus.COMPLETED)
+                    assignment.settle(state)
+
+    def _surface_attack_paths(self, mission_id: str) -> None:
+        """Feed the attack-path count into the completion gate (best-effort)."""
+        surface = self._attack_surface
+        if surface is None:
+            return
+        with contextlib.suppress(Exception):
+            mission = self._orchestration.get(mission_id)
+            surface.record_attack_paths(len(mission.context.attack_paths))
+
+    def _surface_exhausted(self, mission_id: str) -> bool:
+        """Return ``True`` when the attack surface is genuinely exhausted.
+
+        Exhaustion only counts once discovery, dynamic discovery, all applicable
+        capability/surface combinations, the assessment queue and the
+        verification queue are done — and the planning graph carries no
+        untested work.
+        """
+        surface = self._attack_surface
+        if surface is None:
+            return False
+        with contextlib.suppress(Exception):
+            report = surface.exhaustion()
+            self._surface_report = report
+            return report.verdict is CompletionVerdict.EXHAUSTED and not self._has_pending_plan_work(mission_id)
+        return False
+
+    def _surface_exhaustion_report(self, mission_id: str) -> Any | None:
+        """Return (and cache) the latest attack-surface exhaustion report."""
+        surface = self._attack_surface
+        if surface is None:
+            return None
+        with contextlib.suppress(Exception):
+            self._surface_report = surface.exhaustion()
+        return self._surface_report
+
+    def _surface_finalize_condition(self, mission_id: str, report: Any | None) -> StopCondition | None:
+        """Return the exhaustion stop condition when genuinely exhausted.
+
+        A budget/terminal exhaustion is never overwritten by the surface gate,
+        so resource limits stay truthful.
+        """
+        if report is None or report.verdict is not CompletionVerdict.EXHAUSTED:
+            return None
+        with contextlib.suppress(Exception):
+            mission = self._orchestration.get(mission_id)
+            if mission.mission.state.is_terminal or mission.budget.exhausted:
+                return None
+        return StopCondition.ATTACK_SURFACE_EXHAUSTED
+
+    def _finalize_run(self, mission_id: str, *, stop_condition: StopCondition | None = None) -> None:
         """Finalize the mission run (idempotent) so no run stays ``running``."""
         with contextlib.suppress(Exception):  # attack-path recording is best-effort
             self._orchestration.record_attack_paths(mission_id)
         with contextlib.suppress(Exception):  # finalization is the terminal step
-            self._orchestration.finalize(mission_id)
+            self._orchestration.finalize(
+                mission_id,
+                stop_condition=stop_condition.value if stop_condition is not None else None,
+            )
 
     def _record_telemetry(self, mission_id: str) -> None:
         with contextlib.suppress(Exception):  # telemetry is best-effort
