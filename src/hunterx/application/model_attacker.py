@@ -60,11 +60,19 @@ class ModelAttacker:
         finding_pipeline: Any | None = None,
         max_hypotheses_per_cycle: int = 8,
         max_cycles: int = 24,
+        max_context_observations: int = 60,
+        max_context_findings: int = 20,
+        max_context_paths: int = 30,
+        max_context_disproven: int = 200,
+        max_context_surfaces: int = 100,
     ) -> None:
         self._reasoner = reasoner or ModelReasoner()
         self._pipeline = finding_pipeline
         self._max_hypotheses = max(1, max_hypotheses_per_cycle)
         self._max_cycles = max(1, max_cycles)
+        #: Bounded reasoning context: the model must receive an efficient
+        #: summarized state, never an ever-growing full mission history.
+        self._max_context_surfaces = max(1, max_context_surfaces)
 
         self._mission_id = ""
         self._surface = None
@@ -77,7 +85,12 @@ class ModelAttacker:
         self._dedup: dict[str, str] = {}
         self._processed_records: set[tuple[str, str, str, str]] = set()
         self._last_rejections: list[dict[str, Any]] = []
-        self._learning = LearningContext()
+        self._learning = LearningContext(
+            max_observations=max_context_observations,
+            max_findings=max_context_findings,
+            max_paths=max_context_paths,
+            max_disproven=max_context_disproven,
+        )
         self._telemetry = AttackerTelemetry()
         self._bound = False
         self._completion_reason: str = ""
@@ -263,10 +276,14 @@ class ModelAttacker:
                 endpoint = parent.name if parent is not None else ""
                 if node.name not in surfaces.setdefault(endpoint, []):
                     surfaces[endpoint].append(node.name)
-        return [
+        # Bounded context: only the most recently discovered surfaces are fed to
+        # the model (older surfaces remain on the mission/surface state, they are
+        # just excluded from the prompt summary).
+        bounded = [
             {"surface": endpoint, "parameters": parameters, "layer": "surface"}
             for endpoint, parameters in surfaces.items()
-        ]
+        ][-self._max_context_surfaces :]
+        return bounded
 
     @staticmethod
     def _catalog_ids() -> set[str]:

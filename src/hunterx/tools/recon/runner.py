@@ -86,6 +86,59 @@ CommandObserver = Callable[[CommandObservation], None]
 #: the single hook point that sees every spawned command.
 _command_observers: list[CommandObserver] = []
 
+#: Module-level resource hook installed by the platform composition root. Every
+#: spawned process is registered with the :class:`ResourceGovernor` so an
+#: emergency stop can terminate the whole process tree, and a hard default
+#: timeout protects every execution (even ad-hoc paths that build no context
+#: timeout) from hanging forever. Module-level for the same reason as the
+#: observer registry: every adapter builds its own runner.
+_resource_hook: dict[str, object] = {}
+
+
+def set_resource_hook(
+    *,
+    register_process: Callable[[object], None] | None = None,
+    unregister_process: Callable[[object], None] | None = None,
+    default_timeout_s: Callable[[], float] | None = None,
+) -> None:
+    """Install the resource-governor hook used by every spawned command.
+
+    ``register_process``/``unregister_process`` are invoked around each spawn so
+    the governor can terminate the process tree on an emergency budget stop.
+    ``default_timeout_s`` provides the hard per-tool wall-clock deadline used
+    when an execution carries no explicit timeout (``0`` keeps unlimited).
+    """
+    if register_process is not None:
+        _resource_hook["register_process"] = register_process
+    if unregister_process is not None:
+        _resource_hook["unregister_process"] = unregister_process
+    if default_timeout_s is not None:
+        _resource_hook["default_timeout_s"] = default_timeout_s
+
+
+def _default_resource_timeout() -> float:
+    provider = _resource_hook.get("default_timeout_s")
+    if not callable(provider):
+        return 0.0
+    try:
+        return max(0.0, float(provider()))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _register_child(process: object) -> None:
+    callback = _resource_hook.get("register_process")
+    if callable(callback):
+        with contextlib.suppress(Exception):  # noqa: BLE001 - registration is advisory
+            callback(process)
+
+
+def _unregister_child(process: object) -> None:
+    callback = _resource_hook.get("unregister_process")
+    if callable(callback):
+        with contextlib.suppress(Exception):  # noqa: BLE001 - registration is advisory
+            callback(process)
+
 #: Thread-local binding of the currently executing mission step. The mission
 #: runner binds before ``engine.execute`` so observers can correlate a spawned
 #: command with its mission/execution context.
@@ -249,11 +302,12 @@ class BinaryRunner:
                 captured output exceeds :attr:`max_output_bytes`.
 
         """
-        effective = timeout_s or self._default_timeout
+        effective = timeout_s or _default_resource_timeout() or self._default_timeout
         env = {**os.environ, **(self._env or {})}
         argv = [str(part) for part in argv]
         _observe_command(argv, tool_id)
         process = self._spawn(argv, env)
+        _register_child(process)
         sink = _CaptureSink(self._max_output_bytes)
         readers = (
             threading.Thread(target=_drain, args=(process.stdout, sink.stdout_chunks, sink), daemon=True),
@@ -268,11 +322,13 @@ class BinaryRunner:
             _close_pipes(process)
             for reader in readers:
                 reader.join(timeout=_DRAIN_JOIN_TIMEOUT)
+            _unregister_child(process)
             raise ToolTimeoutError(tool_id or str(argv[0]), effective) from None
 
         for reader in readers:
             reader.join(timeout=_DRAIN_JOIN_TIMEOUT)
         _close_pipes(process)
+        _unregister_child(process)
 
         if sink.exceeded:
             _terminate_process_tree(process)
@@ -418,5 +474,6 @@ __all__ = [
     "guard_option_value",
     "guard_positional_target",
     "register_command_observer",
+    "set_resource_hook",
     "unregister_command_observer",
 ]

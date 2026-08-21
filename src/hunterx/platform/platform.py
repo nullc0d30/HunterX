@@ -83,6 +83,7 @@ from hunterx.engines.mission_orchestration import MissionOrchestrationEngine
 from hunterx.engines.mission_planning.api import MissionPlanningAPI
 from hunterx.engines.orchestration.api import OffensiveOrchestrationAPI
 from hunterx.engines.target_intelligence.engine import TargetIntelligenceEngine
+from hunterx.resource import ResourceGovernor
 from hunterx.shared.di import Container
 from hunterx.tools.factory.api import ToolIntegrationFactory
 from hunterx.tools.intelligence.api import ToolIntelligenceAPI
@@ -227,6 +228,7 @@ class Platform:
     event_store: EventStorePort | None = None
     dead_letter: DeadLetterQueuePort | None = None
     repositories: dict[str, object] = field(default_factory=dict)
+    resource_governor: ResourceGovernor | None = None
 
     def resolve(self, key: type[T]) -> T:
         """Resolve a service from the platform's container."""

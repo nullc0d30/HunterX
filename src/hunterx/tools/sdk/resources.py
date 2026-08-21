@@ -59,11 +59,32 @@ class ResourceManager:
         self._max_parallel = max_parallel_jobs
         self._max_queue = max_queue_size
         self._default_limits = default_limits or ResourceLimits()
-        self._semaphore = threading.BoundedSemaphore(
-            max_parallel_jobs if max_parallel_jobs > 0 else 1
-        ) if max_parallel_jobs > 0 else None
+        self._semaphore: threading.BoundedSemaphore | None = None
         self._lock = threading.RLock()
         self._usage = ResourceUsage()
+        self._rebuild_semaphore()
+
+    def _rebuild_semaphore(self) -> None:
+        """(Re)build the concurrency semaphore from the current max parallel cap.
+
+        ``0`` means "unlimited" (no semaphore), matching the SDK contract; any
+        positive value enforces a bounded concurrency ceiling.
+        """
+        if self._max_parallel > 0:
+            self._semaphore = threading.BoundedSemaphore(self._max_parallel)
+        else:
+            self._semaphore = None
+
+    def set_max_parallel(self, max_parallel_jobs: int) -> None:
+        """Resize the platform-wide parallel-jobs cap (adaptive concurrency).
+
+        A positive value enforces a bounded concurrency ceiling; ``0`` reverts
+        to the safe single-worker default. The resize is best-effort: the new
+        cap applies to subsequent acquisitions (in-flight leases are preserved).
+        """
+        with self._lock:
+            self._max_parallel = max(0, int(max_parallel_jobs))
+            self._rebuild_semaphore()
 
     # -- admission ----------------------------------------------------------
 

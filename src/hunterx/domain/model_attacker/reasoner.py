@@ -131,26 +131,36 @@ def _failure_reason(error: str) -> ModelFailureReason:
 
 
 def build_prompt(context: dict[str, Any]) -> str:
-    """Build the JSON-only reasoning prompt from the structured context."""
+    """Build the JSON-only reasoning prompt from the structured context.
+
+    The prompt is defensive: every list is bounded so an unexpectedly large
+    context can never produce an unbounded prompt (the model attacker's
+    ``LearningContext`` already bounds the reasoning context; this is a hard
+    safety net for any caller).
+    """
+    surfaces = list(context.get("surfaces", []) or [])[-100:]
+    observations = list(context.get("observations", []) or [])[-60:]
+    findings = list(context.get("findings", []) or [])[-20:]
+    adjacent = list(context.get("adjacent_paths", []) or [])[-30:]
+    disproven = list(context.get("disproven", []) or [])[-200:]
     surface_lines = "\n".join(
         f"- surface={item.get('surface')} parameters={','.join(str(p) for p in item.get('parameters') or [])} layer={item.get('layer')}"
-        for item in context.get("surfaces", [])
+        for item in surfaces
     ) or "  (none discovered yet)"
     catalog_lines = ", ".join(context.get("catalog", []) or []) or "(empty)"
-    previous = context.get("observations", [])
     observation_lines = "\n".join(
         f"- {item.get('capability')} on {item.get('surface')} vector={item.get('attack_vector')} signal={item.get('signal')} supported={item.get('supported')}"
-        for item in previous
+        for item in observations
     ) or "  (none)"
     finding_lines = "\n".join(
         f"- {item.get('vulnerability_class')} on {item.get('surface')} vector={item.get('vector')} severity={item.get('severity')}"
-        for item in context.get("findings", [])
+        for item in findings
     ) or "  (none)"
     adjacent_lines = "\n".join(
         f"- capability={item.get('capability')} surface={item.get('surface')} vector={item.get('attack_vector')} ({item.get('reason', '')})"
-        for item in context.get("adjacent_paths", [])
+        for item in adjacent
     ) or "  (none)"
-    disproven = ", ".join(context.get("disproven", []) or []) or "(none)"
+    disproven_text = ", ".join(disproven) or "(none)"
     return (
         "You are the attack-reasoning engine of an autonomous security assessment platform.\n"
         "You generate targeted attack hypotheses that HunterX will execute with real probes.\n"
@@ -164,7 +174,7 @@ def build_prompt(context: dict[str, Any]) -> str:
         f"PREVIOUS ATTACK OBSERVATIONS:\n{observation_lines}\n\n"
         f"VALIDATED FINDINGS:\n{finding_lines}\n\n"
         f"ADJACENT ATTACK PATHS:\n{adjacent_lines}\n\n"
-        f"DISPROVEN HYPOTHESES (do not re-run): {disproven}\n\n"
+        f"DISPROVEN HYPOTHESES (do not re-run): {disproven_text}\n\n"
         "Respond with JSON ONLY, exactly this shape:\n"
         '{"hypotheses":[{"capability":"<catalog id>","surface":"<surface url>",'
         '"attack_vector":"<parameter name>","attack_strategy":"<strategy>",'

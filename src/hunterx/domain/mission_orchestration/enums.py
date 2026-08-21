@@ -122,6 +122,14 @@ class StopCondition(StrEnum):
     UNRECOVERABLE_FAILURE = "unrecoverable_failure"
     BLOCKED = "blocked"
 
+    # -- resource-governance stop conditions ---------------------------------
+    # Produced by the centralized Mission Resource Governor. A resource-triggered
+    # stop is NEVER reported as success: the run status degrades and the
+    # structured reason is preserved on the mission outcome.
+    MEMORY_BUDGET_EXHAUSTED = "memory_budget_exhausted"
+    RESOURCE_PRESSURE = "resource_pressure"
+    MISSION_DEADLINE_EXCEEDED = "mission_deadline_exceeded"
+
 
 class NegativeEvidenceKind(StrEnum):
     """Bounded negative-evidence categories.

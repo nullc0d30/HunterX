@@ -21,7 +21,7 @@ _mod_cache: dict[str, Any] = {}
 def _load_sqlalchemy() -> dict[str, Any]:
     if "loaded" not in _mod_cache:
         try:
-            from sqlalchemy import create_engine
+            from sqlalchemy import create_engine, event
             from sqlalchemy.exc import OperationalError
             from sqlalchemy.orm import DeclarativeBase, sessionmaker
         except ImportError as exc:  # pragma: no cover - optional dependency
@@ -39,6 +39,7 @@ def _load_sqlalchemy() -> dict[str, Any]:
                 "sessionmaker": sessionmaker,
                 "OperationalError": OperationalError,
                 "Base": _Base,
+                "event": event,
             }
         )
     return _mod_cache
@@ -57,6 +58,11 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     resolved to the application data directory (``<root>/data/hunterx.db``) and
     the parent directory is created before the engine is built, so a missing
     ``data/`` directory is never a runtime failure.
+
+    File-backed SQLite databases are opened with WAL journaling, a busy timeout
+    and ``check_same_thread=False`` so the autonomous mission (a single writer
+    process with many short sessions) never deadlocks on ``database is locked``
+    and readers never block the mission's persistence path.
     """
     mod = _load_sqlalchemy()
     url = resolve_database_url(settings.url)
@@ -70,12 +76,46 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
             connect_args={"check_same_thread": False},
         )
     _ensure_sqlite_parent_directory(url)
-    return mod["create_engine"](
+    engine = mod["create_engine"](
         url,
         echo=settings.echo,
         pool_size=settings.pool_size,
         pool_timeout=settings.pool_timeout,
+        connect_args={
+            "check_same_thread": False,
+            "timeout": max(30.0, float(settings.pool_timeout)),
+        },
     )
+    _install_sqlite_pragmas(engine)
+    return engine
+
+
+def _install_sqlite_pragmas(engine: Any) -> None:
+    """Enable WAL, foreign keys and a busy timeout on every SQLite connection.
+
+    WAL allows concurrent readers alongside the mission's single writer; the
+    busy timeout keeps a transient writer collision from surfacing as a
+    ``database is locked`` error; foreign keys keep referential integrity.
+    """
+    mod = _load_sqlalchemy()
+    event = mod["event"]
+
+    @event.listens_for(engine, "connect")  # type: ignore[arg-type]
+    def _on_connect(dbapi_connection: Any, connection_record: Any) -> None:
+        cursor = None
+        try:
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA journal_mode=WAL")
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.execute("PRAGMA busy_timeout=30000")
+        except Exception:  # noqa: BLE001 - pragmas are best-effort (non-SQLite engines)
+            pass
+        finally:
+            import contextlib
+
+            if cursor is not None:
+                with contextlib.suppress(Exception):  # noqa: BLE001
+                    cursor.close()
 
 
 def _ensure_sqlite_parent_directory(url: str) -> None:

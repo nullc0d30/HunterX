@@ -22,12 +22,22 @@ from hunterx.shared.time import utcnow_iso
 
 @dataclass
 class LearningContext:
-    """Accumulates the evidence the model reasons over."""
+    """Accumulates the evidence the model reasons over (bounded).
+
+    The learning context is a *summarized* reasoning input, never an ever-growing
+    full mission history: observations, findings and adjacent paths are bounded
+    to the configured caps (most recent retained). Bounding the context bounds
+    both the model prompt size and the in-memory retention of the attacker.
+    """
 
     disproven_fingerprints: set[str] = field(default_factory=set)
     validated_findings: list[dict[str, Any]] = field(default_factory=list)
     observations: list[dict[str, Any]] = field(default_factory=list)
     adjacent_paths: list[dict[str, Any]] = field(default_factory=list)
+    max_observations: int = 60
+    max_findings: int = 20
+    max_paths: int = 30
+    max_disproven: int = 200
     updated_at: str = field(default_factory=utcnow_iso)
 
     def record_observation(self, *, hypothesis_id: str, capability: str, surface: str, signal: str, supported: bool) -> None:
@@ -43,17 +53,25 @@ class LearningContext:
                 "recorded_at": utcnow_iso(),
             }
         )
+        if len(self.observations) > self.max_observations:
+            del self.observations[: len(self.observations) - self.max_observations]
         self.updated_at = utcnow_iso()
 
     def remember_disproven(self, fingerprint: str) -> None:
         """Remember a disproven hypothesis so it is never re-run."""
         self.disproven_fingerprints.add(fingerprint)
+        if len(self.disproven_fingerprints) > self.max_disproven:
+            self.disproven_fingerprints = set(sorted(self.disproven_fingerprints)[-self.max_disproven :])
         self.updated_at = utcnow_iso()
 
     def record_finding(self, finding: dict[str, Any], *, related: list[dict[str, Any]]) -> None:
         """Record a validated finding and its derived adjacent attack paths."""
         self.validated_findings.append(finding)
+        if len(self.validated_findings) > self.max_findings:
+            del self.validated_findings[: len(self.validated_findings) - self.max_findings]
         self.adjacent_paths.extend(related)
+        if len(self.adjacent_paths) > self.max_paths:
+            del self.adjacent_paths[: len(self.adjacent_paths) - self.max_paths]
         self.updated_at = utcnow_iso()
 
     def summary(self) -> dict[str, Any]:

@@ -44,6 +44,12 @@ class ExecutionEngine:
         engine.register_adapter("nmap", "hunterx_tools.nmap:NmapAdapter")
         engine.install("nmap", version="7.94")
         result = engine.execute(context).result
+
+    When a :class:`~hunterx.resource.ResourceGovernor` is wired via
+    :meth:`set_resource_governor`, every external tool execution passes through
+    the governor's admission control (approve/delay/reject under resource
+    pressure) and the platform-wide parallel-jobs cap adapts to the current
+    resource state.
     """
 
     def __init__(
@@ -76,10 +82,16 @@ class ExecutionEngine:
         self._adapters: dict[str, ToolAdapter] = {}
         self._factory = AdapterFactory()
         self._pipelines: dict[str, ExecutionPipeline] = {}
+        self._governor: Any | None = None
+        self._applied_parallel: int | None = None
 
         if adapters:
             for tool_id, adapter in adapters.items():
                 self.register_adapter(tool_id, adapter)
+
+    def set_resource_governor(self, governor: Any | None) -> None:
+        """Wire the resource governor into every execution (admission + parallelism)."""
+        self._governor = governor
 
     # -- registration ---------------------------------------------------------
 
@@ -144,9 +156,22 @@ class ExecutionEngine:
     # -- execution -------------------------------------------------------------
 
     def execute(self, context: ExecutionContext) -> PipelineResult:
-        """Run one execution and return the pipeline outcome."""
-        pipeline = self._pipeline_for(context.tool_id)
-        return pipeline.run(context)
+        """Run one execution and return the pipeline outcome.
+
+        Every execution passes through the wired resource governor first: a
+        denied admission (emergency/critical resource pressure or a concurrency
+        cap) returns a structured ``resource-exhausted`` failure instead of
+        spawning work the host cannot afford.
+        """
+        self._apply_adaptive_parallelism()
+        admission = self._admit(context)
+        if admission is not None:
+            return admission
+        try:
+            pipeline = self._pipeline_for(context.tool_id)
+            return pipeline.run(context)
+        finally:
+            self._release(context)
 
     def execute_batch(self, contexts: list[ExecutionContext]) -> list[PipelineResult]:
         """Run several contexts sequentially (use :meth:`submit` for concurrency)."""
@@ -169,6 +194,57 @@ class ExecutionEngine:
     def shutdown(self) -> None:
         """Release parallel workers."""
         self.parallel.shutdown()
+
+    # -- resource governance ---------------------------------------------------
+
+    def _apply_adaptive_parallelism(self) -> None:
+        """Resize the platform-wide parallel cap to the governor's suggestion."""
+        governor = self._governor
+        if governor is None:
+            return
+        suggested = getattr(governor, "suggested_tool_concurrency", None)
+        cap = suggested() if callable(suggested) else 0
+        if cap != self._applied_parallel:
+            self._applied_parallel = cap
+            self.resources.set_max_parallel(cap)
+
+    def _admit(self, context: ExecutionContext) -> PipelineResult | None:
+        """Admit the execution through the resource governor; ``None`` = approved."""
+        governor = self._governor
+        if governor is None:
+            return None
+        admit = getattr(governor, "admit_tool", None)
+        if not callable(admit):
+            return None
+        admission = admit(tool_id=context.tool_id, timeout_s=context.timeout_effective)
+        if admission.approved:
+            return None
+        return self._resource_denied(context, str(admission.reason))
+
+    def _release(self, context: ExecutionContext) -> None:
+        """Release a governor tool slot after execution (best-effort)."""
+        governor = self._governor
+        if governor is None:
+            return
+        release = getattr(governor, "release_tool", None)
+        if callable(release):
+            release()
+
+    def _resource_denied(self, context: ExecutionContext, reason: str) -> PipelineResult:
+        """Build a structured resource-exhausted failure result (never raises)."""
+        from hunterx.domain.execution import ExecutionStatus, FailureKind
+        from hunterx.tools.sdk import result as results
+        from hunterx.tools.sdk.session import ExecutionSession
+
+        session = ExecutionSession.create(context)
+        final = results.finish_failure(
+            results.new_result(context),
+            error=f"resource governor denied execution: {reason}",
+            kind=FailureKind.RESOURCE_EXHAUSTED,
+            status=ExecutionStatus.FAILED,
+        )
+        session.finish(final)
+        return PipelineResult(result=final, session=session, attempts=0)
 
     # -- internals ---------------------------------------------------------------
 

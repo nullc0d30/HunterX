@@ -56,10 +56,16 @@ class MissionOrchestrationService:
         engine: MissionOrchestrationEngine | None = None,
         stores: TidbRepositoryFactory | None = None,
         event_bus: EventBusPort | None = None,
+        resource_config: Any | None = None,
     ) -> None:
         self._engine = engine or MissionOrchestrationEngine()
         self._stores = stores
         self._event_bus = event_bus
+        #: Bounded in-memory mission state (persisted copies stay durable). When
+        #: wired, every persistence point trims the in-memory aggregate to the
+        #: configured caps so an autonomous mission can never accumulate
+        #: unbounded RAM (see ``hunterx.resource.bounds``).
+        self._resource_config = resource_config
 
     @property
     def engine(self) -> MissionOrchestrationEngine:
@@ -489,6 +495,22 @@ class MissionOrchestrationService:
                 outcome=mission.outcome.to_dict() if mission.outcome else None,
             )
         )
+        self._apply_bounds(mission)
+
+    def _apply_bounds(self, mission: OrchestratedMission) -> None:
+        """Trim the in-memory mission aggregate to the configured resource caps.
+
+        Only the in-memory working set is bounded — the TIDB persisted records
+        remain the durable mission state. Runs in constant time while the
+        aggregate is within its caps (the common case).
+        """
+        config = self._resource_config
+        if config is None or mission is None:
+            return
+        from hunterx.resource.bounds import apply_mission_bounds
+
+        with contextlib.suppress(Exception):  # bounds are best-effort memory hygiene
+            apply_mission_bounds(mission, config)
 
     def _persist_runs(self, mission: OrchestratedMission) -> None:
         if self._stores is None:

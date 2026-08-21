@@ -100,6 +100,7 @@ def _env_override_paths() -> dict[str, list[str]]:
         CacheSettings,
         DatabaseSettings,
         QueueSettings,
+        ResourceSettings,
         SecuritySettings,
     )
 
@@ -113,6 +114,7 @@ def _env_override_paths() -> dict[str, list[str]]:
         ("SECURITY", SecuritySettings),
         ("API", ApiSettings),
         ("AI", AISettings),
+        ("RESOURCE", ResourceSettings),
     ):
         for name in model.model_fields:
             paths[f"{_ENV_PREFIX}{section}_{name.upper()}"] = [section.lower(), name]
