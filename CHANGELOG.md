@@ -9,6 +9,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.0] — 2026-08-22
+
+### Added
+
+- **Resource-aware autonomous execution — centralized Mission Resource Governor.**
+  A single authoritative resource-governance layer (`hunterx.resource`) manages
+  the resource envelope of the *entire* HunterX mission process tree (parent,
+  child tools, grandchildren, external binaries, probes, model calls, queues and
+  evidence) so HunterX stays safe and usable on constrained 4 GB / 2 CPU hosts
+  and never relies on the Linux OOM killer.
+- **Environment-aware resource detection**: bare-metal Linux, VM, WSL and
+  container/cgroup environments are recognized; cgroup v1/v2 memory limits and
+  usage, CPU quota, cpuset-aware CPU count and host memory pressure are read
+  where available (`physical RAM != RAM available to HunterX`).
+- **Derived mission envelope**: an absolute 3 GB HunterX RAM ceiling (default,
+  configurable) with a mission budget derived from the effective environment
+  (4 GB → ~2 GB budget; 8 GB → 3 GB; 16 GB+ → 3 GB) while host headroom is
+  preserved.
+- **Resource states with explicit behaviour**: `NORMAL` (bounded execution),
+  `CONSTRAINED` (reduce concurrency), `DEGRADED` (stop nonessential work),
+  `CRITICAL` (stop new expensive work), `EMERGENCY` (graceful mission
+  termination) — configurable thresholds, throttled `[RESOURCE]` telemetry logs.
+- **Admission control through the governor**: every external tool execution
+  (approve/delay/deny by memory/cpu class + concurrency cap), HTTP probe, model
+  call and assessment-queue scheduling passes through the governor; the
+  platform-wide parallel-jobs cap adapts to the current resource state.
+- **Process-tree accounting and emergency termination**: the mission process
+  tree RSS/CPU is sampled (`/proc` walk); on an emergency budget stop the
+  governor stops scheduling, terminates active child processes (SIGTERM then
+  SIGKILL, no orphans), persists mission state and reports a structured reason.
+- **Bounded in-memory state**: observations, hypotheses, decisions, evidence,
+  tool executions, trace, negative evidence, attack paths and the assessment
+  queue are capped (bounded collections + backpressure); the database remains
+  the durable mission state and open hypotheses / validated findings are never
+  evicted.
+- **Bounded model reasoning context**: the autonomous attacker feeds the model
+  a summarized state (bounded observations, findings, adjacent paths, disproven
+  fingerprints, surfaces) instead of an ever-growing full mission history, and
+  replanning is bounded by `max_replan_cycles` so the
+  observe→hypothesize→decide→probe→reassess→replan cycle terminates.
+- **Hard deadlines for every blocking operation**: per-tool (600 s default),
+  per-model-call (120 s default) and per-mission wall-clock deadlines; the
+  operator-configured `time_budget_seconds` is now a hard loop ceiling, and
+  timeouts surface as structured `execution_timeout` observations.
+- **SQLite resource-safe persistence**: file-backed databases open with WAL
+  journaling, a 30 s busy timeout, foreign keys and concurrent-reader support
+  so the mission's many short write sessions never deadlock on
+  `database is locked`.
+- **New `StopCondition` vocabulary for truthful resource stops**:
+  `memory_budget_exhausted`, `resource_pressure`, `mission_deadline_exceeded` —
+  a resource-triggered stop is never reported as success (run status
+  `degraded`, structured reason on the outcome).
+- **Configuration**: all thresholds are exposed through the existing
+  `HUNTERX_RESOURCE_*` env vars / `resource:` YAML section with safe defaults
+  prioritizing host stability.
+
+### Changed
+
+- The mission runner, tool execution SDK (`ExecutionEngine`,
+  `BinaryRunner`), model attacker, mission orchestration persistence and SQLite
+  factory now route resource decisions through the centralized governor instead
+  of scattered checks.
+
+### Fixed
+
+- A real-world `full_security_assessment` runaway (process tree climbing to
+  ~90%+ host memory, kernel `folio_wait_bit_common` swap-thrash) is prevented:
+  the governor detects the climb and terminates the mission safely within its
+  configured envelope — never driving the host to ~90%+ memory.
+
+---
+
 ## [7.0.1] — 2026-08-21
 
 ### Added
