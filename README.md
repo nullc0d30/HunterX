@@ -446,7 +446,7 @@ hunterx report export <report_id> markdown
 Verify your install:
 
 ```bash
-hunterx version     # HunterX v7.0.0
+hunterx version     # HunterX v7.0.1
 hunterx help        # command list
 hunterx platform    # platform composition
 hunterx config      # resolved configuration

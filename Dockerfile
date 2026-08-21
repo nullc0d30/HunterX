@@ -10,7 +10,7 @@
 # ============================================================
 FROM python:3.11-slim AS builder
 
-ARG VERSION=7.0.0
+ARG VERSION=7.0.1
 ARG BUILD_DATE
 ARG VCS_REF
 
@@ -35,7 +35,7 @@ RUN /opt/hunterx-venv/bin/pip install --no-cache-dir --no-compile ".[api]"
 # ============================================================
 FROM python:3.11-slim AS runtime
 
-ARG VERSION=7.0.0
+ARG VERSION=7.0.1
 ARG BUILD_DATE
 ARG VCS_REF
 
