@@ -428,7 +428,11 @@ def _build_ai_suggester(settings: Settings) -> Any:
         ai = build_ai_client(settings.ai)
     except Exception:  # noqa: BLE001 - AI must never break mission composition
         return None
-    return AIActionSuggester(ai, model=settings.ai.model)
+    return AIActionSuggester(
+        ai,
+        model=settings.ai.model,
+        provider=str(settings.ai.provider or ""),
+    )
 
 
 def _build_model_attacker(settings: Settings, *, finding_service: Any) -> Any:

@@ -298,7 +298,8 @@ class TestPlannerLoop:
             return [
                 a.hypothesis_id
                 for a in graph.actions.values()
-                if a.capability == "vulnerability_scanning" and a.hypothesis_id
+                if a.hypothesis_id
+                and a.capability in ("vulnerability_scanning", "sql_injection")
             ]
 
         _ingest(f"{target}/vuln/a")

@@ -50,7 +50,7 @@ class StubReadiness:
         self._result = result
         self.calls: list[str] = []
 
-    def preflight(self, capabilities, *, mission_id="", auto_provision=True):  # noqa: ANN001
+    def preflight(self, capabilities, *, mission_id="", auto_provision=True, profile_tools=()):  # noqa: ANN001
         self.calls.append(str(capabilities))
         result = self._result
         return PreflightResult(
@@ -150,9 +150,15 @@ class TestPreflightGate:
 
         result = runner.run(mission.mission_id, max_cycles=8)
 
-        assert result["status"] in ("completed", "degraded")
+        # A passed preflight lets execution happen. The terminal is truthful:
+        # never a budget exhaustion (the budget is nowhere near used) — an
+        # incomplete mission with open hypothesis work honestly reports
+        # ``blocked``, never ``exhausted``.
+        assert result["status"] in ("completed", "degraded", "blocked")
+        assert result["status"] != "exhausted"
         assert result["cycles_run"] >= 1
         assert result["tool_executions"] > 0
+        assert result["observations"] > 0
 
     def test_missing_readiness_skips_the_gate(self) -> None:
         runner, orchestration = _runner(None)

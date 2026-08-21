@@ -208,6 +208,7 @@ class DeterministicMissionPlanner:
 
 
 _ACTION_TYPE_BY_CAPABILITY: dict[str, str] = {
+    "asset_discovery": "discover_subdomains",
     "subdomain_enumeration": "discover_subdomains",
     "dns_enumeration": "enumerate_dns",
     "port_discovery": "identify_services",
@@ -216,6 +217,7 @@ _ACTION_TYPE_BY_CAPABILITY: dict[str, str] = {
     "certificate_enumeration": "enumerate_dns",
     "endpoint_enumeration": "discover_endpoints",
     "content_discovery": "discover_endpoints",
+    "javascript_analysis": "discover_endpoints",
     "parameter_discovery": "discover_parameters",
     "api_mapping": "map_api",
     "authentication_analysis": "analyze_authentication",

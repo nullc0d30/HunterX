@@ -87,6 +87,7 @@ class MissionDashboardService:
                 "negative_evidence": len(mission.negative_evidence),
             },
             "coverage_ratio": mission.coverage_ratio(),
+            "coverage_dimensions": mission.coverage_dimensions(),
             "budget": mission.budget.to_dict(),
             "telemetry": telemetry.to_dict() if telemetry else None,
             "outcome": mission.outcome.to_dict() if mission.outcome else None,

@@ -135,7 +135,14 @@ class AttackPathEngine:
         evidence_map: Mapping[str, Iterable[str]] | None = None,
         validated_map: dict[str, bool] | None = None,
     ) -> list[AttackPath]:
-        """Discover candidate attack paths from every exposed entry point."""
+        """Discover candidate attack paths from every exposed entry point.
+
+        Paths are labelled with their evidence-driven state: a chain whose steps
+        carry observation evidence is ``SUPPORTED`` (a genuine attack-path
+        candidate), while a purely structural chain (graph adjacency only) stays
+        ``HYPOTHETICAL``. The caller decides which to treat as discovered
+        attacks — combinatorial adjacency alone is never a discovered attack.
+        """
         evidence_map = evidence_map or {}
         validated_map = validated_map or {}
         entry_points = [
@@ -145,10 +152,12 @@ class AttackPathEngine:
         for entry in sorted(entry_points):
             for node_keys in self._chains(graph, entry):
                 steps = self._steps(graph, node_keys, evidence_map, validated_map)
+                state = _path_state(steps)
                 path = AttackPath(
                     mission_id=mission_id,
                     objective=objective,
                     steps=tuple(steps),
+                    state=state,
                     evidence_refs=tuple(
                         ref for step in steps for ref in step.evidence_refs
                     ),
@@ -309,6 +318,24 @@ def _state_score(state: AttackPathState) -> float:
         AttackPathState.VALIDATED: 0.8,
         AttackPathState.PROVED: 1.0,
     }.get(state, 0.0)
+
+
+def _path_state(steps: list[AttackPathStep]) -> AttackPathState:
+    """Return the evidence-driven state of a chain of steps.
+
+    A chain is ``SUPPORTED`` when at least one step carries evidence refs
+    (observations/hypotheses/findings); otherwise it is a purely structural
+    adjacency chain and stays ``HYPOTHETICAL``. Validated/proved steps promote
+    the whole path so a genuinely reproduced chain is never reported as merely
+    supported.
+    """
+    if not steps:
+        return AttackPathState.HYPOTHETICAL
+    if all(step.validated for step in steps):
+        return AttackPathState.VALIDATED
+    if any(step.evidence_refs for step in steps):
+        return AttackPathState.SUPPORTED
+    return AttackPathState.HYPOTHETICAL
 
 
 def _now() -> str:

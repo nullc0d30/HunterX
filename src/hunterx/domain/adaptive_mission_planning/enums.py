@@ -25,6 +25,7 @@ class MissionObjective(StrEnum):
     """
 
     ATTACK_SURFACE_DISCOVERY = "attack_surface_discovery"
+    FULL_SECURITY_ASSESSMENT = "full_security_assessment"
     WEB_SECURITY_ASSESSMENT = "web_security_assessment"
     API_SECURITY_ASSESSMENT = "api_security_assessment"
     CLOUD_SECURITY_ASSESSMENT = "cloud_security_assessment"
@@ -189,6 +190,7 @@ class ReplanTrigger(StrEnum):
     NEW_PARAMETER_DISCOVERED = "new_parameter_discovered"
     JAVASCRIPT_ANALYSIS = "javascript_analysis"
     NEW_HYPOTHESIS_CREATED = "new_hypothesis_created"
+    CAPABILITY_SCHEDULED = "capability_scheduled"
     HYPOTHESIS_CONFIDENCE_CHANGED = "hypothesis_confidence_changed"
     CONFLICTING_EVIDENCE = "conflicting_evidence"
     PROOF_BECOMES_POSSIBLE = "proof_becomes_possible"

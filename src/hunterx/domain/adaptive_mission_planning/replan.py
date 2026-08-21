@@ -90,6 +90,8 @@ class ReplanningEngine:
             changes = self._on_new_endpoint(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.JAVASCRIPT_ANALYSIS:
             changes = self._on_javascript_analysis(graph, signal, mission_id)
+        elif signal.trigger is ReplanTrigger.CAPABILITY_SCHEDULED:
+            changes = self._on_capability(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
             changes = self._on_new_hypothesis(graph, signal, mission_id)
         elif signal.trigger is ReplanTrigger.CONFLICTING_EVIDENCE:
@@ -257,6 +259,37 @@ class ReplanningEngine:
             )
         ]
 
+    def _on_capability(self, graph: AdaptiveExecutionGraph, signal: ReplanSignal, mission_id: str) -> list[PlanDeltaChange]:
+        """Schedule an explicit capability on an asset (deterministic planner).
+
+        Used by the adaptive runner's deterministic planner to extend the plan
+        with a concrete capability (e.g. ``content_discovery``, ``api_mapping``)
+        without inventing a trigger name. The action type is derived from the
+        capability; replay protection still applies through
+        :meth:`_filter_replays`.
+        """
+        asset = signal.asset_key or "asset"
+        capability = str(signal.detail.get("capability") or "").strip() or "vulnerability_scanning"
+        action_type = _action_type_for_capability(capability)
+        node = ActionNode(
+            mission_id=mission_id,
+            action_type=action_type,
+            asset=asset,
+            capability=capability,
+            expected_information_gain=0.7,
+            expected_evidence=(f"evidence:{capability}:{asset}",),
+            status=ActionStatus.PROPOSED,
+            provenance={"source": "replan", "trigger": signal.trigger.value, "capability": capability},
+        )
+        return [
+            PlanDeltaChange(
+                kind=PlanDeltaKind.ADD_ACTION,
+                action_id=node.action_id,
+                node=node,
+                reason=f"deterministic planner scheduled capability '{capability}'",
+            )
+        ]
+
     def _on_new_hypothesis(self, graph: AdaptiveExecutionGraph, signal: ReplanSignal, mission_id: str) -> list[PlanDeltaChange]:
         asset = signal.asset_key or "asset"
         hypothesis_id = signal.detail.get("hypothesis_id", "")
@@ -386,3 +419,33 @@ class ReplanningEngine:
 
     def _on_generic_signal(self, graph: AdaptiveExecutionGraph, signal: ReplanSignal, mission_id: str) -> list[PlanDeltaChange]:
         return []
+
+
+#: Capability → canonical action type used by the deterministic planner when it
+#: schedules a capability explicitly (``CAPABILITY_SCHEDULED``).
+_ACTION_TYPE_BY_CAPABILITY: dict[str, ActionType] = {
+    "asset_discovery": ActionType.DISCOVER_SUBDOMAINS,
+    "subdomain_enumeration": ActionType.DISCOVER_SUBDOMAINS,
+    "dns_enumeration": ActionType.ENUMERATE_DNS,
+    "port_discovery": ActionType.IDENTIFY_SERVICES,
+    "service_detection": ActionType.IDENTIFY_SERVICES,
+    "technology_fingerprint": ActionType.IDENTIFY_TECHNOLOGY,
+    "certificate_enumeration": ActionType.ENUMERATE_DNS,
+    "endpoint_enumeration": ActionType.DISCOVER_ENDPOINTS,
+    "content_discovery": ActionType.DISCOVER_ENDPOINTS,
+    "javascript_analysis": ActionType.DISCOVER_ENDPOINTS,
+    "parameter_discovery": ActionType.DISCOVER_PARAMETERS,
+    "api_mapping": ActionType.MAP_API,
+    "authentication_analysis": ActionType.ANALYZE_AUTHENTICATION,
+    "authorization_analysis": ActionType.TEST_AUTHORIZATION,
+    "vulnerability_scanning": ActionType.VALIDATE_HYPOTHESIS,
+    "proof_validation": ActionType.COLLECT_PROOF,
+    "replay": ActionType.REPLAY_PROOF,
+    "secret_detection": ActionType.INVESTIGATE_BEHAVIOR,
+    "dependency_check": ActionType.GENERATE_HYPOTHESIS,
+}
+
+
+def _action_type_for_capability(capability: str) -> ActionType:
+    """Return the canonical :class:`ActionType` for ``capability``."""
+    return _ACTION_TYPE_BY_CAPABILITY.get(capability, ActionType.INVESTIGATE_BEHAVIOR)

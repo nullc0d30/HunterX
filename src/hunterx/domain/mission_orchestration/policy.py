@@ -87,15 +87,17 @@ class MissionPolicyEngine:
         if StopCondition.UNRECOVERABLE_FAILURE in conditions and mission.mission.state.value == "failed":
             return StopCondition.UNRECOVERABLE_FAILURE
 
-        if StopCondition.RESOURCE_BUDGET_EXHAUSTED in conditions and mission.budget.exhausted:
-            return StopCondition.RESOURCE_BUDGET_EXHAUSTED
-
+        # Time exhaustion is checked before the combined resource check so a
+        # wall-clock overrun is labelled ``TIME_BUDGET_EXHAUSTED`` — never
+        # misreported as ``RESOURCE_BUDGET_EXHAUSTED``.
         if (
             StopCondition.TIME_BUDGET_EXHAUSTED in conditions
-            and mission.budget.time_budget_seconds > 0
-            and mission.budget.time_used_seconds >= mission.budget.time_budget_seconds
+            and mission.budget.time_exhausted
         ):
             return StopCondition.TIME_BUDGET_EXHAUSTED
+
+        if StopCondition.RESOURCE_BUDGET_EXHAUSTED in conditions and mission.budget.exhausted:
+            return StopCondition.RESOURCE_BUDGET_EXHAUSTED
 
         if (
             StopCondition.FINDINGS_VALIDATED in conditions
