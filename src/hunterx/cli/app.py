@@ -14,10 +14,8 @@ import sys
 from collections.abc import Sequence
 
 import hunterx
-
 from hunterx.cli.registry import CommandRegistry
 from hunterx.cli.render import OutputRenderer
-
 
 #: HunterX CLI startup banner (presentation only). The ASCII logo and the
 #: branding lines are literal and deterministic; only the version line is

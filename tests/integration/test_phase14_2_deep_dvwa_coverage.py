@@ -41,20 +41,15 @@ from hunterx.domain.mission_orchestration.orchestrator import (
     MissionOrchestrator,
     _classes_for_surface,
 )
-from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
-from hunterx.engines.mission_orchestration import MissionOrchestrationEngine
-from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory
 from hunterx.domain.vulnerability_capability.capabilities.injection import (
     CommandInjectionCapability,
     PathTraversalCapability,
 )
 from hunterx.domain.vulnerability_capability.engine import VulnerabilityCapabilityEngine
 from hunterx.domain.vulnerability_capability.probe_executor import ProbeExecutor
-from hunterx.infrastructure.db.graph import InMemoryKnowledgeGraph
-from hunterx.infrastructure.event_bus import InMemoryEventBus
-from hunterx.infrastructure.memory import InMemoryFindingRepository
-from hunterx.tools.intelligence.api import ToolIntelligenceAPI
-from hunterx.tools.sdk.engine import ExecutionEngine
+from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
+from hunterx.engines.mission_orchestration import MissionOrchestrationEngine
+from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory
 from tests.framework.fakes import FakeExecutionEngine
 from tests.framework.vulnerable_app import VulnerableApp
 
@@ -474,7 +469,6 @@ class TestClassSpecificHypothesesBlockPrematureStop:
     """
 
     def _mission(self, *, state: Any) -> Any:
-        from hunterx.domain.mission_orchestration.enums import HypothesisState
         from hunterx.domain.mission_orchestration.mission import new_orchestrated_mission
         from hunterx.domain.mission_orchestration.models import MissionHypothesis
         from hunterx.domain.target_intelligence.enums import HypothesisType
@@ -803,7 +797,7 @@ class TestFormFieldParameterDiscovery:
             )
             context = ExecutionContext(tool_id="arjun", execution_id="exec-arjun-1", target=endpoint)
             pipeline = fake.execute(context)
-            outcome = runner._handle_execution(
+            runner._handle_execution(
                 mission.mission_id,
                 action_id=action.action_id,
                 capability="parameter_discovery",

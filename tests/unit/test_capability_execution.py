@@ -14,7 +14,6 @@ import json
 
 from hunterx.domain.capability_execution.enums import CapabilityExecutionStatus
 from hunterx.domain.capability_execution.models import (
-    CapabilityCoverage,
     CapabilityExecutionRecord,
     ToolExecutionRecord,
     aggregate_status,

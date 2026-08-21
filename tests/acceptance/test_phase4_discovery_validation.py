@@ -33,7 +33,6 @@ import pytest
 
 from hunterx.domain.tools import ToolDescriptor
 from hunterx.tools.sdk.adapter import ToolAdapter
-
 from tests.framework.phase4 import BINARY_ONLY_TOOL_IDS, GenericDiscoveryFixture, Phase4Harness
 
 #: Real regression target (loopback-only black-box).

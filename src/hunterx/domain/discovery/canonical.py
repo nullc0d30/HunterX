@@ -13,7 +13,7 @@ union of sources, earliest first-seen).
 from __future__ import annotations
 
 import ipaddress
-from typing import Iterable
+from collections.abc import Iterable
 from urllib.parse import urlsplit
 
 from hunterx.domain.discovery.models import DiscoveredAsset, DiscoveryEvidence
@@ -24,6 +24,7 @@ def canonical_host(host: str) -> str:
 
     Example:
         ``"  Example.COM. " -> "example.com"``
+
     """
     value = host.strip().rstrip(".").lower()
     if value.endswith("."):
@@ -37,6 +38,7 @@ def canonical_ip(ip: str) -> str:
     Raises:
         ValueError: when the value is not a valid IP literal (the caller decides
             whether an unrecognized value is a hostname instead).
+
     """
     return str(ipaddress.ip_address(ip.strip()))
 
@@ -110,9 +112,7 @@ def is_hostname(value: str) -> bool:
         return False
     if "/" in value or ":" in value:
         return False
-    if is_ip(value):
-        return False
-    return True
+    return not is_ip(value)
 
 
 def host_from_url(url: str) -> str:
@@ -142,6 +142,7 @@ class DiscoveryDeduper:
         Returns:
             The merged asset (the existing one when an equivalent already
             existed, otherwise the newly inserted one).
+
         """
         self._raw_count += 1
         key = asset_key(asset.kind, _canonical_name(asset.kind, asset.name))

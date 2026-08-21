@@ -14,12 +14,9 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from hunterx.application.discovery import UniversalDiscoveryService, build_stage_plan
-from hunterx.domain.discovery.enums import DiscoveryStage, DiscoveryState
-from hunterx.domain.execution import ExecutionContext, ExecutionOutput, ExecutionResult, ExecutionStatus
-from hunterx.domain.execution import FailureKind
+from hunterx.domain.discovery.enums import DiscoveryStage
+from hunterx.domain.execution import ExecutionContext, ExecutionOutput, ExecutionResult, ExecutionStatus, FailureKind
 from hunterx.tools.sdk.pipeline import PipelineResult
 
 _TARGET = "http://fixture.test/"

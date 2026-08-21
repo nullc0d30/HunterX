@@ -236,9 +236,7 @@ def _named_fields(form: dict[str, Any], *, exclude: set[str]) -> list[tuple[str,
         if not name or name in exclude:
             continue
         field_type = str(field.get("type") or "text").lower()
-        if field_type == "hidden" and field.get("value"):
-            result.append((name, str(field.get("value") or "")))
-        elif field_type == "submit" and field.get("value"):
+        if field_type == "hidden" and field.get("value") or field_type == "submit" and field.get("value"):
             result.append((name, str(field.get("value") or "")))
     return result
 

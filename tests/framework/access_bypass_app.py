@@ -120,7 +120,7 @@ class AccessBypassApp:
     def base_url(self) -> str:
         return f"http://{self._host}:{self._server.server_port}"
 
-    def start(self) -> "AccessBypassApp":
+    def start(self) -> AccessBypassApp:
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
         self._thread.start()
         return self
@@ -131,7 +131,7 @@ class AccessBypassApp:
         if self._thread is not None:
             self._thread.join(timeout=2)
 
-    def __enter__(self) -> "AccessBypassApp":
+    def __enter__(self) -> AccessBypassApp:
         return self.start()
 
     def __exit__(self, *exc) -> None:  # noqa: ANN002
