@@ -85,7 +85,17 @@ class MissionOrchestrationService:
         coverage_target: float = 0.7,
         max_concurrency: int = 4,
     ) -> OrchestratedMission:
-        """Create an orchestrated mission with its initial adaptive plan."""
+        """Create an orchestrated mission with its initial adaptive plan.
+
+        Budget semantics: ``time_budget_seconds=0`` means *unlimited* wall-clock
+        budget and ``resource_budget=0`` permits no executions. Negative values
+        are rejected at configuration time so a malformed budget can never
+        silently behave as an exhausted (or unlimited) budget at runtime.
+        """
+        if resource_budget < 0:
+            raise ValueError("resource_budget must be >= 0 (0 permits no executions)")
+        if time_budget_seconds < 0:
+            raise ValueError("time_budget_seconds must be >= 0 (0 means unlimited)")
         mission = self._engine.create_mission(
             objective=objective,
             mode=mode,

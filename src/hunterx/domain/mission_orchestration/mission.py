@@ -40,6 +40,54 @@ from hunterx.domain.mission_orchestration.models import (
 from hunterx.domain.target_intelligence.enums import CoverageCapability, CoverageState
 from hunterx.shared.time import utcnow_iso
 
+#: Capability → assessment-phase grouping used by :meth:`OrchestratedMission.coverage_dimensions`.
+_RECON_CAPABILITIES = frozenset(
+    {
+        "asset_discovery",
+        "subdomain_enumeration",
+        "dns_enumeration",
+        "port_discovery",
+        "service_detection",
+        "technology_fingerprint",
+        "certificate_enumeration",
+        "endpoint_enumeration",
+    }
+)
+_SURFACE_CAPABILITIES = frozenset(
+    {
+        "content_discovery",
+        "javascript_analysis",
+        "api_mapping",
+        "parameter_discovery",
+    }
+)
+_ACTIVE_TEST_CAPABILITIES = frozenset(
+    {
+        "sql_injection",
+        "xss",
+        "ssrf",
+        "ssti",
+        "xxe",
+        "lfi",
+        "rce",
+        "idor",
+        "api_security",
+        "graphql_security",
+        "authentication_analysis",
+        "authorization_analysis",
+        "secret_detection",
+        "dependency_check",
+        "csrf",
+    }
+)
+_VALIDATION_CAPABILITIES = frozenset(
+    {
+        "vulnerability_scanning",
+        "proof_validation",
+        "replay",
+    }
+)
+
 
 @dataclass(slots=True)
 class OrchestratedMission:
@@ -205,6 +253,61 @@ class OrchestratedMission:
     def coverage_cells(self) -> list[CoverageCellState]:
         """Return all coverage cells."""
         return [cell for asset in self.coverage.values() for cell in asset.values()]
+
+    # -- coverage dimensions ------------------------------------------------
+
+    def coverage_dimensions(self) -> dict[str, Any]:
+        """Return per-dimension coverage of the full assessment lifecycle.
+
+        A single ``coverage_ratio`` over all cells is misleading: it looks like
+        full-assessment coverage when it mostly measures reconnaissance. This
+        view tracks the phases separately (recon / attack surface / hypothesis
+        / active test / validation / browser) plus an overall ratio. Untested
+        areas remain ``NOT_ASSESSED``; absence of execution is never converted
+        into negative security evidence.
+        """
+
+        def _dimension(names: frozenset[str]) -> dict[str, Any]:
+            cells = [cell for cell in self.coverage_cells() if cell.capability in names]
+            if not cells:
+                return {"cells": 0, "assessed": 0, "coverage": 0.0}
+            assessed = sum(1 for cell in cells if not cell.state.uncovered())
+            return {"cells": len(cells), "assessed": assessed, "coverage": round(assessed / len(cells), 4)}
+
+        open_states = ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
+        total_hypotheses = max(1, len(self.hypotheses))
+        settled_hypotheses = sum(1 for h in self.hypotheses if h.state.value not in open_states)
+        recon = _dimension(_RECON_CAPABILITIES)
+        surface = _dimension(_SURFACE_CAPABILITIES)
+        active = _dimension(_ACTIVE_TEST_CAPABILITIES)
+        validation = _dimension(_VALIDATION_CAPABILITIES)
+        browser_cell = self.coverage_cell(
+            self.context.target_id or "target", "browser_testing"
+        )
+        browser = {
+            "cells": 1 if browser_cell is not None else 0,
+            "assessed": 1
+            if browser_cell is not None and not browser_cell.state.uncovered()
+            else 0,
+            "coverage": 1.0
+            if browser_cell is not None and not browser_cell.state.uncovered()
+            else 0.0,
+            "state": browser_cell.state.value if browser_cell is not None else "not_assessed",
+        }
+        hypothesis = {
+            "total": len(self.hypotheses),
+            "settled": settled_hypotheses,
+            "coverage": round(settled_hypotheses / total_hypotheses, 4),
+        }
+        return {
+            "recon": recon,
+            "attack_surface": surface,
+            "hypothesis": hypothesis,
+            "active_test": active,
+            "validation": validation,
+            "browser": browser,
+            "overall": self.coverage_ratio(),
+        }
 
     # -- telemetry ----------------------------------------------------------
 

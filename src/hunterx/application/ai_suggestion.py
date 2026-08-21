@@ -19,12 +19,35 @@ unparseable response, invalid or out-of-candidate suggestion) degrades to a
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import time
 from dataclasses import dataclass
 from typing import Any
 
 from hunterx.domain.ports.services import AIPort
+
+
+def _classify_ai_error(exc: Exception) -> tuple[int | None, bool]:
+    """Classify a provider exception into ``(http_status, timeout)``.
+
+    Derives the HTTP status from well-known provider error types/attributes so
+    telemetry can distinguish ``429`` (rate limit), timeouts and other provider
+    errors. ``None`` status means the error is not HTTP-classifiable.
+    """
+    status = getattr(exc, "status_code", None) or getattr(exc, "status", None)
+    try:
+        status = int(status)
+    except (TypeError, ValueError):
+        status = None
+    if status in (429, 401, 402, 403, 404, 408, 413, 500, 502, 503, 504):
+        return status, False
+    name = f"{type(exc).__name__} {exc}".lower()
+    if any(marker in name for marker in ("429", "rate limit", "too many requests")):
+        return 429, False
+    if any(marker in name for marker in ("timeout", "timed out")):
+        return None, True
+    return status, False
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +62,9 @@ class AISuggestion:
         latency_ms: provider round-trip time when invoked.
         error: reason the suggestion was not produced (empty on success).
         raw: the raw provider response (diagnostics only, no secrets).
+        http_status: HTTP status returned by the provider (``None`` unknown).
+        timeout: ``True`` when the provider call timed out.
+        fallback: ``True`` when a fallback/alternate model was used.
 
     """
 
@@ -48,6 +74,9 @@ class AISuggestion:
     latency_ms: int = 0
     error: str = ""
     raw: str = ""
+    http_status: int | None = None
+    timeout: bool = False
+    fallback: bool = False
 
     @property
     def usable(self) -> bool:
@@ -66,9 +95,10 @@ class AIActionSuggester:
 
     """
 
-    def __init__(self, ai: AIPort | None = None, *, model: str = "") -> None:
+    def __init__(self, ai: AIPort | None = None, *, model: str = "", provider: str = "") -> None:
         self._ai = ai
         self._model = model
+        self._provider = provider
 
     # -- public -------------------------------------------------------------
 
@@ -91,30 +121,40 @@ class AIActionSuggester:
         candidate_ids = [getattr(candidate, "action_id", "") for candidate in candidates]
         prompt = _build_prompt(mission, candidates)
         started = time.monotonic()
+        http_status: int | None = None
+        timeout = False
         try:
             response = self._ai.complete(prompt, model=self._model or None)
+        except TimeoutError:
+            latency = int((time.monotonic() - started) * 1000)
+            return AISuggestion(invoked=True, latency_ms=latency, error="AI request timed out", timeout=True)
         except Exception as exc:  # noqa: BLE001 - AI failure must never break the mission
             latency = int((time.monotonic() - started) * 1000)
-            return AISuggestion(invoked=True, latency_ms=latency, error=f"AI request failed: {exc}")
+            http_status, timeout = _classify_ai_error(exc)
+            return AISuggestion(
+                invoked=True,
+                latency_ms=latency,
+                error=f"AI request failed: {exc}",
+                http_status=http_status,
+                timeout=timeout,
+            )
         latency = int((time.monotonic() - started) * 1000)
 
         parsed, error = _parse_suggestion(response)
         if parsed is None:
-            return AISuggestion(invoked=True, latency_ms=latency, error=error, raw=response)
-
+            return AISuggestion(invoked=True, latency_ms=latency, error=error, raw=response, http_status=http_status)
+        suggestion = AISuggestion(invoked=True, latency_ms=latency, raw=response, http_status=http_status)
         action_id = str(parsed.get("suggested_action_id", ""))
         reason = str(parsed.get("reason", ""))
         if action_id not in candidate_ids:
-            return AISuggestion(
-                invoked=True,
-                latency_ms=latency,
+            return dataclasses.replace(
+                suggestion,
                 error=(
                     f"AI suggested '{action_id}' which is not an available candidate"
                     f" (valid: {', '.join(candidate_ids)})"
                 ),
-                raw=response,
             )
-        return AISuggestion(action_id=action_id, reason=reason, invoked=True, latency_ms=latency, raw=response)
+        return dataclasses.replace(suggestion, action_id=action_id, reason=reason)
 
 
 def _build_prompt(mission: Any, candidates: list[Any]) -> str:

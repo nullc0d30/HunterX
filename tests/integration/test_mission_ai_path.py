@@ -127,8 +127,13 @@ class TestAISuggestionReachesDecision:
 
         assert ai.prompts, "the AI producer must be invoked during a decision cycle"
         assert "http://localhost:3010" in ai.prompts[0]
-        # candidate capabilities are surfaced to the AI
-        assert any(cap in ai.prompts[0] for cap in ("subdomain_enumeration", "dns_enumeration", "port_discovery"))
+        # candidate capabilities are surfaced to the AI (the full-spectrum
+        # chain begins with asset discovery, so any of the recon capabilities
+        # must appear).
+        assert any(
+            cap in ai.prompts[0]
+            for cap in ("asset_discovery", "subdomain_enumeration", "dns_enumeration", "port_discovery")
+        )
 
     def test_ai_suggestion_is_passed_to_decide_next(self) -> None:
         fake = FakeExecutionEngine(outputs=dict(_FAKE_OUTPUTS))

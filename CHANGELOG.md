@@ -31,6 +31,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Attack-surface graph accuracy: no silent disappearance of discovery
   information for URL-bearing surface kinds.
+- Full-security-assessment orchestration (v7.0.1 regression): `full_security_assessment`
+  is no longer a fixed reconnaissance chain. It maps to a new
+  `MissionObjective.FULL_SECURITY_ASSESSMENT` whose deterministic plan spans the
+  full spectrum (asset/subdomain/DNS/port/service/technology/certificate/endpoint
+  enumeration plus content discovery, JavaScript analysis, parameter discovery,
+  API mapping and vulnerability scanning), and the adaptive runner wires every
+  observation to its class-specific probe (hypothesis → probe → verify).
+- Completion gate: a mission may no longer enter `reporting` merely because the
+  initial reconnaissance plan is exhausted — reporting requires the objectives
+  to be satisfied (meaningful work happened, no pending plan work, no open
+  high-value hypotheses) or a legitimate terminal condition; remaining
+  open-hypothesis work is reported honestly as `blocked`, never as success.
+- Budget semantics: `resource_budget_exhausted` is emitted only when a configured
+  budget dimension is genuinely exhausted (`executions_used >= executions_budget`,
+  or a positive wall-clock budget overrun); `time_budget_seconds=0` now means
+  unlimited, negative budgets are rejected at configuration, and time exhaustion
+  is labelled `TIME_BUDGET_EXHAUSTED` instead of being conflated with resource
+  exhaustion.
+- Observation → hypothesis pipeline: informational-but-security-relevant scanner
+  results (e.g. nuclei `deprecated-tls`) are canonicalized to real classes
+  (`security-misconfiguration`) and reach the hypothesis/finding pipeline;
+  genuinely informational results are explicitly classified as non-actionable
+  evidence instead of being silently dropped.
+- Deterministic fallback planner: when no action is ready, the runner derives
+  work from the current state — class-specific probes for open hypotheses and
+  web discovery for incomplete web attack surfaces — so the mission is fully
+  functional without AI.
+- AI/OpenRouter telemetry: the AI path records provider, model, request
+  success/failure, HTTP status (incl. 429), timeouts, fallbacks and
+  assisted-decision counts, and distinguishes `AI unavailable/degraded` from
+  mission budget exhaustion.
+- Browser capability is a probed capability: Playwright/Chromium/headless
+  availability is detected and recorded as `browser_testing` (NOT_ASSESSED when
+  unavailable) while non-browser web assessment continues.
+- Attack-path semantics: only evidence-supported chains are reported as
+  discovered attack paths; purely structural adjacency chains are recorded as
+  surface relationships, never as discovered attacks.
+- Coverage model: per-dimension coverage (recon / attack surface / hypothesis /
+  active test / validation / browser / overall) is reported so a single recon
+  ratio is no longer presented as full-assessment coverage.
 
 ---
 

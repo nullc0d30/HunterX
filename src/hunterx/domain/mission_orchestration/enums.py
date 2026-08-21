@@ -249,10 +249,12 @@ class MissionPhase(StrEnum):
     TECHNOLOGY_ANALYSIS = "technology_analysis"
     VULNERABILITY_DISCOVERY = "vulnerability_discovery"
     HYPOTHESIS_ANALYSIS = "hypothesis_analysis"
+    ACTIVE_TESTING = "active_testing"
     VALIDATION = "validation"
     PROOF = "proof"
     IMPACT_ANALYSIS = "impact_analysis"
     CORRELATION = "correlation"
+    COVERAGE_REVIEW = "coverage_review"
     REASSESSMENT = "reassessment"
     REPORTING = "reporting"
 

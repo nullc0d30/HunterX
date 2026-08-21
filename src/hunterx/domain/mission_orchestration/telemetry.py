@@ -52,6 +52,8 @@ class MissionTelemetry:
             4,
         )
 
+        ai = self._ai_telemetry(mission)
+
         return TelemetrySnapshot(
             mission_id=mission.mission_id,
             decision_count=len(decisions),
@@ -67,6 +69,17 @@ class MissionTelemetry:
             failed_actions=failed,
             fallback_rate=fallback_rate,
             resource_utilization=resource_utilization,
+            ai_enabled=ai["enabled"],
+            ai_provider=ai["provider"],
+            ai_model=ai["model"],
+            ai_requests_attempted=ai["attempted"],
+            ai_requests_succeeded=ai["succeeded"],
+            ai_requests_failed=ai["failed"],
+            ai_http_429=ai["http_429"],
+            ai_timeouts=ai["timeouts"],
+            ai_provider_errors=ai["provider_errors"],
+            ai_fallbacks=ai["fallbacks"],
+            ai_assisted_decisions=ai["assisted_decisions"],
             recorded_at=utcnow_iso(),
         )
 
@@ -114,6 +127,57 @@ class MissionTelemetry:
             return 0.0
         fallbacks = len(mission.mission.fallbacks)
         return round(fallbacks / executed, 4)
+
+    @staticmethod
+    def _ai_telemetry(mission: OrchestratedMission) -> dict[str, object]:
+        """Aggregate AI-invocation telemetry from the reasoning-trace entries.
+
+        Every ``ai_invoked`` trace entry records the provider round-trip
+        (provider/model, latency, success/failure, HTTP status when available,
+        fallback flag). Counters are aggregated across the mission and are
+        always derived from trace facts — never guessed.
+        """
+        attempted = succeeded = failed = http_429 = timeouts = provider_errors = 0
+        fallbacks = 0
+        provider = ""
+        model = ""
+        enabled = False
+        for entry in mission.trace:
+            content = dict(entry.content or {})
+            if not content.get("ai_invoked"):
+                continue
+            enabled = True
+            provider = str(content.get("ai_provider") or provider)
+            model = str(content.get("ai_model") or model)
+            attempted += 1
+            status = content.get("ai_http_status")
+            error = str(content.get("ai_error") or "")
+            if content.get("ai_usable"):
+                succeeded += 1
+            else:
+                failed += 1
+                if status == 429:
+                    http_429 += 1
+                elif content.get("ai_timeout"):
+                    timeouts += 1
+                elif error:
+                    provider_errors += 1
+            if content.get("ai_fallback"):
+                fallbacks += 1
+        assisted = sum(1 for decision in mission.decisions if bool(decision.ai_assisted))
+        return {
+            "enabled": enabled,
+            "provider": provider,
+            "model": model,
+            "attempted": attempted,
+            "succeeded": succeeded,
+            "failed": failed,
+            "http_429": http_429,
+            "timeouts": timeouts,
+            "provider_errors": provider_errors,
+            "fallbacks": fallbacks,
+            "assisted_decisions": assisted,
+        }
 
 
 __all__ = ["MissionTelemetry"]

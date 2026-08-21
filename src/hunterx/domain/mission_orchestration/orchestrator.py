@@ -23,6 +23,7 @@ on top.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping
 from dataclasses import replace
 from typing import Any
@@ -307,12 +308,14 @@ class MissionOrchestrator:
         explicit = stop_condition
         evaluated = self.policy.evaluate_stop(mission) if explicit is None else None
         condition = explicit or evaluated
-        objectives_complete = not mission.context.remaining_objectives
+        objectives_complete = self._objectives_satisfied(mission)
         if condition is None:
             if objectives_complete:
                 condition = StopCondition.OBJECTIVES_COMPLETE
             elif mission.budget.exhausted:
                 condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
+            elif self._blocked_unresolved(mission):
+                condition = StopCondition.BLOCKED
             else:
                 condition = StopCondition.BLOCKED
         elif condition in _SUCCESS_STOP_CONDITIONS:
@@ -339,10 +342,20 @@ class MissionOrchestrator:
             findings_validated=validated,
             findings_report_ready=report_ready,
             hypotheses_resolved=resolved,
+            hypotheses_open=sum(
+                1 for hypothesis in mission.hypotheses if hypothesis.state.value in _OPEN_HYPOTHESIS_STATES
+            ),
+            probes_executed=sum(
+                1
+                for observation in mission.observations
+                if observation.observation_type == "probe"
+            ),
             attack_paths_discovered=len(mission.context.attack_paths),
             coverage_ratio=mission.coverage_ratio(),
             executions_used=mission.budget.executions_used,
             stop_condition=condition.value,
+            exhausted_resource=mission.budget.exhausted_resource(),
+            ai_unavailable=_ai_unavailable(mission),
         )
         self.telemetry.record(mission)
         self._trace_mission(mission, MissionEventType.MISSION_COMPLETED, stop_condition=condition.value)
@@ -476,6 +489,22 @@ class MissionOrchestrator:
                 )
 
         evidence_map: dict[str, tuple[str, ...]] = {}
+        for observation in mission.observations:
+            asset_key = observation.asset_key or ""
+            if not asset_key:
+                continue
+            refs = evidence_map.setdefault(asset_key, ())
+            if observation.observation_id not in refs:
+                evidence_map[asset_key] = (*refs, observation.observation_id)
+        # Hypotheses whose provenance names an asset also count as evidence so a
+        # hypothesis-derived chain is SUPPORTED, never a bare graph permutation.
+        for hypothesis in mission.hypotheses:
+            asset_key = str((hypothesis.provenance or {}).get("asset_key") or "")
+            if not asset_key:
+                continue
+            refs = evidence_map.setdefault(asset_key, ())
+            if hypothesis.hypothesis_id not in refs:
+                evidence_map[asset_key] = (*refs, hypothesis.hypothesis_id)
         paths = self.planning.discover_attack_paths(
             mission.mission_id,
             surface=graph,
@@ -483,7 +512,16 @@ class MissionOrchestrator:
             validated_map=validated_map,
         )
         mission.mission.attack_paths = paths
-        mission.context.attack_paths = [path.to_dict() for path in paths]
+        # Attack-path semantics (Phase 11): only evidence-supported paths are
+        # reported as discovered attack paths. Purely structural adjacency
+        # chains (port→service, service→URL, ...) are recorded as surface
+        # relationships — never labelled as discovered attacks.
+        from hunterx.domain.adaptive_mission_planning.enums import AttackPathState
+
+        supported = [path for path in paths if path.state in (AttackPathState.SUPPORTED, AttackPathState.VALIDATED, AttackPathState.PROVED)]
+        structural = [path for path in paths if path.state is AttackPathState.HYPOTHETICAL]
+        mission.context.attack_paths = [path.to_dict() for path in supported]
+        mission.context.surface_relationships = [path.to_dict() for path in structural]
         return list(mission.context.attack_paths)
 
     def record_probe(
@@ -1369,6 +1407,44 @@ class MissionOrchestrator:
                 if not isinstance(candidate, dict) or not candidate:
                     continue
                 if not _is_vulnerability_signal(candidate):
+                    # Explicit classification (Phase 4): an informational
+                    # candidate is never silently dropped. A security-relevant
+                    # config signal (e.g. nuclei ``deprecated-tls`` →
+                    # ``security-misconfiguration``) becomes a low-priority
+                    # MISCONFIGURATION hypothesis; everything else is recorded
+                    # as informational evidence on the context.
+                    canonical = _vulnerability_class_of(candidate)
+                    from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
+
+                    if canonical and is_vulnerability_class(canonical):
+                        endpoint = _candidate_field(candidate, "endpoint")
+                        statement = (
+                            f"{endpoint or asset_key} exposes a security misconfiguration "
+                            f"(informational: {_template_of(candidate) or canonical})"
+                        )
+                        proposed.append(
+                            (
+                                statement,
+                                HypothesisType.MISCONFIGURATION,
+                                {
+                                    "vulnerability_class": canonical,
+                                    "endpoint": endpoint or "",
+                                    "informational": True,
+                                },
+                                0.45,
+                            )
+                        )
+                    else:
+                        mission.context.evidence[f"info:{observation.observation_id}:{canonical or 'unknown'}"] = {
+                            "kind": "informational",
+                            "observation_id": observation.observation_id,
+                            "tool_id": observation.tool_id or "",
+                            "asset_key": asset_key,
+                            "class": canonical,
+                            "content": _candidate_summary(candidate),
+                            "classified": "non_actionable",
+                            "recorded_at": utcnow_iso(),
+                        }
                     continue
                 class_id = _vulnerability_class_of(candidate)
                 endpoint = _candidate_field(candidate, "endpoint")
@@ -1757,6 +1833,60 @@ class MissionOrchestrator:
                         "parameter": parameter,
                     }
 
+    def _objectives_satisfied(self, mission: OrchestratedMission) -> bool:
+        """Return ``True`` when the mission has genuinely satisfied its objectives.
+
+        The completion gate (Phase 12): a full security assessment is complete
+        only when meaningful work happened (observations/hypotheses/executions),
+        every attack-surface branch is exhausted (no pending plan work), every
+        high-value hypothesis is settled (no open class-specific candidates) and
+        no validation is still pending. Reconnaissance completion alone never
+        satisfies the objectives, and a mission that never ran any work is
+        never reported as complete.
+        """
+        has_work = bool(mission.observations) or bool(mission.hypotheses) or mission.budget.executions_used > 0
+        if not has_work:
+            return False
+        if self._has_open_high_value_work(mission):
+            return False
+        return not self._has_pending_plan_work(mission)
+
+    @staticmethod
+    def _has_open_high_value_work(mission: OrchestratedMission) -> bool:
+        """Return ``True`` when a high-value hypothesis is still unresolved."""
+        return any(
+            MissionPolicyEngine._is_high_value(hypothesis)
+            and hypothesis.state.value in _OPEN_HYPOTHESIS_STATES
+            for hypothesis in mission.hypotheses
+        )
+
+    @staticmethod
+    def _has_pending_plan_work(mission: OrchestratedMission) -> bool:
+        """Return ``True`` when the planning graph still carries non-terminal work."""
+        return any(
+            not action.status.is_terminal
+            for action in mission.mission.graph.actions.values()
+        )
+
+    @staticmethod
+    def _blocked_unresolved(mission: OrchestratedMission) -> bool:
+        """Return ``True`` when open work remains but cannot be discharged.
+
+        A mission is *blocked* (honest incomplete terminal) when high-value
+        hypotheses remain open with no bound, non-terminal probe action — the
+        probe capabilities are unavailable or the target is not probeable. This
+        is never reported as success and never as a budget exhaustion.
+        """
+        open_states = _OPEN_HYPOTHESIS_STATES
+        for hypothesis in mission.hypotheses:
+            if hypothesis.state.value not in open_states:
+                continue
+            provenance = hypothesis.provenance or {}
+            if not str(provenance.get("vulnerability_class") or "").strip():
+                continue
+            return True
+        return False
+
     def _advance_to_completed(self, mission_id: str) -> None:
         """Walk the planning state machine to COMPLETED through legal hops.
 
@@ -1968,6 +2098,33 @@ def _candidate_field(candidate: Any, name: str) -> str:
         return ""
     value = candidate.get(name) or candidate.get(f"{name}_id")
     return str(value).strip()
+
+
+def _candidate_summary(candidate: Any) -> str:
+    """Return a short JSON-safe summary of an informational scanner candidate.
+
+    Used to record informational evidence without persisting raw secret-bearing
+    payloads. Bounded to a few safe fields.
+    """
+    if not isinstance(candidate, dict):
+        return str(candidate)[:200]
+    safe: dict[str, Any] = {}
+    for key in (
+        "template",
+        "template_id",
+        "template_name",
+        "info",
+        "name",
+        "severity",
+        "type",
+        "matched_at",
+        "url",
+        "description",
+    ):
+        value = candidate.get(key)
+        if value not in (None, ""):
+            safe[key] = value
+    return json.dumps(safe, ensure_ascii=True, default=str)[:400]
 
 
 #: Parameter name hints → (canonical vulnerability class, priority). Targeted
@@ -2459,12 +2616,37 @@ _PHASE_BY_PLANNING_STATE: dict[MissionState, MissionPhase] = {
     MissionState.MAPPING: MissionPhase.ATTACK_SURFACE_MAPPING,
     MissionState.ANALYSIS: MissionPhase.TECHNOLOGY_ANALYSIS,
     MissionState.HYPOTHESIS_GENERATION: MissionPhase.HYPOTHESIS_ANALYSIS,
-    MissionState.VALIDATION: MissionPhase.VALIDATION,
+    MissionState.VALIDATION: MissionPhase.ACTIVE_TESTING,
     MissionState.PROOF: MissionPhase.PROOF,
     MissionState.REASSESSMENT: MissionPhase.REASSESSMENT,
     MissionState.REPORTING: MissionPhase.REPORTING,
     MissionState.COMPLETED: MissionPhase.REPORTING,
 }
+
+
+#: Hypothesis states that are still open (not settled).
+_OPEN_HYPOTHESIS_STATES = frozenset(
+    {"proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior"}
+)
+
+
+def _ai_unavailable(mission: OrchestratedMission) -> bool:
+    """Return ``True`` when the mission attempted AI but the provider was unusable.
+
+    Distinguishes "AI unavailable/degraded" from any budget exhaustion: the flag
+    reflects real AI invocation outcomes recorded on the reasoning trace and is
+    independent of stop conditions.
+    """
+    attempted = False
+    usable = 0
+    for entry in mission.trace:
+        content = dict(entry.content or {})
+        if not content.get("ai_invoked"):
+            continue
+        attempted = True
+        if content.get("ai_usable"):
+            usable += 1
+    return attempted and usable == 0
 
 
 def _category_for_template(template: str) -> HypothesisType:

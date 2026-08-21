@@ -41,7 +41,7 @@ from hunterx.domain.attack_surface.enums import (
 )
 from hunterx.domain.auth.session import AuthenticatedSession
 from hunterx.domain.execution import ExecutionStatus
-from hunterx.domain.mission_orchestration.enums import StopCondition
+from hunterx.domain.mission_orchestration.enums import MissionPhase, StopCondition
 from hunterx.domain.mission_orchestration.orchestrator import _endpoint_urls
 from hunterx.domain.target_intelligence.enums import CoverageState
 from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
@@ -117,6 +117,47 @@ _CAPABILITY_BY_TRIGGER: dict[ReplanTrigger, str] = {
     ReplanTrigger.NEW_ENDPOINT_DISCOVERED: "parameter_discovery",
     ReplanTrigger.NEW_PARAMETER_DISCOVERED: "vulnerability_scanning",
     ReplanTrigger.NEW_HYPOTHESIS_CREATED: "vulnerability_scanning",
+}
+
+#: Vulnerability class → targeted probe capability. A hypothesis derived from
+#: the attack surface (a ``q`` parameter → sql-injection, an ``id`` → IDOR, a
+#: ``url`` → SSRF, ...) is validated by its class-specific capability, never by
+#: a generic scan alone. This is the deterministic hypothesis → probe wiring:
+#: the planner binds a probe action to the hypothesis and the runner executes
+#: it. Only classes with a registered probe capability are mapped; classes
+#: without one fall back to generic ``vulnerability_scanning``.
+_PROBE_CAPABILITY_BY_CLASS: dict[str, str] = {
+    "sql-injection": "sql_injection",
+    "nosql-injection": "sql_injection",
+    "xss": "xss",
+    "ssti": "ssti",
+    "xxe": "xxe",
+    "lfi": "lfi",
+    "rfi": "lfi",
+    "path-traversal": "lfi",
+    "command-injection": "rce",
+    "rce": "rce",
+    "ssrf": "ssrf",
+    "idor": "idor",
+    "broken-access-control": "authorization_analysis",
+    "authorization": "authorization_analysis",
+    "api-authorization": "authorization_analysis",
+    "authentication": "authentication_analysis",
+    "authentication-flaws": "authentication_analysis",
+    "api-security": "api_security",
+    "graphql-security": "graphql_security",
+    "graphql-authorization": "graphql_security",
+    "secret-exposure": "secret_detection",
+    "sensitive-information-exposure": "secret_detection",
+    "dependency-vulnerability": "dependency_check",
+    "known-vulnerable-component": "dependency_check",
+    "security-misconfiguration": "vulnerability_scanning",
+    "csrf": "vulnerability_scanning",
+    "host-header-injection": "vulnerability_scanning",
+    "http-request-smuggling": "vulnerability_scanning",
+    "http-access-differential": "vulnerability_scanning",
+    "open-redirect": "vulnerability_scanning",
+    "cors-misconfiguration": "vulnerability_scanning",
 }
 
 def _as_list(value: Any) -> list[Any]:
@@ -231,6 +272,7 @@ _STATE_BY_CAPABILITY: dict[str, MissionState] = {
     "certificate_enumeration": MissionState.MAPPING,
     "endpoint_enumeration": MissionState.MAPPING,
     "content_discovery": MissionState.MAPPING,
+    "javascript_analysis": MissionState.MAPPING,
     "parameter_discovery": MissionState.ANALYSIS,
     "api_mapping": MissionState.MAPPING,
     "authentication_analysis": MissionState.ANALYSIS,
@@ -321,6 +363,8 @@ class MissionExecutionService:
         self._attack_surface: AttackSurfaceService | None = attack_surface
         #: Latest attack-surface exhaustion report (``None`` when not wired).
         self._surface_report: Any | None = None
+        #: Browser automation capability report (detected at run start).
+        self._browser_report: dict[str, Any] | None = None
         #: Aggressive-but-bounded adaptive attack controller (Phase 2). Built
         #: per-mission unless injected. Feeds execution outcomes back into the
         #: target-feedback state machine (aggression/pacing/backoff/retry).
@@ -358,6 +402,24 @@ class MissionExecutionService:
         if decision is not None and ai_trace:
             self._record_ai_trace(mission_id, decision, ai_trace)
         if decision is None:
+            # Deterministic idle-gap planner (Phase 10): when no action is
+            # ready, the planner derives NEW work from the current state instead
+            # of idling. Open, class-specific vulnerability hypotheses are
+            # scheduled as targeted probes; an incomplete web attack surface is
+            # extended with web-discovery capabilities. Only when neither can
+            # produce work does the mission advance state or go idle.
+            if self._schedule_hypothesis_probes(mission_id):
+                return self._cycle_outcome(
+                    mission_id,
+                    status="probe_scheduled",
+                    reason="hypothesis-driven probes scheduled deterministically",
+                )
+            if self._schedule_web_discovery(mission_id):
+                return self._cycle_outcome(
+                    mission_id,
+                    status="replanned",
+                    reason="web attack-surface discovery scheduled",
+                )
             if self._advance_state(mission_id):
                 return self._cycle_outcome(
                     mission_id,
@@ -427,6 +489,7 @@ class MissionExecutionService:
         self._parameters = parameters or {}
         self._establish_auth_session(mission_id, parameters)
         self._seed_coverage(mission_id)
+        self._record_browser_capability(mission_id)
         self._build_attack_surface(mission_id)
         self._build_adaptive_attack(mission_id)
         if self._model_attacker is not None:
@@ -467,6 +530,13 @@ class MissionExecutionService:
                 if self._model_attacker is not None and not self._model_attacker.exhausted():
                     idle = 0
                     continue
+                # Completion gate: idle only counts while no hypothesis/attack-
+                # surface work remains. The deterministic planner schedules
+                # probes from open hypotheses, so an idle result while open
+                # hypotheses exist means the planner is blocked, not done.
+                if self._open_hypothesis_work_remaining(mission_id) and self._schedule_hypothesis_probes(mission_id):
+                    idle = 0
+                    continue
                 idle += 1
                 if idle >= max_idle_cycles:
                     break
@@ -484,6 +554,12 @@ class MissionExecutionService:
                     in ("coverage_target_achieved", "high_value_hypotheses_resolved", "findings_validated")
                     and self._has_pending_plan_work(mission_id)
                 ):
+                    continue
+                # Completion gate: high-value hypotheses still open mean the
+                # assessment is not finished. A coverage percentage is not a
+                # security verdict, so the loop continues while probe work for
+                # those hypotheses remains possible.
+                if self._open_hypothesis_work_remaining(mission_id):
                     continue
                 # A target that persistently blocks the assessment is never
                 # "complete": keep a reduced (throttled) presence instead of
@@ -505,11 +581,20 @@ class MissionExecutionService:
                 break
         surface_report = self._surface_exhaustion_report(mission_id)
         if self._adaptive_blocked():
+            # A persistently blocked target is never "complete" and never a
+            # budget problem: report the honest blocked terminal.
             finalize_condition: StopCondition | None = StopCondition.BLOCKED
         elif self._model_attacker is not None and not self._model_attacker.exhausted():
             # A resource ceiling or an unavailable model while work remains is
             # never reported as completion.
             finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
+        elif self._open_hypothesis_work_remaining(mission_id):
+            # Open class-specific hypotheses could not be discharged (their
+            # probe capabilities are unavailable or the target is not
+            # probeable). This is an honest blocked terminal — the assessment
+            # is incomplete, the budget is NOT exhausted, and AI availability is
+            # irrelevant to this classification.
+            finalize_condition = StopCondition.BLOCKED
         else:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
         self._finalize_run(mission_id, stop_condition=finalize_condition)
@@ -526,8 +611,15 @@ class MissionExecutionService:
             "observations": len(mission.observations),
             "decisions": len(mission.decisions),
             "tool_executions": len(mission.context.tool_executions),
+            "probes_executed": sum(
+                1
+                for observation in mission.observations
+                if observation.observation_type == "probe"
+            ),
+            "hypotheses": len(mission.hypotheses),
             "coverage_ratio": mission.coverage_ratio(),
             "surface": surface_report.to_dict() if surface_report is not None else None,
+            "browser": self._browser_report,
             "adaptive_attack": self._adaptive_attack.snapshot() if self._adaptive_attack is not None else None,
             "model_attacker": self._model_attacker.report() if self._model_attacker is not None else None,
         }
@@ -692,8 +784,14 @@ class MissionExecutionService:
             meaningful = has_meaningful_content(raw.get("content"))
             if meaningful:
                 self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
+                # The planner schedules the hypothesis-bound probe BEFORE the
+                # evidence assessment so an observation that settles a
+                # hypothesis (e.g. refutes it) still leaves the single bound
+                # probe action recorded — proving "never reprobed" rather than
+                # "never probed".
+                self._replan_from_observation(mission_id, capability, raw, observation=ingested)
                 # Evidence-driven reassessment: update the hypotheses this
-                # probe was designed to test, then let the planner reconsider.
+                # probe was designed to test.
                 self._assess_hypotheses_after_observation(
                     mission_id,
                     action_id=action_id,
@@ -702,7 +800,6 @@ class MissionExecutionService:
                     raw=raw,
                     result=result,
                 )
-                self._replan_from_observation(mission_id, capability, raw, observation=ingested)
                 self._sync_phase(mission_id)
                 # Attack paths are intelligence derived from the discovered
                 # surface — recorded as the mission moves through
@@ -1070,6 +1167,11 @@ class MissionExecutionService:
             "ai_reason": suggestion.reason,
             "ai_error": suggestion.error,
             "ai_usable": suggestion.usable,
+            "ai_http_status": suggestion.http_status,
+            "ai_timeout": suggestion.timeout,
+            "ai_fallback": suggestion.fallback,
+            "ai_provider": str(getattr(self._ai_suggester, "_provider", "") or ""),
+            "ai_model": str(getattr(self._ai_suggester, "_model", "") or ""),
         }
         return suggestion.action_id, suggestion.reason, trace
 
@@ -1206,6 +1308,51 @@ class MissionExecutionService:
                 tool_id="session-service",
             )
 
+    def _record_browser_capability(self, mission_id: str) -> None:
+        """Detect the browser-automation capability and record it truthfully.
+
+        Browser automation is a capability, never an assumption: Playwright
+        availability, a Chromium executable and a real headless launch are all
+        probed. When unavailable, ``browser_testing`` stays ``NOT_ASSESSED``
+        with a clear reason and the mission continues with non-browser HTTP
+        capabilities — absence of browser testing is never converted into
+        negative security evidence.
+        """
+        try:
+            from hunterx.domain.mission_orchestration.browser import detect_browser_capability
+        except Exception:  # noqa: BLE001 - best-effort detection
+            self._browser_report = {"status": "not_assessed", "reason": "browser detection unavailable"}
+            return
+        report = detect_browser_capability()
+        self._browser_report = report
+        mission = self._orchestration.get(mission_id)
+        target = mission.context.target_id or "target"
+        status = str(report.get("status") or "not_assessed")
+        reason = str(report.get("reason") or "")
+        state = CoverageState.TESTED if status == "available" else CoverageState.NOT_ASSESSED
+        notes = (
+            f"browser automation available ({report.get('executable') or 'playwright'})"
+            if state is CoverageState.TESTED
+            else f"browser automation {status}: {reason}"
+        )
+        self._record_coverage(
+            mission_id,
+            target,
+            "browser_testing",
+            "browser",
+            state=state,
+            notes=notes,
+        )
+        self._publish(
+            "mission.browser.capability",
+            {
+                "mission_id": mission_id,
+                "status": status,
+                "reason": reason,
+                "target": target,
+            },
+        )
+
     def _seed_coverage(self, mission_id: str) -> None:
         """Seed the coverage matrix from the plan's capabilities.
 
@@ -1297,22 +1444,24 @@ class MissionExecutionService:
         observations that carry meaningful evidence — an empty result never
         schedules follow-on work.
 
-        A ``NEW_HYPOTHESIS_CREATED`` signal binds the follow-on validation node
-        to the hypothesis that the observation produced, so the next decision
-        ranks an evidence-driven probe (and never a generic capability).
+        Every hypothesis an observation produces is wired to its class-specific
+        probe capability (hypothesis → probe), so a discovered ``q`` parameter
+        drives a targeted ``sql_injection`` probe — not just a generic scan.
         """
-        trigger = _TRIGGER_BY_OBSERVATION.get(str(raw.get("observation_type", "")))
-        if trigger is None:
-            return
         content = raw.get("content")
         if not content or not has_meaningful_content(content):
             return
+        # Class-specific probe wiring: every hypothesis supported by this
+        # observation gets its targeted capability action bound to it.
+        hypothesis_ids = self._hypotheses_from_observation(mission_id, observation)
+        if hypothesis_ids:
+            self._schedule_probes_for_hypotheses(mission_id, hypothesis_ids)
+        trigger = _TRIGGER_BY_OBSERVATION.get(str(raw.get("observation_type", "")))
+        if trigger is None:
+            return
         new_capability = _CAPABILITY_BY_TRIGGER.get(trigger, "")
         details: list[dict[str, Any]] = []
-        if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
-            for hypothesis_id in self._hypotheses_from_observation(mission_id, observation):
-                details.append({"hypothesis_id": hypothesis_id, "capability": "vulnerability_scanning"})
-        elif trigger is ReplanTrigger.NEW_ENDPOINT_DISCOVERED:
+        if trigger is ReplanTrigger.NEW_ENDPOINT_DISCOVERED:
             # Per-endpoint parameter discovery: every freshly discovered URL
             # gets its own DISCOVER_PARAMETERS action (deduplicated by
             # capability+asset below), so a multi-page surface is enumerated
@@ -1325,7 +1474,7 @@ class MissionExecutionService:
                 for url in _endpoint_urls(content)
                 if str(url).strip()
             ]
-        elif new_capability:
+        elif new_capability and trigger is not ReplanTrigger.NEW_HYPOTHESIS_CREATED:
             details = [{}]
         graph = self._planning.get_plan(mission_id)
         # Script assets a crawler observation surfaces (``*.js``/``*.mjs``) are
@@ -1354,16 +1503,7 @@ class MissionExecutionService:
             return
         for detail in details:
             replan_asset = ""
-            if trigger is ReplanTrigger.NEW_HYPOTHESIS_CREATED:
-                # Per-hypothesis validation actions are distinct: dedup against
-                # ANY existing action bound to the SAME hypothesis (terminal or
-                # not) so an open hypothesis never respawns endless probes.
-                if any(
-                    action.hypothesis_id == detail.get("hypothesis_id")
-                    for action in graph.actions.values()
-                ):
-                    continue
-            elif detail.get("endpoint"):
+            if detail.get("endpoint"):
                 # Per-endpoint follow-on (parameter discovery on a discovered
                 # URL): dedup by capability+asset so each endpoint is scheduled
                 # at most once while every endpoint still gets its own action.
@@ -1393,6 +1533,64 @@ class MissionExecutionService:
             # Replanned work may introduce capabilities the preflight never
             # vetted: re-check readiness before any of it executes.
             self._check_replanned_readiness(mission_id)
+
+    def _schedule_probes_for_hypotheses(self, mission_id: str, hypothesis_ids: list[str]) -> bool:
+        """Schedule class-specific probe actions bound to ``hypothesis_ids``.
+
+        Every open hypothesis with a probeable vulnerability class and no bound
+        action is scheduled with its class-specific capability (the hypothesis
+        → probe transition). Deduplication is per-hypothesis so an open
+        hypothesis never respawns endless probes.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        target = mission.context.target_id or "target"
+        open_states = ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
+        scheduled = False
+        for hypothesis_id in hypothesis_ids:
+            hypothesis = mission.hypothesis(hypothesis_id)
+            if hypothesis is None:
+                continue
+            if hypothesis.state.value not in open_states:
+                continue
+            provenance = dict(hypothesis.provenance or {})
+            vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
+            capability = _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class)
+            if not capability:
+                continue
+            if any(
+                action.hypothesis_id == hypothesis_id
+                for action in graph.actions.values()
+            ):
+                continue
+            asset = str(provenance.get("endpoint") or provenance.get("asset_key") or target)
+            try:
+                self._planning.replan_for_change(
+                    mission_id,
+                    trigger=ReplanTrigger.NEW_HYPOTHESIS_CREATED,
+                    asset_key=asset,
+                    detail={"hypothesis_id": hypothesis_id, "capability": capability},
+                    reason=f"hypothesis-driven probe ({vulnerability_class})",
+                )
+            except Exception:  # noqa: BLE001 - replanning must never break the loop
+                continue
+            self._check_replanned_readiness(mission_id)
+            scheduled = True
+            self._publish(
+                "mission.probe.scheduled",
+                {
+                    "mission_id": mission_id,
+                    "hypothesis_id": hypothesis_id,
+                    "vulnerability_class": vulnerability_class,
+                    "capability": capability,
+                    "asset": asset,
+                    "planner": "observation",
+                },
+            )
+        return scheduled
 
     def _hypothesis_from_observation(self, mission_id: str, observation: Any | None) -> str:
         """Return the hypothesis supported by ``observation``, if any.
@@ -2135,6 +2333,144 @@ class MissionExecutionService:
                 notes=reason,
             )
 
+    # -- deterministic adaptive planner (hypothesis → probe wiring) ----------
+
+    def _open_hypothesis_work_remaining(self, mission_id: str) -> bool:
+        """Return ``True`` when class-specific probe work is still pending.
+
+        The completion gate uses this: a mission must not enter reporting while
+        an open, high-priority, class-specific vulnerability hypothesis has no
+        settled verdict. Discovery facts (assets/services/technologies) never
+        count as open work by themselves.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        bound = {action.hypothesis_id for action in graph.actions.values() if action.hypothesis_id}
+        open_states = ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
+        for hypothesis in mission.hypotheses:
+            if hypothesis.state.value not in open_states:
+                continue
+            provenance = hypothesis.provenance or {}
+            vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
+            if not vulnerability_class:
+                continue
+            if not _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class):
+                continue
+            if hypothesis.hypothesis_id in bound:
+                continue
+            return True
+        return False
+
+    def _schedule_hypothesis_probes(self, mission_id: str) -> bool:
+        """Deterministically schedule targeted probes for open hypotheses.
+
+        The deterministic fallback planner: for every open, class-specific,
+        high-value vulnerability hypothesis with no bound probe action, a
+        class-specific capability action is scheduled and bound to the
+        hypothesis. The runner then executes it through the ordinary
+        capability/tool path and the orchestrator assesses the hypothesis from
+        the probe verdict. AI is never required for this step.
+
+        Returns ``True`` when at least one probe was scheduled.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        open_states = ("proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior")
+        candidates: list[str] = []
+        for hypothesis in sorted(mission.hypotheses, key=lambda h: (-h.priority, -h.confidence)):
+            if hypothesis.state.value not in open_states:
+                continue
+            provenance = dict(hypothesis.provenance or {})
+            vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
+            if not vulnerability_class:
+                continue
+            if not _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class):
+                continue
+            candidates.append(hypothesis.hypothesis_id)
+        if not candidates:
+            return False
+        return self._schedule_probes_for_hypotheses(mission_id, candidates)
+
+    def _web_target(self, mission_id: str) -> bool:
+        """Return ``True`` when the mission target is a web/HTTP target."""
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        spec = normalize_target(mission.context.target_id or "")
+        return spec.scheme in ("http", "https")
+
+    def _schedule_web_discovery(self, mission_id: str) -> bool:
+        """Extend an incomplete web attack surface with discovery capabilities.
+
+        A ``0``-endpoint httpx result must never end a web assessment: when a
+        web target has no discovered endpoints/parameters yet and the web-
+        discovery capabilities have not run, the deterministic planner schedules
+        content discovery (crawler) / javascript analysis / api mapping so the
+        surface is actually enumerated.
+
+        Returns ``True`` when at least one discovery action was scheduled.
+        """
+        if not self._web_target(mission_id):
+            return False
+        try:
+            mission = self._orchestration.get(mission_id)
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        target = mission.context.target_id or "target"
+        has_endpoints = bool(mission.context.endpoints)
+        done = {
+            action.capability
+            for action in graph.actions.values()
+            if action.status.is_terminal
+        }
+        pending = {
+            action.capability
+            for action in graph.actions.values()
+            if not action.status.is_terminal
+        }
+        scheduled = False
+        for capability in ("content_discovery", "javascript_analysis", "api_mapping", "parameter_discovery"):
+            if capability in done or capability in pending:
+                continue
+            if not has_endpoints and capability in ("api_mapping", "parameter_discovery"):
+                continue
+            try:
+                self._planning.replan_for_change(
+                    mission_id,
+                    trigger=ReplanTrigger.CAPABILITY_SCHEDULED,
+                    asset_key=target,
+                    detail={"capability": capability},
+                    reason=f"web attack-surface discovery ({capability})",
+                )
+            except Exception:  # noqa: BLE001 - replanning must never break the loop
+                continue
+            self._check_replanned_readiness(mission_id)
+            scheduled = True
+            self._publish(
+                "mission.surface.discovery.scheduled",
+                {
+                    "mission_id": mission_id,
+                    "capability": capability,
+                    "target": target,
+                    "endpoints": len(mission.context.endpoints),
+                    "parameters": len(mission.context.parameters),
+                },
+            )
+            graph = self._planning.get_plan(mission_id)
+            pending = {
+                action.capability
+                for action in graph.actions.values()
+                if not action.status.is_terminal
+            }
+        return scheduled
+
     def _advance_state(self, mission_id: str) -> bool:
         """Advance the planning state toward the phase that holds the work.
 
@@ -2466,6 +2802,28 @@ class MissionExecutionService:
 
     def _finalize_run(self, mission_id: str, *, stop_condition: StopCondition | None = None) -> None:
         """Finalize the mission run (idempotent) so no run stays ``running``."""
+        # COVERAGE_REVIEW is the last assessment phase before reporting: it
+        # records that every dimension was reviewed (recon, attack surface,
+        # hypotheses, active testing, validation, browser) before the terminal
+        # transition. The domain finalize() then moves the mission to REPORTING.
+        with contextlib.suppress(Exception):  # phase emission is best-effort
+            phase = self._orchestration.sync_phase(mission_id)
+            if phase and phase != self._last_phase:
+                self._last_phase = phase
+                self._publish(
+                    "mission.phase.started",
+                    {"mission_id": mission_id, "phase": phase, "phase_kind": phase},
+                )
+            if self._last_phase != MissionPhase.COVERAGE_REVIEW.value:
+                self._last_phase = MissionPhase.COVERAGE_REVIEW.value
+                self._publish(
+                    "mission.phase.started",
+                    {
+                        "mission_id": mission_id,
+                        "phase": MissionPhase.COVERAGE_REVIEW.value,
+                        "phase_kind": MissionPhase.COVERAGE_REVIEW.value,
+                    },
+                )
         with contextlib.suppress(Exception):  # attack-path recording is best-effort
             self._orchestration.record_attack_paths(mission_id)
         with contextlib.suppress(Exception):  # finalization is the terminal step

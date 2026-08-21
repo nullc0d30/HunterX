@@ -20,6 +20,21 @@ from hunterx.domain.adaptive_mission_planning.enums import (
 
 #: Deterministic discovery chains per objective.
 _DISCOVERY_CHAINS: dict[MissionObjective, tuple[str, ...]] = {
+    MissionObjective.FULL_SECURITY_ASSESSMENT: (
+        "asset_discovery",
+        "subdomain_enumeration",
+        "dns_enumeration",
+        "port_discovery",
+        "service_detection",
+        "technology_fingerprint",
+        "certificate_enumeration",
+        "endpoint_enumeration",
+        "content_discovery",
+        "javascript_analysis",
+        "parameter_discovery",
+        "api_mapping",
+        "vulnerability_scanning",
+    ),
     MissionObjective.ATTACK_SURFACE_DISCOVERY: (
         "subdomain_enumeration",
         "dns_enumeration",

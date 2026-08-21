@@ -167,11 +167,52 @@ class MissionBudget:
         return max(0, self.executions_budget - self.executions_used)
 
     @property
-    def exhausted(self) -> bool:
-        """Return ``True`` when any budget dimension is exhausted."""
-        return self.execution_remaining <= 0 or (
-            self.time_budget_seconds > 0 and self.time_used_seconds >= self.time_budget_seconds
+    def execution_exhausted(self) -> bool:
+        """Return ``True`` when the execution budget is genuinely exhausted.
+
+        ``executions_budget`` is a hard ceiling: exhaustion is defined as
+        ``executions_used >= executions_budget``. A ``0`` budget means "no
+        executions permitted" (immediately exhausted); ``None``/negative values
+        are rejected at configuration time.
+        """
+        return self.executions_used >= self.executions_budget
+
+    @property
+    def time_exhausted(self) -> bool:
+        """Return ``True`` when the wall-clock budget is exhausted.
+
+        ``time_budget_seconds`` semantics: ``0`` means **unlimited** (never
+        exhausted by time), any positive value is a hard ceiling. A negative
+        value is rejected at configuration time.
+        """
+        return (
+            self.time_budget_seconds > 0
+            and self.time_used_seconds >= self.time_budget_seconds
         )
+
+    @property
+    def exhausted(self) -> bool:
+        """Return ``True`` when any configured budget dimension is exhausted.
+
+        This property intentionally only reflects *configured* ceilings: a
+        ``0`` time budget is unlimited and never makes the mission "exhausted".
+        It is used by the stop-condition policy as the source of truth for
+        ``resource_budget_exhausted``.
+        """
+        return self.execution_exhausted or self.time_exhausted
+
+    def exhausted_resource(self) -> str:
+        """Return the canonical name of the resource that caused exhaustion.
+
+        Identifies the exact budget dimension that fired so a stop condition
+        names its resource (``executions`` / ``time`` / ``""`` when nothing is
+        exhausted).
+        """
+        if self.execution_exhausted:
+            return "executions"
+        if self.time_exhausted:
+            return "time"
+        return ""
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-safe mapping."""
@@ -188,6 +229,8 @@ class MissionBudget:
             "memory_mb": self.memory_mb,
             "disk_mb": self.disk_mb,
             "network_kb": self.network_kb,
+            "execution_exhausted": self.execution_exhausted,
+            "time_exhausted": self.time_exhausted,
         }
 
 
@@ -385,11 +428,15 @@ class MissionOutcome:
     findings_validated: int = 0
     findings_report_ready: int = 0
     hypotheses_resolved: int = 0
+    hypotheses_open: int = 0
+    probes_executed: int = 0
     attack_paths_discovered: int = 0
     coverage_ratio: float = 0.0
     executions_used: int = 0
     completed_at: str = field(default_factory=utcnow_iso)
     stop_condition: str = ""
+    exhausted_resource: str = ""
+    ai_unavailable: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-safe mapping."""
@@ -400,11 +447,15 @@ class MissionOutcome:
             "findings_validated": self.findings_validated,
             "findings_report_ready": self.findings_report_ready,
             "hypotheses_resolved": self.hypotheses_resolved,
+            "hypotheses_open": self.hypotheses_open,
+            "probes_executed": self.probes_executed,
             "attack_paths_discovered": self.attack_paths_discovered,
             "coverage_ratio": self.coverage_ratio,
             "executions_used": self.executions_used,
             "completed_at": self.completed_at,
             "stop_condition": self.stop_condition,
+            "exhausted_resource": self.exhausted_resource,
+            "ai_unavailable": self.ai_unavailable,
         }
 
 
@@ -645,6 +696,17 @@ class TelemetrySnapshot:
     failed_actions: int = 0
     fallback_rate: float = 0.0
     resource_utilization: float = 0.0
+    ai_enabled: bool = False
+    ai_provider: str = ""
+    ai_model: str = ""
+    ai_requests_attempted: int = 0
+    ai_requests_succeeded: int = 0
+    ai_requests_failed: int = 0
+    ai_http_429: int = 0
+    ai_timeouts: int = 0
+    ai_provider_errors: int = 0
+    ai_fallbacks: int = 0
+    ai_assisted_decisions: int = 0
     recorded_at: str = field(default_factory=utcnow_iso)
 
     def to_dict(self) -> dict[str, Any]:
@@ -664,6 +726,17 @@ class TelemetrySnapshot:
             "failed_actions": self.failed_actions,
             "fallback_rate": self.fallback_rate,
             "resource_utilization": self.resource_utilization,
+            "ai_enabled": self.ai_enabled,
+            "ai_provider": self.ai_provider,
+            "ai_model": self.ai_model,
+            "ai_requests_attempted": self.ai_requests_attempted,
+            "ai_requests_succeeded": self.ai_requests_succeeded,
+            "ai_requests_failed": self.ai_requests_failed,
+            "ai_http_429": self.ai_http_429,
+            "ai_timeouts": self.ai_timeouts,
+            "ai_provider_errors": self.ai_provider_errors,
+            "ai_fallbacks": self.ai_fallbacks,
+            "ai_assisted_decisions": self.ai_assisted_decisions,
             "recorded_at": self.recorded_at,
         }
 
@@ -769,6 +842,7 @@ class MissionContext:
     proofs: dict[str, Any] = field(default_factory=dict)
     tool_executions: list[dict[str, Any]] = field(default_factory=list)
     attack_paths: list[dict[str, Any]] = field(default_factory=list)
+    surface_relationships: list[dict[str, Any]] = field(default_factory=list)
     decisions: list[MissionDecision] = field(default_factory=list)
     current_phase: str = "target_modeling"
     current_objectives: list[str] = field(default_factory=list)
@@ -827,6 +901,7 @@ class MissionContext:
             "proof_count": len(self.proofs),
             "tool_execution_count": len(self.tool_executions),
             "attack_path_count": len(self.attack_paths),
+            "surface_relationship_count": len(self.surface_relationships),
             "decision_count": len(self.decisions),
             "current_phase": self.current_phase,
             "current_objectives": list(self.current_objectives),

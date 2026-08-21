@@ -16,7 +16,7 @@ from hunterx.domain.adaptive_mission_planning.enums import MissionObjective
 
 #: Sprint-032 objective names → ratified Sprint-027 planning objectives.
 _OBJECTIVE_MAP: dict[str, MissionObjective] = {
-    "full_security_assessment": MissionObjective.ATTACK_SURFACE_DISCOVERY,
+    "full_security_assessment": MissionObjective.FULL_SECURITY_ASSESSMENT,
     "bug_bounty_hunt": MissionObjective.BUG_BOUNTY_ASSESSMENT,
     "bug_bounty_assessment": MissionObjective.BUG_BOUNTY_ASSESSMENT,
     "pentest": MissionObjective.PENTEST_ASSESSMENT,
