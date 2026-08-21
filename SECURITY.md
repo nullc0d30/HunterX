@@ -52,6 +52,7 @@ We ask that you:
 
 | Version | Supported |
 |---------|-----------|
+| v7.0.1  | Yes       |
 | v7.0.0  | Yes       |
 | < v7.0.0 | No       |
 

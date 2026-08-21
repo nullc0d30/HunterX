@@ -1071,7 +1071,7 @@ show_banner() {
     echo "╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝"
     echo ""
     echo "       AI-POWERED SECURITY ORCHESTRATION & INTELLIGENCE PLATFORM"
-    echo "                            HunterX v7.0.0"
+    echo "                            HunterX v7.0.1"
     echo ""
     echo "       Observe → Hypothesize → Probe → Verify"
     echo ""
@@ -1208,7 +1208,7 @@ PYEOF
     echo ""
     echo "============================================================"
     if [ "$readiness_errors" -eq 0 ]; then
-        echo " HunterX ${HUNTERX_VERSION:-v7.0.0}"
+        echo " HunterX ${HUNTERX_VERSION:-v7.0.1}"
         echo " Installation Complete"
         echo "============================================================"
         echo ""

@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.0.1] — 2026-08-21
+
+### Added
+
+- Final release-candidate acceptance hardening: multi-target acceptance across
+  generic synthetic profiles (simple web, REST API, GraphQL, authenticated,
+  multi-user, file-handling, workflow), production reliability/soak testing,
+  failure-recovery matrix, capability-coverage and attack-surface-coverage
+  audits, and final security/target-agnostic audits.
+- Target-agnostic surface-kind preservation: URL-bearing observation kinds
+  (`javascript_endpoint`, `sink`, `source`, `upload`, `client_route`,
+  `workflow`, ...) are no longer silently degraded to generic `endpoint`, and
+  the same endpoint URL is never registered as two graph nodes under different
+  kinds.
+- Autonomous model-driven attack loop documentation in the README, including
+  exhaustion semantics (`EXHAUSTED` vs `RESOURCE_LIMIT` vs `MODEL_UNAVAILABLE`)
+  and model-failure behavior.
+
+### Fixed
+
+- Attack-surface graph accuracy: no silent disappearance of discovery
+  information for URL-bearing surface kinds.
+
+---
+
 ## [Unreleased]
 
 ### Added

@@ -16,7 +16,7 @@ services:
     build:
       context: .
       args:
-        VERSION: 7.0.0
+        VERSION: 7.0.1
     container_name: hunterx-api
     ports:
       - "${HUNTERX_API_PORT:-8080}:8080"
@@ -74,7 +74,7 @@ services:
     build:
       context: .
       args:
-        VERSION: 7.0.0
+        VERSION: 7.0.1
     container_name: hunterx-cli
     profiles:
       - cli
