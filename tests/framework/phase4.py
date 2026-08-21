@@ -212,7 +212,7 @@ class GenericDiscoveryFixture:
         self._thread: threading.Thread | None = None
         self.target_url = ""
 
-    def __enter__(self) -> "GenericDiscoveryFixture":
+    def __enter__(self) -> GenericDiscoveryFixture:
         self._server = ThreadingHTTPServer(("127.0.0.1", 0), _FixtureHandler)
         port = int(self._server.server_address[1])
         self.target_url = f"http://127.0.0.1:{port}/"

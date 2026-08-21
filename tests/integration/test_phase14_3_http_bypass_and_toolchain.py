@@ -312,8 +312,8 @@ class TestRestrictedEndpointDiscovery:
         """The full hook path: an empty arjun result on a restricted endpoint
         records its status through ``_handle_execution`` and the orchestrator
         derives an http-access-differential hypothesis."""
-        from hunterx.domain.execution import ExecutionContext
         from hunterx.domain.adaptive_mission_planning.enums import ReplanTrigger
+        from hunterx.domain.execution import ExecutionContext
 
         stores = InMemoryTidbRepositoryFactory()
         planning = AdaptiveMissionPlanningEngine(
@@ -403,7 +403,6 @@ class TestAccessDifferentialFindingLifecycle:
         finding_id = finding["finding_id"]
         verify = service.verify_with_probe(finding_id)
         assert verify["status"] == "validated", verify
-        package = service.get_finding_package(finding_id)
         pkg = service.generate_reproduction_and_poc(finding_id)
         assert pkg["reproduction"]
         assert set(pkg["pocs"]) >= {"http_request", "curl"}
@@ -530,7 +529,7 @@ class TestAccessDifferentialMissionBridge:
         assert responses[0]["status"] == 403
 
         # Drive the full lifecycle through the mission service.
-        result = runner.run(mission.mission_id, max_cycles=8)
+        runner.run(mission.mission_id, max_cycles=8)
         findings = finding_service.list_findings(mission.mission_id)
         report_ready = [f for f in findings if f.get("status") == "report_ready"]
         assert report_ready, "the bypass must reach REPORT_READY"

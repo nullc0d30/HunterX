@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+from typing import Any
 
 import pytest
 
@@ -125,7 +126,7 @@ class TestFindingServiceBridge:
             if (h.provenance or {}).get("vulnerability_class") == "http-access-differential"
         ]
         assert access
-        result = runner.run(mission.mission_id, max_cycles=8)
+        runner.run(mission.mission_id, max_cycles=8)
         findings = finding_service.list_findings(mission.mission_id)
         ready = [f for f in findings if f.get("status") == "report_ready"]
         assert ready, "the bypass must reach REPORT_READY through the finding bridge"

@@ -188,6 +188,51 @@ observations, correlates results, reasons over hypotheses, validates with
 evidence, engineers and replays proofs/PoCs, and produces reports. It is built
 to work with the ecosystem, not to own every security capability itself.
 
+### Autonomous Model-Driven Attack Loop
+
+When an AI provider is configured (`HUNTERX_AI_PROVIDER`), the connected model
+is an **active participant in the attack loop**, not a reporting component. The
+loop closes end to end:
+
+```
+OBSERVE → REASON → HYPOTHESIZE → REAL TASK → REAL PROBE → ANALYZE
+    → VERIFY → FIND → LEARN → REASON AGAIN → ... → GENUINE EXHAUSTION
+```
+
+- The model receives the attack-surface graph, capability catalog, previous
+  observations, validated findings and disproven hypotheses.
+- Every accepted model hypothesis becomes a **real assessment task** on the
+  attack-surface queue and runs through the ordinary capability execution
+  engine — the same pipeline as every discovery-derived task.
+- Attack results and validated findings are fed back into the model's reasoning
+  context; a finding **never terminates the mission** — it expands the search
+  (adjacent parameters, sibling endpoints, alternative vectors).
+- Hypotheses are fingerprinted, so duplicates are recognised while legitimate
+  escalation (a different vector or authentication context) remains possible;
+  disproven hypotheses are learned and never re-run.
+- No AI provider is required: without one the mission stays fully deterministic.
+
+### Exhaustion Semantics
+
+A mission is only reported `EXHAUSTED` when there is genuinely no remaining
+work: no unexplored applicable attack surface, no pending capability task, no
+pending verification, no accepted-but-unexecuted hypothesis, no model-generated
+attack path, and dynamic discovery exhausted. The following are **never**
+reported as completion — each is recorded with an explicit, distinct reason:
+
+- `RESOURCE_LIMIT` — a cycle / task / model-call / timeout ceiling prevented
+  exhaustion.
+- `MODEL_UNAVAILABLE` — the connected model failed, timed out or returned
+  invalid output; HunterX never fabricates hypotheses or findings and never
+  silently marks the surface exhausted.
+- `BLOCKED` / `TARGET_UNAVAILABLE` — a persistently defensive or unreachable
+  target is never converted into success.
+- `FAILED` / `PARTIAL` — tool failures and partial discovery are explicit and
+  the mission continues with the available surfaces.
+
+Defensive responses (429 / 403 / 5xx / connection resets) throttle the adaptive
+controller, which recovers and resumes — throttling is never exhaustion.
+
 ---
 
 ## What HunterX Brings Together

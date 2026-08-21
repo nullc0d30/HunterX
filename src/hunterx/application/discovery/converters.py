@@ -20,10 +20,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from hunterx.domain.api.models import (
-    APIHostObservation,
-    APISpecObservation,
     ApiAuthObservation,
+    APIHostObservation,
     ApiOperationObservation,
+    APISpecObservation,
+)
+from hunterx.domain.api.models import (
     observations_from_payload as api_observations_from_payload,
 )
 from hunterx.domain.auth.models import (
@@ -31,6 +33,8 @@ from hunterx.domain.auth.models import (
     AuthFlowObservation,
     AuthObservation,
     AuthSurfaceObservation,
+)
+from hunterx.domain.auth.models import (
     observations_from_payload as auth_observations_from_payload,
 )
 from hunterx.domain.discovery.canonical import canonical_host, canonical_url, is_hostname, is_ip
@@ -82,7 +86,7 @@ class ConversionResult:
     observations: list[Observation] = field(default_factory=list)
     records: list[Any] = field(default_factory=list)
 
-    def add(self, other: "ConversionResult") -> None:
+    def add(self, other: ConversionResult) -> None:
         """Merge another conversion result into this one."""
         self.assets.extend(other.assets)
         self.observations.extend(other.observations)

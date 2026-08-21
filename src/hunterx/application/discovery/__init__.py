@@ -3,7 +3,7 @@
 
 """Universal discovery application package.
 
-    from hunterx.application.discovery import UniversalDiscoveryService, build_stage_plan
+from hunterx.application.discovery import UniversalDiscoveryService, build_stage_plan
 """
 
 from hunterx.application.discovery.service import UniversalDiscoveryService, build_stage_plan

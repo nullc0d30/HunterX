@@ -18,10 +18,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from hunterx.domain.discovery.enums import DiscoveryLayer, DiscoveryStage, DiscoveryState
 from hunterx.shared.ids import generate_id
 from hunterx.shared.time import utcnow_iso
-
-from hunterx.domain.discovery.enums import DiscoveryLayer, DiscoveryStage, DiscoveryState
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,7 +104,7 @@ class DiscoveredAsset:
         confidence = max((item.confidence for item in self.evidence), default=0.0)
         object.__setattr__(self, "confidence", max(self.confidence, confidence))
 
-    def merge(self, other: "DiscoveredAsset") -> None:
+    def merge(self, other: DiscoveredAsset) -> None:
         """Merge another asset with the same canonical identity.
 
         Provenance is appended (deduplicated by provider + evidence), the

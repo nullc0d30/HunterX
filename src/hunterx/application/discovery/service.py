@@ -29,7 +29,7 @@ from typing import Any
 
 from hunterx.application.attack_surface import AttackSurfaceService
 from hunterx.application.discovery.converters import CONVERTERS, ConversionResult, Observation
-from hunterx.domain.discovery.canonical import DiscoveryDeduper, canonical_host, canonical_url
+from hunterx.domain.discovery.canonical import DiscoveryDeduper
 from hunterx.domain.discovery.enums import DiscoveryStage, DiscoveryState
 from hunterx.domain.discovery.models import DiscoveryProviderResult, DiscoveryRun, DiscoveryStageResult
 from hunterx.domain.discovery.pipeline import ProviderSpec, StageDefinition, StagePlan
@@ -209,6 +209,7 @@ class UniversalDiscoveryService:
         Returns:
             A :class:`DiscoveryRun` with every stage result, the deduplicated
             assets and the summary — the machine-readable Phase 4 evidence.
+
         """
         run = DiscoveryRun(mission_id=self.mission_id, target=target, mode=mode)
         self.surface.establish_target()

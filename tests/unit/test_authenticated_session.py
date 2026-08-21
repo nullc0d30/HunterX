@@ -17,14 +17,9 @@ Covers the authenticated-session layer added for Phase 12:
 
 from __future__ import annotations
 
-import dataclasses
-import os
-import re
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlencode
-
-import pytest
+from urllib.parse import parse_qs
 
 from hunterx.application.session import SessionService
 from hunterx.domain.auth.session import AuthenticatedSession

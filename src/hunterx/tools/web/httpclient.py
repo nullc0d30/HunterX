@@ -125,6 +125,8 @@ class HttpPageFetcher:
         """Fetch ``url`` and return a page (connection errors yield status 0).
 
         Args:
+            url: the target URL to fetch.
+            timeout_s: per-request timeout in seconds.
             method: HTTP method (``GET``/``POST``/...).
             data: request body for ``POST``/``PUT`` (form-encoded bytes).
             headers: extra request headers (e.g. ``Origin``, ``Cookie``).

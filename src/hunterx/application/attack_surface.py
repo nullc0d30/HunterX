@@ -38,6 +38,32 @@ from hunterx.domain.attack_surface.registry import SurfaceKindRegistry
 from hunterx.domain.target_intelligence.enums import CoverageCapability
 from hunterx.shared.time import utcnow_iso
 
+#: Surface kinds whose node name is a URL. Any classified observation kind in
+#: this set is preserved verbatim on the URL node — a ``javascript``/``sink``/
+#: ``source``/``upload``/``client_route``/``workflow`` observation never
+#: silently degrades to a generic ``endpoint`` (the discovery information is
+#: preserved for capability mapping and surface-kind coverage).
+_URL_BEARING_KINDS: frozenset[str] = frozenset(
+    {
+        SurfaceKind.API_ENDPOINT.value,
+        SurfaceKind.AUTH_SURFACE.value,
+        SurfaceKind.AUTHORIZATION_CONTEXT.value,
+        SurfaceKind.CLIENT_ROUTE.value,
+        SurfaceKind.CLOUD_RESOURCE.value,
+        SurfaceKind.DOWNLOAD.value,
+        SurfaceKind.FILE.value,
+        SurfaceKind.GRAPHQL_OPERATION.value,
+        SurfaceKind.JAVASCRIPT_ENDPOINT.value,
+        SurfaceKind.REDIRECT.value,
+        SurfaceKind.ROUTE.value,
+        SurfaceKind.SINK.value,
+        SurfaceKind.SOURCE.value,
+        SurfaceKind.UPLOAD.value,
+        SurfaceKind.WEBSOCKET.value,
+        SurfaceKind.WORKFLOW.value,
+    }
+)
+
 #: Parameter-name hints that indicate a surface fetches remote URLs (SSRF
 #: surface) or exposes object identifiers (IDOR/BOLA surface). Applied to
 #: input attributes generically — never to a hardcoded target endpoint.
@@ -202,7 +228,19 @@ class AttackSurfaceService:
             entries.extend(self._url_entries(content, asset_key, base_parent, context, default_kind=base_kind))
             if not any(entry["name"] == asset_key for entry in entries) and asset_key:
                 entries.append(self._entry(base_kind, asset_key, base_parent, context, content))
+        existing_names: dict[str, str] = {node.name: node.kind_value() for node in self.graph.nodes()}
         for entry in entries:
+            # A URL already registered as a *specific* URL-bearing surface kind
+            # is never re-registered as a generic ``endpoint``/``url`` — the
+            # same endpoint must not be represented by two graph nodes under
+            # different kinds. Nodes of non-URL kinds (target/host/technology)
+            # never suppress a URL surface.
+            existing_kind = existing_names.get(entry["name"])
+            if (
+                entry["kind"] in (SurfaceKind.ENDPOINT.value, SurfaceKind.URL.value)
+                and existing_kind in _URL_BEARING_KINDS
+            ):
+                continue
             node, is_new = self.graph.upsert(
                 entry["parent_key"],
                 kind=entry["kind"],
@@ -215,6 +253,7 @@ class AttackSurfaceService:
                 source=source,
             )
             if is_new:
+                existing_names[entry["name"]] = entry["kind"]
                 new_surfaces += 1
         # Child inputs/objects/workflows attach to the base surface the asset
         # observation named (the endpoint/URL node), not the raw kind string.
@@ -395,16 +434,7 @@ class AttackSurfaceService:
                         source="discovery",
                     )
             attributes = {"fetch_hint": _fetch_hint(url)} if _fetch_hint(url) else {}
-            if default_kind in (
-                SurfaceKind.API_ENDPOINT.value,
-                SurfaceKind.GRAPHQL_OPERATION.value,
-                SurfaceKind.WEBSOCKET.value,
-                SurfaceKind.ROUTE.value,
-                SurfaceKind.REDIRECT.value,
-                SurfaceKind.AUTH_SURFACE.value,
-                SurfaceKind.AUTHORIZATION_CONTEXT.value,
-                SurfaceKind.CLOUD_RESOURCE.value,
-            ):
+            if default_kind and default_kind in _URL_BEARING_KINDS:
                 kind = default_kind
             else:
                 kind = SurfaceKind.ENDPOINT.value if _url_path(url) else SurfaceKind.URL.value

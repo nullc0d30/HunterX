@@ -271,10 +271,12 @@ class AnthropicClient(AIPort):
         return self._client
 
     def check(self) -> bool:
+        """Return ``True`` when the Anthropic adapter is ready."""
         return True
 
     @property
     def model(self) -> str:
+        """Return the configured model identifier."""
         return self._model
 
     def __repr__(self) -> str:
@@ -368,10 +370,12 @@ class GeminiClient(AIPort):
         return self._client
 
     def check(self) -> bool:
+        """Return ``True`` when the Gemini adapter is ready."""
         return True
 
     @property
     def model(self) -> str:
+        """Return the configured model identifier."""
         return self._model
 
     def __repr__(self) -> str:
