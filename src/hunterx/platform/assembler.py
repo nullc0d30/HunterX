@@ -158,6 +158,7 @@ from hunterx.managers import CacheManager, DependencyManager, EventBus, QueueMan
 from hunterx.platform.platform import Platform
 from hunterx.reporting.exporter import ReportExporter
 from hunterx.reporting.renderers import JsonRenderer, MarkdownRenderer
+from hunterx.resource import ResourceConfig, ResourceGovernor
 from hunterx.shared.di import Container
 from hunterx.tools.api import register_api_adapters
 from hunterx.tools.auth import register_auth_adapters, register_auth_tools
@@ -435,7 +436,32 @@ def _build_ai_suggester(settings: Settings) -> Any:
     )
 
 
-def _build_model_attacker(settings: Settings, *, finding_service: Any) -> Any:
+def _build_resource_governor(settings: Settings) -> Any:
+    """Build the centralized Mission Resource Governor singleton.
+
+    The governor manages the resource envelope of the ENTIRE mission process
+    tree (parent + child tools + grandchildren + external binaries) against an
+    absolute RAM ceiling and a budget derived from the effective runtime
+    environment. It is the single authoritative resource-governance layer:
+    every tool execution, probe, model call and assessment scheduling passes
+    through it, and it is installed as the module-level hook of the binary
+    runner so every spawned external process is registered (and terminated on
+    an emergency budget stop).
+    """
+    from hunterx.resource import ResourceConfig, ResourceGovernor
+    from hunterx.tools.recon.runner import set_resource_hook
+
+    config = ResourceConfig.from_settings(settings.resource)
+    governor = ResourceGovernor(config)
+    set_resource_hook(
+        register_process=governor.register_process,
+        unregister_process=governor.unregister_process,
+        default_timeout_s=governor.tool_timeout_s,
+    )
+    return governor
+
+
+def _build_model_attacker(settings: Settings, *, finding_service: Any, governor: Any | None = None) -> Any:
     """Build the autonomous model-driven attacker (Phase 7).
 
     The attacker is wired only when a real AI provider is configured — the
@@ -444,6 +470,10 @@ def _build_model_attacker(settings: Settings, *, finding_service: Any) -> Any:
     learning), never as a reporting component. Without a configured provider
     the mission stays fully deterministic: there is no model to reason with,
     so nothing is fabricated and nothing is silently marked exhausted.
+
+    The attacker's reasoning context is bounded by the resource configuration
+    (observations/findings/paths/disproven) so an autonomous mission can never
+    feed an ever-growing full mission history to the model.
     """
     from hunterx.application.capability_finding import CapabilityFindingPipeline
     from hunterx.application.model_attacker import ModelAttacker
@@ -456,9 +486,17 @@ def _build_model_attacker(settings: Settings, *, finding_service: Any) -> Any:
         ai = build_ai_client(settings.ai)
     except Exception:  # noqa: BLE001 - an unconfigured model must never break composition
         return None
-    reasoner = ModelReasoner(ai, model=settings.ai.model)
+    resource = settings.resource
+    reasoner = ModelReasoner(ai, model=settings.ai.model, timeout_s=resource.model_timeout_s)
     pipeline = CapabilityFindingPipeline(finding_service)
-    return ModelAttacker(reasoner, finding_pipeline=pipeline)
+    return ModelAttacker(
+        reasoner,
+        finding_pipeline=pipeline,
+        max_context_observations=resource.max_model_context_observations,
+        max_context_findings=resource.max_model_context_findings,
+        max_context_paths=resource.max_model_context_paths,
+        max_context_disproven=resource.max_model_context_disproven,
+    )
 
 
 def _build_tidb_stores(repositories: dict[str, object]) -> TidbRepositoryFactory:
@@ -549,6 +587,9 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
     adapters = _build_adapters(settings)
     repositories = _build_repositories(settings, force_sql=persistence)
 
+    # -- resource governance -------------------------------------------------
+    resource_governor = _build_resource_governor(settings)
+
     # -- v7 facades --------------------------------------------------------
     tip = ToolIntelligenceAPI()
     register_recon_tools(tip)
@@ -571,6 +612,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
 
     register_command_knowledge(tip)
     execution_engine = ExecutionEngine(intelligence=tip.registry)
+    execution_engine.set_resource_governor(resource_governor)
     tool_readiness = ToolReadinessService(
         tip=tip,
         engine=execution_engine,
@@ -889,6 +931,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         engine=mission_orchestration_engine,
         stores=tidb_stores,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
+        resource_config=ResourceConfig.from_settings(settings.resource),
     )
     mission_orchestration_query_service = MissionOrchestrationQueryService(
         stores=tidb_stores,
@@ -906,7 +949,12 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         readiness=tool_readiness,
         ai_suggester=_build_ai_suggester(settings),
         finding_service=vulnerability_finding_service,
-        model_attacker=_build_model_attacker(settings, finding_service=vulnerability_finding_service),
+        model_attacker=_build_model_attacker(
+            settings,
+            finding_service=vulnerability_finding_service,
+            governor=resource_governor,
+        ),
+        governor=resource_governor,
     )
 
     # -- observability -------------------------------------------------------
@@ -937,6 +985,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
     container.register_instance(QueueManager, QueueManager(adapters["queue"]))  # type: ignore[arg-type]
     container.register_instance(EventBus, EventBus(adapters["event_bus"]))  # type: ignore[arg-type]
     container.register_instance(DependencyManager, DependencyManager(container))
+    container.register_instance(ResourceGovernor, resource_governor)  # type: ignore[arg-type]
     container.register_instance(ToolIntegrationFactory, tool_factory)
     container.register_instance(ExecutionEngine, execution_engine)
     container.register_instance(MissionPlanningAPI, mission_planning)
@@ -1054,6 +1103,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         mission_dashboard_service=mission_dashboard_service,
         mission_execution_service=mission_execution_service,
         tool_readiness_service=tool_readiness,
+        resource_governor=resource_governor,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
         cache=adapters["cache"],  # type: ignore[arg-type]
         queue=adapters["queue"],  # type: ignore[arg-type]

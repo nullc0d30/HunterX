@@ -39,4 +39,42 @@ ai:
   provider: ""
   model: ""
 
+# Resource governance: the centralized Mission Resource Governor manages the
+# resource envelope of the entire HunterX process tree (parent + child tools +
+# grandchildren + external binaries). The absolute HunterX RAM ceiling is
+# 3 GB by default; the effective mission budget is derived from the runtime
+# environment, so HunterX stays safe on 4 GB / 2 CPU hosts and never relies on
+# the OOM killer. Override any value via HUNTERX_RESOURCE_* env vars.
+resource:
+  memory_ceiling_mb: 3072
+  host_headroom_ratio: 0.55
+  budget_ratio: 0.5
+  memory_soft_ratio: 0.6
+  memory_high_ratio: 0.8
+  memory_hard_ratio: 0.92
+  system_emergency_ratio: 0.95
+  cpu_budget_percent: 0
+  max_tool_concurrency: 2
+  max_probe_concurrency: 4
+  max_model_concurrency: 1
+  max_queue_depth: 500
+  tool_timeout_s: 600
+  model_timeout_s: 120
+  mission_deadline_s: 0
+  max_observations_in_memory: 1500
+  max_hypotheses_in_memory: 600
+  max_decisions_in_memory: 1500
+  max_evidence_in_memory: 2000
+  max_tool_executions_in_memory: 1500
+  max_trace_in_memory: 1200
+  max_negative_evidence_in_memory: 800
+  max_attack_paths_in_memory: 1500
+  max_model_context_observations: 60
+  max_model_context_findings: 20
+  max_model_context_paths: 30
+  max_model_context_disproven: 200
+  max_replan_cycles: 12
+  max_probes_per_cycle: 12
+  telemetry_interval_s: 5
+
 telemetry_enabled: true

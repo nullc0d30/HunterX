@@ -27,11 +27,17 @@ class AssessmentQueue:
     capability against the same surface under the same context is never queued
     twice, while a *changed* context (a new session, a new authorization scope)
     legitimately produces a new task.
+
+    The pending (actionable) depth is optionally bounded by ``max_pending``:
+    when the consumers cannot keep up and the queue reaches its cap, new
+    submissions are marked ``SKIPPED`` (a terminal state) with a structured
+    reason — hard backpressure so the queue can never consume unbounded RAM.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, max_pending: int = 0) -> None:
         self._tasks: dict[str, AssessmentTask] = {}
         self._by_dedup: dict[str, str] = {}
+        self._max_pending = max(0, max_pending)
 
     # -- mutation -----------------------------------------------------------
 
@@ -49,7 +55,10 @@ class AssessmentQueue:
         """Submit an assessment task (deduplicated by surface×capability×context).
 
         A duplicate submission returns the existing task unchanged, so repeated
-        discovery of the same surface never floods the queue.
+        discovery of the same surface never floods the queue. When the queue is
+        at capacity (``max_pending``), the task is created and immediately
+        marked ``SKIPPED`` — the backpressure signal — rather than allowed to
+        grow the actionable backlog without bound.
         """
         context = context if context is not None else SurfaceContext()
         task = AssessmentTask(
@@ -66,6 +75,12 @@ class AssessmentQueue:
         existing = self._by_dedup.get(dedup)
         if existing is not None:
             return self._tasks[existing]
+        if self._max_pending and self.remaining() >= self._max_pending:
+            task.mark(AssessmentStatus.SKIPPED)
+            task.settle(VerificationState.NOT_APPLICABLE)
+            self._tasks[task.task_id] = task
+            self._by_dedup[dedup] = task.task_id
+            return task
         self._tasks[task.task_id] = task
         self._by_dedup[dedup] = task.task_id
         return task

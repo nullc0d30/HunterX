@@ -116,6 +116,63 @@ class AISettings(BaseModel):
         return value.get_secret_value()
 
 
+class ResourceSettings(BaseModel):
+    """Resource-governance settings (safe defaults prioritize host stability).
+
+    These values drive the centralized :class:`hunterx.resource.ResourceGovernor`
+    which manages the resource envelope of the whole mission process tree. The
+    absolute HunterX RAM ceiling is 3 GB by default; the effective mission
+    budget is derived from the runtime environment (bare-metal/VM/WSL/container),
+    so HunterX stays safe on 4 GB / 2 CPU hosts and never relies on the OOM
+    killer. All values are overridable via ``HUNTERX_RESOURCE_*`` env vars or a
+    ``resource:`` YAML section.
+    """
+
+    memory_ceiling_mb: float = Field(
+        default=3072.0,
+        ge=256.0,
+        description="Absolute upper HunterX RAM ceiling (MB). Never exceeded unless explicitly configured.",
+    )
+    host_headroom_ratio: float = Field(
+        default=0.55, gt=0.0, le=0.95,
+        description="Fraction of physical host RAM HunterX must never exceed (preserves host headroom).",
+    )
+    budget_ratio: float = Field(
+        default=0.5, gt=0.0, le=0.9,
+        description="Fraction of the effective environment memory limit used as the mission budget.",
+    )
+    memory_soft_ratio: float = Field(default=0.6, gt=0.0, lt=1.0, description="Enter CONSTRAINED at this pressure.")
+    memory_high_ratio: float = Field(default=0.8, gt=0.0, lt=1.0, description="Enter DEGRADED at this pressure.")
+    memory_hard_ratio: float = Field(default=0.92, gt=0.0, lt=1.0, description="Enter CRITICAL at this pressure.")
+    system_emergency_ratio: float = Field(
+        default=0.95, gt=0.0, lt=1.0,
+        description="Host memory pressure that triggers EMERGENCY regardless of the HunterX process tree.",
+    )
+    cpu_budget_percent: float = Field(default=0.0, ge=0.0, le=800.0, description="Process-tree CPU budget percent (0 = auto).")
+    max_tool_concurrency: int = Field(default=2, ge=1, description="Max simultaneously running external tools.")
+    max_probe_concurrency: int = Field(default=4, ge=1, description="Max concurrent HTTP probes per capability task.")
+    max_model_concurrency: int = Field(default=1, ge=1, description="Max concurrent model calls.")
+    max_queue_depth: int = Field(default=500, ge=0, description="Max actionable pending assessment-queue tasks (0 = unbounded).")
+    tool_timeout_s: float = Field(default=600.0, gt=0.0, description="Hard per-tool wall-clock deadline (seconds).")
+    model_timeout_s: float = Field(default=120.0, gt=0.0, description="Hard per-model-call wall-clock deadline (seconds).")
+    mission_deadline_s: float = Field(default=0.0, ge=0.0, description="Hard mission wall-clock deadline (0 = unlimited).")
+    max_observations_in_memory: int = Field(default=1500, ge=1, description="Max observations retained in memory.")
+    max_hypotheses_in_memory: int = Field(default=600, ge=1, description="Max hypotheses retained in memory.")
+    max_decisions_in_memory: int = Field(default=1500, ge=1, description="Max decisions retained in memory.")
+    max_evidence_in_memory: int = Field(default=2000, ge=1, description="Max evidence records retained in memory.")
+    max_tool_executions_in_memory: int = Field(default=1500, ge=1, description="Max tool-execution records retained in memory.")
+    max_trace_in_memory: int = Field(default=1200, ge=1, description="Max reasoning-trace entries retained in memory.")
+    max_negative_evidence_in_memory: int = Field(default=800, ge=1, description="Max negative-evidence records retained in memory.")
+    max_attack_paths_in_memory: int = Field(default=1500, ge=1, description="Max attack-path records retained in memory.")
+    max_model_context_observations: int = Field(default=60, ge=1, description="Max observations fed into the model reasoning context.")
+    max_model_context_findings: int = Field(default=20, ge=1, description="Max validated findings fed into the model reasoning context.")
+    max_model_context_paths: int = Field(default=30, ge=1, description="Max adjacent attack paths fed into the model reasoning context.")
+    max_model_context_disproven: int = Field(default=200, ge=1, description="Max disproven fingerprints retained in the model learning context.")
+    max_replan_cycles: int = Field(default=12, ge=1, description="Max replan-driven scheduling rounds before the mission stops spawning new work.")
+    max_probes_per_cycle: int = Field(default=12, ge=1, description="Max differential probes executed per mission cycle.")
+    telemetry_interval_s: float = Field(default=5.0, gt=0.0, description="Throttle interval for [RESOURCE] telemetry logs.")
+
+
 class Settings(BaseModel):
     """Top-level typed configuration.
 
@@ -132,6 +189,7 @@ class Settings(BaseModel):
     security: SecuritySettings = Field(default_factory=SecuritySettings)
     api: ApiSettings = Field(default_factory=ApiSettings)
     ai: AISettings = Field(default_factory=AISettings)
+    resource: ResourceSettings = Field(default_factory=ResourceSettings)
     telemetry_enabled: bool = Field(default=True)
 
 

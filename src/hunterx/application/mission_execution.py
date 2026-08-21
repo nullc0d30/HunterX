@@ -46,6 +46,7 @@ from hunterx.domain.mission_orchestration.orchestrator import _endpoint_urls
 from hunterx.domain.target_intelligence.enums import CoverageState
 from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
+from hunterx.resource import ResourceGovernor, ResourceState
 from hunterx.shared.masking import mask_value
 from hunterx.shared.target import (
     has_meaningful_content,
@@ -323,12 +324,26 @@ class MissionExecutionService:
         adaptive_attack: AdaptiveAttackService | None = None,
         adaptive_attack_factory: Any | None = None,
         model_attacker: Any | None = None,
+        governor: ResourceGovernor | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
         self._engine = execution_engine
         self._event_bus = event_bus
         self._readiness = readiness
+        #: Centralized mission resource governor (optional). When wired, the
+        #: runner drives the mission under a hard resource envelope: resource
+        #: states (NORMAL→CONSTRAINED→DEGRADED→CRITICAL→EMERGENCY) adapt the
+        #: concurrency, the process tree is accounted and terminated on an
+        #: emergency budget stop, and every blocking operation is bounded.
+        self._governor = governor
+        #: Last governor state observed by the runner (for result reporting).
+        self._resource_state: str = "normal"
+        #: Per-run replan-scheduling counter (bounded by the governor's
+        #: ``max_replan_cycles`` so replanning can never spin forever).
+        self._replan_cycles = 0
+        self._probe_count_cycle = 0
+        self._parameters: dict[str, Any] = {}
         #: Vulnerability finding orchestration service (optional). When wired, a
         #: probe-verified hypothesis produces a full finding record with
         #: vulnerability evidence, reproduction, PoC, replay and report-ready.
@@ -483,10 +498,16 @@ class MissionExecutionService:
                 "decisions": 0,
                 "tool_executions": 0,
                 "coverage_ratio": 0.0,
+                "resource": self._resource_report(),
             }
+        governor = self._governor
+        if governor is not None:
+            governor.start_mission(mission_id)
         cycles: list[dict[str, Any]] = []
         idle = 0
         self._parameters = parameters or {}
+        self._replan_cycles = 0
+        self._resource_state = "normal"
         self._establish_auth_session(mission_id, parameters)
         self._seed_coverage(mission_id)
         self._record_browser_capability(mission_id)
@@ -500,12 +521,46 @@ class MissionExecutionService:
                     session=self._session,
                     adaptive=self._adaptive_attack,
                 )
+        resource_stop: StopCondition | None = None
         for _ in range(1, max_cycles + 1):
+            if governor is not None:
+                state = governor.evaluate()
+                self._resource_state = state.value
+                if state is ResourceState.EMERGENCY:
+                    # Hard resource envelope exceeded: terminate the mission
+                    # safely — stop scheduling, terminate active child processes
+                    # (graceful then forced), persist state, mark degraded.
+                    self._publish(
+                        "mission.resource.emergency",
+                        {
+                            "mission_id": mission_id,
+                            "reason": f"memory ceiling {governor.memory_ceiling_mb():.0f} MiB exceeded",
+                            "rss_mb": governor.metrics().rss_mb,
+                        },
+                    )
+                    self._log_resource_emergency(governor)
+                    governor.terminate_process_tree()
+                    resource_stop = StopCondition.MEMORY_BUDGET_EXHAUSTED
+                    break
+                if governor.mission_deadline_exceeded(mission_id):
+                    self._publish(
+                        "mission.resource.deadline",
+                        {"mission_id": mission_id, "reason": "mission deadline exceeded"},
+                    )
+                    resource_stop = StopCondition.MISSION_DEADLINE_EXCEEDED
+                    break
             mission = self._orchestration.get(mission_id)
             if mission.mission.state.is_terminal:
                 break
             if mission.budget.executions_budget and mission.budget.executions_used >= mission.budget.executions_budget:
                 break
+            if mission.budget.time_budget_seconds and mission.budget.time_used_seconds >= mission.budget.time_budget_seconds:
+                # The operator-configured time budget is a hard wall-clock ceiling
+                # (the loop must never keep running just because a stop condition
+                # is only evaluated lazily).
+                resource_stop = StopCondition.TIME_BUDGET_EXHAUSTED
+                break
+            self._probe_count_cycle = 0
             cycle = self.execute_cycle(mission_id, parameters=parameters)
             cycles.append(cycle)
             # Model-driven attack step: the connected model reasons over the
@@ -513,8 +568,10 @@ class MissionExecutionService:
             # tasks that are discharged by the ordinary capability execution
             # engine, and results/findings feed back into its reasoning. A
             # finding never terminates the mission — the attacker only reports
-            # genuine exhaustion when no work remains.
-            if self._model_attacker is not None:
+            # genuine exhaustion when no work remains. Model calls are the most
+            # expensive per-call operation: under CRITICAL/EMERGENCY pressure
+            # they are skipped (no new model calls are spawned).
+            if self._model_attacker is not None and self._model_calls_allowed():
                 try:
                     attacker_step = self._model_attacker.step()
                 except Exception:  # noqa: BLE001 - a model failure must never break the loop
@@ -580,7 +637,11 @@ class MissionExecutionService:
             ):
                 break
         surface_report = self._surface_exhaustion_report(mission_id)
-        if self._adaptive_blocked():
+        if resource_stop is not None:
+            # A resource-triggered stop is the truthful terminal: it is never
+            # converted into success and never into a generic blocked.
+            finalize_condition = resource_stop
+        elif self._adaptive_blocked():
             # A persistently blocked target is never "complete" and never a
             # budget problem: report the honest blocked terminal.
             finalize_condition: StopCondition | None = StopCondition.BLOCKED
@@ -599,6 +660,8 @@ class MissionExecutionService:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
         self._finalize_run(mission_id, stop_condition=finalize_condition)
         self._record_telemetry(mission_id)
+        if governor is not None:
+            governor.end_mission(mission_id)
         mission = self._orchestration.get(mission_id)
         return {
             "mission_id": mission_id,
@@ -622,6 +685,7 @@ class MissionExecutionService:
             "browser": self._browser_report,
             "adaptive_attack": self._adaptive_attack.snapshot() if self._adaptive_attack is not None else None,
             "model_attacker": self._model_attacker.report() if self._model_attacker is not None else None,
+            "resource": self._resource_report(),
         }
 
     # -- decision / execution -----------------------------------------------
@@ -1099,13 +1163,22 @@ class MissionExecutionService:
         # adapters so richer applicable strategies are selected while healthy.
         if self._adaptive_attack is not None:
             merged["aggression"] = self._adaptive_attack.aggression_level().value
-        return (
+        builder = (
             ExecutionContextBuilder(tool_id=tool_id, target=effective_target)
             .with_mission(mission_id)
             .with_target_type(target_type_for(spec, declared))
             .with_permissions(self._permissions_for(tool_id))
             .with_parameters(merged)
-        ).build()
+        )
+        # Every tool execution is bounded by a hard wall-clock deadline from the
+        # resource governor (a hung tool must never block a mission forever).
+        # The per-tool timeout only applies when the tool descriptor declares
+        # one (nuclei can legitimately run longer); otherwise the governor's
+        # ceiling is the deadline.
+        governor = self._governor
+        if governor is not None and governor.tool_timeout_s() > 0:
+            builder = builder.with_timeout(governor.tool_timeout_s())
+        return builder.build()
 
     def _declared_targets(self, tool_id: str) -> tuple[str, ...]:
         """Return the target kinds the tool's adapter declares."""
@@ -1447,7 +1520,19 @@ class MissionExecutionService:
         Every hypothesis an observation produces is wired to its class-specific
         probe capability (hypothesis → probe), so a discovered ``q`` parameter
         drives a targeted ``sql_injection`` probe — not just a generic scan.
+
+        Replanning is bounded by the resource governor's ``max_replan_cycles``:
+        once the budget is exhausted the mission stops spawning new work and
+        instead converges (or degrades with a structured reason), so the
+        observe→hypothesize→decide→probe→reassess→replan cycle can never spin
+        indefinitely.
         """
+        if not self._replan_allowed(mission_id):
+            self._publish(
+                "mission.replan.deferred",
+                {"mission_id": mission_id, "reason": "replan budget exhausted"},
+            )
+            return
         content = raw.get("content")
         if not content or not has_meaningful_content(content):
             return
@@ -1477,6 +1562,7 @@ class MissionExecutionService:
         elif new_capability and trigger is not ReplanTrigger.NEW_HYPOTHESIS_CREATED:
             details = [{}]
         graph = self._planning.get_plan(mission_id)
+        scheduled_any = False
         # Script assets a crawler observation surfaces (``*.js``/``*.mjs``) are
         # scheduled for in-process javascript analysis — one action per asset —
         # so SPA bundles are mined for API/search endpoints. This must run
@@ -1490,16 +1576,20 @@ class MissionExecutionService:
                 ):
                     continue
                 try:
-                    self._planning.replan_for_change(
+                    delta = self._planning.replan_for_change(
                         mission_id,
                         trigger=ReplanTrigger.JAVASCRIPT_ANALYSIS,
                         asset_key=js_url,
                         reason=f"script asset observed from {capability}",
                     )
+                    if delta is not None and not _delta_is_empty(delta):
+                        scheduled_any = True
                     self._check_replanned_readiness(mission_id)
                 except Exception:  # noqa: BLE001 - replanning must never break the loop
                     continue
         if not details:
+            if scheduled_any:
+                self._consume_replan(mission_id)
             return
         for detail in details:
             replan_asset = ""
@@ -1521,18 +1611,25 @@ class MissionExecutionService:
                 replan_asset = ""
             try:
                 mission = self._orchestration.get(mission_id)
-                self._planning.replan_for_change(
+                delta = self._planning.replan_for_change(
                     mission_id,
                     trigger=trigger,
                     asset_key=replan_asset or mission.context.target_id,
                     detail=detail or None,
                     reason=f"observation from {capability}",
                 )
+                if delta is not None and not _delta_is_empty(delta):
+                    scheduled_any = True
             except Exception:  # noqa: BLE001 - replanning must never break the loop
                 continue
             # Replanned work may introduce capabilities the preflight never
             # vetted: re-check readiness before any of it executes.
             self._check_replanned_readiness(mission_id)
+        # The replan budget counts rounds that actually grew the plan (the
+        # deduplication above already stops repeated scheduling of the same
+        # capability×asset, so this is the hard ceiling on plan growth).
+        if scheduled_any:
+            self._consume_replan(mission_id)
 
     def _schedule_probes_for_hypotheses(self, mission_id: str, hypothesis_ids: list[str]) -> bool:
         """Schedule class-specific probe actions bound to ``hypothesis_ids``.
@@ -1542,6 +1639,8 @@ class MissionExecutionService:
         → probe transition). Deduplication is per-hypothesis so an open
         hypothesis never respawns endless probes.
         """
+        if not self._replan_allowed(mission_id):
+            return False
         try:
             mission = self._orchestration.get(mission_id)
             graph = self._planning.get_plan(mission_id)
@@ -1590,6 +1689,8 @@ class MissionExecutionService:
                     "planner": "observation",
                 },
             )
+        if scheduled:
+            self._consume_replan(mission_id)
         return scheduled
 
     def _hypothesis_from_observation(self, mission_id: str, observation: Any | None) -> str:
@@ -1856,6 +1957,37 @@ class MissionExecutionService:
         method = str(provenance.get("method") or "").strip().upper()
         if method in ("POST", "PUT"):
             evidence["method"] = method
+        # Resource backpressure: probes are HTTP I/O; under pressure (or when
+        # the per-cycle probe budget is exhausted) no new probes are admitted.
+        # The hypothesis stays open and the mission degrades/reassesses instead
+        # of spawning probes the host cannot afford.
+        if not self._admit_probe():
+            return None
+        try:
+            return self._differential_probe(
+                mission_id,
+                hypothesis,
+                vulnerability_class,
+                evidence,
+                target=target,
+                endpoint=endpoint,
+                parameter=parameter,
+            )
+        finally:
+            self._release_probe()
+
+    def _differential_probe(
+        self,
+        mission_id: str,
+        hypothesis: Any,
+        vulnerability_class: str,
+        evidence: dict[str, Any],
+        *,
+        target: str,
+        endpoint: str,
+        parameter: str,
+    ) -> Any | None:
+        """Execute the class-specific differential probe for a hypothesis."""
         try:
             from hunterx.domain.vulnerability_capability.engine import VulnerabilityCapabilityEngine
             from hunterx.domain.vulnerability_capability.probe_executor import ProbeExecutor
@@ -2416,6 +2548,8 @@ class MissionExecutionService:
 
         Returns ``True`` when at least one discovery action was scheduled.
         """
+        if not self._replan_allowed(mission_id):
+            return False
         if not self._web_target(mission_id):
             return False
         try:
@@ -2469,6 +2603,8 @@ class MissionExecutionService:
                 for action in graph.actions.values()
                 if not action.status.is_terminal
             }
+        if scheduled:
+            self._consume_replan(mission_id)
         return scheduled
 
     def _advance_state(self, mission_id: str) -> bool:
@@ -2539,17 +2675,26 @@ class MissionExecutionService:
         """Build (or keep) the per-mission attack-surface service.
 
         The surface model is mission-scoped; an injected instance is reused,
-        otherwise a fresh one is built for the active mission's target.
+        otherwise a fresh one is built for the active mission's target. The
+        assessment queue is bounded by the resource governor's ``max_queue_depth``
+        (backpressure) so a stalled consumer can never let the queue grow
+        without bound.
         """
         if self._attack_surface is not None:
             return
         with contextlib.suppress(Exception):  # surface modelling must never block the loop
             mission = self._orchestration.get(mission_id)
             target_key = mission.context.target_id or "target"
+            queue = None
+            if self._governor is not None:
+                from hunterx.domain.attack_surface.queue import AssessmentQueue
+
+                queue = AssessmentQueue(max_pending=self._governor.max_queue_depth())
             self._attack_surface = AttackSurfaceService(
                 mission_id=mission_id,
                 target_key=target_key,
                 event_bus=self._event_bus,
+                queue=queue,
             )
 
     def _build_adaptive_attack(self, mission_id: str) -> None:
@@ -2836,6 +2981,77 @@ class MissionExecutionService:
         with contextlib.suppress(Exception):  # telemetry is best-effort
             self._orchestration.record_telemetry(mission_id)
 
+    # -- resource governance helpers ------------------------------------------
+
+    def _model_calls_allowed(self) -> bool:
+        """Return ``False`` when resource pressure forbids new model calls."""
+        governor = self._governor
+        if governor is None:
+            return True
+        state = governor.state()
+        if state in (ResourceState.CRITICAL, ResourceState.EMERGENCY):
+            return False
+        return governor.admit_model_call().approved
+
+    def _log_resource_emergency(self, governor: ResourceGovernor) -> None:
+        """Emit the structured emergency-stop resource telemetry (throttled)."""
+        with contextlib.suppress(Exception):  # observability is best-effort
+            metrics = governor.metrics()
+            self._publish(
+                "mission.resource.telemetry",
+                {"mission_id": "", **metrics.to_dict()},
+            )
+
+    def _resource_report(self) -> dict[str, Any]:
+        """Return the JSON-safe resource report for the run result."""
+        governor = self._governor
+        if governor is None:
+            return {"governor": "disabled", "state": self._resource_state}
+        report = governor.report()
+        report["state"] = self._resource_state
+        return report
+
+    def _admit_probe(self) -> bool:
+        """Admit a differential probe through the governor (backpressure)."""
+        governor = self._governor
+        if governor is not None:
+            if self._probe_count_cycle >= governor.max_probes_per_cycle():
+                return False
+            admission = governor.admit_probe()
+            if not admission.approved:
+                return False
+        self._probe_count_cycle += 1
+        return True
+
+    def _release_probe(self) -> None:
+        if self._governor is not None:
+            self._governor.release_probe()
+
+    def _replan_allowed(self, mission_id: str) -> bool:
+        """Return ``True`` while replan-scheduling is within its budget.
+
+        Replanning is a resource consumer (it spawns new plan actions); the
+        governor's ``max_replan_cycles`` gives replanning a hard termination
+        condition so the observe→hypothesize→decide→probe→replan cycle can
+        never spin indefinitely.
+        """
+        governor = self._governor
+        if governor is None:
+            return self._replan_cycles < self._default_replan_budget()
+        return governor.replan_budget(mission_id) > 0
+
+    def _consume_replan(self, mission_id: str) -> bool:
+        """Consume one replan-scheduling slot; ``False`` when exhausted."""
+        self._replan_cycles += 1
+        governor = self._governor
+        if governor is None:
+            return self._replan_cycles <= self._default_replan_budget()
+        return governor.consume_replan(mission_id)
+
+    def _default_replan_budget(self) -> int:
+        return 12
+
+
     def _publish_tool_completed(
         self,
         mission_id: str,
@@ -2887,6 +3103,21 @@ class MissionExecutionService:
 
     def _cycle_outcome(self, mission_id: str, **fields: Any) -> dict[str, Any]:
         return {"mission_id": mission_id, **fields}
+
+
+def _delta_is_empty(delta: Any) -> bool:
+    """Return ``True`` when a plan delta carries no actual plan mutations.
+
+    A replan that schedules no new work (everything already deduplicated in the
+    graph) is not counted against the replan budget.
+    """
+    is_empty = getattr(delta, "is_empty", None)
+    if callable(is_empty):
+        try:
+            return bool(is_empty())
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+    return not bool(getattr(delta, "changes", ()))
 
 
 def _is_explicit_negative(result: Any) -> bool:
@@ -2970,8 +3201,11 @@ def _finding_scope_for_hypothesis(hypothesis: Any, endpoint: str) -> dict[str, A
 def _run_status(mission: Any, preflight: Any | None) -> str:
     """Derive the truthful run status from the finalized mission outcome.
 
-    The status distinguishes completed / blocked / exhausted / failed /
-    cancelled and never claims success when the objectives are incomplete.
+    The status distinguishes completed / degraded / blocked / exhausted /
+    failed / cancelled and never claims success when the objectives are
+    incomplete. A resource-triggered stop (memory budget exceeded, resource
+    pressure, mission deadline exceeded) is never reported as success: it maps
+    to ``degraded`` with the structured reason preserved on the outcome.
     """
     if preflight is not None and preflight.status.value == "degraded":
         return "degraded"
@@ -2981,7 +3215,14 @@ def _run_status(mission: Any, preflight: Any | None) -> str:
     if outcome.objectives_complete:
         return "completed"
     stop_condition = getattr(outcome, "stop_condition", "") or ""
-    if stop_condition in ("resource_budget_exhausted", "time_budget_exhausted"):
+    if stop_condition in (
+        "memory_budget_exhausted",
+        "resource_pressure",
+        "mission_deadline_exceeded",
+        "time_budget_exhausted",
+    ):
+        return "degraded"
+    if stop_condition in ("resource_budget_exhausted",):
         return "exhausted"
     if stop_condition == "unrecoverable_failure":
         return "failed"
