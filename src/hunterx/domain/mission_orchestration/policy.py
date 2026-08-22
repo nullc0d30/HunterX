@@ -12,6 +12,7 @@ evaluated deterministically after every observation.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -45,7 +46,24 @@ class MissionPolicyEngine:
     Every action receives the mission context, target context, scope context
     and execution policy. The gate chain is: scope → authorization → technique
     → resource budget → concurrency.
+
+    Stop conditions are evaluated after every observation. Coverage-derived
+    conditions (``COVERAGE_TARGET_ACHIEVED``) are NOT terminal on their own:
+    they become terminal only when the mission's objective completion contract
+    confirms every mandatory dimension was assessed (see
+    :mod:`hunterx.domain.mission_orchestration.completion`). The contract is
+    injected by the orchestrator via :attr:`completion_gate`.
     """
+
+    #: Injected objective completion contract: ``(mission) -> (satisfied, unmet)``.
+    completion_gate: Callable[[OrchestratedMission], tuple[bool, list[str]]] | None = None
+
+    def __init__(
+        self,
+        *,
+        completion_gate: Callable[[OrchestratedMission], tuple[bool, list[str]]] | None = None,
+    ) -> None:
+        self.completion_gate = completion_gate
 
     def check_action(
         self,
@@ -109,17 +127,36 @@ class MissionPolicyEngine:
         if StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED in conditions and self._high_value_resolved(mission):
             return StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED
 
+        # Coverage is a prerequisite, never a terminal condition by itself: the
+        # objective completion contract must confirm every mandatory dimension
+        # (active testing, browser, attack paths, hypotheses) was assessed. A
+        # coverage percentage must never let a full assessment terminate while
+        # actionable hypotheses remain open or major dimensions are untested.
         if (
             StopCondition.COVERAGE_TARGET_ACHIEVED in conditions
             and mission.coverage_ratio() >= mission.policy.coverage_target
-            and not self._has_open_high_value_hypotheses(mission)
+            and self._completion_contract_satisfied(mission)
         ):
             return StopCondition.COVERAGE_TARGET_ACHIEVED
-
-        if StopCondition.OBJECTIVES_COMPLETE in conditions and not mission.context.remaining_objectives:
+        if (
+            StopCondition.OBJECTIVES_COMPLETE in conditions
+            and not mission.context.remaining_objectives
+            and self._completion_contract_satisfied(mission)
+        ):
             return StopCondition.OBJECTIVES_COMPLETE
 
         return None
+
+    def _completion_contract_satisfied(self, mission: OrchestratedMission) -> bool:
+        """Return ``True`` when the objective completion contract is satisfied.
+
+        Falls back to the historical high-value gate when no contract is wired
+        (backward compatible for standalone policy-engine use).
+        """
+        if self.completion_gate is not None:
+            satisfied, _unmet = self.completion_gate(mission)
+            return bool(satisfied)
+        return not self._has_open_high_value_hypotheses(mission)
 
     @staticmethod
     def _all_findings_validated(mission: OrchestratedMission) -> bool:

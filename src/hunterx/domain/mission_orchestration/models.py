@@ -706,7 +706,20 @@ class TelemetrySnapshot:
     ai_timeouts: int = 0
     ai_provider_errors: int = 0
     ai_fallbacks: int = 0
+    ai_cooldown_events: int = 0
+    ai_deterministic_decisions: int = 0
     ai_assisted_decisions: int = 0
+    hypotheses_tested: int = 0
+    hypotheses_deferred: int = 0
+    hypotheses_blocked: int = 0
+    active_tests_attempted: int = 0
+    active_tests_completed: int = 0
+    browser_tests_attempted: int = 0
+    browser_tests_completed: int = 0
+    attack_paths_generated: int = 0
+    attack_paths_tested: int = 0
+    attack_paths_validated: int = 0
+    completion_gate_failures: int = 0
     recorded_at: str = field(default_factory=utcnow_iso)
 
     def to_dict(self) -> dict[str, Any]:
@@ -736,7 +749,20 @@ class TelemetrySnapshot:
             "ai_timeouts": self.ai_timeouts,
             "ai_provider_errors": self.ai_provider_errors,
             "ai_fallbacks": self.ai_fallbacks,
+            "ai_cooldown_events": self.ai_cooldown_events,
+            "ai_deterministic_decisions": self.ai_deterministic_decisions,
             "ai_assisted_decisions": self.ai_assisted_decisions,
+            "hypotheses_tested": self.hypotheses_tested,
+            "hypotheses_deferred": self.hypotheses_deferred,
+            "hypotheses_blocked": self.hypotheses_blocked,
+            "active_tests_attempted": self.active_tests_attempted,
+            "active_tests_completed": self.active_tests_completed,
+            "browser_tests_attempted": self.browser_tests_attempted,
+            "browser_tests_completed": self.browser_tests_completed,
+            "attack_paths_generated": self.attack_paths_generated,
+            "attack_paths_tested": self.attack_paths_tested,
+            "attack_paths_validated": self.attack_paths_validated,
+            "completion_gate_failures": self.completion_gate_failures,
             "recorded_at": self.recorded_at,
         }
 

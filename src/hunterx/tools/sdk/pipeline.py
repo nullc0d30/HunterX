@@ -182,7 +182,17 @@ class ExecutionPipeline:
 
         ok, errors = self._adapter.validate_output(context, collected)
         if not ok:
-            return self._fail(context, session, FailureKind.OUTPUT_INVALID, Exception("; ".join(errors)))
+            # Attach the collected output so the failure carries the truthful
+            # exit code / stdout / stderr. Previously the failure kept the
+            # default (exit_code=0) output while the error text said
+            # "exit code 1" — a contradiction in the report.
+            return self._fail(
+                context,
+                session,
+                FailureKind.OUTPUT_INVALID,
+                Exception("; ".join(errors)),
+                output=collected,
+            )
 
         normalized = self._adapter.normalize(context, collected)
         self._events.normalization_complete(context.execution_id, context.tool_id, len(normalized.findings))
@@ -227,8 +237,15 @@ class ExecutionPipeline:
         *,
         status: ExecutionStatus = ExecutionStatus.FAILED,
         result: ExecutionResult | None = None,
+        output: ExecutionOutput | None = None,
     ) -> ExecutionResult:
-        final = results.finish_failure(result or results.new_result(context), error=str(error), kind=kind, status=status)
+        final = results.finish_failure(
+            result or results.new_result(context),
+            error=str(error),
+            kind=kind,
+            status=status,
+            output=output,
+        )
         session.finish(final)
         self._events.failed(context.execution_id, context.tool_id, kind.value, str(error))
         self._monitor.report(context, status=status, phase="failed")

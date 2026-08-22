@@ -28,6 +28,20 @@ class HypothesisState(StrEnum):
     A hypothesis is never a conclusion: it transitions only when observations
     move it. ``NOVEL_BEHAVIOR`` marks behavior that matches no known signature
     and must be characterized before it can be validated or disproved.
+
+    ``DEFERRED`` and ``BLOCKED`` are explicit classifications for open
+    hypotheses that cannot be discharged under the current mission policy:
+
+    - ``DEFERRED``: the hypothesis is acknowledged but testing was deferred
+      (no runnable action, capability unavailable, budget priority, out of
+      scope) with a recorded reason.
+    - ``BLOCKED``: the hypothesis is actionable but its probe capability is
+      unavailable or the target is not probeable under the current scope.
+
+    A classified hypothesis is never "settled by evidence" — it is explicitly
+    marked as not-testable-now, and the recorded reason answers *why it remains
+    open*. An incomplete assessment that classifies hypotheses as deferred/
+    blocked is reported as partial/blocked, never as complete.
     """
 
     PROPOSED = "proposed"
@@ -38,6 +52,8 @@ class HypothesisState(StrEnum):
     VALIDATED = "validated"
     DISPROVED = "disproved"
     NOVEL_BEHAVIOR = "novel_behavior"
+    DEFERRED = "deferred"
+    BLOCKED = "blocked"
 
     @property
     def is_terminal(self) -> bool:
@@ -46,6 +62,8 @@ class HypothesisState(StrEnum):
             HypothesisState.VALIDATED,
             HypothesisState.DISPROVED,
             HypothesisState.REFUTED,
+            HypothesisState.DEFERRED,
+            HypothesisState.BLOCKED,
         )
 
 

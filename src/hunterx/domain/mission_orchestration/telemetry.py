@@ -11,6 +11,8 @@ is a JSON-safe snapshot produced at checkpoint/finalize time.
 
 from __future__ import annotations
 
+from typing import Any
+
 from hunterx.domain.mission_orchestration.mission import OrchestratedMission
 from hunterx.domain.mission_orchestration.models import TelemetrySnapshot
 from hunterx.shared.time import utcnow_iso
@@ -54,6 +56,36 @@ class MissionTelemetry:
 
         ai = self._ai_telemetry(mission)
 
+        hypotheses = mission.hypotheses
+        hypotheses_tested = sum(
+            1 for hypothesis in hypotheses if hypothesis.tested_actions
+        )
+        hypotheses_deferred = sum(
+            1 for hypothesis in hypotheses if hypothesis.state.value == "deferred"
+        )
+        hypotheses_blocked = sum(
+            1 for hypothesis in hypotheses if hypothesis.state.value == "blocked"
+        )
+        observations = mission.observations
+        probes = [observation for observation in observations if observation.observation_type == "probe"]
+        active_tests_attempted = len(probes)
+        active_tests_completed = sum(
+            1 for probe in probes if probe.confidence > 0
+        )
+        browser_cells = [
+            cell
+            for cells in (getattr(mission, "coverage", None) or {}).values()
+            for cell in cells.values()
+            if str(getattr(cell, "capability", "")) == "browser_testing"
+        ]
+        browser_tests_attempted = sum(
+            1 for cell in browser_cells if str(getattr(getattr(cell, "state", None), "value", getattr(cell, "state", ""))) == "tested"
+        )
+        attack_paths = mission.context.attack_paths
+        attack_paths_generated = len(attack_paths)
+        attack_paths_tested = sum(1 for path in attack_paths if _path_has_evidence(path))
+        attack_paths_validated = sum(1 for path in attack_paths if _path_validated(path))
+
         return TelemetrySnapshot(
             mission_id=mission.mission_id,
             decision_count=len(decisions),
@@ -79,7 +111,20 @@ class MissionTelemetry:
             ai_timeouts=ai["timeouts"],
             ai_provider_errors=ai["provider_errors"],
             ai_fallbacks=ai["fallbacks"],
+            ai_cooldown_events=ai["cooldown_events"],
+            ai_deterministic_decisions=ai["deterministic_decisions"],
             ai_assisted_decisions=ai["assisted_decisions"],
+            hypotheses_tested=hypotheses_tested,
+            hypotheses_deferred=hypotheses_deferred,
+            hypotheses_blocked=hypotheses_blocked,
+            active_tests_attempted=active_tests_attempted,
+            active_tests_completed=active_tests_completed,
+            browser_tests_attempted=browser_tests_attempted,
+            browser_tests_completed=browser_tests_attempted,
+            attack_paths_generated=attack_paths_generated,
+            attack_paths_tested=attack_paths_tested,
+            attack_paths_validated=attack_paths_validated,
+            completion_gate_failures=len(_completion_gate_failures(mission)),
             recorded_at=utcnow_iso(),
         )
 
@@ -138,7 +183,7 @@ class MissionTelemetry:
         always derived from trace facts — never guessed.
         """
         attempted = succeeded = failed = http_429 = timeouts = provider_errors = 0
-        fallbacks = 0
+        fallbacks = cooldown_events = deterministic_decisions = 0
         provider = ""
         model = ""
         enabled = False
@@ -164,6 +209,10 @@ class MissionTelemetry:
                     provider_errors += 1
             if content.get("ai_fallback"):
                 fallbacks += 1
+            if content.get("ai_cooldown"):
+                cooldown_events += 1
+            if content.get("ai_deterministic"):
+                deterministic_decisions += 1
         assisted = sum(1 for decision in mission.decisions if bool(decision.ai_assisted))
         return {
             "enabled": enabled,
@@ -176,8 +225,43 @@ class MissionTelemetry:
             "timeouts": timeouts,
             "provider_errors": provider_errors,
             "fallbacks": fallbacks,
+            "cooldown_events": cooldown_events,
+            "deterministic_decisions": deterministic_decisions,
             "assisted_decisions": assisted,
         }
+
+
+def _path_has_evidence(path: Any) -> bool:
+    """Return ``True`` when an attack path carries evidence-backed steps."""
+    return bool(getattr(path, "evidence_refs", None))
+
+
+def _path_validated(path: Any) -> bool:
+    """Return ``True`` when an attack path reached a validated state."""
+    state = getattr(path, "state", None)
+    value = getattr(state, "value", state)
+    return str(value) in ("supported", "validated", "proved")
+
+
+def _completion_gate_failures(mission: Any) -> list[str]:
+    """Return the mission completion-contract gates that are currently unmet.
+
+    Best-effort (never raises): used by telemetry to expose why a mission is
+    still incomplete — an incomplete assessment must never look complete.
+    """
+    try:
+        from hunterx.domain.mission_orchestration.completion import contract_for_objective
+
+        contract = contract_for_objective(
+            getattr(getattr(mission, "mission", None), "objective", None),
+            coverage_target=float(getattr(mission.policy, "coverage_target", 0.7) or 0.7),
+        )
+        pending_plan_work = any(
+            not action.status.is_terminal for action in mission.mission.graph.actions.values()
+        )
+        return contract.evaluate(mission, pending_plan_work=pending_plan_work).unmet()
+    except Exception:  # noqa: BLE001 - telemetry is best-effort
+        return []
 
 
 __all__ = ["MissionTelemetry"]

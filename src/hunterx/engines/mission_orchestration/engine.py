@@ -120,6 +120,18 @@ class MissionOrchestrationEngine:
         """Refute a hypothesis whose class-specific probe found no signal."""
         return self.orchestrator.refute_hypothesis(mission_id, hypothesis_id, **kwargs)
 
+    def defer_hypothesis(self, mission_id: str, hypothesis_id: str, *, reason: str) -> dict[str, Any] | None:
+        """Explicitly classify an open hypothesis as deferred with a recorded reason."""
+        return self.orchestrator.defer_hypothesis(mission_id, hypothesis_id, reason=reason)
+
+    def block_hypothesis(self, mission_id: str, hypothesis_id: str, *, reason: str) -> dict[str, Any] | None:
+        """Explicitly classify an actionable hypothesis as blocked with a reason."""
+        return self.orchestrator.block_hypothesis(mission_id, hypothesis_id, reason=reason)
+
+    def classify_open_hypotheses(self, mission_id: str, *, reason: str = "") -> int:
+        """Classify non-actionable open hypotheses as deferred; return the count."""
+        return self.orchestrator.classify_open_hypotheses(mission_id, reason=reason)
+
     def decide_next(self, mission_id: str, **kwargs: Any) -> MissionDecision | None:
         """Select the next action by information gain."""
         return self.orchestrator.decide_next(mission_id, **kwargs)

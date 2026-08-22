@@ -9,6 +9,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.2] — 2026-08-22
+
+### Fixed
+
+- **Premature `full_security_assessment` completion (the reference regression).**
+  A real mission reached `stop_condition=coverage_target_achieved` at 76.47%
+  coverage while 67 of 69 hypotheses were open, active testing had not been
+  performed, browser coverage was NOT_ASSESSED and no attack paths had been
+  evaluated. Root causes and fixes:
+  - `MissionPolicyEngine.evaluate_stop` treated `COVERAGE_TARGET_ACHIEVED` as a
+    terminal condition on coverage alone. It is now a *candidate*: it only
+    becomes terminal when the mission's **objective completion contract**
+    (new `hunterx.domain.mission_orchestration.completion`) is satisfied —
+    work performed, no pending plan work, no unclassified actionable open
+    hypothesis, coverage baseline met, and (for a full assessment) active
+    testing performed when a probeable surface exists, attack paths evaluated,
+    validation exercised and browser testing explicitly classified.
+  - The runner's `_open_hypothesis_work_remaining` and the planner's
+    high-value gate only counted priority>=0.75 / vulnerability-class
+    hypotheses, so 67 recon-derived open hypotheses did not block a false
+    completion. Actionable (high-priority or vulnerability-class) open
+    hypotheses now keep the hunt alive; non-actionable recon facts are
+    classified `DEFERRED` with a recorded reason at finalize.
+  - `planning_state=completed` no longer implies execution complete: the
+    runner never walks into `REPORTING`/`COMPLETED` during execution, and
+    `finalize` walks the planning state to `COMPLETED` only when the objective
+    contract is satisfied, otherwise to the honest `BLOCKED` terminal (an
+    incomplete mission is never reported in the reporting phase).
+  - **Hypothesis lifecycle**: new `DEFERRED` and `BLOCKED` states with recorded
+    reasons (`defer_hypothesis` / `block_hypothesis` / `classify_open_hypotheses`),
+    so every unresolved hypothesis answers *why it remains open* and whether it
+    is actionable.
+- **Root asset registration**: a URL target (`http://localhost:3010`) now
+  registers a valid root `Asset` entity at mission creation (Target → Asset)
+  before any downstream services/endpoints/technologies are attached. No
+  duplicate entities.
+- **Tool failure normalization**: a validation failure (e.g. adapter reporting
+  `exit code 1`) previously produced `error="exit code 1"` with `exit_code=0`.
+  The pipeline now attaches the collected output to the failure so
+  `failure_kind`, `status` and `exit_code` agree and stdout/stderr are
+  preserved. Parser/validation failures are never successful executions.
+- **OpenRouter free-tier / HTTP 429 resilience**: `AIActionSuggester` now
+  honors `Retry-After`, applies bounded exponential backoff with jitter, and
+  maintains a **shared per-provider cooldown** so concurrent workers cannot
+  amplify a 429 into a request storm. During cooldown the mission continues
+  with the deterministic planner; an authentication failure disables AI for the
+  mission. The AI request budget (minimum interval) reserves the model for
+  non-trivial decisions. Telemetry now records `ai_cooldown_events`,
+  `ai_deterministic_decisions`, and truthful `ai_fallbacks` (the incident
+  showed `ai_fallbacks=0` despite 6× 429 — a lie).
+- **AI failure ≠ mission completion**: an AI rate limit / failure / unavailability
+  can never become `coverage_target_achieved`; deterministic orchestration
+  continues, and the telemetry/report expose the fallback state.
+
+### Added
+
+- `hunterx.domain.mission_orchestration.completion` — objective-aware,
+  configurable completion contract with explainable gates.
+- Mission telemetry extended: `ai_cooldown_events`, `ai_deterministic_decisions`,
+  `hypotheses_deferred`, `hypotheses_blocked`, `hypotheses_tested`,
+  `active_tests_attempted/completed`, `browser_tests_attempted/completed`,
+  `attack_paths_generated/tested/validated`, `completion_gate_failures`,
+  `stop_condition`.
+- Regression suite (`tests/integration/test_mission_completion_regression.py`)
+  covering: coverage cannot prematurely terminate, remaining-budget semantics,
+  OpenRouter 429 Retry-After / bounded backoff / shared cooldown / deterministic
+  fallback, AI-unavailable continuation, root asset, tool failure exit-code
+  truthfulness, actionable-open-hypothesis continuation, active-testing and
+  browser applicability gates, and hypothesis classification.
+- `scripts/demo_mission_lifecycle.py` — behavioral acceptance demo (real
+  loopback target, real differential probes).
+
+---
+
 ## [7.1.1] — 2026-08-22
 
 ### Fixed
