@@ -50,6 +50,22 @@ _EXPOSURE_KINDS = frozenset(
     }
 )
 
+#: Per-call BFS budget fallback (used when :meth:`AttackPathEngine._chains` is
+#: invoked without a shared discovery budget) so no caller can trigger an
+#: unbounded expansion on a dense graph. The durable system of record keeps the
+#: full surface.
+_MAX_CHAIN_VISITS = 10000
+
+#: Global discovery budget for :meth:`AttackPathEngine.discover`. The attack
+#: path analysis runs after EVERY meaningful observation over the mission
+#: context graph; on a target with hundreds of services/endpoints an unbounded
+#: analysis is a memory/CPU bomb (the real runaway was exactly this). These
+#: totals keep one analysis pass deterministic and cheap; the durable system of
+#: record keeps the full surface.
+_MAX_ENTRY_POINTS = 40
+_MAX_TOTAL_VISITS = 4000
+_MAX_TOTAL_CHAINS = 400
+
 #: Entity kind → attack-path step kind.
 _KIND_TO_STEP: dict[str, AttackPathStepKind] = {
     "url": AttackPathStepKind.APPLICATION,
@@ -142,15 +158,22 @@ class AttackPathEngine:
         candidate), while a purely structural chain (graph adjacency only) stays
         ``HYPOTHETICAL``. The caller decides which to treat as discovered
         attacks — combinatorial adjacency alone is never a discovered attack.
+
+        The discovery is globally budgeted (entry points, BFS visits and chains)
+        so a dense surface graph can never cause an exponential expansion that
+        consumes the host — a real 5.6 GiB runaway was traced to exactly this.
         """
         evidence_map = evidence_map or {}
         validated_map = validated_map or {}
         entry_points = [
             asset.key for asset in graph.assets() if _kind_str(asset.kind) in _EXPOSURE_KINDS
         ]
+        budget = {"visits": _MAX_TOTAL_VISITS, "chains": _MAX_TOTAL_CHAINS}
         paths: list[AttackPath] = []
-        for entry in sorted(entry_points):
-            for node_keys in self._chains(graph, entry):
+        for entry in sorted(entry_points)[:_MAX_ENTRY_POINTS]:
+            if budget["visits"] <= 0:
+                break
+            for node_keys in self._chains(graph, entry, budget):
                 steps = self._steps(graph, node_keys, evidence_map, validated_map)
                 state = _path_state(steps)
                 path = AttackPath(
@@ -167,6 +190,8 @@ class AttackPathEngine:
                 )
                 self.score(path)
                 paths.append(path)
+                if len(paths) >= budget["chains"]:
+                    break
         paths.sort(key=lambda path: (-path.score, len(path.steps)))
         return paths[: self.max_paths]
 
@@ -253,11 +278,24 @@ class AttackPathEngine:
 
     # -- internals ----------------------------------------------------------
 
-    def _chains(self, graph: AttackSurfaceGraph, start: str) -> list[list[str]]:
-        """BFS chains from ``start``, pruning to security-relevant step kinds."""
+    def _chains(self, graph: AttackSurfaceGraph, start: str, budget: dict[str, int] | None = None) -> list[list[str]]:
+        """BFS chains from ``start``, pruning to security-relevant step kinds.
+
+        The BFS is budget-capped (shared across the whole discovery pass) so a
+        dense attack-surface graph can never cause an exponential expansion that
+        consumes the host — a real 5.6 GiB runaway was traced exactly to this
+        expansion. Discovery beyond the budget is bounded to what was found.
+        """
         chains: list[list[str]] = []
         queue: deque[tuple[str, list[str], set[str]]] = deque([(start, [start], {start})])
+        if budget is None:
+            budget = {"visits": _MAX_CHAIN_VISITS, "chains": 200}
+        visits = 0
         while queue:
+            if budget["visits"] <= 0 or budget["chains"] <= 0:
+                break
+            budget["visits"] -= 1
+            visits += 1
             node, path, visited = queue.popleft()
             if len(path) - 1 >= self.max_depth:
                 continue
@@ -270,6 +308,9 @@ class AttackPathEngine:
                 next_path = path + [key]
                 if step_kind in _INTERESTING_STEP_KINDS:
                     chains.append(next_path)
+                    budget["chains"] -= 1
+                    if budget["chains"] <= 0:
+                        break
                 if len(next_path) - 1 < self.max_depth:
                     queue.append((key, next_path, visited | {key}))
         return chains

@@ -170,7 +170,38 @@ class ResourceSettings(BaseModel):
     max_model_context_disproven: int = Field(default=200, ge=1, description="Max disproven fingerprints retained in the model learning context.")
     max_replan_cycles: int = Field(default=12, ge=1, description="Max replan-driven scheduling rounds before the mission stops spawning new work.")
     max_probes_per_cycle: int = Field(default=12, ge=1, description="Max differential probes executed per mission cycle.")
+
+    # -- byte-level in-memory bounds (resident memory, not just item counts) ---
+    max_observation_content_bytes: int = Field(
+        default=262144, ge=1,
+        description="Max serialized bytes retained per observation content (larger tool output is summarized in memory; the durable copy is persisted).",
+    )
+    max_aggregate_state_bytes: int = Field(
+        default=1073741824, ge=1,
+        description="Max total serialized bytes of the in-memory mission aggregate (oldest observations are evicted beyond this).",
+    )
+    max_model_context_bytes: int = Field(
+        default=1048576, ge=1,
+        description="Max serialized bytes of the model reasoning context fed to the model.",
+    )
+    max_services_in_memory: int = Field(default=200, ge=1, description="Max service entries retained in the in-memory target model (a single port scan can add hundreds).")
+    max_assets_in_memory: int = Field(default=1000, ge=1, description="Max asset entries retained in the in-memory target model.")
+    max_technologies_in_memory: int = Field(default=500, ge=1, description="Max technology entries retained in the in-memory target model.")
+
+    # -- runtime memory instrumentation ------------------------------------------
+    telemetry_file: str = Field(
+        default="",
+        description="Path for append-only JSON-lines mission memory telemetry (empty = disabled).",
+    )
+    telemetry_tracemalloc: bool = Field(
+        default=False,
+        description="Enable Python-heap tracing via tracemalloc for the memory telemetry (adds overhead).",
+    )
     telemetry_interval_s: float = Field(default=5.0, gt=0.0, description="Throttle interval for [RESOURCE] telemetry logs.")
+    watchdog_interval_s: float = Field(
+        default=1.0, ge=0.0,
+        description="Background governor sampling interval in seconds (0 disables the watchdog thread).",
+    )
 
 
 class Settings(BaseModel):

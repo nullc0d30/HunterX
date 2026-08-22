@@ -99,6 +99,21 @@ from hunterx.shared.ids import generate_id
 from hunterx.shared.target import has_meaningful_content
 from hunterx.shared.time import utcnow_iso
 
+#: Resource-governed bounds for attack-path graph construction.
+#
+# ``record_attack_paths`` rebuilds an attack-surface graph from the mission
+# context after EVERY meaningful observation. A port-scan observation can add
+# hundreds of ``context.services`` entries, and a crawler hundreds of
+# endpoints; the graph then links each service to each endpoint (a dense
+# bipartite adjacency) which the attack-path BFS explores. Without bounds this
+# is a transient memory/CPU bomb (the real 5.6 GiB runaway). These caps keep
+# the analysis bounded: only the most relevant services/endpoints participate
+# in attack-path discovery, and the BFS itself is visit-capped. The durable
+# system of record (TIDB) keeps the full discovery; only the in-memory analysis
+# graph is bounded.
+_MAX_ATTACK_PATH_SERVICES = 64
+_MAX_ATTACK_PATH_ENDPOINTS = 200
+
 
 class MissionOrchestrator:
     """Runtime facade of the autonomous mission orchestration layer.
@@ -420,7 +435,7 @@ class MissionOrchestrator:
             )
 
         service_assets: dict[str, IntelligenceAsset] = {}
-        for entry in mission.context.services.values():
+        for entry in list(mission.context.services.values())[:_MAX_ATTACK_PATH_SERVICES]:
             identity = str(entry.get("identity") or entry.get("key") or "")
             if not identity:
                 continue
@@ -448,7 +463,7 @@ class MissionOrchestrator:
             str(finding.get("asset_key")): finding.get("stage") in ("verified", "proven", "report_ready")
             for finding in mission.context.findings
         }
-        for _key, entry in mission.context.endpoints.items():
+        for _key, entry in list(mission.context.endpoints.items())[:_MAX_ATTACK_PATH_ENDPOINTS]:
             url = str(entry.get("key") or entry.get("url") or "")
             if not url:
                 continue
