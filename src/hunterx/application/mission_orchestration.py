@@ -304,6 +304,58 @@ class MissionOrchestrationService:
         )
         return hypothesis.to_dict()
 
+    def defer_hypothesis(self, mission_id: str, hypothesis_id: str, *, reason: str) -> dict[str, Any] | None:
+        """Explicitly classify an open hypothesis as deferred with a recorded reason.
+
+        A deferred hypothesis is acknowledged but not tested now (capability
+        unavailable, budget priority, out of scope). It is reported as partial/
+        blocked, never as settled evidence or as a complete assessment.
+        """
+        self._engine.defer_hypothesis(mission_id, hypothesis_id, reason=reason)
+        mission = self.get(mission_id)
+        hypothesis = mission.hypothesis(hypothesis_id)
+        if hypothesis is None:
+            return None
+        self._persist_hypothesis(mission_id, hypothesis)
+        self._publish(
+            "mission.hypothesis.updated",
+            {"mission_id": mission_id, "hypothesis_id": hypothesis_id, "state": "deferred", "reason": reason},
+        )
+        return hypothesis.to_dict()
+
+    def block_hypothesis(self, mission_id: str, hypothesis_id: str, *, reason: str) -> dict[str, Any] | None:
+        """Explicitly classify an actionable hypothesis as blocked with a reason.
+
+        A blocked hypothesis is actionable but cannot be probed under the
+        current policy (capability unavailable / target not probeable).
+        """
+        self._engine.block_hypothesis(mission_id, hypothesis_id, reason=reason)
+        mission = self.get(mission_id)
+        hypothesis = mission.hypothesis(hypothesis_id)
+        if hypothesis is None:
+            return None
+        self._persist_hypothesis(mission_id, hypothesis)
+        self._publish(
+            "mission.hypothesis.updated",
+            {"mission_id": mission_id, "hypothesis_id": hypothesis_id, "state": "blocked", "reason": reason},
+        )
+        return hypothesis.to_dict()
+
+    def classify_open_hypotheses(
+        self,
+        mission_id: str,
+        *,
+        reason: str = "no runnable action under current policy/capability availability",
+    ) -> int:
+        """Classify non-actionable open hypotheses as deferred (best-effort).
+
+        Returns the number of hypotheses classified.
+        """
+        classified = self._engine.classify_open_hypotheses(mission_id, reason=reason)
+        mission = self.get(mission_id)
+        self._persist_mission(mission)
+        return classified
+
     def decide_next(self, mission_id: str, **kwargs: Any) -> dict[str, Any] | None:
         """Select the next action by expected information gain."""
         decision = self._engine.decide_next(mission_id, **kwargs)

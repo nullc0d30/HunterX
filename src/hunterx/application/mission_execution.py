@@ -1253,6 +1253,8 @@ class MissionExecutionService:
             "ai_http_status": suggestion.http_status,
             "ai_timeout": suggestion.timeout,
             "ai_fallback": suggestion.fallback,
+            "ai_cooldown": suggestion.cooldown,
+            "ai_deterministic": suggestion.deterministic,
             "ai_provider": str(getattr(self._ai_suggester, "_provider", "") or ""),
             "ai_model": str(getattr(self._ai_suggester, "_model", "") or ""),
         }
@@ -2487,12 +2489,13 @@ class MissionExecutionService:
     # -- deterministic adaptive planner (hypothesis → probe wiring) ----------
 
     def _open_hypothesis_work_remaining(self, mission_id: str) -> bool:
-        """Return ``True`` when class-specific probe work is still pending.
+        """Return ``True`` when actionable hypothesis work is still pending.
 
         The completion gate uses this: a mission must not enter reporting while
-        an open, high-priority, class-specific vulnerability hypothesis has no
-        settled verdict. Discovery facts (assets/services/technologies) never
-        count as open work by themselves.
+        an open high-priority (``priority >= 0.75``) or class-specific
+        vulnerability hypothesis has no settled verdict and no bound, running
+        probe action. Discovery facts (assets/services/technologies) are not
+        actionable by themselves and are classified (deferred) at finalize.
         """
         try:
             mission = self._orchestration.get(mission_id)
@@ -2506,9 +2509,10 @@ class MissionExecutionService:
                 continue
             provenance = hypothesis.provenance or {}
             vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
-            if not vulnerability_class:
-                continue
-            if not _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class):
+            if hypothesis.priority < 0.75 and not vulnerability_class:
+                # Not high-priority and not a vulnerability candidate: no
+                # runnable action exists for this recon fact under the current
+                # policy (it is classified as deferred at finalize).
                 continue
             if hypothesis.hypothesis_id in bound:
                 continue
@@ -3311,7 +3315,16 @@ def _run_status(mission: Any, preflight: Any | None) -> str:
 
 
 def _next_forward_state(current: MissionState) -> MissionState | None:
-    """Return the next canonical forward state reachable from ``current``."""
+    """Return the next canonical forward state reachable from ``current``.
+
+    Terminal states (``REASSESSMENT``, ``REPORTING``, ``COMPLETED``) are
+    deliberately excluded: the runner advances *execution* through the active
+    workflow states only, and the terminal state (``COMPLETED`` for a genuinely
+    complete objective, ``BLOCKED`` for an incomplete one) is decided by
+    ``MissionOrchestrator.finalize``. This keeps ``planning_state=completed``
+    from ever meaning "the runner got bored" instead of "the objective was
+    satisfied".
+    """
     from hunterx.domain.adaptive_mission_planning.state import can_transition
 
     try:
@@ -3319,11 +3332,7 @@ def _next_forward_state(current: MissionState) -> MissionState | None:
     except ValueError:
         return None
     for candidate in _FORWARD_STATES[index + 1 :]:
-        if candidate is MissionState.REASSESSMENT:
-            continue
-        if candidate is MissionState.COMPLETED:
-            if can_transition(current, candidate):
-                return candidate
+        if candidate in (MissionState.REASSESSMENT, MissionState.REPORTING, MissionState.COMPLETED):
             continue
         if can_transition(current, candidate):
             return candidate

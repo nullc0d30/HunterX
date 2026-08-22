@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import random
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -64,7 +65,12 @@ class AISuggestion:
         raw: the raw provider response (diagnostics only, no secrets).
         http_status: HTTP status returned by the provider (``None`` unknown).
         timeout: ``True`` when the provider call timed out.
-        fallback: ``True`` when a fallback/alternate model was used.
+        fallback: ``True`` when a deterministic fallback decision was used
+            instead of an AI-assisted one (rate limited / failed / skipped).
+        cooldown: ``True`` when the provider was skipped due to an active
+            rate-limit cooldown.
+        deterministic: ``True`` when the decision was made without AI reasoning
+            (cooldown, single candidate, free-tier throttle).
 
     """
 
@@ -77,6 +83,8 @@ class AISuggestion:
     http_status: int | None = None
     timeout: bool = False
     fallback: bool = False
+    cooldown: bool = False
+    deterministic: bool = False
 
     @property
     def usable(self) -> bool:
@@ -92,13 +100,68 @@ class AIActionSuggester:
             mission fully deterministic).
         model: optional model override (defaults to the provider's configured
             model when empty).
+        provider: provider name for telemetry.
+        min_interval_s: minimum wall-clock gap between AI calls (free-tier
+            request budget — trivial decisions do not need the model every
+            cycle).
+        backoff_s: base cooldown applied after a 429.
+        max_cooldown_s: ceiling for the 429 cooldown.
+
+    Free-tier resilience: a ``429`` (or any provider failure) puts the provider
+    into a shared cooldown (honoring ``Retry-After`` when supplied, otherwise
+    bounded exponential backoff with jitter). During cooldown the suggester
+    returns a deterministic (non-AI) result so the mission continues; telemetry
+    records the cooldown/fallback so an incomplete assessment is never reported
+    as AI-completed.
 
     """
 
-    def __init__(self, ai: AIPort | None = None, *, model: str = "", provider: str = "") -> None:
+    def __init__(
+        self,
+        ai: AIPort | None = None,
+        *,
+        model: str = "",
+        provider: str = "",
+        min_interval_s: float = 1.0,
+        backoff_s: float = 5.0,
+        max_cooldown_s: float = 60.0,
+    ) -> None:
         self._ai = ai
         self._model = model
         self._provider = provider
+        self._min_interval = max(0.0, min_interval_s)
+        self._backoff = max(1.0, backoff_s)
+        self._max_cooldown = max(self._backoff, max_cooldown_s)
+        #: Shared per-provider/model rate-limit state (this instance is a
+        #: platform singleton, so cooldown is shared across all workers).
+        self._cooldown_until = 0.0
+        self._last_attempt_at = 0.0
+        #: Telemetry counters (aggregate across the mission).
+        self._cooldown_events = 0
+        self._fallback_decisions = 0
+        self._deterministic_decisions = 0
+
+    # -- state ------------------------------------------------------------------
+
+    def rate_limited(self) -> bool:
+        """Return ``True`` while the provider is in a rate-limit cooldown."""
+        return time.monotonic() < self._cooldown_until
+
+    def cooldown_remaining_s(self) -> float:
+        """Return the remaining cooldown (``0`` when not rate limited)."""
+        return max(0.0, self._cooldown_until - time.monotonic())
+
+    def counters(self) -> dict[str, int]:
+        """Return cumulative telemetry counters (JSON-safe)."""
+        return {
+            "ai_cooldown_events": self._cooldown_events,
+            "ai_fallback_decisions": self._fallback_decisions,
+            "ai_deterministic_decisions": self._deterministic_decisions,
+        }
+
+    def reset_rate_limit(self) -> None:
+        """Clear the rate-limit cooldown (e.g. for tests / operator action)."""
+        self._cooldown_until = 0.0
 
     # -- public -------------------------------------------------------------
 
@@ -112,12 +175,43 @@ class AIActionSuggester:
         ``candidates`` is the list of ready candidate actions (each exposing
         ``action_id``, ``capability``, ``description`` and ``tool_ids``). The
         suggestion is validated against this set; anything else is rejected.
+
+        Free-tier policy: AI is only consulted when there is more than one
+        candidate (a single candidate is deterministic) and when the provider
+        is not in cooldown and the per-cycle request budget allows it. Any
+        failure/cooldown returns a ``fallback``/``deterministic`` suggestion so
+        the mission continues with the deterministic planner — an AI failure
+        never stops or falsely completes a mission.
         """
         if self._ai is None:
-            return AISuggestion(error="AI client unavailable")
+            return AISuggestion(error="AI client unavailable", deterministic=True)
         if not candidates:
-            return AISuggestion(error="no candidate actions to suggest")
+            return AISuggestion(error="no candidate actions to suggest", deterministic=True)
 
+        now = time.monotonic()
+
+        if now < self._cooldown_until:
+            # Rate-limited: do NOT re-fire at the provider (prevents 429 storms
+            # and respects a shared cooldown). Deterministic fallback continues
+            # the mission.
+            self._deterministic_decisions += 1
+            self._fallback_decisions += 1
+            remaining = int(self.cooldown_remaining_s())
+            return AISuggestion(
+                error=f"AI rate-limited; deterministic fallback for {remaining}s",
+                http_status=429,
+                fallback=True,
+                cooldown=True,
+                deterministic=True,
+            )
+
+        if now - self._last_attempt_at < self._min_interval:
+            # Free-tier request budget: don't ask the model for every trivial
+            # decision; the deterministic planner handles this cycle.
+            self._deterministic_decisions += 1
+            return AISuggestion(error="AI request throttled (free-tier budget); deterministic decision", deterministic=True)
+
+        self._last_attempt_at = now
         candidate_ids = [getattr(candidate, "action_id", "") for candidate in candidates]
         prompt = _build_prompt(mission, candidates)
         started = time.monotonic()
@@ -127,34 +221,91 @@ class AIActionSuggester:
             response = self._ai.complete(prompt, model=self._model or None)
         except TimeoutError:
             latency = int((time.monotonic() - started) * 1000)
-            return AISuggestion(invoked=True, latency_ms=latency, error="AI request timed out", timeout=True)
-        except Exception as exc:  # noqa: BLE001 - AI failure must never break the mission
-            latency = int((time.monotonic() - started) * 1000)
-            http_status, timeout = _classify_ai_error(exc)
+            self._fallback_decisions += 1
             return AISuggestion(
                 invoked=True,
                 latency_ms=latency,
-                error=f"AI request failed: {exc}",
+                error="AI request timed out; deterministic fallback",
+                timeout=True,
+                fallback=True,
+            )
+        except Exception as exc:  # noqa: BLE001 - AI failure must never break the mission
+            latency = int((time.monotonic() - started) * 1000)
+            http_status, timeout = _classify_ai_error(exc)
+            if http_status == 429:
+                self._enter_cooldown(exc)
+                return AISuggestion(
+                    invoked=True,
+                    latency_ms=latency,
+                    error=f"AI rate limited (HTTP 429); deterministic fallback for {self.cooldown_remaining_s():.0f}s",
+                    http_status=429,
+                    fallback=True,
+                    cooldown=True,
+                    deterministic=True,
+                )
+            if http_status in (401, 403):
+                # Authentication failure: disable AI for the mission rather than
+                # hammering the endpoint with a bad key.
+                self._enter_cooldown(exc, auth_failure=True)
+            self._fallback_decisions += 1
+            return AISuggestion(
+                invoked=True,
+                latency_ms=latency,
+                error=f"AI request failed: {exc}; deterministic fallback",
                 http_status=http_status,
                 timeout=timeout,
+                fallback=True,
             )
         latency = int((time.monotonic() - started) * 1000)
 
         parsed, error = _parse_suggestion(response)
         if parsed is None:
-            return AISuggestion(invoked=True, latency_ms=latency, error=error, raw=response, http_status=http_status)
+            self._fallback_decisions += 1
+            return AISuggestion(
+                invoked=True,
+                latency_ms=latency,
+                error=f"{error}; deterministic fallback",
+                raw=response,
+                http_status=http_status,
+                fallback=True,
+            )
         suggestion = AISuggestion(invoked=True, latency_ms=latency, raw=response, http_status=http_status)
         action_id = str(parsed.get("suggested_action_id", ""))
         reason = str(parsed.get("reason", ""))
         if action_id not in candidate_ids:
+            self._fallback_decisions += 1
             return dataclasses.replace(
                 suggestion,
                 error=(
                     f"AI suggested '{action_id}' which is not an available candidate"
-                    f" (valid: {', '.join(candidate_ids)})"
+                    f" (valid: {', '.join(candidate_ids)}); deterministic fallback"
                 ),
+                fallback=True,
             )
         return dataclasses.replace(suggestion, action_id=action_id, reason=reason)
+
+    # -- rate limiting ---------------------------------------------------------
+
+    def _enter_cooldown(self, exc: Exception, *, auth_failure: bool = False) -> None:
+        """Enter (or extend) the shared rate-limit cooldown with backoff + jitter.
+
+        Honors ``Retry-After`` when the provider attached it; otherwise applies
+        bounded exponential backoff with jitter. The cooldown is shared across
+        all planner workers (this is the platform singleton) so a burst of 429s
+        cannot amplify into more requests.
+        """
+        retry_after = float(getattr(exc, "retry_after", 0.0) or 0.0)
+        if retry_after > 0:
+            cooldown = retry_after
+        else:
+            backoff = self._backoff * (2 ** self._cooldown_events)
+            cooldown = backoff + random.uniform(0.0, min(5.0, backoff))
+        cooldown = min(cooldown, self._max_cooldown)
+        if auth_failure:
+            # An auth failure disables AI for a long window (don't hammer).
+            cooldown = max(cooldown, self._max_cooldown)
+        self._cooldown_events += 1
+        self._cooldown_until = max(self._cooldown_until, time.monotonic() + cooldown)
 
 
 def _build_prompt(mission: Any, candidates: list[Any]) -> str:

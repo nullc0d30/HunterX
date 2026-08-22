@@ -110,7 +110,15 @@ class OpenAICompatibleClient(AIPort):
             raise OperationError(f"{self.provider}: network failure reaching the API ({_bounded_excerpt(exc)})") from exc
         status = int(getattr(response, "status_code", 0) or 0)
         if status >= 400:
-            raise _error_for_status(self.provider, status)
+            error = _error_for_status(self.provider, status)
+            if status == 429:
+                # Honor Retry-After when the provider supplies it so the
+                # scheduler can respect the server's cooldown instead of
+                # retrying immediately (free-tier models enforce strict limits).
+                retry_after = _retry_after_seconds(getattr(response, "headers", None))
+                if retry_after:
+                    error.retry_after = retry_after  # type: ignore[attr-defined]
+            raise error
         try:
             body = response.json()
         except (ValueError, TypeError) as exc:
@@ -247,7 +255,15 @@ class AnthropicClient(AIPort):
             raise OperationError(f"{self.provider}: network failure reaching the API ({_bounded_excerpt(exc)})") from exc
         status = int(getattr(response, "status_code", 0) or 0)
         if status >= 400:
-            raise _error_for_status(self.provider, status)
+            error = _error_for_status(self.provider, status)
+            if status == 429:
+                # Honor Retry-After when the provider supplies it so the
+                # scheduler can respect the server's cooldown instead of
+                # retrying immediately (free-tier models enforce strict limits).
+                retry_after = _retry_after_seconds(getattr(response, "headers", None))
+                if retry_after:
+                    error.retry_after = retry_after  # type: ignore[attr-defined]
+            raise error
         try:
             body = response.json()
         except (ValueError, TypeError) as exc:
@@ -346,7 +362,15 @@ class GeminiClient(AIPort):
             raise OperationError(f"{self.provider}: network failure reaching the API ({_bounded_excerpt(exc)})") from exc
         status = int(getattr(response, "status_code", 0) or 0)
         if status >= 400:
-            raise _error_for_status(self.provider, status)
+            error = _error_for_status(self.provider, status)
+            if status == 429:
+                # Honor Retry-After when the provider supplies it so the
+                # scheduler can respect the server's cooldown instead of
+                # retrying immediately (free-tier models enforce strict limits).
+                retry_after = _retry_after_seconds(getattr(response, "headers", None))
+                if retry_after:
+                    error.retry_after = retry_after  # type: ignore[attr-defined]
+            raise error
         try:
             body = response.json()
         except (ValueError, TypeError) as exc:
@@ -408,6 +432,27 @@ def _error_for_status(provider: str, status: int) -> OperationError:
             f"{provider}: provider unavailable (HTTP {status})"
         )
     return OperationError(f"{provider}: provider request failed (HTTP {status})")
+
+
+def _retry_after_seconds(headers: Any) -> float:
+    """Return the ``Retry-After`` duration in seconds (``0`` when absent/invalid).
+
+    ``Retry-After`` may be an HTTP-date or a number of seconds; providers
+    (notably OpenRouter free-tier models) use seconds. The value is bounded so
+    an absurd header can never cause an unbounded scheduler stall.
+    """
+    if not headers:
+        return 0.0
+    value = headers.get("Retry-After") or headers.get("retry-after")
+    if value is None:
+        return 0.0
+    try:
+        seconds = float(str(value).strip())
+    except (TypeError, ValueError):
+        return 0.0
+    if not seconds > 0:
+        return 0.0
+    return min(seconds, 300.0)
 
 
 __all__ = [

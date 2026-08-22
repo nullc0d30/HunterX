@@ -23,6 +23,7 @@ on top.
 
 from __future__ import annotations
 
+import contextlib
 import json
 from collections.abc import Mapping
 from dataclasses import replace
@@ -157,9 +158,159 @@ class MissionOrchestrator:
         self.telemetry = telemetry or MissionTelemetry()
         self.trace = trace or ReasoningTrace()
         self.policy = policy or MissionPolicyEngine()
+        # Objective-aware completion contract: coverage-derived conditions only
+        # become terminal when the contract confirms every mandatory dimension
+        # was assessed (see hunterx.domain.mission_orchestration.completion).
+        self.policy.completion_gate = self._completion_contract_gate
         self.impact = impact or ImpactAnalysisEngine()
         self.cascade = cascade or FindingCascadeEngine()
         self._missions: dict[str, OrchestratedMission] = {}
+
+    # -- completion contract ---------------------------------------------------
+
+    def _completion_contract_gate(self, mission: OrchestratedMission) -> tuple[bool, list[str]]:
+        """Return ``(satisfied, unmet_gates)`` for the mission objective contract.
+
+        ``pending_plan_work`` is derived from the planning graph (non-terminal
+        actions still scheduled). An objective is complete only when its
+        contract gates all pass — coverage alone never completes a full
+        assessment.
+        """
+        from hunterx.domain.mission_orchestration.completion import contract_for_objective
+
+        contract = contract_for_objective(
+            getattr(getattr(mission, "mission", None), "objective", None),
+            coverage_target=mission.policy.coverage_target,
+        )
+        assessment = contract.evaluate(mission, pending_plan_work=self._has_pending_plan_work(mission))
+        return assessment.satisfied, assessment.unmet()
+
+    # -- hypothesis classification ---------------------------------------------
+
+    def defer_hypothesis(
+        self,
+        mission_id: str,
+        hypothesis_id: str,
+        *,
+        reason: str,
+    ) -> dict[str, Any] | None:
+        """Explicitly classify an open hypothesis as deferred with a reason.
+
+        A deferred hypothesis is acknowledged but not tested now (capability
+        unavailable, budget priority, out of scope). The recorded reason answers
+        *why it remains open*. Deferral never implies the target is secure.
+        """
+        return self._classify_hypothesis(mission_id, hypothesis_id, HypothesisState.DEFERRED, reason)
+
+    def block_hypothesis(
+        self,
+        mission_id: str,
+        hypothesis_id: str,
+        *,
+        reason: str,
+    ) -> dict[str, Any] | None:
+        """Explicitly classify an actionable hypothesis as blocked with a reason.
+
+        A blocked hypothesis is actionable but cannot be probed under the
+        current policy (capability unavailable / target not probeable). It is
+        reported as blocked work, never as settled evidence.
+        """
+        return self._classify_hypothesis(mission_id, hypothesis_id, HypothesisState.BLOCKED, reason)
+
+    def classify_open_hypotheses(
+        self,
+        mission_id: str,
+        *,
+        reason: str = "no runnable action under current policy/capability availability",
+    ) -> int:
+        """Classify non-actionable open hypotheses as DEFERRED (in place).
+
+        Recon-derived facts (service/technology/endpoint hypotheses without a
+        probeable vulnerability class and below high-priority) have no runnable
+        test action; they are recorded as deferred with the given reason so the
+        mission can reach an honest terminal (partial/blocked) instead of
+        leaving a misleading count of "open" hypotheses that were never
+        actionable.
+        """
+        mission = self.get(mission_id)
+        classified = 0
+        for hypothesis in list(mission.hypotheses):
+            if hypothesis.state.value not in _OPEN_HYPOTHESIS_STATES:
+                continue
+            provenance = hypothesis.provenance or {}
+            vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
+            if hypothesis.priority >= 0.75 or vulnerability_class:
+                # High-priority or vulnerability-class hypotheses are actionable:
+                # they must be tested or explicitly blocked, never auto-deferred.
+                continue
+            self._classify_hypothesis(mission_id, hypothesis.hypothesis_id, HypothesisState.DEFERRED, reason)
+            classified += 1
+        return classified
+
+    def _classify_hypothesis(
+        self,
+        mission_id: str,
+        hypothesis_id: str,
+        state: HypothesisState,
+        reason: str,
+    ) -> dict[str, Any] | None:
+        """Set an open hypothesis to ``state`` with a recorded reason (best-effort)."""
+        mission = self.get(mission_id)
+        hypothesis = mission.hypothesis(hypothesis_id)
+        if hypothesis is None:
+            return None
+        if hypothesis.state.value not in _OPEN_HYPOTHESIS_STATES:
+            return hypothesis.to_dict()
+        provenance = dict(hypothesis.provenance or {})
+        provenance[f"{state.value}_reason"] = reason
+        provenance[f"{state.value}_at"] = utcnow_iso()
+        updated = replace(
+            hypothesis,
+            state=state,
+            provenance=provenance,
+            updated_at=utcnow_iso(),
+        )
+        mission.upsert_hypothesis(updated)
+        self._record_trace(
+            mission,
+            kind=ReasoningTraceKind.RATIONALE,
+            node_id=hypothesis_id,
+            content={"event": f"hypothesis.{state.value}", "reason": reason},
+        )
+        return updated.to_dict()
+
+    # -- target-model root asset -------------------------------------------------
+
+    @staticmethod
+    def _root_asset_entry(target: str) -> dict[str, Any]:
+        """Return the canonical root-asset entry for ``target``."""
+        from hunterx.shared.target import normalize_target
+
+        spec = normalize_target(target)
+        return {
+            "key": target,
+            "name": target,
+            "host": spec.host_or_ip,
+            "root": True,
+            "kind": "url" if spec.scheme in ("http", "https") else "host",
+            "content": {"target": target},
+        }
+
+    def _seed_root_asset(self, mission: OrchestratedMission) -> None:
+        """Ensure the mission context holds a valid root asset for the target.
+
+        A URL target (e.g. ``http://localhost:3010``) must produce a root asset
+        entity before any downstream services/endpoints/technologies are
+        attached — otherwise the target model is an orphaned set of children.
+        Idempotent: the root is seeded once.
+        """
+        target = mission.context.target_id or ""
+        if not target:
+            return
+        key = f"asset:{target}"
+        if key in mission.context.assets:
+            return
+        mission.context.assets[key] = self._root_asset_entry(target)
 
     # -- mission lifecycle --------------------------------------------------
 
@@ -216,6 +367,7 @@ class MissionOrchestrator:
         )
         mission.context.current_objectives = _objectives_for(objective_enum)
         mission.context.remaining_objectives = list(mission.context.current_objectives)
+        self._seed_root_asset(mission)
         self._missions[mission.mission_id] = mission
         self._record_trace(
             mission,
@@ -316,10 +468,18 @@ class MissionOrchestrator:
         (explicit or policy-evaluated). When nothing fired and the objectives
         are NOT complete, the mission is reported as ``BLOCKED`` (no actionable
         work / exhausted) — it is never silently converted into success.
+
+        Open non-actionable hypotheses (recon facts with no runnable test) are
+        first recorded as ``DEFERRED`` with an explicit reason so the aggregate
+        distinguishes "assessed and deferred" from "untested actionable work".
+        The planning state walks to COMPLETED only when the objectives are
+        genuinely complete; an incomplete mission walks to BLOCKED instead —
+        ``planning_state=completed`` never implies execution was complete.
         """
         mission = self.get(mission_id)
         if mission.outcome is not None:
             return mission
+        self.classify_open_hypotheses(mission_id)
         explicit = stop_condition
         evaluated = self.policy.evaluate_stop(mission) if explicit is None else None
         condition = explicit or evaluated
@@ -336,8 +496,16 @@ class MissionOrchestrator:
         elif condition in _SUCCESS_STOP_CONDITIONS:
             objectives_complete = True
         if self.planning is not None:
-            self._advance_to_completed(mission_id)
-        mission.current_phase = MissionPhase.REPORTING
+            if objectives_complete:
+                self._advance_to_completed(mission_id)
+            else:
+                self._advance_to_blocked(mission_id)
+        if objectives_complete:
+            mission.current_phase = MissionPhase.REPORTING
+        elif mission.current_phase is MissionPhase.REPORTING:
+            # A blocked/incomplete mission is never reported in the reporting
+            # phase: keep the last genuine assessment phase.
+            mission.current_phase = MissionPhase.REASSESSMENT
         if mission.runs:
             mission.runs[-1].status = MissionRunStatus.COMPLETED
             mission.runs[-1].finished_at = utcnow_iso()
@@ -375,6 +543,36 @@ class MissionOrchestrator:
         self.telemetry.record(mission)
         self._trace_mission(mission, MissionEventType.MISSION_COMPLETED, stop_condition=condition.value)
         return mission
+
+    def _advance_to_blocked(self, mission_id: str) -> None:
+        """Walk the planning state machine to BLOCKED through legal hops.
+
+        An incomplete mission (blocked / budget-exhausted / no actionable work)
+        must not be reported as ``planning_state=completed``: ``completed``
+        implies the objective contract was satisfied. BLOCKED is reachable from
+        every active state; REPORTING (already in the completion corridor) is
+        left untouched and the outcome records the honest blocked terminal.
+        """
+        if self.planning is None:
+            return
+        from hunterx.domain.adaptive_mission_planning.enums import MissionState
+
+        current = self.planning.get_mission(mission_id).state
+        if current in (MissionState.BLOCKED, MissionState.COMPLETED, MissionState.CANCELLED, MissionState.FAILED):
+            return
+        from hunterx.domain.adaptive_mission_planning.state import can_transition
+
+        if can_transition(current, MissionState.BLOCKED):
+            self.planning.transition(mission_id, MissionState.BLOCKED)
+            return
+        if current is MissionState.REPORTING:
+            # REPORTING cannot legally re-enter BLOCKED; the outcome records the
+            # blocked terminal and the phase reflects reassessment.
+            return
+        if can_transition(current, MissionState.REASSESSMENT):
+            with contextlib.suppress(Exception):  # best-effort legal hop
+                self.planning.transition(mission_id, MissionState.REASSESSMENT)
+                self.planning.transition(mission_id, MissionState.BLOCKED)
 
     # -- observation intake --------------------------------------------------
 
@@ -1703,6 +1901,7 @@ class MissionOrchestrator:
         content = observation.content
         if not has_meaningful_content(content):
             return
+        self._seed_root_asset(mission)
         asset_key = observation.asset_key or str(content.get("key", ""))
         observation_type = observation.observation_type
 
@@ -1852,19 +2051,19 @@ class MissionOrchestrator:
         """Return ``True`` when the mission has genuinely satisfied its objectives.
 
         The completion gate (Phase 12): a full security assessment is complete
-        only when meaningful work happened (observations/hypotheses/executions),
-        every attack-surface branch is exhausted (no pending plan work), every
-        high-value hypothesis is settled (no open class-specific candidates) and
-        no validation is still pending. Reconnaissance completion alone never
-        satisfies the objectives, and a mission that never ran any work is
-        never reported as complete.
+        only when its objective completion contract is satisfied — meaningful
+        work happened, no pending plan work remains, no actionable hypothesis is
+        silently left open, and every mandatory dimension (active testing,
+        browser, attack paths, validation) was assessed or explicitly
+        classified. Reconnaissance completion alone never satisfies the
+        objectives, and a mission that never ran any work is never reported as
+        complete.
         """
         has_work = bool(mission.observations) or bool(mission.hypotheses) or mission.budget.executions_used > 0
         if not has_work:
             return False
-        if self._has_open_high_value_work(mission):
-            return False
-        return not self._has_pending_plan_work(mission)
+        satisfied, _unmet = self._completion_contract_gate(mission)
+        return bool(satisfied)
 
     @staticmethod
     def _has_open_high_value_work(mission: OrchestratedMission) -> bool:

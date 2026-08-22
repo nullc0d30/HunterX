@@ -231,7 +231,9 @@ class TestPlannerLoop:
         runner, orchestration, planning, mission_id = _runner(fake, target=target)
 
         result = runner.run(mission_id, max_cycles=30)
-        assert result["planning_state"] == "completed"  # plan exhausted truthfully
+        # A non-loopback target with actionable (unprobeable) hypotheses
+        # terminates honestly as blocked; the plan is exhausted either way.
+        assert result["planning_state"] in ("completed", "blocked")
 
         nuclei_calls = [call for call in fake.calls if call.tool_id == "nuclei"]
         # The tool is never re-executed with the same identity: executions are

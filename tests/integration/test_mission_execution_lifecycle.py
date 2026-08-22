@@ -110,13 +110,22 @@ class TestMissionStartsExecution:
 
         result = runner.run(mission.mission_id, max_cycles=16)
 
-        # A terminal runner exit finalizes the mission: terminal state, an
-        # outcome record and a completed run with a finish timestamp.
-        assert mission.mission.state.value == "completed"
+        # A terminal runner exit finalizes the mission: a terminal state, an
+        # outcome record and a completed run with a finish timestamp. On a
+        # non-loopback target the fake outputs leave actionable vulnerability
+        # hypotheses unprobeable, so the honest terminal is BLOCKED (never a
+        # false coverage-complete) — the regression this suite guards.
+        assert mission.mission.state.value in ("completed", "blocked")
         assert mission.outcome is not None
         assert mission.runs, "a run record must exist"
         assert mission.runs[-1].status.value == "completed"
         assert mission.runs[-1].finished_at, "the run must record a finish timestamp"
+        # Coverage must never terminate a full assessment while actionable
+        # hypotheses remain open.
+        assert not (
+            mission.outcome.stop_condition == "coverage_target_achieved"
+            and mission.outcome.hypotheses_open > 0
+        ), "coverage_target_achieved must not fire while open hypotheses remain"
         assert result["cycles_run"] >= 1
         assert mission.decisions, "an initial decision must be generated"
         assert fake.calls, "a tool execution must be attempted"
@@ -179,8 +188,11 @@ class TestMissionStartsExecution:
         )
         mission = orchestration.create_mission(objective="full_security_assessment", target=_TARGET)
 
-        # A mission that has not started discovery is not complete.
-        assert mission.context.assets == {}
+        # A URL target registers a valid root asset at creation (Target → Asset)
+        # before any downstream observations are attached, but a mission that
+        # has not started discovery is not complete.
+        assert mission.context.assets, "a URL target must produce a root asset"
+        assert any(entry.get("root") for entry in mission.context.assets.values())
         assert mission.observations == []
         assert mission.mission.state.value != "completed"
         assert mission.outcome is None
@@ -244,9 +256,15 @@ class TestCLIIntegration:
         assert overview["counts"]["negative_evidence"] >= 0
         assert overview["coverage_ratio"] > 0.0
         # The runner finalizes every terminal exit: the mission is never left
-        # running when the CLI returns.
-        assert overview["planning_state"] == "completed"
+        # running when the CLI returns. A non-loopback target with unprobeable
+        # actionable hypotheses terminates honestly as blocked, never as a
+        # false coverage-complete.
+        assert overview["planning_state"] in ("completed", "blocked")
         assert overview["outcome"] is not None
+        assert not (
+            overview["outcome"].get("stop_condition") == "coverage_target_achieved"
+            and overview["outcome"].get("hypotheses_open", 0) > 0
+        ), "coverage_target_achieved must not fire while open hypotheses remain"
 
 
 class _PassingReadiness:
