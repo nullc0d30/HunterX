@@ -9,6 +9,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.1] — 2026-08-22
+
+### Fixed
+
+- **Real-runtime memory runaway (the 5.6 GiB incident).** A real
+  `full_security_assessment` on a 7.6 GiB host reached ~5.6 GiB resident
+  (~74% of host RAM) with no child tools running. Runtime instrumentation
+  (per-cycle VmRSS/VmHWM/VmPeak + process-tree RSS + tracemalloc heap +
+  mission-aggregate bytes) traced the root cause to the **attack-path
+  analysis**, not the sampler:
+  - `MissionOrchestrator.record_attack_paths` rebuilds an attack-surface graph
+    from the mission context after every observation. A port scan adds hundreds
+    of `context.services`, a crawler adds hundreds of endpoints, and the
+    `O(SERVICES × ENDPOINTS)` cross-linking built a dense bipartite graph that
+    `AttackPathEngine._chains` expanded with an **exponential BFS on every
+    observation** — a transient ~1.7–4.8 GiB allocation per cycle whose freed
+    memory ratcheted the process RSS upward and stalled the mission (the hang).
+  - The governor sampler was **not** the problem: it tracked `/proc` VmRSS
+    within 25% and did transition to EMERGENCY — but enforcement cannot
+    interrupt a single long synchronous analysis.
+- **Bounded attack-path analysis.** `record_attack_paths` now caps the number
+  of services (64) and endpoints (200) used in graph construction, and
+  `AttackPathEngine.discover`/`_chains` enforce a **global discovery budget**
+  (entry points, BFS visits, chains) so one analysis pass is deterministic and
+  cheap regardless of surface size. Reproduction on a dense 1000-service /
+  200-endpoint graph: transient peak dropped from ~4.8 GiB to ~292 MiB, and a
+  45-second mission now completes at a stable ~195 MiB RSS.
+- **Bounded target-model maps.** `apply_mission_bounds` now trims
+  `context.services` / `context.assets` / `context.technologies` (previously
+  untrimmed — a single port scan added 1000+ service entries) plus byte-level
+  bounds: `max_observation_content_bytes` summarizes oversized observation
+  content, `max_aggregate_state_bytes` caps the retained aggregate, and
+  `max_model_context_bytes` bounds the reasoning context.
+- **Continuous enforcement.** Admission decisions now re-sample the process
+  tree (not a cached state), and a background sampling **watchdog**
+  (`watchdog_interval_s`, default 1 s, started by the platform) keeps the
+  resource state current even while the main thread is inside a long single
+  operation, so EMERGENCY is observable between explicit evaluation points.
+
+### Added
+
+- **Runtime memory telemetry** (`hunterx.resource.telemetry`): a
+  cross-sectional probe records process RSS/VmRSS/VmHWM/VmPeak, process-tree
+  RSS, Python heap (opt-in `tracemalloc`), mission-aggregate item counts and
+  approximate serialized bytes, model context and queue sizes, plus the
+  governor's own reading at the same instant — written as JSON-lines to
+  `HUNTERX_RESOURCE_TELEMETRY_FILE`. Enables data-driven failure
+  classification (sampler bug vs. enforcement gap vs. unbounded state vs.
+  temporary allocation) instead of guessing.
+- `scripts/reproduce_resource_runaway.py`: reproduces the incident class and
+  prints the classification (governor-vs-`/proc` tracking, peak RSS, aggregate
+  bytes, heap).
+- Regression tests: `tests/integration/test_resource_attack_path_regression.py`
+  asserts attack-path discovery and `record_attack_paths` stay bounded on dense
+  graphs, target-model maps are trimmed, and observation content is
+  byte-bounded.
+
+---
+
 ## [7.1.0] — 2026-08-22
 
 ### Added

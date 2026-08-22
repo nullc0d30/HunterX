@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hunterxsec"
-version = "7.1.0"
+version = "7.1.1"
 description = "Enterprise AI-powered security orchestration & intelligence platform: plans, orchestrates, executes, validates, correlates and reports security assessments by integrating open-source security tools."
 readme = "README.md"
 requires-python = ">=3.11"
