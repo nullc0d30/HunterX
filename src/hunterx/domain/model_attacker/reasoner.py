@@ -84,6 +84,19 @@ class ModelReasoner:
         self._model = model
         self._attempts = max(1, attempts)
         self._timeout_s = timeout_s
+        #: Sizes of the most recent model round (for memory telemetry).
+        self._last_prompt_bytes = 0
+        self._last_response_bytes = 0
+
+    @property
+    def last_prompt_bytes(self) -> int:
+        """Return the serialized size of the last prompt sent to the model."""
+        return self._last_prompt_bytes
+
+    @property
+    def last_response_bytes(self) -> int:
+        """Return the raw size of the last model response received."""
+        return self._last_response_bytes
 
     @property
     def available(self) -> bool:
@@ -100,6 +113,7 @@ class ModelReasoner:
         if self._ai is None:
             return ReasonResult(error="no model connected", failure_reason=ModelFailureReason.UNAVAILABLE)
         prompt = build_prompt(context)
+        self._last_prompt_bytes = len(prompt)
         last_error = ""
         last_raw = ""
         for _ in range(self._attempts):
@@ -111,6 +125,7 @@ class ModelReasoner:
                 last_raw = ""
                 continue
             latency = int((time.monotonic() - started) * 1000)
+            self._last_response_bytes = len(str(response))
             hypotheses, rejected_or_error = _parse_hypotheses(response, context)
             if hypotheses is not None:
                 return ReasonResult(hypotheses=hypotheses, rejected=rejected_or_error, invoked=True, latency_ms=latency, raw=response)

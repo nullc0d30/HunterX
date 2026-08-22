@@ -94,6 +94,53 @@ class ResourceGovernor:
         self._last_log_ts = 0.0
         self._budget_mb = self._derive_budget_mb()
         self._ceiling_mb = self._derive_ceiling_mb()
+        #: Background sampling watchdog (optional). Started by
+        #: :meth:`start_monitoring`; keeps the resource state current even while
+        #: the main thread is busy inside a single blocking operation, so a
+        #: runaway can be detected between explicit evaluation points.
+        self._watchdog_thread: threading.Thread | None = None
+        self._watchdog_stop = threading.Event()
+
+    # -- watchdog -----------------------------------------------------------------
+
+    def start_monitoring(self) -> None:
+        """Start the background sampling watchdog (daemon thread).
+
+        Samples the process tree every ``watchdog_interval_s`` and updates the
+        resource state. Disabled when the configured interval is ``0``. Safe to
+        call multiple times (idempotent).
+        """
+        if self._config.watchdog_interval_s <= 0:
+            return
+        if self._watchdog_thread is not None and self._watchdog_thread.is_alive():
+            return
+        self._watchdog_stop.clear()
+        self._watchdog_thread = threading.Thread(
+            target=self._watchdog_loop,
+            name="hunterx-resource-watchdog",
+            daemon=True,
+        )
+        self._watchdog_thread.start()
+
+    def stop_monitoring(self, *, join_s: float = 2.0) -> None:
+        """Stop the background sampling watchdog (best-effort join)."""
+        self._watchdog_stop.set()
+        thread = self._watchdog_thread
+        if thread is not None and thread.is_alive():
+            thread.join(timeout=join_s)
+        self._watchdog_thread = None
+
+    def emergency_raised(self) -> bool:
+        """Return ``True`` when the current resource state is EMERGENCY."""
+        return self.state() is ResourceState.EMERGENCY
+
+    def _watchdog_loop(self) -> None:
+        interval = max(0.05, self._config.watchdog_interval_s)
+        while not self._watchdog_stop.wait(interval):
+            try:
+                self.evaluate()
+            except Exception:  # noqa: BLE001 - the watchdog must never die
+                continue
 
     # -- derived envelope ------------------------------------------------------
 
@@ -149,6 +196,14 @@ class ResourceGovernor:
     def max_probes_per_cycle(self) -> int:
         """Return the max differential probes executed per mission cycle."""
         return self._config.max_probes_per_cycle
+
+    def max_observation_content_bytes(self) -> int:
+        """Return the per-observation content byte cap retained in memory."""
+        return self._config.max_observation_content_bytes
+
+    def max_aggregate_state_bytes(self) -> int:
+        """Return the mission-aggregate byte cap retained in memory."""
+        return self._config.max_aggregate_state_bytes
 
     def environment(self) -> EnvironmentInfo:
         """Return the detected effective environment."""
@@ -335,6 +390,15 @@ class ResourceGovernor:
 
     # -- admission control ------------------------------------------------------------
 
+    def _admission_state(self) -> ResourceState:
+        """Return the live resource state for an admission decision.
+
+        Admission re-samples the process tree (fresh ``evaluate``) rather than
+        using a cached state, so a memory climb that happened inside a long
+        operation is seen the moment the next operation asks for admission.
+        """
+        return self.evaluate()
+
     def admit_tool(
         self,
         *,
@@ -350,7 +414,7 @@ class ResourceGovernor:
         tools are deferred. ``max_tool_concurrency`` is enforced with an active
         count (callers must release with :meth:`release_tool`).
         """
-        state = self.state()
+        state = self._admission_state()
         if state is ResourceState.EMERGENCY:
             return Admission.deny("emergency: memory ceiling reached; no new tool executions")
         if state is ResourceState.CRITICAL:
@@ -378,7 +442,7 @@ class ResourceGovernor:
         CRITICAL/EMERGENCY they are denied, and ``max_model_concurrency`` is
         enforced.
         """
-        state = self.state()
+        state = self._admission_state()
         if state in (ResourceState.EMERGENCY, ResourceState.CRITICAL):
             return Admission.deny(f"{state.value}: stopping new model calls")
         with self._lock:
@@ -400,7 +464,7 @@ class ResourceGovernor:
         Probes are cheap individually but can flood in bulk: under CRITICAL they
         are denied and ``max_probe_concurrency`` bounds simultaneous probes.
         """
-        state = self.state()
+        state = self._admission_state()
         if state in (ResourceState.EMERGENCY, ResourceState.CRITICAL):
             return Admission.deny(f"{state.value}: stopping new probes")
         with self._lock:
@@ -423,7 +487,7 @@ class ResourceGovernor:
         cap so the assessment queue can never consume unbounded RAM when the
         consumers cannot keep up.
         """
-        state = self.state()
+        state = self._admission_state()
         if state in (ResourceState.EMERGENCY, ResourceState.CRITICAL):
             return Admission.deny(f"{state.value}: stopping new assessment scheduling")
         if self._config.max_queue_depth and pending >= self._config.max_queue_depth:

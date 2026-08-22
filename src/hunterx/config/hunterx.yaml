@@ -75,6 +75,17 @@ resource:
   max_model_context_disproven: 200
   max_replan_cycles: 12
   max_probes_per_cycle: 12
+  # Byte-level in-memory bounds (resident memory, not just item counts).
+  max_observation_content_bytes: 262144
+  max_aggregate_state_bytes: 1073741824
+  max_model_context_bytes: 1048576
+  max_services_in_memory: 200
+  max_assets_in_memory: 1000
+  max_technologies_in_memory: 500
+  # Runtime memory instrumentation (JSON-lines telemetry; empty file = disabled).
+  telemetry_file: ""
+  telemetry_tracemalloc: false
   telemetry_interval_s: 5
+  watchdog_interval_s: 1
 
 telemetry_enabled: true

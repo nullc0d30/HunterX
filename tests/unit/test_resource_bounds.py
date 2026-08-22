@@ -16,8 +16,11 @@ from typing import Any
 
 from hunterx.resource.bounds import (
     apply_mission_bounds,
+    content_bytes,
     trim_hypotheses,
     trim_observations,
+    trim_observations_by_bytes,
+    truncate_content,
 )
 from hunterx.resource.config import ResourceConfig
 
@@ -47,6 +50,9 @@ class _Context:
     history: list[Any] = field(default_factory=list)
     endpoints: dict[str, Any] = field(default_factory=dict)
     parameters: dict[str, Any] = field(default_factory=dict)
+    services: dict[str, Any] = field(default_factory=dict)
+    assets: dict[str, Any] = field(default_factory=dict)
+    technologies: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -149,6 +155,46 @@ class TestMissionBounds:
 
     def test_none_mission_is_safe(self) -> None:
         apply_mission_bounds(None, ResourceConfig())
+
+
+class TestByteBounds:
+    def test_content_bytes_is_measured(self) -> None:
+        content = {"blob": "x" * 10000, "ports": list(range(100))}
+        assert content_bytes(content) >= 10000
+
+    def test_truncate_content_caps_serialized_size(self) -> None:
+        content = {"blob": "x" * (1024 * 1024), "ports": list(range(500))}
+        truncated = truncate_content(content, 4096)
+        assert content_bytes(truncated) <= 4096
+        # Keys are preserved (JSON-safe summary, never silent truncation).
+        assert "blob" in truncated
+        assert "ports" in truncated
+
+    def test_truncate_content_keeps_small_payload_unchanged(self) -> None:
+        content = {"a": 1}
+        assert truncate_content(content, 4096) is content
+
+    def test_trim_observations_by_bytes_drops_oldest(self) -> None:
+        class Obs:
+            def __init__(self, content): self.content = content
+        observations = [Obs({"blob": "y" * 2000}) for _ in range(20)]
+        trim_observations_by_bytes(observations, 8000)
+        assert len(observations) < 20
+        assert sum(content_bytes(o.content) for o in observations) <= 8000
+
+    def test_apply_bounds_trims_services_assets_technologies(self) -> None:
+        config = ResourceConfig(max_services_in_memory=5, max_assets_in_memory=5, max_technologies_in_memory=5)
+        mission = _Mission(
+            context=_Context(
+                services={f"s{i}": {"identity": str(i)} for i in range(30)},
+                assets={f"a{i}": {"key": str(i)} for i in range(30)},
+                technologies={f"t{i}": {"key": str(i)} for i in range(30)},
+            )
+        )
+        apply_mission_bounds(mission, config)
+        assert len(mission.context.services) == 5
+        assert len(mission.context.assets) == 5
+        assert len(mission.context.technologies) == 5
 
 
 __all__ = []

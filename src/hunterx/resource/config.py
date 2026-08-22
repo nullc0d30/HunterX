@@ -61,7 +61,21 @@ class ResourceConfig:
     max_model_context_disproven: int = 200
     max_replan_cycles: int = 12
     max_probes_per_cycle: int = 12
+    #: Byte-level in-memory bounds (resident memory, not just item counts).
+    max_observation_content_bytes: int = 262144
+    max_aggregate_state_bytes: int = 1073741824
+    max_model_context_bytes: int = 1048576
+    #: Count bounds for the target-model maps (a single port scan can add
+    #: hundreds of service entries; these maps feed the attack-path analysis).
+    max_services_in_memory: int = 200
+    max_assets_in_memory: int = 1000
+    max_technologies_in_memory: int = 500
+    #: Runtime memory instrumentation.
+    telemetry_file: str = ""
+    telemetry_tracemalloc: bool = False
     telemetry_interval_s: float = 5.0
+    #: Governor background sampling interval (seconds; 0 disables the watchdog).
+    watchdog_interval_s: float = 1.0
 
     @classmethod
     def from_settings(cls, settings: ResourceSettings | None) -> ResourceConfig:
@@ -97,7 +111,16 @@ class ResourceConfig:
             max_model_context_disproven=source.max_model_context_disproven,
             max_replan_cycles=source.max_replan_cycles,
             max_probes_per_cycle=source.max_probes_per_cycle,
+            max_observation_content_bytes=source.max_observation_content_bytes,
+            max_aggregate_state_bytes=source.max_aggregate_state_bytes,
+            max_model_context_bytes=source.max_model_context_bytes,
+            max_services_in_memory=source.max_services_in_memory,
+            max_assets_in_memory=source.max_assets_in_memory,
+            max_technologies_in_memory=source.max_technologies_in_memory,
+            telemetry_file=source.telemetry_file,
+            telemetry_tracemalloc=source.telemetry_tracemalloc,
             telemetry_interval_s=source.telemetry_interval_s,
+            watchdog_interval_s=source.watchdog_interval_s,
         )
 
 

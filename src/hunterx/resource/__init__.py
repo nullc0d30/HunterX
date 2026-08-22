@@ -15,7 +15,14 @@ and usable on 4 GB / 2 CPU environments and never relies on the OOM killer.
 from __future__ import annotations
 
 from hunterx.resource.admission import Admission
-from hunterx.resource.bounds import apply_mission_bounds, keep_recent, trim_generic, trim_hypotheses
+from hunterx.resource.bounds import (
+    apply_mission_bounds,
+    content_bytes,
+    keep_recent,
+    trim_generic,
+    trim_hypotheses,
+    truncate_content,
+)
 from hunterx.resource.config import ResourceConfig, ResourceMetrics, ResourceSettings
 from hunterx.resource.detect import (
     EnvironmentInfo,
@@ -29,11 +36,13 @@ from hunterx.resource.detect import (
 from hunterx.resource.governor import ResourceGovernor
 from hunterx.resource.sampler import ProcessSnapshot, ProcessTreeSampler
 from hunterx.resource.state import ResourceState, state_severity
+from hunterx.resource.telemetry import MissionMemoryProbe, TelemetryLog
 
 __all__ = [
     "Admission",
     "EnvironmentInfo",
     "EnvironmentKind",
+    "MissionMemoryProbe",
     "ProcessSnapshot",
     "ProcessTreeSampler",
     "ResourceConfig",
@@ -41,7 +50,9 @@ __all__ = [
     "ResourceMetrics",
     "ResourceSettings",
     "ResourceState",
+    "TelemetryLog",
     "apply_mission_bounds",
+    "content_bytes",
     "describe_environment",
     "detect_cgroup_memory",
     "detect_cpu_quota",
@@ -51,4 +62,5 @@ __all__ = [
     "state_severity",
     "trim_generic",
     "trim_hypotheses",
+    "truncate_content",
 ]

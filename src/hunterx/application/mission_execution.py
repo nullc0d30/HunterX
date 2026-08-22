@@ -337,6 +337,12 @@ class MissionExecutionService:
         #: concurrency, the process tree is accounted and terminated on an
         #: emergency budget stop, and every blocking operation is bounded.
         self._governor = governor
+        #: Runtime memory instrumentation (optional). Records a cross-sectional
+        #: snapshot (process RSS/VmRSS/VmHWM, heap, mission aggregate sizes and
+        #: serialized bytes, model context, governor reading) as JSON-lines.
+        self._memory_probe: Any = None
+        self._telemetry_log: Any = None
+        self._telemetry_last_ts = 0.0
         #: Last governor state observed by the runner (for result reporting).
         self._resource_state: str = "normal"
         #: Per-run replan-scheduling counter (bounded by the governor's
@@ -503,11 +509,13 @@ class MissionExecutionService:
         governor = self._governor
         if governor is not None:
             governor.start_mission(mission_id)
+        self._init_memory_telemetry()
         cycles: list[dict[str, Any]] = []
         idle = 0
         self._parameters = parameters or {}
         self._replan_cycles = 0
         self._resource_state = "normal"
+        self._telemetry_last_ts = 0.0
         self._establish_auth_session(mission_id, parameters)
         self._seed_coverage(mission_id)
         self._record_browser_capability(mission_id)
@@ -583,6 +591,7 @@ class MissionExecutionService:
                         "completion_reason": attacker_step.get("completion_reason", ""),
                     }
                 )
+            self._record_memory_telemetry(mission_id)
             if cycle.get("status") in ("idle", "skipped"):
                 if self._model_attacker is not None and not self._model_attacker.exhausted():
                     idle = 0
@@ -660,6 +669,7 @@ class MissionExecutionService:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
         self._finalize_run(mission_id, stop_condition=finalize_condition)
         self._record_telemetry(mission_id)
+        self._record_memory_telemetry(mission_id)
         if governor is not None:
             governor.end_mission(mission_id)
         mission = self._orchestration.get(mission_id)
@@ -1278,6 +1288,10 @@ class MissionExecutionService:
 
         The raw tool output is treated as data — never as instructions. The
         observation type is derived from the action's capability.
+
+        The content retained in memory is byte-bounded (a summary of the tool
+        output) so one huge tool result can never balloon the mission aggregate;
+        the durable copy is persisted to the system of record.
         """
         output = result.output
         content: dict[str, Any] = {}
@@ -1285,6 +1299,11 @@ class MissionExecutionService:
             content = output.json if isinstance(output.json, dict) else {"value": output.json}
         elif output.stdout:
             content = {"stdout": output.stdout[:20000]}
+        governor = self._governor
+        if governor is not None:
+            from hunterx.resource.bounds import truncate_content
+
+            content = truncate_content(content, governor.max_observation_content_bytes())
         return {
             "observation_type": _OBSERVATION_TYPE.get(capability, "asset"),
             "content": content,
@@ -2983,12 +3002,72 @@ class MissionExecutionService:
 
     # -- resource governance helpers ------------------------------------------
 
+    def _init_memory_telemetry(self) -> None:
+        """Build the runtime memory probe + telemetry log (best-effort)."""
+        governor = self._governor
+        if governor is None:
+            return
+        config = getattr(governor, "_config", None)
+        if config is None:
+            return
+        try:
+            from hunterx.resource.telemetry import MissionMemoryProbe, TelemetryLog
+
+            self._memory_probe = MissionMemoryProbe(heap_enabled=bool(getattr(config, "telemetry_tracemalloc", False)))
+            self._telemetry_log = TelemetryLog(str(getattr(config, "telemetry_file", "") or ""))
+        except Exception:  # noqa: BLE001 - instrumentation must never break a mission
+            self._memory_probe = None
+            self._telemetry_log = None
+
+    def _record_memory_telemetry(self, mission_id: str) -> None:
+        """Record one cross-sectional memory snapshot (throttled, best-effort).
+
+        The snapshot includes the process RSS / VmRSS / VmHWM / VmPeak, the
+        process-tree RSS (the governor's own sampler), the Python heap, the
+        mission aggregate sizes and serialized bytes, the model context and the
+        governor's own measurement taken at the same instant — so the failure
+        class (sampler bug vs. enforcement gap vs. unbounded state) can be
+        determined from data, never guessed.
+        """
+        if self._memory_probe is None or self._telemetry_log is None:
+            return
+        try:
+            import time as _time
+
+            governor = self._governor
+            config = getattr(governor, "_config", None)
+            interval = float(getattr(config, "telemetry_interval_s", 5.0) or 5.0)
+            now = _time.monotonic()
+            if now - self._telemetry_last_ts < interval:
+                return
+            self._telemetry_last_ts = now
+            mission = self._orchestration.get(mission_id)
+            prompt_bytes = 0
+            response_bytes = 0
+            reasoner = getattr(getattr(self._model_attacker, "_reasoner", None), "_ai", None) if self._model_attacker is not None else None
+            if self._model_attacker is not None:
+                reasoner = getattr(self._model_attacker, "_reasoner", None)
+                prompt_bytes = int(getattr(reasoner, "last_prompt_bytes", 0) or 0)
+                response_bytes = int(getattr(reasoner, "last_response_bytes", 0) or 0)
+            record = self._memory_probe.snapshot(
+                mission_id=mission_id,
+                mission=mission,
+                governor=governor,
+                model_attacker=self._model_attacker,
+                prompt_size=prompt_bytes,
+                response_size=response_bytes,
+            )
+            record["phase"] = self._last_phase
+            self._telemetry_log.append(record)
+        except Exception:  # noqa: BLE001 - instrumentation must never break a mission
+            return
+
     def _model_calls_allowed(self) -> bool:
         """Return ``False`` when resource pressure forbids new model calls."""
         governor = self._governor
         if governor is None:
             return True
-        state = governor.state()
+        state = governor.evaluate()
         if state in (ResourceState.CRITICAL, ResourceState.EMERGENCY):
             return False
         return governor.admit_model_call().approved

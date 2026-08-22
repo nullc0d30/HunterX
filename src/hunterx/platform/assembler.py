@@ -458,6 +458,10 @@ def _build_resource_governor(settings: Settings) -> Any:
         unregister_process=governor.unregister_process,
         default_timeout_s=governor.tool_timeout_s,
     )
+    # Background sampling watchdog: keeps the resource state current even while
+    # the main thread is inside a long single operation, so a runaway is
+    # detected between explicit evaluation points (not just at loop boundaries).
+    governor.start_monitoring()
     return governor
 
 
