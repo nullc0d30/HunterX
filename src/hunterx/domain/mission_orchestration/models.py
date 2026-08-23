@@ -437,6 +437,7 @@ class MissionOutcome:
     stop_condition: str = ""
     exhausted_resource: str = ""
     ai_unavailable: bool = False
+    blocked_reason: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to a JSON-safe mapping."""
@@ -456,6 +457,7 @@ class MissionOutcome:
             "stop_condition": self.stop_condition,
             "exhausted_resource": self.exhausted_resource,
             "ai_unavailable": self.ai_unavailable,
+            "blocked_reason": self.blocked_reason,
         }
 
 

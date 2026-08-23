@@ -376,7 +376,12 @@ class TestTermination:
         assert outcome is not None
         assert outcome.objectives_complete is False
         assert outcome.stop_condition != "objectives_complete"
-        assert outcome.stop_condition in ("blocked", "resource_budget_exhausted", "time_budget_exhausted")
+        assert outcome.stop_condition in (
+            "blocked",
+            "no_actionable_work",
+            "resource_budget_exhausted",
+            "time_budget_exhausted",
+        )
         assert result["status"] != "completed"
         assert result["status"] in ("blocked", "exhausted", "failed", "cancelled")
 

@@ -230,6 +230,16 @@ class ModelAttacker:
             return self._completion_reason
         return AttackerCompletion.STOPPED.value
 
+    def model_unavailable(self) -> bool:
+        """Return ``True`` when the model is unavailable/rate-limited.
+
+        True when the latest reasoning round failed with a provider failure
+        (e.g. OpenRouter 429) and set the attacker's completion reason to
+        MODEL_UNAVAILABLE. Used by the mission runner to classify an
+        un-dispatched attacker as AI_UNAVAILABLE (never resource exhaustion).
+        """
+        return self._completion_reason == AttackerCompletion.MODEL_UNAVAILABLE.value
+
     def telemetry(self) -> dict[str, Any]:
         """Return the machine-readable mission telemetry."""
         self._refresh_counts()
