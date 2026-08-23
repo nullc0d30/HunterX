@@ -31,7 +31,7 @@ Package layout follows the ratified Development Bible
 
 from __future__ import annotations
 
-__version__ = "7.1.2"
+__version__ = "7.1.3"
 __author__ = "Ahmed Awad (NullC0d3)"
 __license__ = "Apache-2.0"
 

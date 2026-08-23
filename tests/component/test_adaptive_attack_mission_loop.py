@@ -136,6 +136,7 @@ class TestAdaptiveThrottling:
             StopCondition.COVERAGE_TARGET_ACHIEVED.value,
             StopCondition.ATTACK_SURFACE_EXHAUSTED.value,
             StopCondition.BLOCKED.value,
+            StopCondition.NO_ACTIONABLE_WORK.value,
         )
 
     def test_runner_feeds_feedback_from_observed_status(self) -> None:
@@ -182,4 +183,9 @@ class TestAdaptiveThrottling:
         assert mission.outcome.stop_condition != StopCondition.ATTACK_SURFACE_EXHAUSTED.value
         assert mission.outcome.stop_condition != StopCondition.OBJECTIVES_COMPLETE.value
         assert mission.outcome.stop_condition != StopCondition.COVERAGE_TARGET_ACHIEVED.value
-        assert mission.outcome.stop_condition == StopCondition.BLOCKED.value
+        assert mission.outcome.stop_condition in (
+            StopCondition.BLOCKED.value,
+            StopCondition.NO_ACTIONABLE_WORK.value,
+            StopCondition.AI_UNAVAILABLE.value,
+        )
+        assert mission.outcome.stop_condition != StopCondition.RESOURCE_BUDGET_EXHAUSTED.value

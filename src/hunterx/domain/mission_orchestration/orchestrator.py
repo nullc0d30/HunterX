@@ -495,6 +495,20 @@ class MissionOrchestrator:
                 condition = StopCondition.BLOCKED
         elif condition in _SUCCESS_STOP_CONDITIONS:
             objectives_complete = True
+        # INVARIANT A/B: RESOURCE_BUDGET_EXHAUSTED / TIME_BUDGET_EXHAUSTED may
+        # ONLY be emitted when the corresponding real resource predicate is
+        # true. A resource stop supplied explicitly while no resource is
+        # actually exhausted is a semantic lie (the real regression: 16/1000
+        # executions with 984 remaining reported as resource exhaustion) — it
+        # is downgraded to an honest blocked/no-actionable terminal.
+        if (
+            condition is StopCondition.RESOURCE_BUDGET_EXHAUSTED and not mission.budget.exhausted
+        ) or (
+            condition is StopCondition.TIME_BUDGET_EXHAUSTED and not mission.budget.time_exhausted
+        ):
+            condition = StopCondition.NO_ACTIONABLE_WORK
+        if condition in (StopCondition.BLOCKED, StopCondition.NO_ACTIONABLE_WORK, StopCondition.AI_UNAVAILABLE):
+            objectives_complete = False
         if self.planning is not None:
             if objectives_complete:
                 self._advance_to_completed(mission_id)
@@ -502,10 +516,15 @@ class MissionOrchestrator:
                 self._advance_to_blocked(mission_id)
         if objectives_complete:
             mission.current_phase = MissionPhase.REPORTING
-        elif mission.current_phase is MissionPhase.REPORTING:
+        else:
             # A blocked/incomplete mission is never reported in the reporting
-            # phase: keep the last genuine assessment phase.
-            mission.current_phase = MissionPhase.REASSESSMENT
+            # phase; the phase reflects the (final) planning state, so a
+            # blocked mission is honestly shown as reassessment rather than a
+            # stale reconnaissance.
+            if self.planning is not None:
+                mission.current_phase = self.sync_phase(mission_id)
+            if mission.current_phase in (MissionPhase.REPORTING,):
+                mission.current_phase = MissionPhase.REASSESSMENT
         if mission.runs:
             mission.runs[-1].status = MissionRunStatus.COMPLETED
             mission.runs[-1].finished_at = utcnow_iso()
@@ -537,12 +556,42 @@ class MissionOrchestrator:
             coverage_ratio=mission.coverage_ratio(),
             executions_used=mission.budget.executions_used,
             stop_condition=condition.value,
-            exhausted_resource=mission.budget.exhausted_resource(),
+            exhausted_resource=mission.budget.exhausted_resource() if condition in (StopCondition.RESOURCE_BUDGET_EXHAUSTED, StopCondition.TIME_BUDGET_EXHAUSTED) else "",
             ai_unavailable=_ai_unavailable(mission),
+            blocked_reason=self._blocked_reason(mission, condition),
         )
         self.telemetry.record(mission)
         self._trace_mission(mission, MissionEventType.MISSION_COMPLETED, stop_condition=condition.value)
         return mission
+
+    @staticmethod
+    def _blocked_reason(mission: OrchestratedMission, condition: StopCondition) -> str:
+        """Return an explicit, explainable blocking reason for a non-success terminal.
+
+        INVARIANT F: ``planning_state=blocked`` must be accompanied by a
+        truthful reason distinguishing resource exhaustion, no actionable work,
+        AI unavailability, open-but-undischarged hypotheses, and completion-gate
+        failure.
+        """
+        if condition is StopCondition.RESOURCE_BUDGET_EXHAUSTED:
+            return f"resource_budget_exhausted:{mission.budget.exhausted_resource()}"
+        if condition is StopCondition.TIME_BUDGET_EXHAUSTED:
+            return "time_budget_exhausted"
+        if condition is StopCondition.AI_UNAVAILABLE:
+            return "ai_unavailable: model unavailable/rate-limited and no deterministic work remains"
+        if condition is StopCondition.NO_ACTIONABLE_WORK:
+            unmet = _completion_gate_unmet(mission)
+            if unmet:
+                return f"no_actionable_work: completion contract unmet ({', '.join(unmet)})"
+            return "no_actionable_work: planner has no runnable action and the objective contract is unmet"
+        if condition is StopCondition.BLOCKED:
+            if MissionPolicyEngine._has_open_high_value_hypotheses(mission):
+                return "blocked: open actionable hypotheses could not be discharged (capability unavailable / target not probeable)"
+            unmet = _completion_gate_unmet(mission)
+            if unmet:
+                return f"blocked: completion contract unmet ({', '.join(unmet)})"
+            return "blocked: no actionable work and the objective contract is unmet"
+        return ""
 
     def _advance_to_blocked(self, mission_id: str) -> None:
         """Walk the planning state machine to BLOCKED through legal hops.
@@ -2835,6 +2884,8 @@ _PHASE_BY_PLANNING_STATE: dict[MissionState, MissionPhase] = {
     MissionState.REASSESSMENT: MissionPhase.REASSESSMENT,
     MissionState.REPORTING: MissionPhase.REPORTING,
     MissionState.COMPLETED: MissionPhase.REPORTING,
+    # A blocked mission is honestly shown as reassessment, never a stale phase.
+    MissionState.BLOCKED: MissionPhase.REASSESSMENT,
 }
 
 
@@ -2842,6 +2893,26 @@ _PHASE_BY_PLANNING_STATE: dict[MissionState, MissionPhase] = {
 _OPEN_HYPOTHESIS_STATES = frozenset(
     {"proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior"}
 )
+
+
+def _completion_gate_unmet(mission: OrchestratedMission) -> list[str]:
+    """Return the objective completion-contract gates that are currently unmet.
+
+    Best-effort (never raises): used to produce an explicit blocking reason.
+    """
+    try:
+        from hunterx.domain.mission_orchestration.completion import contract_for_objective
+
+        contract = contract_for_objective(
+            getattr(getattr(mission, "mission", None), "objective", None),
+            coverage_target=float(getattr(mission.policy, "coverage_target", 0.7) or 0.7),
+        )
+        pending_plan_work = any(
+            not action.status.is_terminal for action in mission.mission.graph.actions.values()
+        )
+        return contract.evaluate(mission, pending_plan_work=pending_plan_work).unmet()
+    except Exception:  # noqa: BLE001 - best-effort
+        return []
 
 
 def _ai_unavailable(mission: OrchestratedMission) -> bool:

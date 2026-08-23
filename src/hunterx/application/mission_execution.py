@@ -454,7 +454,7 @@ class MissionExecutionService:
         self,
         mission_id: str,
         *,
-        max_cycles: int = 16,
+        max_cycles: int = 100,
         max_idle_cycles: int = 3,
         parameters: dict[str, Any] | None = None,
         auto_provision: bool = True,
@@ -650,23 +650,35 @@ class MissionExecutionService:
             # A resource-triggered stop is the truthful terminal: it is never
             # converted into success and never into a generic blocked.
             finalize_condition = resource_stop
+        elif self._mission_budget_exhausted(mission_id):
+            # INVARIANT A/B: resource exhaustion is only claimed when the actual
+            # budget predicate is true (execution_exhausted or time_exhausted).
+            finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
         elif self._adaptive_blocked():
             # A persistently blocked target is never "complete" and never a
             # budget problem: report the honest blocked terminal.
-            finalize_condition: StopCondition | None = StopCondition.BLOCKED
-        elif self._model_attacker is not None and not self._model_attacker.exhausted():
-            # A resource ceiling or an unavailable model while work remains is
-            # never reported as completion.
-            finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
-        elif self._open_hypothesis_work_remaining(mission_id):
-            # Open class-specific hypotheses could not be discharged (their
-            # probe capabilities are unavailable or the target is not
-            # probeable). This is an honest blocked terminal — the assessment
-            # is incomplete, the budget is NOT exhausted, and AI availability is
-            # irrelevant to this classification.
             finalize_condition = StopCondition.BLOCKED
+        elif self._open_hypothesis_work_remaining(mission_id):
+            # Open actionable hypotheses could not be discharged (their probe
+            # capabilities are unavailable or the target is not probeable).
+            finalize_condition = StopCondition.BLOCKED
+        elif self._model_attacker is not None and not self._model_attacker.exhausted():
+            # The model attacker still holds un-dispatched work (typically
+            # rate-limited / unavailable while the deterministic side has no
+            # further actionable work). This is NEVER resource exhaustion:
+            # classify it as AI_UNAVAILABLE when the model is the blocker,
+            # otherwise NO_ACTIONABLE_WORK.
+            if self._model_attacker.model_unavailable():
+                finalize_condition = StopCondition.AI_UNAVAILABLE
+            else:
+                finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         else:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
+            if finalize_condition is None:
+                # Plan exhausted, nothing actionable, contract unmet (or met and
+                # finalized as complete) — an incomplete run with no runnable
+                # action is NO_ACTIONABLE_WORK, never resource exhaustion.
+                finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         self._finalize_run(mission_id, stop_condition=finalize_condition)
         self._record_telemetry(mission_id)
         self._record_memory_telemetry(mission_id)
@@ -3123,6 +3135,21 @@ class MissionExecutionService:
             return self._replan_cycles < self._default_replan_budget()
         return governor.replan_budget(mission_id) > 0
 
+    def _mission_budget_exhausted(self, mission_id: str) -> bool:
+        """Return ``True`` when a real mission resource budget is exhausted.
+
+        Authoritative resource-exhaustion predicate: the execution budget
+        (``executions_used >= executions_budget``) or the wall-clock budget
+        (``time_budget_seconds > 0`` and exceeded). A mission with 984 of 1000
+        executions remaining is NOT exhausted — no caller may claim
+        ``resource_budget_exhausted`` for it.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        return bool(mission.budget.exhausted)
+
     def _consume_replan(self, mission_id: str) -> bool:
         """Consume one replan-scheduling slot; ``False`` when exhausted."""
         self._replan_cycles += 1
@@ -3305,8 +3332,12 @@ def _run_status(mission: Any, preflight: Any | None) -> str:
         "time_budget_exhausted",
     ):
         return "degraded"
-    if stop_condition in ("resource_budget_exhausted",):
+    if stop_condition in (
+        "resource_budget_exhausted",
+    ):
         return "exhausted"
+    if stop_condition in ("no_actionable_work", "ai_unavailable", "blocked"):
+        return "blocked"
     if stop_condition == "unrecoverable_failure":
         return "failed"
     if stop_condition == "operator_cancelled":

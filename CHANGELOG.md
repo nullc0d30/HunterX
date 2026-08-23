@@ -9,6 +9,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.3] — 2026-08-22
+
+### Fixed
+
+- **False `resource_budget_exhausted` (the reference regression).** A real
+  `full_security_assessment` with a wired OpenRouter free model reached
+  `stop_condition=resource_budget_exhausted` while the persisted budget showed
+  `executions_used=16 / executions_budget=1000 / execution_remaining=984 /
+  execution_exhausted=false / time_exhausted=false`. Root cause: the mission
+  runner mapped "model attacker has not reached genuine exhaustion" to
+  `RESOURCE_BUDGET_EXHAUSTED`. A rate-limited free model (HTTP 429) sets the
+  attacker's completion reason to `MODEL_UNAVAILABLE`, so `exhausted()` stays
+  `False` forever (its `no_new_paths` predicate requires the last reason to be
+  `empty`) — every mission with a 429ing model then terminated as "resource
+  exhaustion" regardless of the real budget. Fixes:
+  - `RESOURCE_BUDGET_EXHAUSTED` (and `TIME_BUDGET_EXHAUSTED`) are now emitted
+    **only** when the corresponding real resource predicate is true
+    (`mission.budget.exhausted` / `time_exhausted`). An explicit resource stop
+    with no exhausted resource is downgraded to an honest terminal (INVARIANTS
+    A/B).
+  - The runner's post-loop resolution checks the authoritative budget first,
+    and maps the model-attacker-still-pending case to a truthful terminal:
+    `AI_UNAVAILABLE` when the model is unavailable/rate-limited, otherwise
+    `NO_ACTIONABLE_WORK`.
+- **Explicit blocked terminals.** New stop conditions `NO_ACTIONABLE_WORK` and
+  `AI_UNAVAILABLE` distinguish "planner has no runnable action and the
+  objective contract is unmet" and "the only remaining work is an unavailable
+  model" from genuine resource exhaustion. Every blocked terminal now carries a
+  structured `blocked_reason` on the mission outcome (e.g.
+  `no_actionable_work: completion contract unmet (no_actionable_open_hypotheses,
+  active_testing)`), satisfying the invariant that `planning_state=blocked` must
+  have an explicit reason.
+- **Phase consistency (INVARIANT G).** A blocked mission now maps to the
+  `reassessment` phase (added `BLOCKED → REASSESSMENT` to the planning-state →
+  phase map) so `current_phase` never remains stale (the regression showed
+  `reconnaissance`) after the planning state became `blocked`. The runner no
+  longer walks into `REPORTING`/`COMPLETED` during execution, and `finalize`
+  sets the phase from the final planning state.
+- **Free-model continuation.** The default mission cycle ceiling was raised from
+  16 to 100 so a full assessment is not truncated mid-hunt by the cycle cap
+  (the execution budget of 1000 remains the real bound; `max_idle_cycles`
+  still terminates idle runs).
+- **OpenRouter 429 cooldown/fallback preserved** — a rate-limited model keeps
+  its shared cooldown and deterministic fallback, and now explicitly terminates
+  as `AI_UNAVAILABLE` (never resource exhaustion, never completion).
+
+### Added
+
+- `MissionOutcome.blocked_reason` — the explicit, explainable reason for every
+  non-success terminal.
+- Tool-execution accounting clarified: `mission.context.tool_executions`
+  records every execution *entry* (budgeted tool executions + differential
+  probe executions), while `budget.executions_used` is the authoritative
+  **budgeted** unit. The resource budget consumes only budgeted executions;
+  probes are bounded by the governor's probe caps, never by (nor exhausted via)
+  the execution budget.
+- Regression suite (`tests/integration/test_mission_resource_exhaustion_regression.py`,
+  11 tests) covering: budget-with-984-remaining is not exhausted; an explicit
+  resource stop with no exhausted resource is downgraded; real execution/time
+  exhaustion reports the resource; a rate-limited model never emits resource
+  exhaustion and never falsely completes; tool failure is not resource
+  exhaustion; deferred hypotheses do not masquerade as completion; and report
+  JSON internal consistency (INVARIANTS A–H).
+- `scripts/demo_resource_exhaustion_fix.py` — behavioral acceptance demo of the
+  rate-limited-model regression.
+
+---
+
 ## [7.1.2] — 2026-08-22
 
 ### Fixed

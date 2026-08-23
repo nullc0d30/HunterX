@@ -148,6 +148,19 @@ class StopCondition(StrEnum):
     RESOURCE_PRESSURE = "resource_pressure"
     MISSION_DEADLINE_EXCEEDED = "mission_deadline_exceeded"
 
+    # -- explicit blocked terminals -----------------------------------------
+    # ``RESOURCE_BUDGET_EXHAUSTED`` may ONLY be emitted when a real resource
+    # exhaustion predicate is true. When the planner/runtime cannot continue for
+    # a *non-resource* reason, the terminal is one of these explicit blocked
+    # conditions with a truthful ``blocked_reason`` on the outcome:
+    # ``NO_ACTIONABLE_WORK`` (no runnable action, no pending plan work, no
+    # actionable open hypothesis and the completion contract is unmet) and
+    # ``AI_UNAVAILABLE`` (the only remaining un-dispatched work is the model
+    # attacker, which is unavailable/rate-limited while the deterministic side
+    # has no further actionable work). Neither is ever reported as success.
+    NO_ACTIONABLE_WORK = "no_actionable_work"
+    AI_UNAVAILABLE = "ai_unavailable"
+
 
 class NegativeEvidenceKind(StrEnum):
     """Bounded negative-evidence categories.
