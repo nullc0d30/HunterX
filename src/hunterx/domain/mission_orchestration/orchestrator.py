@@ -537,6 +537,9 @@ class MissionOrchestrator:
         resolved = sum(
             1 for hypothesis in mission.hypotheses if hypothesis.state.is_terminal
         )
+        deferred = sum(
+            1 for hypothesis in mission.hypotheses if hypothesis.state.is_classified
+        )
         mission.outcome = MissionOutcome(
             mission_id=mission_id,
             phase=mission.current_phase.value,
@@ -544,6 +547,7 @@ class MissionOrchestrator:
             findings_validated=validated,
             findings_report_ready=report_ready,
             hypotheses_resolved=resolved,
+            hypotheses_deferred=deferred,
             hypotheses_open=sum(
                 1 for hypothesis in mission.hypotheses if hypothesis.state.value in _OPEN_HYPOTHESIS_STATES
             ),
@@ -577,6 +581,8 @@ class MissionOrchestrator:
             return f"resource_budget_exhausted:{mission.budget.exhausted_resource()}"
         if condition is StopCondition.TIME_BUDGET_EXHAUSTED:
             return "time_budget_exhausted"
+        if condition is StopCondition.CYCLE_CEILING_REACHED:
+            return "cycle_ceiling_reached: operational cycle limit reached with budget remaining"
         if condition is StopCondition.AI_UNAVAILABLE:
             return "ai_unavailable: model unavailable/rate-limited and no deterministic work remains"
         if condition is StopCondition.NO_ACTIONABLE_WORK:
@@ -1556,9 +1562,56 @@ class MissionOrchestrator:
                         finding_id=finding["finding_id"],
                     )
                     return merged
+        # When a finding is promoted to a validated state, link its evidence
+        # and record proof in the mission context for tracking.
+        if stage_value in ("verified", "proven", "report_ready"):
+            self._link_finding_evidence(mission, finding)
         mission.context.findings.append(finding)
         self._trace_mission(mission, MissionEventType.MISSION_FINDING_CREATED, finding_id=finding["finding_id"])
         return finding
+
+    def _link_finding_evidence(self, mission: OrchestratedMission, finding: dict[str, Any]) -> None:
+        """Link finding evidence to the mission context's evidence/proofs dicts.
+
+        Validated findings must have their evidence and proof tracked in the
+        mission context so the aggregate counts (evidence_count, proof_count)
+        are accurate and internally consistent.
+        """
+        finding_id = finding.get("finding_id")
+        evidence_refs = finding.get("evidence_refs", [])
+        vulnerability_class = finding.get("vulnerability_class", "unknown")
+        asset_key = finding.get("asset_key", "")
+        stage = finding.get("stage", "")
+
+        # Link each evidence reference (observation ID) to the finding in evidence dict
+        for obs_id in evidence_refs:
+            obs = mission.observation(obs_id)
+            if obs is None:
+                continue
+            key = f"finding:{finding_id}:{obs_id}"
+            mission.context.evidence[key] = {
+                "finding_id": finding_id,
+                "observation_id": obs_id,
+                "vulnerability_class": vulnerability_class,
+                "asset_key": asset_key,
+                "stage": stage,
+                "observation_type": obs.observation_type,
+                "confidence": obs.confidence,
+                "recorded_at": utcnow_iso(),
+            }
+
+        # Record proof entry for the finding
+        proof_key = f"proof:{finding_id}"
+        if proof_key not in mission.context.proofs:
+            mission.context.proofs[proof_key] = {
+                "finding_id": finding_id,
+                "vulnerability_class": vulnerability_class,
+                "asset_key": asset_key,
+                "stage": stage,
+                "evidence_refs": list(evidence_refs),
+                "proof_depth": finding.get("proof_depth", "minimal"),
+                "created_at": utcnow_iso(),
+            }
 
     # -- checkpoints ----------------------------------------------------------
 

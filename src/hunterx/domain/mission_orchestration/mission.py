@@ -250,6 +250,50 @@ class OrchestratedMission:
         assessed = sum(1 for cell in cells if not cell.state.uncovered())
         return round(assessed / len(cells), 4)
 
+    def mandatory_coverage_satisfied(self) -> tuple[bool, list[str]]:
+        """Check if all mandatory coverage dimensions for the objective are satisfied.
+
+        For ``full_security_assessment``, mandatory dimensions are:
+        - recon: must be > 0 (at least some recon performed)
+        - attack_surface: must be > 0
+        - hypothesis: must have actionable hypotheses settled
+        - active_test: must have at least some active testing if probeable surface exists
+        - validation: must have findings validated if hypotheses supported
+        - browser: must be explicitly TESTED or classified with notes
+
+        Returns ``(satisfied, unmet_dimensions)``.
+        """
+        dims = self.coverage_dimensions()
+        unmet = []
+
+        # Recon must have some coverage
+        if dims["recon"]["coverage"] == 0.0:
+            unmet.append("recon")
+
+        # Attack surface must have some coverage
+        if dims["attack_surface"]["coverage"] == 0.0:
+            unmet.append("attack_surface")
+
+        # Hypothesis dimension: check actionable hypotheses are settled
+        # (This is gated by the completion contract's no_actionable_open_hypotheses gate)
+        # The hypothesis "coverage" in dimensions is settled/total, but we need
+        # to check if actionable ones are settled via the completion contract.
+
+        # Active testing: if probeable surface exists, must have some active testing
+        if dims["active_test"]["cells"] > 0 and dims["active_test"]["coverage"] == 0.0:
+            unmet.append("active_test")
+
+        # Validation: if applicable, must have findings validated
+        if dims["validation"]["cells"] > 0 and dims["validation"]["coverage"] == 0.0:
+            unmet.append("validation")
+
+        # Browser: must be explicitly TESTED or classified
+        browser_state = dims["browser"]["state"]
+        if browser_state == "not_assessed":
+            unmet.append("browser")
+
+        return len(unmet) == 0, unmet
+
     def coverage_cells(self) -> list[CoverageCellState]:
         """Return all coverage cells."""
         return [cell for asset in self.coverage.values() for cell in asset.values()]

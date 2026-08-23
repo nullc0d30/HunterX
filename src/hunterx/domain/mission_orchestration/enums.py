@@ -57,11 +57,35 @@ class HypothesisState(StrEnum):
 
     @property
     def is_terminal(self) -> bool:
-        """Return ``True`` for states that end a hypothesis lifecycle."""
+        """Return ``True`` for states that end a hypothesis lifecycle.
+
+        TERMINAL states (VALIDATED, DISPROVED, REFUTED) represent settled
+        security conclusions established by evidence.
+
+        CLASSIFIED states (DEFERRED, BLOCKED) are explicitly marked as
+        not-testable-now with a recorded reason. They are NOT settled by
+        evidence and must not be counted as resolved. An assessment with
+        deferred/blocked hypotheses is reported as partial/blocked.
+        """
         return self in (
             HypothesisState.VALIDATED,
             HypothesisState.DISPROVED,
             HypothesisState.REFUTED,
+        )
+
+    @property
+    def is_classified(self) -> bool:
+        """Return ``True`` for explicitly classified non-actionable states.
+
+        DEFERRED: acknowledged but not tested now (capability unavailable,
+        budget priority, out of scope) with a recorded reason.
+
+        BLOCKED: actionable but cannot be probed under current policy
+        (capability unavailable / target not probeable).
+
+        These are NOT settled by evidence and must not be counted as resolved.
+        """
+        return self in (
             HypothesisState.DEFERRED,
             HypothesisState.BLOCKED,
         )
@@ -160,6 +184,13 @@ class StopCondition(StrEnum):
     # has no further actionable work). Neither is ever reported as success.
     NO_ACTIONABLE_WORK = "no_actionable_work"
     AI_UNAVAILABLE = "ai_unavailable"
+
+    # -- operational limits ---------------------------------------------------
+    # The mission runner's cycle ceiling was reached. This is NOT resource
+    # exhaustion — it is an operational ceiling that may be hit while budgets
+    # remain. It must be reported distinctly so operators can distinguish
+    # "we ran out of cycles" from "we ran out of budget".
+    CYCLE_CEILING_REACHED = "cycle_ceiling_reached"
 
 
 class NegativeEvidenceKind(StrEnum):
