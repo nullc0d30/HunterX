@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 import sqlalchemy.event
+from sqlalchemy import JSON, inspect
 
 from hunterx.infrastructure.db.sql.tidb_models import (
     AuditEventModel,
@@ -85,8 +86,6 @@ def _before_snapshot(row: TidbModelMixin) -> dict[str, object]:
 
 def inspect_safe(row: TidbModelMixin) -> Any:
     """Return the SQLAlchemy inspection state for a row."""
-    from sqlalchemy import inspect
-
     return inspect(row)
 
 
@@ -303,4 +302,40 @@ def install_versioning(session_factory: Any, **kwargs: object) -> VersioningList
     """Create and attach a :class:`VersioningListener` to a session factory."""
     listener = VersioningListener(**kwargs)
     listener.install(session_factory)
+    # Also install a JSON sanitization listener that runs before every flush
+    # to guarantee all JSON/JSONB column values are JSON-safe before the
+    # engine serializer runs. This is a defense-in-depth measure.
+    _install_json_sanitizer(session_factory)
     return listener
+
+
+def _sanitize_json_columns(session: Any, _flush_context: Any, _instances: Any) -> None:
+    for obj in list(session.new) + list(session.dirty):
+        if not isinstance(obj, TidbModelMixin):
+            continue
+        # Skip audit models to avoid recursion
+        if isinstance(obj, _AUDIT_MODEL_CLASSES):
+            continue
+        for column in obj.__table__.columns:
+            if isinstance(column.type, JSON):
+                key = column.key
+                value = getattr(obj, key, None)
+                if value is not None:
+                    sanitized = to_json_safe(value)
+                    if sanitized is not value:
+                        setattr(obj, key, sanitized)
+
+
+def _install_json_sanitizer(session_factory: Any) -> None:
+    """Install a before_flush listener that sanitizes all JSON/JSONB column values.
+
+    This runs before every flush and ensures that any JSON/JSONB column values
+    on new or dirty TIDB model instances are JSON-safe. This is a defense-in-
+    depth measure that catches any non-JSON-native objects (parser tokens,
+    dataclasses, enums, datetimes, UUIDs, paths, ...) before they reach the
+    engine's JSON serializer or the versioning listener's snapshot logic.
+    """
+    import sqlalchemy.event
+
+    session_maker = getattr(session_factory, "_session_factory", session_factory)
+    sqlalchemy.event.listen(session_maker, "before_flush", _sanitize_json_columns)

@@ -275,9 +275,10 @@ def test_full_mission_with_js_token_observations_never_crashes(tmp_path) -> None
         result = runner.run(mission.mission_id, max_cycles=12, max_idle_cycles=4)
 
         # The mission reached a truthful terminal state without a persistence
-        # crash ('blocked' is an honest terminal for fake tool outputs under
-        # the v7.1.3 lifecycle semantics).
-        assert result["status"] in ("completed", "stopped", "blocked")
+        # crash. With fake tool outputs, the mission hits the cycle ceiling
+        # (max_cycles=12) which is an operational ceiling, not resource exhaustion.
+        # This correctly maps to 'degraded' status.
+        assert result["status"] in ("completed", "stopped", "blocked", "degraded")
 
         # Observations carrying tokens were persisted.
         with factory.session() as session:

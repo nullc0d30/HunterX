@@ -530,7 +530,10 @@ class MissionExecutionService:
                     adaptive=self._adaptive_attack,
                 )
         resource_stop: StopCondition | None = None
+        cycle_ceiling_reached = False
+        cycles_run = 0
         for _ in range(1, max_cycles + 1):
+            cycles_run += 1
             if governor is not None:
                 state = governor.evaluate()
                 self._resource_state = state.value
@@ -645,11 +648,20 @@ class MissionExecutionService:
                 self._model_attacker is None or self._model_attacker.exhausted()
             ):
                 break
+        # Track if the cycle ceiling was reached (completed all max_cycles iterations
+        # without breaking early). This is NOT resource exhaustion — it's an
+        # operational ceiling that operators should be aware of.
+        if cycles_run == max_cycles and resource_stop is None:
+            cycle_ceiling_reached = True
         surface_report = self._surface_exhaustion_report(mission_id)
         if resource_stop is not None:
             # A resource-triggered stop is the truthful terminal: it is never
             # converted into success and never into a generic blocked.
             finalize_condition = resource_stop
+        elif cycle_ceiling_reached:
+            # The cycle ceiling was reached with budget remaining. This is an
+            # operational ceiling, NOT resource exhaustion. Report it distinctly.
+            finalize_condition = StopCondition.CYCLE_CEILING_REACHED
         elif self._mission_budget_exhausted(mission_id):
             # INVARIANT A/B: resource exhaustion is only claimed when the actual
             # budget predicate is true (execution_exhausted or time_exhausted).
@@ -663,14 +675,21 @@ class MissionExecutionService:
             # capabilities are unavailable or the target is not probeable).
             finalize_condition = StopCondition.BLOCKED
         elif self._model_attacker is not None and not self._model_attacker.exhausted():
-            # The model attacker still holds un-dispatched work (typically
-            # rate-limited / unavailable while the deterministic side has no
-            # further actionable work). This is NEVER resource exhaustion:
-            # classify it as AI_UNAVAILABLE when the model is the blocker,
-            # otherwise NO_ACTIONABLE_WORK.
+            # The model attacker still holds un-dispatched work.
+            # AI_UNAVAILABLE is ONLY valid when the model is the ONLY remaining
+            # actionable work. If deterministic work remains (open actionable
+            # hypotheses, pending surface work, browser gap, attack paths),
+            # the mission must continue or be BLOCKED/NO_ACTIONABLE_WORK.
             if self._model_attacker.model_unavailable():
-                finalize_condition = StopCondition.AI_UNAVAILABLE
+                if self._deterministic_work_remaining(mission_id):
+                    # Deterministic work exists - don't terminate as AI_UNAVAILABLE
+                    # Classify based on what's actually blocked
+                    finalize_condition = StopCondition.BLOCKED
+                else:
+                    # ONLY model-dependent work remains and model is unavailable
+                    finalize_condition = StopCondition.AI_UNAVAILABLE
             else:
+                # Model attacker not exhausted but not unavailable either
                 finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         else:
             finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
@@ -2531,6 +2550,105 @@ class MissionExecutionService:
             return True
         return False
 
+    def _deterministic_work_remaining(self, mission_id: str) -> bool:
+        """Return ``True`` when deterministic (non-model) work remains.
+
+        This checks for:
+        - Open actionable hypotheses (class-specific, high-priority) that could be probed
+        - Pending web discovery actions (endpoints, parameters, javascript analysis)
+        - Browser testing gap (browser_testing NOT_ASSESSED without explicit classification)
+        - Attack surface not evaluated (attack paths, surface relationships)
+        - Validation gap (supported hypotheses without findings, findings without validation)
+        - Pending plan work (discovery actions not yet run)
+
+        This is used to determine if AI_UNAVAILABLE is the ONLY remaining work,
+        or if deterministic work can continue without the model.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+
+        # 1. Check for open actionable hypotheses (same logic as _open_hypothesis_work_remaining)
+        if self._open_hypothesis_work_remaining(mission_id):
+            return True
+
+        # 2. Check for pending web discovery actions (crawler, javascript, api mapping)
+        if self._has_pending_web_discovery(mission_id):
+            return True
+
+        # 3. Check browser gap - NOT_ASSESSED without explicit classification
+        browser_cell = mission.coverage_cell(
+            mission.context.target_id or "target", "browser_testing"
+        )
+        if browser_cell is not None and browser_cell.state.value == "not_assessed":
+            notes = str(getattr(browser_cell, "notes", "") or "")
+            if not notes:  # No explicit classification recorded
+                return True
+
+        # 4. Check attack surface evaluation gap
+        if self._has_attack_surface_gap(mission):
+            return True
+
+        # 5. Check validation gap (supported hypotheses without findings, findings without validation)
+        if self._has_validation_gap(mission):
+            return True
+
+        # 6. Check pending plan work (non-hypothesis-bound actions)
+        return self._has_pending_plan_work(mission_id)
+
+    def _has_pending_web_discovery(self, mission_id: str) -> bool:
+        """Check for pending web discovery actions in the plan."""
+        try:
+            graph = self._planning.get_plan(mission_id)
+        except Exception:
+            return False
+        discovery_caps = {"endpoint_enumeration", "content_discovery", "javascript_analysis", "api_mapping", "parameter_discovery"}
+        return any(
+            action.status in (ActionStatus.PROPOSED, ActionStatus.APPROVED, ActionStatus.RUNNING)
+            and action.capability in discovery_caps
+            for action in graph.actions.values()
+        )
+
+    def _has_attack_surface_gap(self, mission: Any) -> bool:
+        """Check if attack surface dimension was never evaluated."""
+        # Attack paths or surface relationships must exist if services/endpoints exist
+        surface_exists = bool(getattr(mission.context, "services", None)) or bool(
+            getattr(mission.context, "endpoints", None)
+        )
+        if not surface_exists:
+            return False
+        evaluated = bool(getattr(mission.context, "attack_paths", None)) or bool(
+            getattr(mission.context, "surface_relationships", None)
+        )
+        return not evaluated
+
+    def _has_validation_gap(self, mission: Any) -> bool:
+        """Check if validation dimension has unexercised work."""
+        findings = getattr(mission.context, "findings", None) or []
+        supported = [
+            hypothesis
+            for hypothesis in mission.hypotheses
+            if hypothesis.state.value in ("supported", "validated")
+        ]
+        applicable = bool(findings) or bool(supported)
+        if not applicable:
+            return False
+        return not findings  # supported hypothesis with no validation/finding recorded
+
+    def _has_pending_plan_work(self, mission_id: str) -> bool:
+        """Return ``True`` when the plan still holds untested discovery work."""
+        try:
+            graph = self._planning.get_plan(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        return any(
+            action.status in (ActionStatus.PROPOSED, ActionStatus.APPROVED, ActionStatus.RUNNING)
+            and not action.hypothesis_id
+            for action in graph.actions.values()
+        )
+
     def _schedule_hypothesis_probes(self, mission_id: str) -> bool:
         """Deterministically schedule targeted probes for open hypotheses.
 
@@ -3330,6 +3448,7 @@ def _run_status(mission: Any, preflight: Any | None) -> str:
         "resource_pressure",
         "mission_deadline_exceeded",
         "time_budget_exhausted",
+        "cycle_ceiling_reached",
     ):
         return "degraded"
     if stop_condition in (

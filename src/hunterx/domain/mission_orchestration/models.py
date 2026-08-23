@@ -428,6 +428,7 @@ class MissionOutcome:
     findings_validated: int = 0
     findings_report_ready: int = 0
     hypotheses_resolved: int = 0
+    hypotheses_deferred: int = 0
     hypotheses_open: int = 0
     probes_executed: int = 0
     attack_paths_discovered: int = 0
@@ -448,6 +449,7 @@ class MissionOutcome:
             "findings_validated": self.findings_validated,
             "findings_report_ready": self.findings_report_ready,
             "hypotheses_resolved": self.hypotheses_resolved,
+            "hypotheses_deferred": self.hypotheses_deferred,
             "hypotheses_open": self.hypotheses_open,
             "probes_executed": self.probes_executed,
             "attack_paths_discovered": self.attack_paths_discovered,

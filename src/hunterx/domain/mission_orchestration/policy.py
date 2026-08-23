@@ -204,22 +204,16 @@ class MissionPolicyEngine:
 
         A mission with no high-value hypotheses is NOT considered complete by
         this condition (the condition only fires when there was real work).
+
+        RESOLVED means terminal by evidence (VALIDATED/DISPROVED/REFUTED).
+        DEFERRED/BLOCKED are explicitly classified and do NOT count as resolved.
         """
         high_value = [
             hypothesis for hypothesis in mission.hypotheses if MissionPolicyEngine._is_high_value(hypothesis)
         ]
         if not high_value:
             return False
-        return all(
-            hypothesis.state.value not in (
-                "proposed",
-                "supported",
-                "weakly_supported",
-                "inconclusive",
-                "novel_behavior",
-            )
-            for hypothesis in high_value
-        )
+        return all(hypothesis.state.is_terminal for hypothesis in high_value)
 
     @staticmethod
     def _has_open_high_value_hypotheses(mission: OrchestratedMission) -> bool:

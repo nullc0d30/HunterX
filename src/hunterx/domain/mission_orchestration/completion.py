@@ -273,6 +273,19 @@ class MissionCompletionContract:
             )
         )
 
+        # Mandatory coverage dimensions gate - prevents aggregate coverage
+        # from hiding unassessed mandatory dimensions
+        mandatory_satisfied, unmet = mission.mandatory_coverage_satisfied()
+        gates.append(
+            CompletionGate(
+                "mandatory_dimensions",
+                mandatory_satisfied,
+                "all mandatory coverage dimensions satisfied"
+                if mandatory_satisfied
+                else f"mandatory dimensions unmet: {', '.join(unmet)}",
+            )
+        )
+
         gates.append(_active_testing_gate(mission))
         gates.append(_validation_gate(mission))
         gates.append(_browser_gate(mission))

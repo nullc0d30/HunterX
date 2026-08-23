@@ -178,11 +178,13 @@ class TestResourceExhaustionIsTruthful:
         assert outcome.stop_condition != StopCondition.RESOURCE_BUDGET_EXHAUSTED.value
         assert outcome.stop_condition != StopCondition.TIME_BUDGET_EXHAUSTED.value
         assert outcome.exhausted_resource == ""
-        # It is an explicit blocked terminal with a truthful reason.
+        # It is an explicit blocked/degraded terminal with a truthful reason.
+        # CYCLE_CEILING_REACHED is also acceptable when max_cycles is hit.
         assert outcome.stop_condition in (
             StopCondition.AI_UNAVAILABLE.value,
             StopCondition.NO_ACTIONABLE_WORK.value,
             StopCondition.BLOCKED.value,
+            StopCondition.CYCLE_CEILING_REACHED.value,
         )
 
 
@@ -230,6 +232,7 @@ class TestNoFalseCompletion:
         assert outcome.stop_condition in (
             StopCondition.NO_ACTIONABLE_WORK.value,
             StopCondition.BLOCKED.value,
+            StopCondition.CYCLE_CEILING_REACHED.value,
         )
         assert outcome.stop_condition != StopCondition.RESOURCE_BUDGET_EXHAUSTED.value
         assert mission.budget.execution_exhausted is False
