@@ -51,6 +51,15 @@ class AIPort(abc.ABC):
     def embed(self, text: str) -> list[float]:
         """Return the embedding vector for ``text``."""
 
+    @abc.abstractmethod
+    def check(self) -> bool:
+        """Return ``True`` when the provider is reachable and the model is available.
+
+        This performs a lightweight health check (e.g., listing available models)
+        to validate connectivity and model availability without consuming a full
+        chat completion.
+        """
+
 
 class TelemetryPort(abc.ABC):
     """Metrics, tracing and logging export contract."""

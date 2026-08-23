@@ -85,6 +85,7 @@ def register_default_commands(app: CliApplication, platform: Any | None = None) 
     app.registry.register("help", _help, help_text="Show command help")
     app.registry.register("config", _config, help_text="Show resolved configuration")
     app.registry.register("platform", _platform, help_text="Show platform composition status")
+    _register_ai_commands(app, platform)
     _register_adaptive_mission_commands(app, platform)
     _register_mission_orchestration_commands(app, platform)
     _register_hunt_commands(app, platform)
@@ -101,6 +102,132 @@ def _require_finding_id(argv: list[str]) -> str:
         raise SystemExit("usage: hunterx finding <command> <finding_id>")
     return argv[0]
 
+
+def _register_ai_commands(app: CliApplication, platform: Any) -> None:
+    """Register AI provider commands.
+
+    Commands: ``ai check`` (health check), ``ai models`` (list available models),
+    ``ai status`` (show provider status and configuration).
+    """
+
+    def _ai_check(argv: list[str]) -> int:
+        """Perform AI provider health check."""
+        ai_settings = platform.ai_settings
+        if not ai_settings or not ai_settings.provider:
+            print("AI provider not configured")
+            return 1
+
+        # Build AI client from settings
+        from hunterx.infrastructure.ai.factory import build_ai_client
+
+        try:
+            client = build_ai_client(ai_settings)
+        except Exception as exc:
+            print(f"Failed to build AI client: {exc}")
+            return 1
+
+        if not client.check():
+            print(f"AI Provider: {ai_settings.provider}")
+            print(f"Model: {ai_settings.model or 'default'}")
+            print(f"Base URL: {ai_settings.base_url or 'default'}")
+            print("Status: UNAVAILABLE")
+            print("Error: Health check failed")
+            return 1
+
+        print(f"AI Provider: {ai_settings.provider}")
+        print(f"Model: {ai_settings.model or 'default'}")
+        print(f"Base URL: {ai_settings.base_url or 'default'}")
+        print("Status: AVAILABLE")
+        print("Health check: OK")
+        return 0
+
+    def _ai_models(argv: list[str]) -> int:
+        """List available models from the AI provider."""
+        ai_settings = platform.ai_settings
+        if not ai_settings or not ai_settings.provider:
+            print("AI provider not configured")
+            return 1
+
+        from hunterx.infrastructure.ai.factory import build_ai_client
+
+        try:
+            client = build_ai_client(ai_settings)
+        except Exception as exc:
+            print(f"Failed to build AI client: {exc}")
+            return 1
+
+        if not client.check():
+            print(f"AI Provider: {ai_settings.provider}")
+            print("Status: UNAVAILABLE")
+            print("Cannot list models - provider unreachable")
+            return 1
+
+        # Try to list models via the models endpoint
+        try:
+            import httpx
+            base_url = ai_settings.base_url or getattr(client, '_base_url', '')
+            if not base_url:
+                print("Cannot determine base URL for models endpoint")
+                return 1
+
+            with httpx.Client(timeout=10.0) as http:
+                response = http.get(f"{base_url}/models")
+                if response.status_code == 200:
+                    data = response.json()
+                    models = data.get("data", [])
+                    if not models:
+                        print("No models available")
+                        return 0
+                    for model in models:
+                        model_id = model.get("id", "unknown")
+                        owned_by = model.get("owned_by", "")
+                        if owned_by:
+                            print(f"  {model_id} (by {owned_by})")
+                        else:
+                            print(f"  {model_id}")
+                    return 0
+                else:
+                    print(f"Failed to list models: HTTP {response.status_code}")
+                    return 1
+        except Exception as exc:
+            print(f"Failed to list models: {exc}")
+            return 1
+
+    def _ai_status(argv: list[str]) -> int:
+        """Show AI provider status and configuration."""
+        ai_settings = platform.ai_settings
+        if not ai_settings or not ai_settings.provider:
+            print("AI Provider: not configured")
+            print("Model: N/A")
+            print("Base URL: N/A")
+            print("Status: NOT_CONFIGURED")
+            return 0
+
+        from hunterx.infrastructure.ai.factory import build_ai_client
+
+        print(f"AI Provider: {ai_settings.provider}")
+        print(f"Model: {ai_settings.model or 'default'}")
+        print(f"Base URL: {ai_settings.base_url or 'default'}")
+        print(f"Timeout: {ai_settings.timeout}s")
+
+        try:
+            client = build_ai_client(ai_settings)
+            if client.check():
+                print("Status: AVAILABLE")
+                print("Health check: OK")
+            else:
+                print("Status: UNAVAILABLE")
+                print("Health check: FAILED")
+        except Exception as exc:
+            print("Status: ERROR")
+            print(f"Error: {exc}")
+            return 1
+
+        return 0
+
+    app.registry.register("ai check", _ai_check, help_text="Perform AI provider health check")
+    app.registry.register("ai models", _ai_models, help_text="List available models from AI provider")
+    app.registry.register("ai status", _ai_status, help_text="Show AI provider status and configuration")
 
 def _register_finding_commands(app: CliApplication, platform: Any) -> None:
     """Register the vulnerability finding orchestration commands.

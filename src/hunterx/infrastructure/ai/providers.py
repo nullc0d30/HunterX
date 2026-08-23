@@ -37,6 +37,49 @@ def _bounded_excerpt(exc: Exception, limit: int = 200) -> str:
     return text[:limit] if text else exc.__class__.__name__
 
 
+def classify_ai_error(exc: Exception) -> tuple[str, str]:
+    """Classify an exception into an AI failure category and provider-labelled message.
+
+    Returns ``(category, message)`` where category is from ``AIFailureCategory``.
+    """
+    from hunterx.domain.model_attacker.enums import AIFailureCategory
+
+    status = getattr(exc, "status_code", None) or getattr(exc, "status", None)
+    if status is not None:
+        try:
+            status = int(status)
+        except (TypeError, ValueError):
+            status = None
+
+    if status == 429:
+        return AIFailureCategory.RATE_LIMITED.value, "rate limited (HTTP 429)"
+    if status in (401, 403):
+        return AIFailureCategory.AUTHENTICATION_ERROR.value, "authentication failed"
+    if status == 402:
+        return AIFailureCategory.AUTHENTICATION_REQUIRED.value, "payment required"
+    if status == 404:
+        return AIFailureCategory.MODEL_UNAVAILABLE.value, "model not found"
+    if status == 408:
+        return AIFailureCategory.TIMEOUT.value, "request timeout"
+    if status == 408:
+        return AIFailureCategory.TIMEOUT.value, "request timeout"
+    if status >= 500:
+        return AIFailureCategory.PROVIDER_ERROR.value, f"provider error (HTTP {status})"
+
+    # Check exception type/message for more specific classification
+    msg = str(exc).lower()
+    if "timeout" in msg or "timed out" in msg:
+        return AIFailureCategory.TIMEOUT.value, "request timed out"
+    if "connection refused" in msg or "connectionrefused" in msg:
+        return AIFailureCategory.CONNECTION_REFUSED.value, "connection refused"
+    if "connection" in msg or "network" in msg or "unreachable" in msg:
+        return AIFailureCategory.CONNECTION_ERROR.value, "network failure"
+    if "malformed" in msg or "json" in msg or "decode" in msg:
+        return AIFailureCategory.INVALID_RESPONSE.value, "malformed response"
+
+    return AIFailureCategory.UNKNOWN.value, str(exc)
+
+
 class OpenAICompatibleClient(AIPort):
     """Shared OpenAI-style ``/chat/completions`` transport.
 
@@ -103,7 +146,7 @@ class OpenAICompatibleClient(AIPort):
         """POST ``payload`` to ``path`` and return the JSON body (error-mapped)."""
         headers = self._auth_headers()
         try:
-            response = self._http().post(f"{self._base_url}{path}", json=payload, headers=headers)
+            response = self._http().post(f"{self._base_url}{path}", json=payload, headers=headers, timeout=self._timeout)
         except TimeoutError as exc:
             raise OperationError(f"{self.provider}: request timed out after {self._timeout}s") from exc
         except OSError as exc:
@@ -143,8 +186,17 @@ class OpenAICompatibleClient(AIPort):
         return self._client
 
     def check(self) -> bool:
-        """Return ``True`` so the health probe reports the adapter as configured."""
-        return True
+        """Return ``True`` when the provider is reachable and the model is available.
+
+        This performs a lightweight health check by listing available models.
+        For local providers (LM Studio, Ollama), this validates connectivity
+        and model availability without consuming a full chat completion.
+        """
+        try:
+            response = self._http().get(f"{self._base_url}/models", timeout=10.0)
+            return response.status_code == 200
+        except Exception:
+            return False
 
     # -- identity / diagnostics ----------------------------------------------
 
@@ -177,6 +229,70 @@ class DeepSeekClient(OpenAICompatibleClient):
     default_model = "deepseek-chat"
 
 
+class LMStudioClient(OpenAICompatibleClient):
+    """LM Studio local server (OpenAI-compatible API at ``http://127.0.0.1:1234/v1``).
+
+    LM Studio runs a local OpenAI-compatible server. No API key is required
+    for local usage. The base URL defaults to ``http://127.0.0.1:1234/v1``.
+    """
+
+    provider = "lmstudio"
+    base_url = "http://127.0.0.1:1234/v1"
+    default_model = "local-model"
+
+    def __init__(
+        self,
+        *,
+        api_key: str = "",
+        model: str | None = None,
+        base_url: str = "",
+        embed_model: str = _DEFAULT_EMBED_MODEL,
+        http_client: Any | None = None,
+        timeout: float = 120.0,
+    ) -> None:
+        # LM Studio typically doesn't require an API key for local usage
+        super().__init__(
+            api_key=api_key or "lm-studio",
+            model=model,
+            base_url=base_url,
+            embed_model=embed_model,
+            http_client=http_client,
+            timeout=timeout,
+        )
+
+
+class OllamaClient(OpenAICompatibleClient):
+    """Ollama local server (OpenAI-compatible API at ``http://127.0.0.1:11434/v1``).
+
+    Ollama provides an OpenAI-compatible endpoint. No API key is required
+    for local usage. The base URL defaults to ``http://127.0.0.1:11434/v1``.
+    """
+
+    provider = "ollama"
+    base_url = "http://127.0.0.1:11434/v1"
+    default_model = "llama3.1"
+
+    def __init__(
+        self,
+        *,
+        api_key: str = "",
+        model: str | None = None,
+        base_url: str = "",
+        embed_model: str = _DEFAULT_EMBED_MODEL,
+        http_client: Any | None = None,
+        timeout: float = 120.0,
+    ) -> None:
+        # Ollama typically doesn't require an API key for local usage
+        super().__init__(
+            api_key=api_key or "ollama",
+            model=model,
+            base_url=base_url,
+            embed_model=embed_model,
+            http_client=http_client,
+            timeout=timeout,
+        )
+
+
 class XAIClient(OpenAICompatibleClient):
     """xAI (Grok) chat-completions provider (``https://api.x.ai/v1``).
 
@@ -187,6 +303,39 @@ class XAIClient(OpenAICompatibleClient):
     provider = "grok"
     base_url = "https://api.x.ai/v1"
     default_model = "grok-2-latest"
+
+
+class OpenAICompatibleGenericClient(OpenAICompatibleClient):
+    """Generic OpenAI-compatible provider for arbitrary self-hosted endpoints.
+
+    This adapter works with any OpenAI-compatible API endpoint. The base URL
+    and model must be provided via configuration.
+    """
+
+    provider = "openai_compatible"
+    base_url = ""
+    default_model = "default"
+
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        model: str | None = None,
+        base_url: str = "",
+        embed_model: str = _DEFAULT_EMBED_MODEL,
+        http_client: Any | None = None,
+        timeout: float = 120.0,
+    ) -> None:
+        if not base_url:
+            raise ValueError("openai_compatible provider requires a base_url")
+        super().__init__(
+            api_key=api_key,
+            model=model,
+            base_url=base_url,
+            embed_model=embed_model,
+            http_client=http_client,
+            timeout=timeout,
+        )
 
 
 class AnthropicClient(AIPort):

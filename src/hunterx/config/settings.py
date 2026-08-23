@@ -78,19 +78,32 @@ class AISettings(BaseModel):
     object masks them automatically. Keys are loaded from the environment
     (``HUNTERX_AI_OPENAI_KEY``, ``HUNTERX_AI_ANTHROPIC_KEY``,
     ``HUNTERX_AI_OPENROUTER_KEY``, ``HUNTERX_AI_GEMINI_KEY``,
-    ``HUNTERX_AI_DEEPSEEK_KEY``, ``HUNTERX_AI_GROK_KEY``) or a ``.env`` file
+    ``HUNTERX_AI_DEEPSEEK_KEY``, ``HUNTERX_AI_GROK_KEY``,
+    ``HUNTERX_AI_LMSTUDIO_KEY``, ``HUNTERX_AI_OLLAMA_KEY``,
+    ``HUNTERX_AI_OPENAI_COMPATIBLE_KEY``) or a ``.env`` file
     and are never hardcoded in source. An empty ``provider`` keeps the safe
     :class:`~hunterx.infrastructure.ai.NullAIClient` fallback in place.
+
+    For local/OpenAI-compatible providers (LM Studio, Ollama, generic), the
+    ``base_url`` points to the provider's OpenAI-compatible endpoint
+    (e.g. ``http://127.0.0.1:1234/v1`` for LM Studio,
+    ``http://127.0.0.1:11434/v1`` for Ollama). When empty, the provider's
+    default base URL is used.
     """
 
-    provider: str = Field(default="", description="AI provider name (openai | anthropic | openrouter | gemini | deepseek | grok).")
+    provider: str = Field(default="", description="AI provider name (openai | anthropic | openrouter | gemini | deepseek | grok | lmstudio | ollama | openai_compatible).")
     model: str = Field(default="", description="Default model identifier (e.g. deepseek/deepseek-chat).")
+    base_url: str = Field(default="", description="Custom base URL for OpenAI-compatible providers (e.g. http://127.0.0.1:1234/v1 for LM Studio, http://127.0.0.1:11434/v1 for Ollama). Empty uses provider default.")
+    timeout: float = Field(default=120.0, gt=0.0, description="Per-request timeout in seconds.")
     openai_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="OpenAI API key (masked).")
     anthropic_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Anthropic API key (masked).")
     openrouter_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="OpenRouter API key (masked).")
     gemini_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Gemini API key (masked).")
     deepseek_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="DeepSeek API key (masked).")
     grok_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Grok API key (masked).")
+    lmstudio_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="LM Studio API key (masked, usually empty for local).")
+    ollama_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Ollama API key (masked, usually empty for local).")
+    openai_compatible_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Generic OpenAI-compatible API key (masked).")
 
     #: Provider name → key field name. Configuration knowledge only; provider
     #: HTTP behaviour lives in the infrastructure adapters.
@@ -101,6 +114,9 @@ class AISettings(BaseModel):
         "gemini": "gemini_key",
         "deepseek": "deepseek_key",
         "grok": "grok_key",
+        "lmstudio": "lmstudio_key",
+        "ollama": "ollama_key",
+        "openai_compatible": "openai_compatible_key",
     }
 
     def api_key_for(self, provider: str) -> str:

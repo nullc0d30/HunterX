@@ -69,6 +69,20 @@ class CapabilityLevel(Enum):
     OPTIONAL = "optional"
 
 
+class AIProviderStatus(Enum):
+    """Status of the AI provider health check.
+
+    These are distinct from tool readiness because the AI provider is
+    a single logical dependency (the model backend), not a tool.
+    """
+
+    AVAILABLE = "available"
+    UNAVAILABLE = "unavailable"
+    NOT_CONFIGURED = "not_configured"
+    DEGRADED = "degraded"  # e.g., rate limited, high latency
+    UNKNOWN = "unknown"
+
+
 class PreflightStatus(Enum):
     """Mission preflight verdict.
 
@@ -564,6 +578,10 @@ class PreflightResult:
     provisioned: tuple[str, ...] = ()
     provision_failures: tuple[str, ...] = ()
     blocked_reason: str = ""
+    ai_provider: str = ""
+    ai_provider_name: str = ""
+    ai_model: str = ""
+    ai_provider_error: str = ""
 
     @property
     def may_execute(self) -> bool:
@@ -583,6 +601,10 @@ class PreflightResult:
             "provisioned": list(self.provisioned),
             "provision_failures": list(self.provision_failures),
             "blocked_reason": self.blocked_reason,
+            "ai_provider": self.ai_provider,
+            "ai_provider_name": self.ai_provider_name,
+            "ai_model": self.ai_model,
+            "ai_provider_error": self.ai_provider_error,
         }
 
 

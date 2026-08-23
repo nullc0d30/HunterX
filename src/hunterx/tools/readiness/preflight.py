@@ -27,7 +27,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from hunterx.domain.ports.services import AIPort
 from hunterx.tools.readiness.models import (
+    AIProviderStatus,
     CapabilityLevel,
     PreflightResult,
     PreflightStatus,
@@ -97,6 +99,8 @@ class MissionPreflight:
         auto_provision: bool = True,
         provisioner: Any | None = None,
         profile_tools: tuple[str, ...] = (),
+        ai_client: AIPort | None = None,
+        ai_settings: Any | None = None,
     ) -> PreflightResult:
         """Compute the preflight verdict for ``capabilities``.
 
@@ -193,6 +197,42 @@ class MissionPreflight:
                 if tool_id not in available and tool_id not in missing_tools:
                     missing_tools.append(tool_id)
 
+        # -- AI provider health check -------------------------------------------
+        ai_provider_status = AIProviderStatus.NOT_CONFIGURED
+        ai_provider_name = ""
+        ai_model = ""
+        ai_provider_error = ""
+
+        if ai_client is not None and ai_settings is not None:
+            ai_provider_name = ai_settings.provider or ""
+            ai_model = ai_settings.model or ""
+            try:
+                if ai_client.check():
+                    ai_provider_status = AIProviderStatus.AVAILABLE
+                else:
+                    ai_provider_status = AIProviderStatus.UNAVAILABLE
+                    ai_provider_error = "AI provider health check failed"
+            except Exception as exc:  # noqa: BLE001 - health check must not crash preflight
+                ai_provider_status = AIProviderStatus.UNAVAILABLE
+                ai_provider_error = f"AI provider health check error: {exc}"
+        elif ai_settings is not None and ai_settings.provider:
+            # AI provider configured but no client (should not happen in practice)
+            ai_provider_name = ai_settings.provider or ""
+            ai_model = ai_settings.model or ""
+            ai_provider_status = AIProviderStatus.NOT_CONFIGURED
+            ai_provider_error = "AI provider configured but no client available"
+        else:
+            # No AI provider configured
+            ai_provider_status = AIProviderStatus.NOT_CONFIGURED
+
+        # Map AIProviderStatus to string for the result
+        ai_provider = ai_provider_status.value
+
+        # If AI provider is unavailable and it's required for the mission,
+        # we may want to degrade rather than block (mission can run with
+        # deterministic fallback). This is a policy decision.
+        # For now, we report the status and let the mission runner decide.
+
         if required_missing:
             return PreflightResult(
                 status=PreflightStatus.BLOCKED,
@@ -204,6 +244,10 @@ class MissionPreflight:
                 provisioned=tuple(provisioned),
                 provision_failures=tuple(provision_failures),
                 blocked_reason=_blocked_reason(required_missing, missing_tools),
+                ai_provider=ai_provider,
+                ai_provider_name=ai_provider_name,
+                ai_model=ai_model,
+                ai_provider_error=ai_provider_error,
             )
         return PreflightResult(
             status=PreflightStatus.DEGRADED if optional_missing else PreflightStatus.PASS,
@@ -214,6 +258,10 @@ class MissionPreflight:
             provision_attempted=provision_attempted,
             provisioned=tuple(provisioned),
             provision_failures=tuple(provision_failures),
+            ai_provider=ai_provider,
+            ai_provider_name=ai_provider_name,
+            ai_model=ai_model,
+            ai_provider_error=ai_provider_error,
         )
 
 
