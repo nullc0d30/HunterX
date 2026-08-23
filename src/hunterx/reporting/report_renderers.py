@@ -274,7 +274,7 @@ def render_sarif(document: ReportDocument) -> str:
                 "tool": {
                     "driver": {
                         "name": "HunterX",
-                        "semanticVersion": "7.1.3",
+                        "semanticVersion": "7.1.4",
                         "informationUri": "https://github.com/nullc0d30/HunterX",
                         "rules": [
                             {

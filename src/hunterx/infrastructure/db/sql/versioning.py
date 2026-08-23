@@ -14,7 +14,6 @@ tables directly; the persistence layer does.
 
 from __future__ import annotations
 
-import copy
 from typing import Any
 
 import sqlalchemy.event
@@ -28,6 +27,7 @@ from hunterx.infrastructure.db.sql.tidb_models import (
 )
 from hunterx.infrastructure.db.sql.tidb_models._base import TidbModelMixin
 from hunterx.shared.ids import generate_id
+from hunterx.shared.json_safe import to_json_safe
 from hunterx.shared.time import utcnow_iso
 
 # Audit models carry the same envelope (they extend ``TidbModelMixin``) but are
@@ -52,12 +52,19 @@ def _is_versioned(obj: object) -> bool:
 
 
 def _snapshot(row: TidbModelMixin) -> dict[str, object]:
-    """Capture a JSON-safe snapshot of a model row's columns."""
+    """Capture a JSON-safe snapshot of a model row's columns.
+
+    Values are passed through the canonical :func:`to_json_safe` boundary so
+    audit/history payloads are JSON-native Python structures even before the
+    engine serializer runs — a parser object that leaked into a JSON column
+    (e.g. a JavaScript ``JSToken``) can never crash the commit and is preserved
+    with its semantic fields for forensics.
+    """
     data: dict[str, object] = {}
     for column in row.__table__.columns:
         key = column.key
         value = getattr(row, key)
-        data[key] = copy.deepcopy(value) if value is not None else None
+        data[key] = to_json_safe(value) if value is not None else None
     return data
 
 
@@ -69,10 +76,10 @@ def _before_snapshot(row: TidbModelMixin) -> dict[str, object]:
     for column in row.__table__.columns:
         key = column.key
         if key in committed:
-            before[key] = copy.deepcopy(committed[key]) if committed[key] is not None else None
+            before[key] = to_json_safe(committed[key]) if committed[key] is not None else None
         else:
             value = getattr(row, key)
-            before[key] = copy.deepcopy(value) if value is not None else None
+            before[key] = to_json_safe(value) if value is not None else None
     return before
 
 
