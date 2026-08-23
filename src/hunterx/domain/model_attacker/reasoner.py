@@ -21,10 +21,11 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from hunterx.domain.model_attacker.enums import ModelFailureReason
+from hunterx.domain.model_attacker.enums import AIFailureCategory, ModelFailureReason
 from hunterx.domain.model_attacker.models import ModelHypothesis
 from hunterx.domain.ports.services import AIPort
 from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
+from hunterx.infrastructure.ai.providers import classify_ai_error
 
 #: Recognised differential signal vocabulary (class-specific analysis results).
 _KNOWN_SIGNALS = {
@@ -59,6 +60,7 @@ class ReasonResult:
     error: str = ""
     failure_reason: ModelFailureReason = ModelFailureReason.NONE
     raw: str = ""
+    ai_failure_category: str = ""
 
     @property
     def usable(self) -> bool:
@@ -111,11 +113,12 @@ class ModelReasoner:
         reason; the mission is never marked exhausted because the model failed.
         """
         if self._ai is None:
-            return ReasonResult(error="no model connected", failure_reason=ModelFailureReason.UNAVAILABLE)
+            return ReasonResult(error="no model connected", failure_reason=ModelFailureReason.UNAVAILABLE, ai_failure_category=AIFailureCategory.UNAVAILABLE.value)
         prompt = build_prompt(context)
         self._last_prompt_bytes = len(prompt)
         last_error = ""
         last_raw = ""
+        last_ai_category = AIFailureCategory.UNKNOWN.value
         for _ in range(self._attempts):
             started = time.monotonic()
             try:
@@ -123,15 +126,17 @@ class ModelReasoner:
             except Exception as exc:  # noqa: BLE001 - provider failures are bounded and reported
                 last_error = f"model request failed: {exc}"
                 last_raw = ""
+                last_ai_category = classify_ai_error(exc)[0]
                 continue
             latency = int((time.monotonic() - started) * 1000)
             self._last_response_bytes = len(str(response))
             hypotheses, rejected_or_error = _parse_hypotheses(response, context)
             if hypotheses is not None:
-                return ReasonResult(hypotheses=hypotheses, rejected=rejected_or_error, invoked=True, latency_ms=latency, raw=response)
+                return ReasonResult(hypotheses=hypotheses, rejected=rejected_or_error, invoked=True, latency_ms=latency, raw=response, ai_failure_category=AIFailureCategory.NONE.value)
             last_error = rejected_or_error or "malformed model output"
             last_raw = response
-        return ReasonResult(invoked=True, error=last_error, failure_reason=_failure_reason(last_error), raw=last_raw)
+            last_ai_category = AIFailureCategory.INVALID_RESPONSE.value
+        return ReasonResult(invoked=True, error=last_error, failure_reason=_failure_reason(last_error), ai_failure_category=last_ai_category, raw=last_raw)
 
 
 def _failure_reason(error: str) -> ModelFailureReason:
@@ -142,6 +147,8 @@ def _failure_reason(error: str) -> ModelFailureReason:
         return ModelFailureReason.PROVIDER_LIMIT
     if "invalid" in lowered or "malformed" in lowered or "unexpected" in lowered:
         return ModelFailureReason.INVALID_OUTPUT
+    if "unavailable" in lowered or "connection" in lowered or "refused" in lowered:
+        return ModelFailureReason.UNAVAILABLE
     return ModelFailureReason.UNAVAILABLE
 
 

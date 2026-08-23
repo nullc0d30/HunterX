@@ -34,18 +34,22 @@ from hunterx.infrastructure.ai.providers import (
     AnthropicClient,
     DeepSeekClient,
     GeminiClient,
+    LMStudioClient,
+    OllamaClient,
     OpenAIClient,
+    OpenAICompatibleGenericClient,
     XAIClient,
 )
 
 #: Providers whose API key is accepted by :class:`AISettings`.
 _KNOWN_PROVIDERS: frozenset[str] = frozenset(
-    {"openai", "anthropic", "openrouter", "gemini", "deepseek", "grok"}
+    {"openai", "anthropic", "openrouter", "gemini", "deepseek", "grok", "lmstudio", "ollama", "openai_compatible"}
 )
 
 #: Providers with a concrete adapter implemented in the infrastructure layer.
-#: OpenAI, DeepSeek, OpenRouter and xAI/Grok share the OpenAI-compatible
-#: transport; Anthropic and Gemini use their own protocol adapters.
+#: OpenAI, DeepSeek, OpenRouter, LM Studio, Ollama, and xAI/Grok share the
+#: OpenAI-compatible transport; Anthropic and Gemini use their own protocol
+#: adapters.
 _ADAPTERS: dict[str, type[Any]] = {
     "openai": OpenAIClient,
     "anthropic": AnthropicClient,
@@ -53,7 +57,15 @@ _ADAPTERS: dict[str, type[Any]] = {
     "openrouter": OpenRouterClient,
     "gemini": GeminiClient,
     "grok": XAIClient,
+    "lmstudio": LMStudioClient,
+    "ollama": OllamaClient,
+    "openai_compatible": OpenAICompatibleGenericClient,
 }
+
+#: Providers that use the OpenAI-compatible transport and support base_url override.
+_OPENAI_COMPATIBLE_PROVIDERS: frozenset[str] = frozenset(
+    {"openai", "deepseek", "openrouter", "grok", "lmstudio", "ollama", "openai_compatible"}
+)
 
 
 def build_ai_client(settings: AISettings) -> AIPort:
@@ -62,7 +74,6 @@ def build_ai_client(settings: AISettings) -> AIPort:
     - No provider configured → :class:`NullAIClient` (safe fallback; HunterX
       keeps running without any AI key).
     - Unknown provider → :class:`ConfigurationError`.
-    - Known provider without its API key → :class:`ConfigurationError`.
     - Known provider without an adapter yet → :class:`ConfigurationError`.
 
     Error messages reference provider names and environment variable names only
@@ -78,12 +89,14 @@ def build_ai_client(settings: AISettings) -> AIPort:
             f"{', '.join(sorted(_KNOWN_PROVIDERS))}."
         )
 
+    # For local providers (lmstudio, ollama), API key is optional.
+    # For openai_compatible, it's required if the endpoint needs it.
     api_key = settings.api_key_for(provider)
-    if not api_key:
+    if not api_key and provider not in {"lmstudio", "ollama"}:
         raise ConfigurationError(
             f"AI provider '{provider}' is configured but no API key is set. "
             f"Set the HUNTERX_AI_{provider.upper()}_KEY environment variable "
-            "(see .env.example)."
+            f"(see .env.example)."
         )
 
     adapter = _ADAPTERS.get(provider)
@@ -93,5 +106,14 @@ def build_ai_client(settings: AISettings) -> AIPort:
             "implemented yet; configure a supported provider instead."
         )
 
-    client: AIPort = adapter(api_key=api_key, model=settings.model or None)
+    # Pass base_url and timeout for OpenAI-compatible providers
+    if provider in _OPENAI_COMPATIBLE_PROVIDERS:
+        client: AIPort = adapter(
+            api_key=api_key,
+            model=settings.model or None,
+            base_url=settings.base_url or None,
+            timeout=settings.timeout,
+        )
+    else:
+        client = adapter(api_key=api_key, model=settings.model or None)
     return client
