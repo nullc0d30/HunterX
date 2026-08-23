@@ -50,6 +50,24 @@ def get_base() -> type:
     return _load_sqlalchemy()["Base"]  # type: ignore[return-value]
 
 
+def _json_bind_serializer(value: Any) -> str:
+    """Serialize a JSON-column bind value, guaranteeing JSON compatibility.
+
+    This is the central persistence boundary for every ``JSON``/``JSONB``
+    column: arbitrary Python objects that leaked into a payload (parser tokens,
+    dataclasses, datetimes, enums, paths, ...) are recursively converted to
+    JSON-native structures by :func:`to_json_safe` before ``json.dumps`` ever
+    sees them. The database layer therefore never receives a non-serializable
+    object — a mission can no longer crash with
+    ``TypeError: Object of type ... is not JSON serializable`` at commit.
+    """
+    import json as _json
+
+    from hunterx.shared.json_safe import to_json_safe
+
+    return _json.dumps(to_json_safe(value))
+
+
 def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     """Create a SQLAlchemy engine from typed settings.
 
@@ -63,6 +81,11 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     and ``check_same_thread=False`` so the autonomous mission (a single writer
     process with many short sessions) never deadlocks on ``database is locked``
     and readers never block the mission's persistence path.
+
+    Every engine installs the canonical JSON-safe bind serializer
+    (``_json_bind_serializer``), making it impossible for any JSON-backed
+    column — observations, evidence, audit snapshots, metadata — to receive a
+    non-JSON-native Python object.
     """
     mod = _load_sqlalchemy()
     url = resolve_database_url(settings.url)
@@ -72,6 +95,7 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
         return mod["create_engine"](
             url,
             echo=settings.echo,
+            json_serializer=_json_bind_serializer,
             poolclass=StaticPool,
             connect_args={"check_same_thread": False},
         )
@@ -79,6 +103,7 @@ def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     engine = mod["create_engine"](
         url,
         echo=settings.echo,
+        json_serializer=_json_bind_serializer,
         pool_size=settings.pool_size,
         pool_timeout=settings.pool_timeout,
         connect_args={

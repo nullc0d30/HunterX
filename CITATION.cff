@@ -12,8 +12,8 @@ authors:
     orcid: ""
     email: "ahmed@nullc0d3.com"
     website: "https://github.com/nullc0d30"
-version: 7.1.3
-date-released: 2026-08-22
+version: 7.1.4
+date-released: 2026-08-23
 doi: "10.6084/m9.figshare.33102290"
 url: "https://github.com/nullc0d30/HunterX"
 repository-code: "https://github.com/nullc0d30/HunterX"
@@ -37,7 +37,7 @@ preferred-citation:
     - family-names: "Awad"
       given-names: "Ahmed"
       alias: "NullC0d3"
-  version: 7.1.3
-  date-released: 2026-08-22
+version: 7.1.4
+date-released: 2026-08-23
   url: "https://github.com/nullc0d30/HunterX"
   doi: "10.6084/m9.figshare.33102290"

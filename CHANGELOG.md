@@ -9,6 +9,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.4] — 2026-08-23
+
+### Fixed
+
+- **JSToken JSON serialization crash (production blocker).** A real
+  `full_security_assessment` with JavaScript analysis crashed at commit with
+  `TypeError: Object of type JSToken is not JSON serializable` on
+  `tidb_audit_logs.after`. Root cause: in-process tool outputs carried raw
+  `JSToken` dataclass objects (from the JavaScript tokenizer) into observation
+  `content`; the versioning listener snapshotted them into audit JSON columns
+  without sanitization. Fixes:
+  - Central canonical serializer `to_json_safe()` in `hunterx.shared.json_safe`
+    recursively converts any Python value to JSON-native structures while
+    preserving semantics (dataclasses → `__type__` + fields, Enums → values,
+    datetimes → ISO-8601, UUID/Path/bytes → typed previews, circular refs →
+    `__circular__` marker, non-finite floats → `"NaN"`/`"Infinity"`).
+  - Engine-level `json_serializer` boundary in `create_engine_from_settings`
+    guarantees **every** SQLAlchemy `JSON`/`JSONB` column (600+ across 30
+    models) sanitizes at bind time — no schema churn, future-proof.
+  - Audit snapshots (`_snapshot`, `_before_snapshot`) sanitize at creation for
+    deterministic `ChangeHistory` diffs and clean `TimelineEvent` payloads.
+  - Legacy Text-JSON path (`repositories._json_dumps`) uses the same boundary.
+  - Credential-looking keys/fields masked via `shared.masking`; memory
+    addresses scrubbed from fallback reprs.
+- **Secret leakage prevention.** All serialization paths (mappings, dataclass
+  fields, structured accessors, generic object attributes) now uniformly mask
+  values whose key/field name contains credential fragments
+  (`password`, `api_key`, `authorization`, `cookie`, `bearer`, `secret`,
+  `token`), so fallback serialization can never persist secrets verbatim.
+- **Circular reference determinism.** Self-referencing dict/list/set/object
+  structures now terminate with `__circular__` marker; depth cap (64) emits
+  `__truncated__`.
+
+### Added
+
+- `src/hunterx/shared/json_safe.py` — canonical JSON-safe boundary with
+  explicit serializer registry (`register_json_safe`) for project-approved
+  custom serializers (priority 1 in custom-object policy).
+- Regression test suite `tests/integration/test_json_persistence_boundary.py`
+  reproducing the exact incident (observation with nested JSToken → SQL
+  repository → versioning audit → commit) and verifying semantic token
+  preservation in audit logs and round-trip reads.
+- Unit test suite `tests/unit/test_json_safe.py` covering all 18 required
+  contract cases (primitives, nested dict/list/set, dataclasses, Enums,
+  datetime/UUID/Path, custom objects, JSToken, circular refs, non-string
+  keys, NaN/Infinity, secret masking, identity preservation).
+
+### Changed
+
+- No v7.1.3 mission semantics regressed: `RESOURCE_BUDGET_EXHAUSTED`,
+  `TIME_BUDGET_EXHAUSTED`, `NO_ACTIONABLE_WORK`, `AI_UNAVAILABLE`,
+  `BLOCKED` stop conditions remain truthful and orthogonal to the persistence
+  fix.
+
+---
+
 ## [7.1.3] — 2026-08-22
 
 ### Fixed

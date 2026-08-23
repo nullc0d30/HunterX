@@ -45,8 +45,15 @@ from hunterx.infrastructure.db.sql.models import (
 
 
 def _json_dumps(value: object) -> str:
-    """Serialize a value to JSON, coercing non-JSON types to strings."""
-    return json.dumps(value, default=str)
+    """Serialize a value to JSON text through the canonical safe boundary.
+
+    Values are recursively sanitized by :func:`to_json_safe` first so nested
+    domain objects (parser tokens, dataclasses, datetimes) persist with their
+    semantic fields instead of crashing or degrading to ``str()``.
+    """
+    from hunterx.shared.json_safe import to_json_safe
+
+    return json.dumps(to_json_safe(value))
 
 
 class _SqlRepositoryMixin:
