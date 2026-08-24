@@ -714,8 +714,10 @@ class TelemetrySnapshot:
     ai_deterministic_decisions: int = 0
     ai_assisted_decisions: int = 0
     hypotheses_tested: int = 0
+    hypotheses_resolved: int = 0
     hypotheses_deferred: int = 0
     hypotheses_blocked: int = 0
+    hypotheses_open: int = 0
     active_tests_attempted: int = 0
     active_tests_completed: int = 0
     browser_tests_attempted: int = 0
@@ -757,8 +759,10 @@ class TelemetrySnapshot:
             "ai_deterministic_decisions": self.ai_deterministic_decisions,
             "ai_assisted_decisions": self.ai_assisted_decisions,
             "hypotheses_tested": self.hypotheses_tested,
+            "hypotheses_resolved": self.hypotheses_resolved,
             "hypotheses_deferred": self.hypotheses_deferred,
             "hypotheses_blocked": self.hypotheses_blocked,
+            "hypotheses_open": self.hypotheses_open,
             "active_tests_attempted": self.active_tests_attempted,
             "active_tests_completed": self.active_tests_completed,
             "browser_tests_attempted": self.browser_tests_attempted,

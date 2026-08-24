@@ -660,8 +660,26 @@ class MissionExecutionService:
             finalize_condition = resource_stop
         elif cycle_ceiling_reached:
             # The cycle ceiling was reached with budget remaining. This is an
-            # operational ceiling, NOT resource exhaustion. Report it distinctly.
-            finalize_condition = StopCondition.CYCLE_CEILING_REACHED
+            # operational ceiling, NOT resource exhaustion.
+            # If there is still actionable work and budget remaining, do NOT
+            # terminate with CYCLE_CEILING_REACHED. Instead, classify based on
+            # what work actually remains (replan and continue conceptually).
+            if self._deterministic_work_remaining(mission_id) or self._open_hypothesis_work_remaining(mission_id):
+                # There is still deterministic or hypothesis-driven work that
+                # could be actionable. The cycle ceiling is a replanning
+                # boundary, not a terminal condition. Classify based on what
+                # work actually remains.
+                if self._open_hypothesis_work_remaining(mission_id):
+                    finalize_condition = StopCondition.BLOCKED
+                else:
+                    finalize_condition = StopCondition.NO_ACTIONABLE_WORK
+            elif self._mission_budget_exhausted(mission_id):
+                # Budget actually exhausted - this is genuine resource exhaustion
+                finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
+            else:
+                # No actionable work remains and budget remains - this is an
+                # operational ceiling with no actionable work
+                finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         elif self._mission_budget_exhausted(mission_id):
             # INVARIANT A/B: resource exhaustion is only claimed when the actual
             # budget predicate is true (execution_exhausted or time_exhausted).
@@ -3531,3 +3549,4 @@ def _readiness_reason(capability: str, verdict: Any) -> str:
 
 
 __all__ = ["MissionExecutionService"]
+
