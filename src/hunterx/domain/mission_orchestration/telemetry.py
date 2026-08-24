@@ -60,11 +60,17 @@ class MissionTelemetry:
         hypotheses_tested = sum(
             1 for hypothesis in hypotheses if hypothesis.tested_actions
         )
+        hypotheses_resolved = sum(
+            1 for hypothesis in hypotheses if hypothesis.state.is_terminal
+        )
         hypotheses_deferred = sum(
             1 for hypothesis in hypotheses if hypothesis.state.value == "deferred"
         )
         hypotheses_blocked = sum(
             1 for hypothesis in hypotheses if hypothesis.state.value == "blocked"
+        )
+        hypotheses_open = sum(
+            1 for hypothesis in hypotheses if hypothesis.state.value in _OPEN_HYPOTHESIS_STATES
         )
         observations = mission.observations
         probes = [observation for observation in observations if observation.observation_type == "probe"]
@@ -115,8 +121,10 @@ class MissionTelemetry:
             ai_deterministic_decisions=ai["deterministic_decisions"],
             ai_assisted_decisions=ai["assisted_decisions"],
             hypotheses_tested=hypotheses_tested,
+            hypotheses_resolved=hypotheses_resolved,
             hypotheses_deferred=hypotheses_deferred,
             hypotheses_blocked=hypotheses_blocked,
+            hypotheses_open=hypotheses_open,
             active_tests_attempted=active_tests_attempted,
             active_tests_completed=active_tests_completed,
             browser_tests_attempted=browser_tests_attempted,
