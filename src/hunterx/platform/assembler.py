@@ -393,12 +393,24 @@ def _build_adapters(settings: Settings) -> dict[str, object]:
     """Build the infrastructure adapters selected by ``settings``."""
     cache: CachePort = MemoryCache() if settings.cache.backend == "memory" else NullCache()
     queue: QueuePort = MemoryQueue() if settings.queue.backend == "memory" else NullQueue()
+    # An AI misconfiguration (provider set but key/adapter missing) must never
+    # prevent platform composition: fall back to the null client; the guided
+    # configuration gate reports the problem before any mission starts.
+    try:
+        ai_client = build_ai_client(settings.ai)
+    except Exception as exc:  # noqa: BLE001 - surfaced later via preflight/guided setup
+        import logging
+
+        from hunterx.infrastructure.ai.null import NullAIClient
+
+        ai_client = NullAIClient()
+        logging.getLogger(__name__).warning("AI adapter unavailable (%s); continuing without a provider", exc)
     return {
         "event_bus": InMemoryEventBus(),
         "cache": cache,
         "queue": queue,
         "secrets": EnvironmentSecrets(),
-        "ai": build_ai_client(settings.ai),
+        "ai": ai_client,
         "telemetry": MemoryTelemetry(),
         "knowledge_graph": InMemoryKnowledgeGraph(),
     }
@@ -413,21 +425,37 @@ def _resolve_repository(repositories: dict[str, object], role: str) -> Any:
     return constructor()
 
 
+def _resolve_ai_client(settings: Settings, default: Any = None) -> Any:
+    """Return the configured AI client, or ``None`` when unconfigured/broken.
+
+    A ``None`` return means "no usable AI": the platform stays composable and
+    the mission runner reports ``ai_provider=not_configured`` truthfully
+    instead of crashing or silently pretending a provider exists.
+    """
+    if not str(settings.ai.provider or "").strip():
+        return None
+    try:
+        from hunterx.infrastructure.ai.null import NullAIClient
+
+        if isinstance(default, NullAIClient):
+            return None
+    except Exception:  # noqa: BLE001 - defensive
+        pass
+    return default
+
+
 def _build_ai_suggester(settings: Settings) -> Any:
     """Build the advisory AI action-suggestion producer for mission decisions.
 
     Uses the existing AI client built from settings (``build_ai_client``). When
-    no provider is configured the client is a no-op ``NullAIClient``; the
-    mission execution path treats it as "no suggestion" and remains fully
-    deterministic. The AI is advisory only — it never selects tools, never
-    executes and never bypasses policy/sandbox/budget.
+    no provider is configured the suggester is ``None``; the mission execution
+    path treats it as "no suggestion". The AI Hunt Director (not this advisory
+    producer) is the primary decision authority when configured.
     """
     from hunterx.application.ai_suggestion import AIActionSuggester
-    from hunterx.infrastructure.ai import build_ai_client
 
-    try:
-        ai = build_ai_client(settings.ai)
-    except Exception:  # noqa: BLE001 - AI must never break mission composition
+    ai = _resolve_ai_client(settings)
+    if ai is None:
         return None
     return AIActionSuggester(
         ai,
@@ -959,6 +987,8 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
             governor=resource_governor,
         ),
         governor=resource_governor,
+        ai_client=_resolve_ai_client(settings, adapters["ai"]),
+        ai_settings=settings.ai,
     )
 
     # -- observability -------------------------------------------------------
@@ -1053,6 +1083,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
 
     return Platform(
         settings=settings,
+        ai_settings=settings.ai,
         container=container,
         core=core,
         tip=tip,

@@ -23,6 +23,8 @@ snapshot.
 from __future__ import annotations
 
 import contextlib
+import json
+import time
 from typing import Any
 
 from hunterx.application.adaptive_attack import AdaptiveAttackService
@@ -43,11 +45,16 @@ from hunterx.domain.auth.session import AuthenticatedSession
 from hunterx.domain.execution import ExecutionStatus
 from hunterx.domain.mission_orchestration.enums import MissionPhase, StopCondition
 from hunterx.domain.mission_orchestration.orchestrator import _endpoint_urls
+from hunterx.domain.mission_orchestration.security_matrix import (
+    MatrixState,
+    SecurityTestMatrix,
+)
 from hunterx.domain.target_intelligence.enums import CoverageState
 from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
 from hunterx.resource import ResourceGovernor, ResourceState
 from hunterx.shared.masking import mask_value
+from hunterx.shared.time import utcnow_iso
 from hunterx.shared.target import (
     has_meaningful_content,
     normalize_target,
@@ -92,6 +99,7 @@ _OBSERVATION_TYPE: dict[str, str] = {
     "secret_detection": "vulnerability",
     "dependency_check": "vulnerability",
     "cloud_ownership_mapping": "api",
+    "browser_testing": "browser",
     "proof_validation": "proof",
     "replay": "proof",
 }
@@ -107,6 +115,7 @@ _TRIGGER_BY_OBSERVATION: dict[str, ReplanTrigger] = {
     "url": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "api": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "javascript": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
+    "browser": ReplanTrigger.NEW_ENDPOINT_DISCOVERED,
     "parameter": ReplanTrigger.NEW_PARAMETER_DISCOVERED,
     "vulnerability": ReplanTrigger.NEW_HYPOTHESIS_CREATED,
 }
@@ -160,6 +169,20 @@ _PROBE_CAPABILITY_BY_CLASS: dict[str, str] = {
     "open-redirect": "vulnerability_scanning",
     "cors-misconfiguration": "vulnerability_scanning",
 }
+
+#: Stop conditions that may be treated as success signals by the loop. They
+#: remain gated by the Security Test Matrix before the run can finalize
+#: complete.
+_SUCCESS_STOP_CONDITION_NAMES = frozenset(
+    {
+        "objectives_complete",
+        "coverage_target_achieved",
+        "high_value_hypotheses_resolved",
+        "findings_validated",
+        "attack_surface_exhausted",
+    }
+)
+
 
 def _as_list(value: Any) -> list[Any]:
     """Return ``value`` as a list (single values are wrapped)."""
@@ -276,6 +299,7 @@ _STATE_BY_CAPABILITY: dict[str, MissionState] = {
     "javascript_analysis": MissionState.MAPPING,
     "parameter_discovery": MissionState.ANALYSIS,
     "api_mapping": MissionState.MAPPING,
+    "browser_testing": MissionState.VALIDATION,
     "authentication_analysis": MissionState.ANALYSIS,
     "authorization_analysis": MissionState.VALIDATION,
     "vulnerability_scanning": MissionState.HYPOTHESIS_GENERATION,
@@ -325,6 +349,8 @@ class MissionExecutionService:
         adaptive_attack_factory: Any | None = None,
         model_attacker: Any | None = None,
         governor: ResourceGovernor | None = None,
+        ai_client: Any | None = None,
+        ai_settings: Any | None = None,
     ) -> None:
         self._orchestration = orchestration
         self._planning = planning
@@ -360,6 +386,38 @@ class MissionExecutionService:
         #: Advisory AI action-suggestion producer (None keeps the mission
         #: fully deterministic — the AI is never required for execution).
         self._ai_suggester = ai_suggester
+        #: AI Hunt Director (autonomous decision authority). When wired, the AI
+        #: decides the next security-testing action each cycle; HunterX
+        #: validates every decision through the policy gate before execution.
+        self._hunt_director: Any = None
+        self.director_enabled: bool = False
+        #: AI client + settings for preflight health reporting and the guided
+        #: configuration gate.
+        self._ai_client: Any = ai_client
+        self._ai_settings: Any = ai_settings
+        #: Per-mission Security Test Matrix (the completion contract). Built at
+        #: run start; updated deterministically from real capability executions.
+        self._matrix: SecurityTestMatrix | None = None
+        self._matrix_mission_id: str = ""
+        #: AI attribution counters for the current run (bounded, JSON-safe).
+        self._ai_stats: dict[str, int] = {
+            "ai_cycles": 0,
+            "ai_decisions": 0,
+            "deterministic_decisions": 0,
+            "policy_rejections": 0,
+            "invalid_decisions": 0,
+            "provider_failures": 0,
+            "adaptive_replans": 0,
+        }
+        #: Bounded per-decision attribution trace (decision_id → provenance).
+        from collections import deque
+
+        self._decision_trace: deque[dict[str, Any]] = deque(maxlen=200)
+        #: Signature of the previous AI decision (for adaptivity detection).
+        self._last_decision_signature: str = ""
+        #: Director rate-limit cooldown (free-tier providers 429 quickly).
+        self._director_cooldown_until: float = 0.0
+        self._director_consecutive_failures: int = 0
         #: Autonomous model-driven attacker (Phase 7). When wired, the connected
         #: model participates in the real attack loop each cycle: it reasons,
         #: produces attack hypotheses, every accepted hypothesis becomes a real
@@ -405,21 +463,47 @@ class MissionExecutionService:
         execution attempt and its outcome. Never marks a running mission as
         complete just because a single cycle finished.
 
-        When an AI suggestion producer is wired, an advisory suggestion is
-        requested and passed to the decision engine. The deterministic engine
-        remains the final authority; a rejected or unavailable AI proposal is
-        ignored and the deterministic planner continues.
+        When an AI Hunt Director is wired AND usable, the AI decides the next
+        security-testing action FIRST; HunterX validates the decision through
+        the policy gate and executes it through the ordinary capability
+        pipeline. The advisory suggester + deterministic engine remain as the
+        fallback path (and are counted separately), so an AI failure degrades
+        honestly instead of silently.
         """
         mission = self._orchestration.get(mission_id)
         if mission.mission.state.is_terminal:
             return self._cycle_outcome(mission_id, status="skipped", reason="mission terminal")
+        # -- AI Hunt Director (authoritative decision source) -------------------
+        if self.director_active:
+            payload = self._request_ai_decision(mission_id, parameters=parameters)
+            if payload is not None:
+                if payload.get("__complete__"):
+                    return self._cycle_outcome(
+                        mission_id,
+                        status="ai_complete",
+                        reason="AI Hunt Director requested completion; Security Test Matrix verified complete",
+                    )
+                outcome = self._schedule_ai_action(mission_id, payload, parameters=parameters)
+                if outcome is not None and outcome.get("status") != "ai_replay":
+                    return outcome
+                # A replayed/rejected decision falls through: the same cycle
+                # still asks the deterministic planner for work so no cycle is
+                # wasted on a loop.
         self._approve_ready_actions(mission_id)
-        ai_suggestion, ai_reason, ai_trace = self._request_ai_suggestion(mission_id)
+        # When a director is active, the advisory suggester is redundant: the
+        # AI already had its (authoritative) chance this cycle, and doubling
+        # provider calls only invites rate limits.
+        if self.director_active:
+            ai_suggestion, ai_reason, ai_trace = "", "", {}
+        else:
+            ai_suggestion, ai_reason, ai_trace = self._request_ai_suggestion(mission_id)
         decision = self._orchestration.decide_next(
             mission_id,
             ai_suggestion=ai_suggestion,
             ai_reason=ai_reason,
         )
+        if decision is not None:
+            self._ai_stats["deterministic_decisions"] += 1
         if decision is not None and ai_trace:
             self._record_ai_trace(mission_id, decision, ai_trace)
         if decision is None:
@@ -427,8 +511,9 @@ class MissionExecutionService:
             # ready, the planner derives NEW work from the current state instead
             # of idling. Open, class-specific vulnerability hypotheses are
             # scheduled as targeted probes; an incomplete web attack surface is
-            # extended with web-discovery capabilities. Only when neither can
-            # produce work does the mission advance state or go idle.
+            # extended with web-discovery capabilities; finally the Security
+            # Test Matrix drives new assessment actions so queue exhaustion
+            # can NEVER end an applicable-domain-incomplete mission.
             if self._schedule_hypothesis_probes(mission_id):
                 return self._cycle_outcome(
                     mission_id,
@@ -446,6 +531,12 @@ class MissionExecutionService:
                     mission_id,
                     status="reassessed",
                     reason="no ready action; mission advanced to reassessment",
+                )
+            if self._matrix_incomplete(mission_id) and self._schedule_matrix_actions(mission_id):
+                return self._cycle_outcome(
+                    mission_id,
+                    status="matrix_scheduled",
+                    reason="Security Test Matrix incomplete domains scheduled",
                 )
             return self._cycle_outcome(mission_id, status="idle", reason="no ready action")
         return self._execute_decision(mission_id, decision, parameters=parameters)
@@ -532,154 +623,254 @@ class MissionExecutionService:
         resource_stop: StopCondition | None = None
         cycle_ceiling_reached = False
         cycles_run = 0
-        for _ in range(1, max_cycles + 1):
-            cycles_run += 1
-            if governor is not None:
-                state = governor.evaluate()
-                self._resource_state = state.value
-                if state is ResourceState.EMERGENCY:
-                    # Hard resource envelope exceeded: terminate the mission
-                    # safely — stop scheduling, terminate active child processes
-                    # (graceful then forced), persist state, mark degraded.
-                    self._publish(
-                        "mission.resource.emergency",
+        ai_complete_requested = False
+        reassessment_passes = 0
+        self._ai_stats = {
+            "ai_cycles": 0,
+            "ai_decisions": 0,
+            "deterministic_decisions": 0,
+            "policy_rejections": 0,
+            "invalid_decisions": 0,
+            "provider_failures": 0,
+            "adaptive_replans": 0,
+        }
+        self._decision_trace.clear()
+        self._last_decision_signature = ""
+        # The cycle ceiling is a REASSESSMENT boundary, never a termination:
+        # each pass runs up to ``max_cycles`` cycles; when a pass completes
+        # with budget remaining and an incomplete Security Test Matrix, the AI
+        # Hunt Director is asked to reassess and execution continues. Genuine
+        # exhaustion (budget/time/governor/completion) breaks both loops.
+        while True:
+            broke_early = False
+            for _cycle_index in range(1, max_cycles + 1):
+                cycles_run += 1
+                if governor is not None:
+                    state = governor.evaluate()
+                    self._resource_state = state.value
+                    if state is ResourceState.EMERGENCY:
+                        # Hard resource envelope exceeded: terminate the mission
+                        # safely — stop scheduling, terminate active child processes
+                        # (graceful then forced), persist state, mark degraded.
+                        self._publish(
+                            "mission.resource.emergency",
+                            {
+                                "mission_id": mission_id,
+                                "reason": f"memory ceiling {governor.memory_ceiling_mb():.0f} MiB exceeded",
+                                "rss_mb": governor.metrics().rss_mb,
+                            },
+                        )
+                        self._log_resource_emergency(governor)
+                        governor.terminate_process_tree()
+                        resource_stop = StopCondition.MEMORY_BUDGET_EXHAUSTED
+                        broke_early = True
+                        break
+                    if governor.mission_deadline_exceeded(mission_id):
+                        self._publish(
+                            "mission.resource.deadline",
+                            {"mission_id": mission_id, "reason": "mission deadline exceeded"},
+                        )
+                        resource_stop = StopCondition.MISSION_DEADLINE_EXCEEDED
+                        broke_early = True
+                        break
+                mission = self._orchestration.get(mission_id)
+                if mission.mission.state.is_terminal:
+                    broke_early = True
+                    break
+                if mission.budget.executions_budget and mission.budget.executions_used >= mission.budget.executions_budget:
+                    broke_early = True
+                    break
+                if mission.budget.time_budget_seconds and mission.budget.time_used_seconds >= mission.budget.time_budget_seconds:
+                    # The operator-configured time budget is a hard wall-clock ceiling
+                    # (the loop must never keep running just because a stop condition
+                    # is only evaluated lazily).
+                    resource_stop = StopCondition.TIME_BUDGET_EXHAUSTED
+                    broke_early = True
+                    break
+                self._probe_count_cycle = 0
+                cycle = self.execute_cycle(mission_id, parameters=parameters)
+                cycles.append(cycle)
+                # Model-driven attack step: the connected model reasons over the
+                # observed surface, its accepted hypotheses become real assessment
+                # tasks that are discharged by the ordinary capability execution
+                # engine, and results/findings feed back into its reasoning. A
+                # finding never terminates the mission — the attacker only reports
+                # genuine exhaustion when no work remains. Model calls are the most
+                # expensive per-call operation: under CRITICAL/EMERGENCY pressure
+                # they are skipped (no new model calls are spawned).
+                if self._model_attacker is not None and self._model_calls_allowed():
+                    try:
+                        attacker_step = self._model_attacker.step()
+                    except Exception:  # noqa: BLE001 - a model failure must never break the loop
+                        attacker_step = {"status": "model_unavailable", "pending": True}
+                    cycles.append(
                         {
-                            "mission_id": mission_id,
-                            "reason": f"memory ceiling {governor.memory_ceiling_mb():.0f} MiB exceeded",
-                            "rss_mb": governor.metrics().rss_mb,
-                        },
+                            "status": "model_attacker",
+                            "detail": attacker_step.get("status"),
+                            "completion_reason": attacker_step.get("completion_reason", ""),
+                        }
                     )
-                    self._log_resource_emergency(governor)
-                    governor.terminate_process_tree()
-                    resource_stop = StopCondition.MEMORY_BUDGET_EXHAUSTED
+                self._record_memory_telemetry(mission_id)
+                if cycle.get("status") in ("idle", "skipped"):
+                    if self._model_attacker is not None and not self._model_attacker.exhausted():
+                        idle = 0
+                        continue
+                    # Completion gate: idle only counts while no hypothesis/attack-
+                    # surface work remains. The deterministic planner schedules
+                    # probes from open hypotheses, so an idle result while open
+                    # hypotheses exist means the planner is blocked, not done.
+                    if self._open_hypothesis_work_remaining(mission_id) and self._schedule_hypothesis_probes(mission_id):
+                        idle = 0
+                        continue
+                    # SECURITY TEST MATRIX gate: queue exhaustion is never mission
+                    # completion — schedule work for incomplete applicable domains
+                    # before considering idle terminal.
+                    if self._matrix_incomplete(mission_id):
+                        scheduled = self._schedule_matrix_actions(mission_id)
+                        if not scheduled and self.director_active:
+                            payload = self._request_ai_decision(mission_id, parameters=parameters)
+                            if payload is not None and not payload.get("__complete__"):
+                                outcome = self._schedule_ai_action(mission_id, payload, parameters=parameters)
+                                scheduled = outcome is not None and outcome.get("status") != "ai_replay"
+                        if scheduled:
+                            idle = 0
+                            continue
+                    idle += 1
+                    if idle >= max_idle_cycles:
+                        broke_early = True
+                        break
+                    continue
+                idle = 0
+                stop = self._orchestration.stop_condition(mission_id)
+                if stop and stop.get("stop_condition"):
+                    # A numerical coverage/completion signal must not claim
+                    # completion while the plan still carries untested work
+                    # (replan-scheduled discovery such as javascript analysis, or
+                    # hypothesis-driven validation): keep executing until that work
+                    # is discharged.
+                    if (
+                        stop.get("stop_condition")
+                        in ("coverage_target_achieved", "high_value_hypotheses_resolved", "findings_validated")
+                        and self._has_pending_plan_work(mission_id)
+                    ):
+                        continue
+                    # Completion gate: high-value hypotheses still open mean the
+                    # assessment is not finished. A coverage percentage is not a
+                    # security verdict, so the loop continues while probe work for
+                    # those hypotheses remains possible.
+                    if self._open_hypothesis_work_remaining(mission_id):
+                        continue
+                    # SECURITY TEST MATRIX gate: a success signal is only
+                    # actionable when every applicable domain reached a terminal
+                    # state. Queue exhaustion / coverage numbers never complete an
+                    # assessment with untested applicable domains.
+                    if stop.get("stop_condition") in _SUCCESS_STOP_CONDITION_NAMES and self._matrix_incomplete(
+                        mission_id
+                    ):
+                        continue
+                    # A target that persistently blocks the assessment is never
+                    # "complete": keep a reduced (throttled) presence instead of
+                    # converting a defensive response into a success stop.
+                    if self._adaptive_blocked():
+                        continue
+                    # The model attacker still holds real work: keep the loop alive.
+                    if self._model_attacker is not None and not self._model_attacker.exhausted():
+                        continue
+                    broke_early = True
                     break
-                if governor.mission_deadline_exceeded(mission_id):
-                    self._publish(
-                        "mission.resource.deadline",
-                        {"mission_id": mission_id, "reason": "mission deadline exceeded"},
-                    )
-                    resource_stop = StopCondition.MISSION_DEADLINE_EXCEEDED
+                # Phase 1 exhaustion gate: the attack surface is only complete when
+                # discovery, dynamic re-discovery, all applicable capability×surface
+                # combinations, the assessment queue and the verification queue are
+                # exhausted and no new attack paths remain. With a model attacker
+                # wired, its own genuine-exhaustion check is part of the gate.
+                if self._surface_exhausted(mission_id) and (
+                    self._model_attacker is None or self._model_attacker.exhausted()
+                ):
+                    # Even surface exhaustion cannot complete the mission while
+                    # applicable security domains remain untested — matrix work
+                    # (injection, authz, ...) is scheduled before finalizing.
+                    if self._matrix_incomplete(mission_id) and (
+                        self._schedule_matrix_actions(mission_id)
+                    ):
+                        idle = 0
+                        continue
+                    broke_early = True
                     break
+                if cycle.get("status") == "ai_complete":
+                    ai_complete_requested = True
+                    broke_early = True
+                    break
+            # -- pass boundary (cycle ceiling reached or early break) ------------
+            if broke_early:
+                break
+            # A full pass completed: this is a REASSESSMENT boundary, never a
+            # termination while budget remains and the matrix is incomplete.
             mission = self._orchestration.get(mission_id)
             if mission.mission.state.is_terminal:
                 break
-            if mission.budget.executions_budget and mission.budget.executions_used >= mission.budget.executions_budget:
+            if self._mission_budget_exhausted(mission_id):
+                resource_stop = StopCondition.RESOURCE_BUDGET_EXHAUSTED
                 break
-            if mission.budget.time_budget_seconds and mission.budget.time_used_seconds >= mission.budget.time_budget_seconds:
-                # The operator-configured time budget is a hard wall-clock ceiling
-                # (the loop must never keep running just because a stop condition
-                # is only evaluated lazily).
-                resource_stop = StopCondition.TIME_BUDGET_EXHAUSTED
+            matrix = self._matrix_for(mission_id)
+            if matrix is not None and matrix.is_complete() and not self._has_pending_plan_work(mission_id):
                 break
-            self._probe_count_cycle = 0
-            cycle = self.execute_cycle(mission_id, parameters=parameters)
-            cycles.append(cycle)
-            # Model-driven attack step: the connected model reasons over the
-            # observed surface, its accepted hypotheses become real assessment
-            # tasks that are discharged by the ordinary capability execution
-            # engine, and results/findings feed back into its reasoning. A
-            # finding never terminates the mission — the attacker only reports
-            # genuine exhaustion when no work remains. Model calls are the most
-            # expensive per-call operation: under CRITICAL/EMERGENCY pressure
-            # they are skipped (no new model calls are spawned).
-            if self._model_attacker is not None and self._model_calls_allowed():
-                try:
-                    attacker_step = self._model_attacker.step()
-                except Exception:  # noqa: BLE001 - a model failure must never break the loop
-                    attacker_step = {"status": "model_unavailable", "pending": True}
-                cycles.append(
-                    {
-                        "status": "model_attacker",
-                        "detail": attacker_step.get("status"),
-                        "completion_reason": attacker_step.get("completion_reason", ""),
-                    }
-                )
-            self._record_memory_telemetry(mission_id)
-            if cycle.get("status") in ("idle", "skipped"):
-                if self._model_attacker is not None and not self._model_attacker.exhausted():
-                    idle = 0
-                    continue
-                # Completion gate: idle only counts while no hypothesis/attack-
-                # surface work remains. The deterministic planner schedules
-                # probes from open hypotheses, so an idle result while open
-                # hypotheses exist means the planner is blocked, not done.
-                if self._open_hypothesis_work_remaining(mission_id) and self._schedule_hypothesis_probes(mission_id):
-                    idle = 0
-                    continue
-                idle += 1
-                if idle >= max_idle_cycles:
-                    break
-                continue
+            reassessment_passes += 1
+            if reassessment_passes > 50:
+                # Absolute safety ceiling on reassessment passes (each pass is
+                # already bounded by max_cycles): prevents pathological spin.
+                cycle_ceiling_reached = True
+                break
+            self._publish(
+                "mission.cycle_ceiling.reassessment",
+                {
+                    "mission_id": mission_id,
+                    "pass": reassessment_passes,
+                    "reason": "cycle ceiling reached with budget remaining; Security Test Matrix incomplete",
+                    "incomplete_domains": [d.domain for d in matrix.incomplete_domains()] if matrix is not None else [],
+                },
+            )
+            if self.director_active:
+                with contextlib.suppress(Exception):
+                    hunt_context = self._build_hunt_context(mission_id)
+                    self._hunt_director.reassess(hunt_context)
             idle = 0
-            stop = self._orchestration.stop_condition(mission_id)
-            if stop and stop.get("stop_condition"):
-                # A numerical coverage/completion signal must not claim
-                # completion while the plan still carries untested work
-                # (replan-scheduled discovery such as javascript analysis, or
-                # hypothesis-driven validation): keep executing until that work
-                # is discharged.
-                if (
-                    stop.get("stop_condition")
-                    in ("coverage_target_achieved", "high_value_hypotheses_resolved", "findings_validated")
-                    and self._has_pending_plan_work(mission_id)
-                ):
-                    continue
-                # Completion gate: high-value hypotheses still open mean the
-                # assessment is not finished. A coverage percentage is not a
-                # security verdict, so the loop continues while probe work for
-                # those hypotheses remains possible.
-                if self._open_hypothesis_work_remaining(mission_id):
-                    continue
-                # A target that persistently blocks the assessment is never
-                # "complete": keep a reduced (throttled) presence instead of
-                # converting a defensive response into a success stop.
-                if self._adaptive_blocked():
-                    continue
-                # The model attacker still holds real work: keep the loop alive.
-                if self._model_attacker is not None and not self._model_attacker.exhausted():
-                    continue
-                break
-            # Phase 1 exhaustion gate: the attack surface is only complete when
-            # discovery, dynamic re-discovery, all applicable capability×surface
-            # combinations, the assessment queue and the verification queue are
-            # exhausted and no new attack paths remain. With a model attacker
-            # wired, its own genuine-exhaustion check is part of the gate.
-            if self._surface_exhausted(mission_id) and (
-                self._model_attacker is None or self._model_attacker.exhausted()
-            ):
-                break
-        # Track if the cycle ceiling was reached (completed all max_cycles iterations
-        # without breaking early). This is NOT resource exhaustion — it's an
-        # operational ceiling that operators should be aware of.
-        if cycles_run == max_cycles and resource_stop is None:
+        if cycles_run >= max_cycles and resource_stop is None and not ai_complete_requested:
             cycle_ceiling_reached = True
         surface_report = self._surface_exhaustion_report(mission_id)
-        if resource_stop is not None:
+        matrix_summary = self._matrix_report(mission_id)
+        if ai_complete_requested:
+            # The AI requested completion AND the Security Test Matrix was
+            # verified complete at request time — the one honest success path.
+            finalize_condition = StopCondition.OBJECTIVES_COMPLETE
+        elif resource_stop is not None:
             # A resource-triggered stop is the truthful terminal: it is never
             # converted into success and never into a generic blocked.
             finalize_condition = resource_stop
         elif cycle_ceiling_reached:
             # The cycle ceiling was reached with budget remaining. This is an
-            # operational ceiling, NOT resource exhaustion.
-            # If there is still actionable work and budget remaining, do NOT
-            # terminate with CYCLE_CEILING_REACHED. Instead, classify based on
-            # what work actually remains (replan and continue conceptually).
-            if self._deterministic_work_remaining(mission_id) or self._open_hypothesis_work_remaining(mission_id):
-                # There is still deterministic or hypothesis-driven work that
-                # could be actionable. The cycle ceiling is a replanning
-                # boundary, not a terminal condition. Classify based on what
-                # work actually remains.
-                if self._open_hypothesis_work_remaining(mission_id):
-                    finalize_condition = StopCondition.BLOCKED
+            # operational ceiling, NOT resource exhaustion, and NEVER a
+            # completion: the Security Test Matrix decides what happens.
+            if self._mission_budget_exhausted(mission_id):
+                finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
+            elif self._matrix_incomplete(mission_id):
+                # Incomplete assessment + remaining budget → the ceiling is a
+                # REASSESSMENT boundary. The mission is reported BLOCKED (work
+                # remains that the loop could not discharge within its cycle
+                # envelope) — never completed, never silently dropped.
+                finalize_condition = StopCondition.BLOCKED
+                self._publish(
+                    "mission.cycle_ceiling.reassessment",
+                    {
+                        "mission_id": mission_id,
+                        "reason": "cycle ceiling reached with budget remaining; Security Test Matrix incomplete",
+                    },
+                )
+            else:
+                matrix = self._matrix_for(mission_id)
+                if matrix is not None and matrix.is_complete():
+                    finalize_condition = StopCondition.OBJECTIVES_COMPLETE
                 else:
                     finalize_condition = StopCondition.NO_ACTIONABLE_WORK
-            elif self._mission_budget_exhausted(mission_id):
-                # Budget actually exhausted - this is genuine resource exhaustion
-                finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
-            else:
-                # No actionable work remains and budget remains - this is an
-                # operational ceiling with no actionable work
-                finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         elif self._mission_budget_exhausted(mission_id):
             # INVARIANT A/B: resource exhaustion is only claimed when the actual
             # budget predicate is true (execution_exhausted or time_exhausted).
@@ -691,6 +882,11 @@ class MissionExecutionService:
         elif self._open_hypothesis_work_remaining(mission_id):
             # Open actionable hypotheses could not be discharged (their probe
             # capabilities are unavailable or the target is not probeable).
+            finalize_condition = StopCondition.BLOCKED
+        elif self._matrix_incomplete(mission_id):
+            # Applicable Security Test Matrix domains never reached a terminal
+            # state and no producer (AI or deterministic) can create more work
+            # within budget: honest BLOCKED, never a success stop.
             finalize_condition = StopCondition.BLOCKED
         elif self._model_attacker is not None and not self._model_attacker.exhausted():
             # The model attacker still holds un-dispatched work.
@@ -745,7 +941,72 @@ class MissionExecutionService:
             "adaptive_attack": self._adaptive_attack.snapshot() if self._adaptive_attack is not None else None,
             "model_attacker": self._model_attacker.report() if self._model_attacker is not None else None,
             "resource": self._resource_report(),
+            # AI attribution (proves the AI actually directed the hunt).
+            "ai": self.ai_attribution(),
+            # First-class Security Test Matrix report (completion contract).
+            "matrix": matrix_summary,
+            "stop_condition": finalize_condition.value if finalize_condition is not None else "",
         }
+
+    def ai_attribution(self) -> dict[str, Any]:
+        """Return the AI Hunt Director attribution block for this run.
+
+        Proves (or honestly refutes) that the connected model generated hunt
+        decisions: per-decision records with provider, model, selected
+        capability/domain/tool, policy verdict and execution outcome — never
+        credentials.
+        """
+        director = self._hunt_director
+        stats = dict(self._ai_stats)
+        decisions = list(self._decision_trace)
+        return {
+            "enabled": director is not None,
+            "provider": str(getattr(self._ai_settings, "provider", "") or "") if director is not None else "",
+            "model": str(getattr(self._ai_settings, "model", "") or "") if director is not None else "",
+            **stats,
+            "ai_decision_ratio": (
+                round(stats["ai_decisions"] / max(1, stats["ai_decisions"] + stats["deterministic_decisions"]), 4)
+            ),
+            "decisions_trace": decisions[-60:],
+        }
+
+    def _matrix_report(self, mission_id: str) -> dict[str, Any] | None:
+        """Return the final Security Test Matrix summary (best-effort)."""
+        matrix = self._matrix_for(mission_id)
+        if matrix is None:
+            return None
+        with contextlib.suppress(Exception):
+            return matrix.summary()
+        return None
+
+    def _matrix_enforced(self, mission_id: str) -> bool:
+        """Return ``True`` when the matrix completion contract applies."""
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        objective = str(getattr(mission.policy, "objective_name", "") or "")
+        if objective.replace("-", "_") != "full_security_assessment":
+            return False
+        spec = normalize_target(mission.context.target_id or "")
+        return spec.scheme in ("http", "https")
+
+    def _matrix_incomplete(self, mission_id: str) -> bool:
+        """Return ``True`` when applicable Security Test Matrix domains remain.
+
+        The matrix is the completion contract for ``full_security_assessment``
+        missions on web targets; narrower objectives keep their historical
+        completion semantics.
+        """
+        if not self._matrix_enforced(mission_id):
+            return False
+        matrix = self._matrix_for(mission_id)
+        if matrix is None:
+            return False
+        with contextlib.suppress(Exception):
+            self._update_matrix_applicability(mission_id)
+            return not matrix.is_complete()
+        return False
 
     # -- decision / execution -----------------------------------------------
 
@@ -782,6 +1043,8 @@ class MissionExecutionService:
                 mission_id=mission_id,
                 auto_provision=auto_provision,
                 profile_tools=profile_tools,
+                ai_client=self._ai_client,
+                ai_settings=self._ai_settings,
             )
         except Exception:  # noqa: BLE001 - preflight must never crash the runner
             return None
@@ -905,6 +1168,25 @@ class MissionExecutionService:
             self._surface_feedback(mission_id, raw, capability, target)
             self._planning.get_action(mission_id, action_id).mark(ActionStatus.COMPLETED)
             meaningful = has_meaningful_content(raw.get("content"))
+            # Security Test Matrix bookkeeping (evidence-backed).
+            if meaningful:
+                positive_signal = raw.get("observation_type") == "vulnerability"
+                self._record_matrix_execution(
+                    mission_id,
+                    capability=capability,
+                    tool_id=tool_id,
+                    outcome="tested_positive" if positive_signal else "tested_negative",
+                    notes=f"{capability}/{tool_id} on {target}",
+                )
+            else:
+                self._record_matrix_execution(
+                    mission_id,
+                    capability=capability,
+                    tool_id=tool_id,
+                    outcome="uninformative",
+                    notes=f"{capability}/{tool_id} produced no usable signal",
+                )
+            self._update_matrix_applicability(mission_id)
             if meaningful:
                 self._record_coverage(mission_id, target, capability, tool_id, state=CoverageState.TESTED)
                 # The planner schedules the hypothesis-bound probe BEFORE the
@@ -1114,6 +1396,13 @@ class MissionExecutionService:
         """
         mission = self._orchestration.get(mission_id)
         target = mission.context.target_id
+        self._record_matrix_execution(
+            mission_id,
+            capability=capability,
+            tool_id=tool_id,
+            outcome="failed",
+            notes=error[:200],
+        )
         self._attack_observe(
             mission_id,
             status_code=None,
@@ -1334,6 +1623,598 @@ class MissionExecutionService:
         with contextlib.suppress(Exception):  # provenance recording is best-effort
             self._orchestration.record_ai_trace(mission_id, decision_id=decision_id, **trace)
 
+    # -- AI Hunt Director integration ----------------------------------------
+    #
+    # The AI Hunt Director is the autonomous decision authority for
+    # full_security_assessment missions: every meaningful cycle it receives
+    # the complete mission state (including the Security Test Matrix) and its
+    # structured decision drives the next action. HunterX remains the
+    # enforcement system: scope, authorization, budgets, tool availability
+    # and evidence requirements are validated by deterministic policy gates
+    # BEFORE any AI-selected action executes.
+
+    @property
+    def director_active(self) -> bool:
+        """Return ``True`` when an AI Hunt Director is wired and usable.
+
+        Lazily builds the director on first access so a configured provider
+        starts directing without any manual bootstrap step.
+        """
+        if self._hunt_director is None:
+            self._build_hunt_director()
+        return self._hunt_director is not None
+
+    def _build_hunt_director(self) -> Any:
+        """Build the AI Hunt Director from the configured AI client."""
+        if self._hunt_director is not None:
+            return self._hunt_director
+        if self._ai_client is None or self._ai_settings is None:
+            return None
+        if not str(getattr(self._ai_settings, "provider", "") or "").strip():
+            return None
+        try:
+            from hunterx.application.ai_hunt_director.director import AIHuntDirector
+
+            allowed = tuple(
+                {
+                    capability
+                    for domain in SecurityTestMatrix().domains.values()
+                    for capability in domain.capabilities
+                }
+                | set(_STATE_BY_CAPABILITY.keys())
+            )
+            self._hunt_director = AIHuntDirector(
+                ai_port=self._ai_client,
+                model=str(self._ai_settings.model or ""),
+                provider=str(self._ai_settings.provider or ""),
+                allowed_capabilities=allowed,
+            )
+        except Exception:  # noqa: BLE001 - director build must never break composition
+            return None
+        return self._hunt_director
+
+    def _matrix_for(self, mission_id: str) -> SecurityTestMatrix | None:
+        """Return (lazily building) the mission's Security Test Matrix."""
+        if self._matrix is None or self._matrix_mission_id != mission_id:
+            try:
+                mission = self._orchestration.get(mission_id)
+                spec = normalize_target(mission.context.target_id or "")
+                target_kind = "web" if spec.scheme in ("http", "https") else "network"
+            except Exception:  # noqa: BLE001 - matrix build is best-effort
+                return None
+            self._matrix = SecurityTestMatrix(target_kind=target_kind)
+            self._matrix_mission_id = mission_id
+        return self._matrix
+
+    def _context_markers(self, mission: Any) -> set[str]:
+        """Derive deterministic applicability markers from the discovered context."""
+        markers: set[str] = set()
+        haystacks: list[str] = []
+        context = mission.context
+        haystacks.extend(str(url) for url in (getattr(context, "endpoints", {}) or {}).keys())
+        haystacks.extend(f"{key}:{value}" for key, value in (getattr(context, "parameters", {}) or {}).items())
+        haystacks.extend(
+            f"{tech.name if hasattr(tech, 'name') else tech}"
+            for tech in (getattr(context, "technologies", {}) or {}).values()
+        )
+        for observation in getattr(context, "observations", [])[-80:]:
+            content = getattr(observation, "content", None)
+            if isinstance(content, dict):
+                haystacks.append(json.dumps(content, default=str)[:2000].lower())
+        blob = " ".join(haystacks).lower()
+        for marker in ("graphql", "jwt", "websocket", "ws://", "wss://", "xml", "soap", "upload", "api"):
+            if marker in blob:
+                markers.add(marker)
+        if any(key.startswith("/") for key in (getattr(context, "endpoints", {}) or {})):
+            markers.add("api")
+        return markers
+
+    def _update_matrix_applicability(self, mission_id: str) -> None:
+        """Refresh domain applicability from the discovered attack surface."""
+        matrix = self._matrix_for(mission_id)
+        if matrix is None:
+            return
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception:  # noqa: BLE001 - best-effort
+            return
+        with contextlib.suppress(Exception):
+            changed = matrix.update_applicability(self._context_markers(mission))
+            if changed:
+                self._publish("mission.matrix.applicability", {"mission_id": mission_id, "changed": changed[:12]})
+
+    def _record_matrix_execution(
+        self,
+        mission_id: str,
+        *,
+        capability: str,
+        tool_id: str,
+        outcome: str,
+        findings_delta: int = 0,
+        validated_delta: int = 0,
+        notes: str = "",
+    ) -> None:
+        """Feed one real execution outcome into the Security Test Matrix."""
+        matrix = self._matrix_for(mission_id)
+        if matrix is None:
+            return
+        with contextlib.suppress(Exception):
+            updated = matrix.record_execution(
+                capability=capability,
+                tool_id=tool_id,
+                outcome=outcome,
+                findings=findings_delta,
+                validated_findings=validated_delta,
+                notes=notes,
+            )
+            if updated:
+                self._publish(
+                    "mission.matrix.updated",
+                    {"mission_id": mission_id, "domains": updated[:8], "outcome": outcome},
+                )
+
+    def _capability_catalog(self, mission_id: str) -> tuple[list[Any], list[str]]:
+        """Return ToolCapability descriptions + plain tool ids available to the AI.
+
+        The catalog covers every capability the matrix can require; each entry
+        records whether a provider tool exists so the AI never selects an
+        impossible capability.
+        """
+        from hunterx.application.ai_hunt_director.protocol import ToolCapability
+
+        catalog_cache = getattr(self, "_catalog_cache", None)
+        if catalog_cache is not None and catalog_cache[0] == mission_id:
+            return catalog_cache[1], catalog_cache[2]
+        matrix = self._matrix_for(mission_id)
+        capability_ids: list[str] = []
+        if matrix is not None:
+            for domain in matrix.domains.values():
+                capability_ids.extend(domain.capabilities)
+        capability_ids.extend(_STATE_BY_CAPABILITY.keys())
+        seen: set[str] = set()
+        catalog: list[ToolCapability] = []
+        resolver = getattr(self._readiness, "_resolver", None)
+        providers_for = getattr(resolver, "providers_for", None)
+        readiness_check = getattr(self._readiness, "check", None)
+        available_tools: set[str] = set()
+        if callable(readiness_check):
+            with contextlib.suppress(Exception):
+                report = readiness_check(tool_ids=None)
+                for verdict in getattr(report, "tools", []) or []:
+                    if getattr(verdict, "status", None) is not None and str(verdict.status).endswith("AVAILABLE"):
+                        available_tools.add(str(verdict.tool_id))
+        descriptions: dict[str, tuple[str, str]] = {}
+        for domain in (matrix.domains.values() if matrix is not None else []):
+            for capability in domain.capabilities:
+                descriptions.setdefault(capability, (f"{domain.label} via {capability}", domain.category))
+        for capability in dict.fromkeys(capability_ids):
+            if capability in seen:
+                continue
+            seen.add(capability)
+            label, category = descriptions.get(capability, (capability.replace("_", " "), "active_testing"))
+            providers: list[str] = []
+            if callable(providers_for):
+                with contextlib.suppress(Exception):
+                    providers = [str(tool) for tool in providers_for(capability)]
+            live = [tool for tool in providers if not available_tools or tool in available_tools]
+            catalog.append(
+                ToolCapability(
+                    tool_id=capability,
+                    name=capability,
+                    description=label,
+                    purpose=label,
+                    capability=category,
+                    input_schema={"asset": "target URL/host to test", "param": "optional parameter"},
+                    preconditions=() if live else ("no provider tool detected; will be validated at execution time",),
+                    supported_target_types=("url", "host"),
+                    risk_level="medium",
+                    evidence_types=["observation"],
+                )
+            )
+        self._catalog_cache = (mission_id, catalog, sorted(available_tools))
+        return catalog, sorted(available_tools)
+
+    def _build_hunt_context(self, mission_id: str):  # noqa: ANN201 - protocol type imported lazily
+        """Assemble the COMPLETE mission state for the AI Hunt Director."""
+        from hunterx.application.ai_hunt_director.protocol import (
+            FindingSummary,
+            HypothesisSummary,
+            ObservationSummary,
+            ResourceState,
+            HuntContext,
+        )
+
+        mission = self._orchestration.get(mission_id)
+        matrix = self._matrix_for(mission_id)
+        if matrix is not None:
+            self._update_matrix_applicability(mission_id)
+        catalog, tools_available = self._capability_catalog(mission_id)
+        context = mission.context
+        budget = mission.budget
+        scope_dict = {
+            "included_targets": list(getattr(context.scope, "included_targets", ()) or ()),
+            "excluded_assets": list(getattr(context.scope, "excluded_assets", ()) or ()),
+            "note": "Only included targets may be tested. Out-of-scope requests are rejected.",
+        }
+
+        def _content_summary(observation: Any) -> str:
+            content = getattr(observation, "content", "")
+            if isinstance(content, dict):
+                return json.dumps(content, default=str)
+            return str(content)
+
+        observations = [
+            ObservationSummary(
+                observation_id=str(getattr(o, "observation_id", "")),
+                observation_type=str(getattr(o, "observation_type", "")),
+                tool_id=str(getattr(o, "tool_id", "")),
+                asset_key=str(getattr(o, "asset_key", "")),
+                content_summary=_content_summary(o)[:300],
+                evidence_ref=str(getattr(o, "evidence_ref", "")),
+                confidence=float(getattr(o, "confidence", 0.0) or 0.0),
+                provenance=dict(getattr(o, "provenance", {}) or {}),
+            )
+            for o in getattr(context, "observations", [])[-60:]
+        ]
+        hypotheses = [
+            HypothesisSummary(
+                hypothesis_id=h.hypothesis_id,
+                statement=h.statement[:300],
+                state=h.state,
+                category=str(h.category),
+                vulnerability_class=str((h.provenance or {}).get("vulnerability_class") or ""),
+                priority=float(h.priority),
+                confidence=float(h.confidence),
+                supporting_evidence=list(h.supporting_evidence)[:6],
+                contradicting_evidence=list(h.contradicting_evidence)[:6],
+                tested_actions=list(h.tested_actions)[:6],
+                created_at="",
+                updated_at="",
+                provenance=dict(h.provenance or {}),
+            )
+            for h in mission.hypotheses[-60:]
+        ]
+        findings = [
+            FindingSummary(
+                finding_id=str(f.get("finding_id", "")),
+                vulnerability_class=str(f.get("vulnerability_class", "")),
+                title=str(f.get("title", ""))[:160],
+                target=str(f.get("target", "") or f.get("asset_key", "")),
+                severity=str(f.get("severity", "info")),
+                stage=str(f.get("stage", "")),
+                confidence=float(f.get("confidence", 0.0) or 0.0),
+                evidence_refs=[str(ref) for ref in (f.get("evidence_refs") or ())][:6],
+                hypothesis_id=str(f.get("hypothesis_id", "")),
+            )
+            for f in getattr(context, "findings", [])
+        ]
+        executions = getattr(context, "tool_executions", []) or []
+        previous_results = [
+            {
+                "action_id": str(getattr(e, "action_id", "")),
+                "tool_id": str(getattr(e, "tool_id", "")),
+                "capability": str(getattr(e, "capability", "")),
+                "asset": str(getattr(e, "asset", "")),
+                "summary": json.dumps(getattr(e, "result_summary", ""), default=str)[:240],
+            }
+            for e in executions[-10:]
+        ]
+        pending_actions: list[str] = []
+        try:
+            graph = self._planning.get_plan(mission_id)
+            for action in graph.actions.values():
+                if not action.status.is_terminal:
+                    pending_actions.append(f"{action.capability} @ {action.asset or 'target'}")
+        except Exception:  # noqa: BLE001 - best-effort context
+            pending_actions = []
+        negative = [
+            {
+                "asset_key": record.asset_key,
+                "capability": record.capability,
+                "outcome": record.outcome,
+            }
+            for record in (getattr(mission, "negative_evidence", []) or [])[-12:]
+        ]
+        remaining_executions = max(0, budget.executions_budget - budget.executions_used)
+        time_remaining = int(budget.time_budget_seconds - budget.time_used_seconds) if budget.time_budget_seconds > 0 else 3600
+        return HuntContext(
+            mission_id=mission_id,
+            target=context.target_id,
+            objective=str(mission.policy.objective_name),
+            scope=scope_dict,
+            authorization_context={"contexts": list(getattr(context.scope, "authorization_contexts", ()) or ()), "authorized": True},
+            current_phase=getattr(context, "current_phase", ""),
+            current_strategy=str(getattr(mission.policy, "strategy", "")),
+            available_capabilities=catalog,
+            available_tools=tools_available,
+            observations=observations,
+            hypotheses=hypotheses,
+            findings=findings,
+            technologies=[
+                str(t.name if hasattr(t, "name") else t) for t in (getattr(context, "technologies", {}) or {}).values()
+            ],
+            services=[str(s) for s in (getattr(context, "services", {}) or {}).keys()],
+            endpoints=[str(url) for url in (getattr(context, "endpoints", {}) or {}).keys()],
+            parameters=[f"{k}" for k in (getattr(context, "parameters", {}) or {}).keys()],
+            attack_surface={},
+            attack_paths=list(getattr(context, "attack_paths", []) or []),
+            negative_evidence=negative,
+            security_matrix=matrix.to_dict() if matrix is not None else {},
+            previous_tool_results=previous_results,
+            pending_actions=pending_actions,
+            coverage_matrix={
+                cell.capability: cell.state.value
+                for cell in mission.coverage_cells()[:120]
+            },
+            resource_state=ResourceState(
+                execution_remaining=remaining_executions,
+                time_remaining=max(0, time_remaining),
+                available_capabilities=[c.tool_id for c in catalog],
+            ),
+            ai_provider=str(self._ai_settings.provider if self._ai_settings else ""),
+            ai_model=str(self._ai_settings.model if self._ai_settings else ""),
+            completion_gate_status=matrix.summary() if matrix is not None else {},
+        )
+
+    def _policy_review_ai_decision(self, mission_id: str, decision: Any) -> tuple[bool, str]:
+        """Deterministic policy gate for an AI decision.
+
+        Enforces scope, budget and capability availability. Returns
+        ``(approved, reason)``.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+        except Exception as exc:  # noqa: BLE001
+            return False, f"mission unavailable: {exc}"
+        if mission.budget.execution_exhausted:
+            return False, "execution budget exhausted"
+        capability = (decision.capability or "").strip()
+        if not capability:
+            return False, "decision carries no capability"
+        asset = str((decision.arguments or {}).get("asset") or "").strip()
+        target = asset or mission.context.target_id
+        scope = getattr(mission.context, "scope", None)
+        if scope is not None and hasattr(scope, "allows") and target:
+            if not self._target_in_scope(scope, target):
+                self._publish(
+                    "mission.policy.scope_violation",
+                    {"mission_id": mission_id, "requested_target": target},
+                )
+                return False, f"target '{target}' is outside authorized scope"
+        known = {c.tool_id for c in self._capability_catalog(mission_id)[0]}
+        if capability not in known:
+            return False, f"unknown capability '{capability}'"
+        return True, ""
+
+    @staticmethod
+    def _target_in_scope(scope: Any, target: str) -> bool:
+        """Return ``True`` when ``target`` is inside the authorized scope.
+
+        Beyond the domain scope's own rules (exact/subdomain/path-prefix), a
+        request whose HOST:PORT equals an included target's HOST:PORT is in
+        scope: the AI legitimately addresses the authorized web origin by its
+        bare host for host-level capabilities (port/service discovery). Any
+        other host remains out of scope — third-party domains never pass.
+        """
+        if scope.allows(target):
+            return True
+        from urllib.parse import urlsplit
+
+        def _endpoint(value: str) -> tuple[str, str]:
+            parts = urlsplit(str(value))
+            host = parts.hostname or ""
+            scheme = parts.scheme or ""
+            if not parts.port:
+                default = {"http": "80", "https": "443"}.get(scheme, "")
+                return host.lower(), default
+            return host.lower(), str(parts.port)
+
+        req_host, req_port = _endpoint(target)
+        if not req_host:
+            # Bare hostname form.
+            req_host = str(target).strip().lower()
+            req_port = ""
+        for included in getattr(scope, "included_targets", ()) or ():
+            inc_host, inc_port = _endpoint(included)
+            if inc_host and inc_host == req_host and (not req_port or not inc_port or req_port == inc_port):
+                return True
+        return False
+
+    def _request_ai_decision(self, mission_id: str, *, parameters: dict[str, Any] | None) -> dict[str, Any] | None:
+        """Ask the AI Hunt Director for the next action; validate it.
+
+        Returns a decision payload for :meth:`_execute_decision`-style
+        execution (``{"next_action": "", "ai": decision}``) or ``None`` when
+        the director is unavailable/failed/rejected — every rejection is
+        counted and traced.
+        """
+        director = self._build_hunt_director()
+        if director is None:
+            return None
+        if time.monotonic() < self._director_cooldown_until:
+            # Provider rate-limit cooldown: do NOT re-fire (prevents 429 storms);
+            # the deterministic planner continues this cycle.
+            return None
+        stats = self._ai_stats
+        try:
+            hunt_context = self._build_hunt_context(mission_id)
+        except Exception as exc:  # noqa: BLE001
+            stats["provider_failures"] += 1
+            self._trace_decision(mission_id, {"decision_id": "", "error": f"context build failed: {exc}"}, status="context_error")
+            return None
+        stats["ai_cycles"] += 1
+        try:
+            decision = director.decide_next_action(hunt_context)
+        except Exception as exc:  # noqa: BLE001 - provider failures never break the loop
+            stats["provider_failures"] += 1
+            self._director_consecutive_failures += 1
+            # Bounded exponential backoff with jitter on the shared director path.
+            backoff = min(90.0, 5.0 * (2 ** max(0, self._director_consecutive_failures - 1)))
+            import random
+
+            self._director_cooldown_until = time.monotonic() + backoff + random.uniform(0.0, 3.0)
+            self._publish(
+                "mission.ai.director_failed",
+                {
+                    "mission_id": mission_id,
+                    "error": str(exc)[:400],
+                    "cooldown_s": round(self._director_cooldown_until - time.monotonic(), 1),
+                },
+            )
+            self._trace_decision(mission_id, {"decision_id": "", "error": str(exc)[:300]}, status="provider_failure")
+            return None
+        self._director_consecutive_failures = 0
+        signature = f"{decision.action_type.value}|{decision.security_domain}|{decision.capability}|{json.dumps(decision.arguments, sort_keys=True, default=str)}"
+        adaptive = bool(self._last_decision_signature) and signature != self._last_decision_signature
+        approved, reason = self._policy_review_ai_decision(mission_id, decision)
+        trace = {
+            "decision_id": decision.decision_id,
+            "provider": director.provider,
+            "model": director.model,
+            "timestamp": utcnow_iso(),
+            "question": decision.question[:200],
+            "security_domain": decision.security_domain,
+            "selected_capability": decision.capability,
+            "selected_tool": decision.tool_id,
+            "arguments": json.dumps(decision.arguments, default=str)[:200],
+            "reason": decision.rationale[:200],
+            "adaptive": adaptive,
+            "latency_ms": decision.metadata.get("latency_ms", 0),
+        }
+        if decision.action_type.value == "complete":
+            matrix = self._matrix_for(mission_id)
+            complete = bool(matrix is not None and matrix.is_complete())
+            trace.update({"action": "complete", "policy_result": "approved" if complete else "rejected"})
+            self._trace_decision(mission_id, trace, status="approved" if complete else "rejected")
+            if complete:
+                stats["ai_decisions"] += 1
+                return {"__complete__": True}
+            stats["invalid_decisions"] += 1
+            self._publish(
+                "mission.ai.completion_rejected",
+                {
+                    "mission_id": mission_id,
+                    "reason": "Security Test Matrix incomplete",
+                    "incomplete": [d.domain for d in matrix.incomplete_domains()] if matrix is not None else [],
+                },
+            )
+            return None
+        if not approved:
+            stats["policy_rejections"] += 1
+            trace["policy_result"] = f"rejected: {reason}"
+            self._trace_decision(mission_id, trace, status="policy_rejected")
+            return None
+        stats["ai_decisions"] += 1
+        if adaptive:
+            stats["adaptive_replans"] += 1
+        self._last_decision_signature = signature
+        trace["policy_result"] = "approved"
+        self._trace_decision(mission_id, trace, status="approved")
+        # Durable attribution: persist as a first-class ai_assisted decision.
+        with contextlib.suppress(Exception):
+            self._orchestration.record_ai_decision(
+                mission_id,
+                decision_id=decision.decision_id,
+                capability=decision.capability,
+                tool_id=decision.tool_id,
+                reason=f"{decision.question[:160]} :: {decision.rationale[:160]}",
+                expected_result="; ".join(decision.evidence_required)[:200],
+                priority=decision.priority,
+                latency_ms=int(decision.metadata.get("latency_ms", 0) or 0),
+                provider=director.provider,
+                model=director.model,
+                security_domain=decision.security_domain,
+            )
+        return {
+            "__ai__": True,
+            "capability": decision.capability,
+            "asset": str((decision.arguments or {}).get("asset") or ""),
+            "param": str((decision.arguments or {}).get("param") or ""),
+            "decision": decision,
+            "trace": trace,
+        }
+
+    def _trace_decision(self, mission_id: str, trace: dict[str, Any], *, status: str) -> None:
+        """Persist one attribution entry (bounded deque + best-effort trace)."""
+        entry = dict(trace)
+        entry["status"] = status
+        entry["mission_id"] = mission_id
+        self._decision_trace.append(entry)
+        with contextlib.suppress(Exception):
+            self._orchestration.record_ai_trace(mission_id, decision_id=str(trace.get("decision_id", "")), **{
+                key: value for key, value in trace.items() if key != "decision_id"
+            })
+
+    def _schedule_ai_action(
+        self,
+        mission_id: str,
+        payload: dict[str, Any],
+        *,
+        parameters: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        """Materialize an approved AI decision as a plan action and execute it.
+
+        The AI chose capability + target; HunterX schedules it through the
+        ordinary replanning pipeline (replay protection, dependency handling,
+        readiness checks), binds a tool, then runs the standard execution path
+        so observation ingestion, hypothesis assessment and coverage recording
+        all apply unchanged.
+        """
+        decision = payload["decision"]
+        capability = payload["capability"]
+        asset = payload["asset"]
+        try:
+            mission = self._orchestration.get(mission_id)
+            target = asset or mission.context.target_id
+            delta = self._planning.replan_for_change(
+                mission_id,
+                trigger=ReplanTrigger.CAPABILITY_SCHEDULED,
+                asset_key=target,
+                detail={"capability": capability},
+                reason=f"AI Hunt Director: {decision.security_domain or 'security testing'} ({decision.question[:80]})",
+            )
+        except Exception as exc:  # noqa: BLE001
+            self._ai_stats["invalid_decisions"] += 1
+            self._publish("mission.ai.schedule_failed", {"mission_id": mission_id, "error": str(exc)[:200]})
+            return None
+        action_id = ""
+        for change in delta.changes:
+            action_id = getattr(change, "action_id", "") or ""
+            if action_id:
+                break
+        graph = self._planning.get_plan(mission_id)
+        if not action_id:
+            # Replay protection filtered the request: this capability+asset
+            # already ran. Tell the loop to ask again (the next decision sees
+            # the executed result in its context).
+            self._ai_stats["invalid_decisions"] += 1
+            self._publish(
+                "mission.ai.replay_rejected",
+                {"mission_id": mission_id, "capability": capability, "asset": target},
+            )
+            return {"status": "ai_replay", "reason": f"{capability} on {target} already scheduled/executed"}
+        action = graph.action(action_id) if hasattr(graph, "action") else None
+        if action is None:
+            action = self._planning.get_action(mission_id, action_id)
+        if getattr(action, "status", None) is not None and str(action.status).endswith("PROPOSED"):
+            action.mark(ActionStatus.APPROVED)
+        if not action.selected_tool:
+            with contextlib.suppress(Exception):
+                self._planning.select_tool(mission_id, action_id)
+        decision_payload = {
+            "next_action": action_id,
+            "tool_id": action.selected_tool,
+            "capability": capability,
+            "ai_directed": True,
+            "ai_decision_id": decision.decision_id,
+            "ai_security_domain": decision.security_domain,
+            "ai_question": decision.question,
+        }
+        outcome = self._execute_decision(mission_id, decision_payload, parameters=parameters)
+        outcome["ai_directed"] = True
+        outcome["ai_security_domain"] = decision.security_domain
+        return outcome
+
     def _observation_from_result(self, capability: str, result: Any) -> dict[str, Any]:
         """Project a tool execution result into a normalized observation dict.
 
@@ -1486,6 +2367,19 @@ class MissionExecutionService:
             state=state,
             notes=notes,
         )
+        # Truthful matrix bookkeeping: an unavailable browser is a BLOCKED
+        # domain (with reason), never silent zero coverage and never fake
+        # negative evidence.
+        matrix = self._matrix_for(mission_id)
+        if matrix is not None:
+            with contextlib.suppress(Exception):
+                if status == "available":
+                    domain = matrix.domain("browser_testing")
+                    if domain is not None and domain.status is MatrixState.NOT_ASSESSED:
+                        domain.status = MatrixState.IN_PROGRESS
+                        domain.reason = "browser capability available; awaiting AI-selected browser test"
+                else:
+                    matrix.mark_blocked("browser_testing", f"browser automation {status}: {reason}")
         self._publish(
             "mission.browser.capability",
             {
@@ -2354,6 +3248,22 @@ class MissionExecutionService:
         # report-ready). The finding is downstream of the actual probe
         # verdict — it is never fabricated from the target alone.
         self._materialize_validated_finding(mission_id, hypothesis)
+        # Security Test Matrix: a validated finding is positive validated
+        # evidence for every domain the class's probe capability covers.
+        vulnerability_class = str((hypothesis.provenance or {}).get("vulnerability_class") or "")
+        capability = _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class, "")
+        matrix = self._matrix_for(mission_id)
+        if matrix is not None and capability:
+            with contextlib.suppress(Exception):
+                updated = matrix.record_validated_finding(capability)
+                validation_domain = matrix.domain("validation")
+                if validation_domain is not None and not validation_domain.status.is_terminal:
+                    validation_domain.status = MatrixState.TESTED_POSITIVE_VALIDATED
+                    validation_domain.reason = "validated finding produced through the evidence contract"
+                self._publish(
+                    "mission.matrix.validated",
+                    {"mission_id": mission_id, "domains": updated[:8], "vulnerability_class": vulnerability_class},
+                )
 
     def _materialize_validated_finding(self, mission_id: str, hypothesis: Any) -> None:
         """Create the full validated finding through the finding service.
@@ -2778,6 +3688,71 @@ class MissionExecutionService:
             self._consume_replan(mission_id)
         return scheduled
 
+    def _schedule_matrix_actions(self, mission_id: str) -> bool:
+        """Schedule assessment work for incomplete Security Test Matrix domains.
+
+        This is the queue-exhaustion backstop required by the completion
+        contract: when the plan has no ready action AND the AI director cannot
+        produce one, an applicable domain still marked NOT_ASSESSED / DEFERRED
+        gets its capability scheduled here. The mission may only idle (and the
+        run finalize) once every applicable domain is terminal or explicitly
+        blocked.
+
+        Returns ``True`` when at least one action was scheduled.
+        """
+        matrix = self._matrix_for(mission_id)
+        if matrix is None or not self._replan_allowed(mission_id):
+            return False
+        self._update_matrix_applicability(mission_id)
+        try:
+            mission = self._orchestration.get(mission_id)
+            graph = self._planning.get_plan(mission_id)
+            target = mission.context.target_id or "target"
+        except Exception:  # noqa: BLE001 - best-effort guard
+            return False
+        for domain_id in matrix.pending_domain_ids():
+            domain = matrix.domain(domain_id)
+            if domain is None:
+                continue
+            scheduled_capability = ""
+            for capability in domain.capabilities:
+                if any(
+                    action.capability == capability and not action.status.is_terminal
+                    for action in graph.actions.values()
+                ):
+                    continue
+                scheduled_capability = capability
+                break
+            if not scheduled_capability:
+                # Every capability of this domain already ran; the execution
+                # outcome recording settles it — nothing more to schedule.
+                continue
+            try:
+                delta = self._planning.replan_for_change(
+                    mission_id,
+                    trigger=ReplanTrigger.CAPABILITY_SCHEDULED,
+                    asset_key=target,
+                    detail={"capability": scheduled_capability},
+                    reason=f"Security Test Matrix: {domain_id} still {domain.status.value}",
+                )
+            except Exception:  # noqa: BLE001 - replanning must never break the loop
+                continue
+            if delta is None or _delta_is_empty(delta):
+                continue
+            self._check_replanned_readiness(mission_id)
+            self._consume_replan(mission_id)
+            self._publish(
+                "mission.matrix.scheduled",
+                {
+                    "mission_id": mission_id,
+                    "domain": domain_id,
+                    "capability": scheduled_capability,
+                    "target": target,
+                },
+            )
+            return True
+        return False
+
     def _advance_state(self, mission_id: str) -> bool:
         """Advance the planning state toward the phase that holds the work.
 
@@ -3118,6 +4093,7 @@ class MissionExecutionService:
 
     def _finalize_run(self, mission_id: str, *, stop_condition: StopCondition | None = None) -> None:
         """Finalize the mission run (idempotent) so no run stays ``running``."""
+        self._classify_matrix_at_finalize(mission_id)
         # COVERAGE_REVIEW is the last assessment phase before reporting: it
         # records that every dimension was reviewed (recon, attack surface,
         # hypotheses, active testing, validation, browser) before the terminal
@@ -3147,6 +4123,69 @@ class MissionExecutionService:
                 mission_id,
                 stop_condition=stop_condition.value if stop_condition is not None else None,
             )
+
+    def _classify_matrix_at_finalize(self, mission_id: str) -> None:
+        """Settle analysis/validation domains honestly at finalization time.
+
+        Domains without a direct probe capability (attack-path analysis,
+        validation, proof generation) are classified from the mission's real
+        end state — never defaulted to a terminal state they did not earn.
+        """
+        matrix = self._matrix_for(mission_id)
+        if matrix is None:
+            return
+        with contextlib.suppress(Exception):
+            self._update_matrix_applicability(mission_id)
+            mission = self._orchestration.get(mission_id)
+            paths = list(getattr(mission.context, "attack_paths", []) or [])
+            path_domain = matrix.domain("attack_path_analysis")
+            if path_domain is not None and not path_domain.status.is_terminal:
+                if paths:
+                    path_domain.status = MatrixState.TESTED_POSITIVE_VALIDATED
+                    path_domain.reason = f"{len(paths)} attack path(s) correlated from validated evidence"
+                else:
+                    surface = getattr(mission.context, "services", None)
+                    endpoints_exist = bool(getattr(mission.context, "endpoints", None))
+                    if endpoints_exist or surface:
+                        path_domain.status = MatrixState.TESTED_NEGATIVE
+                        path_domain.reason = "no chained attack path derivable from the assessed surface"
+                    # With no surface at all the domain stays non-terminal.
+            findings = getattr(mission.context, "findings", []) or []
+            validated = [f for f in findings if str(f.get("stage", "")) in ("verified", "validated", "report_ready")]
+            validation_domain = matrix.domain("validation")
+            if validation_domain is not None and not validation_domain.status.is_terminal:
+                if validated:
+                    validation_domain.status = MatrixState.TESTED_POSITIVE_VALIDATED
+                    validation_domain.reason = f"{len(validated)} finding(s) passed the validation contract"
+                elif findings:
+                    validation_domain.status = MatrixState.BLOCKED_WITH_REASON
+                    validation_domain.blocked_reason = "candidates exist but none completed validation"
+                else:
+                    supported_open = [
+                        h for h in mission.hypotheses if h.state.value in ("supported",)  # supported but never verified
+                    ]
+                    if supported_open:
+                        validation_domain.status = MatrixState.BLOCKED_WITH_REASON
+                        validation_domain.blocked_reason = f"{len(supported_open)} supported hypothesis(es) could not be independently verified"
+                    else:
+                        validation_domain.status = MatrixState.TESTED_NEGATIVE
+                        validation_domain.reason = "no candidate signals required validation"
+            proof_domain = matrix.domain("proof_generation")
+            if proof_domain is not None and not proof_domain.status.is_terminal:
+                proofs = sum(1 for f in findings if str(f.get("stage", "")) == "report_ready")
+                if validated and proofs == 0 and self._finding_service is None:
+                    proof_domain.status = MatrixState.BLOCKED_WITH_REASON
+                    proof_domain.blocked_reason = "finding service unavailable; PoC/proof pipeline not wired"
+                elif validated and proofs == 0:
+                    proof_domain.status = MatrixState.BLOCKED_WITH_REASON
+                    proof_domain.blocked_reason = "validated findings did not complete proof generation"
+                elif proofs:
+                    proof_domain.status = MatrixState.TESTED_POSITIVE_VALIDATED
+                    proof_domain.reason = f"{proofs} report-ready proof(s) generated"
+                else:
+                    proof_domain.status = MatrixState.NOT_APPLICABLE_WITH_EVIDENCE
+                    proof_domain.applicability_evidence = "no validated findings to prove"
+            self._publish("mission.matrix.finalized", {"mission_id": mission_id, **matrix.summary()})
 
     def _record_telemetry(self, mission_id: str) -> None:
         with contextlib.suppress(Exception):  # telemetry is best-effort

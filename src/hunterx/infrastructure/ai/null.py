@@ -45,3 +45,7 @@ class NullAIClient(AIPort):
         """Return a deterministic feature vector derived from ``text``."""
         digest = hashlib.sha256(text.encode("utf-8")).digest()
         return [byte / 255.0 for byte in digest]
+
+    def check(self) -> bool:
+        """Return ``False``: no provider is configured, so none is reachable."""
+        return False

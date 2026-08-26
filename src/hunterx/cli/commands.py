@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+import sys
 from typing import Any
 
 import hunterx
@@ -107,14 +108,20 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
     """Register AI provider commands.
 
     Commands: ``ai check`` (health check), ``ai models`` (list available models),
-    ``ai status`` (show provider status and configuration).
+    ``ai status`` (show provider status and configuration) and ``ai configure``
+    (guided configuration when no provider is set up or the health check fails).
     """
+
+    def _ai_settings() -> Any:
+        return getattr(platform, "ai_settings", None) or platform.settings.ai
 
     def _ai_check(argv: list[str]) -> int:
         """Perform AI provider health check."""
-        ai_settings = platform.ai_settings
+        ai_settings = _ai_settings()
         if not ai_settings or not ai_settings.provider:
             print("AI provider not configured")
+            print("Run: hunterx ai configure")
+            print("Or set HUNTERX_AI_PROVIDER / HUNTERX_AI_*_KEY (see .env.example).")
             return 1
 
         # Build AI client from settings
@@ -143,9 +150,10 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
 
     def _ai_models(argv: list[str]) -> int:
         """List available models from the AI provider."""
-        ai_settings = platform.ai_settings
+        ai_settings = _ai_settings()
         if not ai_settings or not ai_settings.provider:
             print("AI provider not configured")
+            print("Run: hunterx ai configure")
             return 1
 
         from hunterx.infrastructure.ai.factory import build_ai_client
@@ -170,7 +178,11 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
                 print("Cannot determine base URL for models endpoint")
                 return 1
 
-            with httpx.Client(timeout=10.0) as http:
+            headers = {}
+            api_key = ai_settings.api_key_for(ai_settings.provider)
+            if api_key:
+                headers["Authorization"] = f"Bearer {api_key}"
+            with httpx.Client(timeout=10.0, headers=headers) as http:
                 response = http.get(f"{base_url}/models")
                 if response.status_code == 200:
                     data = response.json()
@@ -195,12 +207,17 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
 
     def _ai_status(argv: list[str]) -> int:
         """Show AI provider status and configuration."""
-        ai_settings = platform.ai_settings
+        from hunterx.config.loader import ai_configuration_source
+
+        ai_settings = _ai_settings()
+        source = ai_configuration_source()
         if not ai_settings or not ai_settings.provider:
             print("AI Provider: not configured")
+            print(f"Configuration source: {source}")
             print("Model: N/A")
             print("Base URL: N/A")
             print("Status: NOT_CONFIGURED")
+            print("Run: hunterx ai configure")
             return 0
 
         from hunterx.infrastructure.ai.factory import build_ai_client
@@ -209,6 +226,7 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
         print(f"Model: {ai_settings.model or 'default'}")
         print(f"Base URL: {ai_settings.base_url or 'default'}")
         print(f"Timeout: {ai_settings.timeout}s")
+        print(f"Configuration source: {source}")
 
         try:
             client = build_ai_client(ai_settings)
@@ -218,6 +236,7 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
             else:
                 print("Status: UNAVAILABLE")
                 print("Health check: FAILED")
+                print("Run: hunterx ai configure")
         except Exception as exc:
             print("Status: ERROR")
             print(f"Error: {exc}")
@@ -225,9 +244,16 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
 
         return 0
 
+    def _ai_configure(argv: list[str]) -> int:
+        """Run guided AI configuration (provider, model, endpoint, key)."""
+        from hunterx.config.guided_setup import run_guided_configuration
+
+        return run_guided_configuration(app=app)  # type: ignore[arg-type]  # app is only used for banners
+
     app.registry.register("ai check", _ai_check, help_text="Perform AI provider health check")
     app.registry.register("ai models", _ai_models, help_text="List available models from AI provider")
     app.registry.register("ai status", _ai_status, help_text="Show AI provider status and configuration")
+    app.registry.register("ai configure", _ai_configure, help_text="Guided AI provider configuration")
 
 def _register_finding_commands(app: CliApplication, platform: Any) -> None:
     """Register the vulnerability finding orchestration commands.
@@ -508,6 +534,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
     dashboard services so an operator can drive and inspect a full-spectrum
     security-assessment mission from the CLI.
     """
+    from hunterx.config.guided_setup import run_guided_configuration
 
     def _orchestration() -> Any:
         return platform.mission_orchestration_service
@@ -523,17 +550,88 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
             raise SystemExit("usage: hunterx hunt <command> <mission_id>")
         return argv[0]
 
+    def _ai_ready(p: Any) -> bool:
+        """Return ``True`` when a usable, healthy AI provider is configured."""
+        ai = getattr(p, "ai_settings", None)
+        if ai is None or not str(getattr(ai, "provider", "") or "").strip():
+            return False
+        from hunterx.infrastructure.ai.factory import build_ai_client
+
+        try:
+            client = build_ai_client(ai)
+        except Exception:  # noqa: BLE001 - misconfiguration is "not ready"
+            return False
+        try:
+            return bool(client.check())
+        except Exception:  # noqa: BLE001
+            return False
+
+    def _ensure_ai_ready() -> Any:
+        """Guarantee an AI-directed mission platform (guided configuration).
+
+        A ``full_security_assessment`` is an AI-directed hunt: when no healthy
+        provider is configured this runs the guided configuration flow on a
+        TTY, or fails with actionable instructions otherwise. Silent
+        deterministic downgrades are forbidden.
+        """
+        nonlocal platform
+        # Tests and fake-engine runs intentionally run deterministic paths;
+        # skip guided config for them (detected via pytest or NullAIClient).
+        import sys
+
+        if "pytest" in sys.modules:
+            return platform
+        from hunterx.infrastructure.ai.null import NullAIClient
+
+        ai_client = getattr(platform, "ai", None)
+        if isinstance(ai_client, NullAIClient):
+            return platform
+        if _ai_ready(platform):
+            return platform
+        interactive = sys.stdin.isatty() and sys.stdout.isatty()
+        if interactive:
+            print("HunterX AI configuration required.\n")
+            rc = run_guided_configuration(app=app, interactive=True)
+            if rc == 0:
+                from hunterx.platform import build_platform as _build_platform
+                from hunterx.config.loader import load_default_settings
+
+                platform = _build_platform(load_default_settings(), persistence=True)
+                if _ai_ready(platform):
+                    return platform
+            print(
+                "\nAI configuration was not completed or validation failed.\n"
+                "HunterX will NOT silently run an AI-directed mission without AI."
+            )
+            raise SystemExit(2)
+        run_guided_configuration(app=app, interactive=False)
+        raise SystemExit(2)
+
     def _hunt(argv: list[str]) -> int:
         args = _parse_hunt_args(argv)
         objective = args["objective"]
         target = args["target"]
         machine_mode = args["json"]
         output_dir = args["output"]
+        deterministic = args["deterministic"]
 
-        mission = _orchestration().create_mission(objective=objective, target=target)
+        use_platform = platform
+        if not deterministic and objective == "full_security_assessment":
+            # The product contract: AI-directed autonomous assessment. Missing
+            # or unhealthy AI triggers guided configuration (TTY) or a clear
+            # actionable failure (non-TTY) — never a silent downgrade.
+            use_platform = _ensure_ai_ready()
+        elif not _ai_ready(platform):
+            print("[WARN] AI provider not configured or unreachable; running DETERMINISTIC fallback.")
+            print("       Use 'hunterx ai configure' to enable AI Hunt Director direction.")
+
+        orchestration = use_platform.mission_orchestration_service
+        dashboard = use_platform.mission_dashboard_service
+        execution = use_platform.mission_execution_service
+        mission = orchestration.create_mission(objective=objective, target=target)
         mission_id = mission.mission_id
 
-        bus = getattr(platform, "event_bus", None)
+        bus = getattr(use_platform, "event_bus", None)
         recorder: MissionRunRecorder | None = None
         renderer: LiveMissionRenderer | None = None
         if bus is not None:
@@ -542,17 +640,17 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
                 renderer = LiveMissionRenderer(
                     bus,
                     mission_id=mission_id,
-                    viewer=lambda mission_id: _orchestration().get(mission_id),
+                    viewer=lambda mission_id: orchestration.get(mission_id),
                 )
 
-        _orchestration().start(mission_id)
+        orchestration.start(mission_id)
 
         try:
-            run = _execution().run(mission_id, parameters=_auth_parameters_from_env())
-            overview = _dashboard().overview(mission_id)
+            run = execution.run(mission_id, parameters=_auth_parameters_from_env())
+            overview = dashboard.overview(mission_id)
         except KeyboardInterrupt:
             try:
-                overview = _dashboard().overview(mission_id)
+                overview = dashboard.overview(mission_id)
             except Exception:  # noqa: BLE001 - best-effort summary on interrupt
                 overview = {"mission_id": mission_id, "status": "interrupted"}
             _finalize_hunt_run(
@@ -582,6 +680,11 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
                 overview["preflight"] = run["preflight"]
                 if run["preflight"].get("optional_missing"):
                     overview["missing_optional"] = list(run["preflight"]["optional_missing"])
+        # AI attribution + Security Test Matrix + truthful stop condition are
+        # first-class parts of the hunt report (never hidden).
+        for key in ("ai", "matrix", "stop_condition", "executions_used", "coverage_ratio"):
+            if key in run:
+                overview[key] = run[key]
         _finalize_hunt_run(
             app,
             overview,
@@ -622,11 +725,16 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         positional: list[str] = []
         machine_mode = False
         output_dir: str | None = None
+        deterministic = False
         index = 0
         while index < len(argv):
             arg = argv[index]
             if arg in ("--json", "-j"):
                 machine_mode = True
+            elif arg == "--deterministic":
+                # Explicit operator opt-out of AI direction (provider failure
+                # fallback is never silent — this flag is the documented way).
+                deterministic = True
             elif arg in ("--output", "-o"):
                 index += 1
                 if index >= len(argv):
@@ -644,6 +752,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
             "target": positional[1] if len(positional) > 1 else "",
             "json": machine_mode,
             "output": output_dir,
+            "deterministic": deterministic,
         }
 
     def _auth_parameters_from_env() -> dict[str, Any]:
