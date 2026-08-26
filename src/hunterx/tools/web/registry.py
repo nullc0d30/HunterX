@@ -16,6 +16,7 @@ from collections.abc import Mapping
 
 from hunterx.tools.sdk.engine import ExecutionEngine
 from hunterx.tools.web.base import WebToolAdapter
+from hunterx.tools.web.browser import BrowserTestingAdapter
 from hunterx.tools.web.crawler import CrawlerAdapter
 from hunterx.tools.web.httpclient import HttpPageFetcher, WebFetchFn
 from hunterx.tools.web.katana import KatanaAdapter
@@ -30,6 +31,7 @@ from hunterx.tools.web.url_discovery import (
 #: Canonical order and set of the integrated web crawling tools.
 WEB_TOOL_IDS: tuple[str, ...] = (
     "crawler",
+    "browser",
     "katana",
     "gospider",
     "hakrawler",
@@ -51,6 +53,7 @@ class WebAdapterFactory:
         crawler = CrawlerAdapter(fetch=fetch or HttpPageFetcher().fetch)
         return {
             "crawler": crawler,
+            "browser": BrowserTestingAdapter(),
             "katana": KatanaAdapter(),
             "gospider": GospiderAdapter(),
             "hakrawler": HakrawlerAdapter(),

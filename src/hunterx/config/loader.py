@@ -10,6 +10,22 @@ Loads settings from, in order of increasing precedence:
 3. A user-provided profile file (``HUNTERX_CONFIG`` or ``hunterx.yaml`` in cwd).
 4. Environment variables (``HUNTERX_*``).
 
+AI credentials are additionally discovered from a ``.env`` file resolved
+intentionally (see :func:`discover_env_file`) so the configured provider is
+available regardless of the working directory or ``sudo`` usage:
+
+* ``$HUNTERX_ENV_FILE`` when set explicitly.
+* ``$HUNTERX_DATA_DIR/.env`` — the install data directory managed by
+  ``install.sh``.
+* ``.env`` in the current directory and its parents.
+* ``.env`` beside the ``$HUNTERX_CONFIG`` profile.
+* User configuration directories (the invoking user's home under ``sudo``):
+  ``~/.config/hunterx/.env``, ``~/.hunterx/.env``.
+* The system install data directory (``/opt/hunterx/data/.env``).
+
+Values already present in the real environment always win over file values so
+Docker/CI/Kubernetes secret injection keeps precedence.
+
 The result is a validated :class:`~hunterx.config.settings.Settings` instance.
 """
 
@@ -29,10 +45,103 @@ from hunterx.shared import masking
 _ENV_PREFIX = "HUNTERX_"
 #: Default profile shipped with the package.
 _DEFAULT_PROFILE = "hunterx.yaml"
+#: Default system install data directory (managed by ``install.sh``).
+_SYSTEM_DATA_DIRS: tuple[str, ...] = ("/opt/hunterx/data",)
 
 
-def load_env_file(env_file: str | Path | None = None) -> None:
-    """Load a local ``.env`` file into the process environment (best-effort).
+def _sudo_user_home() -> Path | None:
+    """Return the invoking user's home when running under ``sudo``.
+
+    ``sudo`` strips most caller environment but preserves ``SUDO_USER``/``SUDO_UID``
+    unless explicitly configured otherwise. Configuration written by the human
+    operator therefore stays discoverable instead of silently falling back to
+    root's (usually empty) home.
+    """
+    user = os.environ.get("SUDO_USER", "").strip()
+    if not user:
+        return None
+    try:
+        import pwd
+
+        entry = pwd.getpwnam(user)
+        return Path(entry.pw_dir)
+    except (ImportError, KeyError):  # pragma: no cover - platform dependent
+        return None
+
+
+def _candidate_env_files() -> list[Path]:
+    """Return the ordered candidate ``.env`` paths for :func:`discover_env_file`."""
+    candidates: list[Path] = []
+
+    def _add(path: Path) -> None:
+        if path not in candidates:
+            candidates.append(path)
+
+    explicit = os.environ.get("HUNTERX_ENV_FILE", "").strip()
+    if explicit:
+        _add(Path(explicit).expanduser())
+    data_dir = os.environ.get("HUNTERX_DATA_DIR", "").strip()
+    if data_dir:
+        _add(Path(data_dir).expanduser() / ".env")
+    cwd = Path.cwd()
+    for parent in (cwd, *cwd.parents):
+        _add(parent / ".env")
+    config_profile = os.environ.get("HUNTERX_CONFIG", "").strip()
+    if config_profile:
+        _add(Path(config_profile).expanduser().parent / ".env")
+    homes: list[Path | None] = [_sudo_user_home(), Path.home()]
+    for home in homes:
+        if home is None:
+            continue
+        xdg = os.environ.get("XDG_CONFIG_HOME", "").strip()
+        if xdg:
+            _add(Path(xdg).expanduser() / "hunterx" / ".env")
+        _add(home / ".config" / "hunterx" / ".env")
+        _add(home / ".hunterx" / ".env")
+    for data_dir in _SYSTEM_DATA_DIRS:
+        _add(Path(data_dir) / ".env")
+    # Development checkout: <repo>/src/hunterx/config/loader.py → repo .env.
+    try:
+        repo_root = Path(__file__).resolve().parents[3]
+        if repo_root.name and (repo_root / "pyproject.toml").exists():
+            _add(repo_root / ".env")
+    except IndexError:  # pragma: no cover - defensive
+        pass
+    return candidates
+
+
+def discover_env_file() -> Path | None:
+    """Return the first existing ``.env`` file from the intentional search path.
+
+    Search order (most specific first):
+
+    1. ``$HUNTERX_ENV_FILE``
+    2. ``$HUNTERX_DATA_DIR/.env``
+    3. ``.env`` from the current directory upward
+    4. ``.env`` beside ``$HUNTERX_CONFIG``
+    5. ``~/.config/hunterx/.env`` then ``~/.hunterx/.env`` (invoking user under sudo)
+    6. ``/opt/hunterx/data/.env`` (system install)
+    7. repository-root ``.env`` (development checkout)
+
+    Set ``HUNTERX_SKIP_ENV_FILE=1`` to disable file discovery entirely
+    (pure-environment mode: Docker, CI, hardened deployments).
+
+    Returns ``None`` when no candidate exists — configuration may legitimately
+    be supplied purely through the environment.
+    """
+    if os.environ.get("HUNTERX_SKIP_ENV_FILE", "").strip() in ("1", "true", "yes"):
+        return None
+    for candidate in _candidate_env_files():
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:  # pragma: no cover - permission errors are non-fatal
+            continue
+    return None
+
+
+def load_env_file(env_file: str | Path | None = None) -> Path | None:
+    """Load a ``.env`` file into the process environment (best-effort).
 
     Values already present in the real environment win over the file
     (``override=False``) so secrets injected by Docker, CI or Kubernetes take
@@ -41,15 +150,24 @@ def load_env_file(env_file: str | Path | None = None) -> None:
     dependency-light.
 
     Args:
-        env_file: explicit path to a ``.env`` file; when ``None``,
-            ``python-dotenv`` searches the working directory and its parents.
+        env_file: explicit path to a ``.env`` file; when ``None`` the file is
+            discovered intentionally via :func:`discover_env_file` (cwd is only
+            one of several searched locations, so ``sudo`` and arbitrary
+            working directories still resolve the configured AI provider).
+
+    Returns:
+        The loaded file path, or ``None`` when nothing was loaded.
 
     """
     try:
         from dotenv import load_dotenv
     except ImportError:  # pragma: no cover - optional dependency
-        return
-    load_dotenv(dotenv_path=str(env_file) if env_file is not None else None, override=False)
+        return None
+    path = Path(env_file).expanduser() if env_file is not None else discover_env_file()
+    if path is None or not path.is_file():
+        return None
+    load_dotenv(dotenv_path=str(path), override=False)
+    return path
 
 
 def _default_profile_path() -> Path:
@@ -195,3 +313,30 @@ class ConfigurationManager:
         return masking.mask_secrets_in_mapping(
             {k: v for k, v in os.environ.items() if k.startswith(_ENV_PREFIX)}
         )
+
+
+def ai_configuration_source() -> str:
+    """Return a human-readable description of where AI config was resolved from.
+
+    One of ``environment``, ``<path> (.env)``, ``profile`` or ``not_configured``.
+    Never includes secret values — only the location names.
+    """
+    provider = os.environ.get("HUNTERX_AI_PROVIDER", "").strip()
+    if provider:
+        return "environment"
+    env_file = discover_env_file()
+    if env_file is not None:
+        try:
+            text = env_file.read_text(encoding="utf-8", errors="replace")
+        except OSError:  # pragma: no cover - unreadable file is non-fatal
+            text = ""
+        for line in text.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("HUNTERX_AI_PROVIDER") and "=" in stripped:
+                value = stripped.split("=", 1)[1].strip().strip("'\"")
+                if value:
+                    return f"{env_file}"
+    profile_path = os.environ.get("HUNTERX_CONFIG", "").strip()
+    if profile_path and Path(profile_path).is_file():
+        return f"{profile_path} (profile)"
+    return "not_configured"

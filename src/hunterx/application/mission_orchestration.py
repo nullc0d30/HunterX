@@ -382,6 +382,17 @@ class MissionOrchestrationService:
         with contextlib.suppress(Exception):  # provenance recording is best-effort
             self._engine.record_ai_trace(mission_id, decision_id=decision_id, **trace)
 
+    def record_ai_decision(self, mission_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Persist an AI Hunt Director decision as a first-class decision record.
+
+        Marked ``ai_assisted`` and carrying provider/model provenance so the
+        durable decision log proves AI direction (never credentials).
+        """
+        decision = self._engine.orchestrator.record_ai_decision(mission_id, **kwargs)
+        self._persist_decision(mission_id, decision)
+        self._persist_mission(self._engine.get(mission_id))
+        return decision.to_dict()
+
     def explain_decision(self, mission_id: str, decision_id: str = "") -> dict[str, Any] | None:
         """Return an explainable decision record."""
         return self._engine.explain_decision(mission_id, decision_id)

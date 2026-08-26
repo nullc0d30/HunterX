@@ -21,8 +21,10 @@ from hunterx.infrastructure.ai.providers import OpenAICompatibleClient
 
 #: OpenRouter REST API base URL.
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
-#: Fallback model when ``HUNTERX_AI_MODEL`` is not set.
-DEFAULT_MODEL = "deepseek/deepseek-chat"
+#: Fallback model when ``HUNTERX_AI_MODEL`` is not set. A free-tier model by
+#: default: an unset model must never silently route to a paid deployment and
+#: surface as ``HTTP 402 payment required`` mid-mission.
+DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
 
 
 class OpenRouterClient(OpenAICompatibleClient):
@@ -30,7 +32,8 @@ class OpenRouterClient(OpenAICompatibleClient):
 
     Args:
         api_key: OpenRouter API key (never logged or serialized).
-        model: default model identifier; falls back to ``deepseek/deepseek-chat``.
+        model: default model identifier; falls back to the configured
+            free-tier default (:data:`DEFAULT_MODEL`).
         base_url: OpenRouter API base URL (overridable for tests/proxies).
         http_client: optional injected HTTP client for tests; when omitted a
             lazy ``httpx.Client`` is used.

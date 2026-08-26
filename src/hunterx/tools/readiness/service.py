@@ -431,6 +431,8 @@ class ToolReadinessService:
         mission_id: str = "",
         auto_provision: bool = True,
         profile_tools: tuple[str, ...] = (),
+        ai_client: Any | None = None,
+        ai_settings: Any | None = None,
     ) -> PreflightResult:
         """Compute the mission preflight verdict for ``capabilities``.
 
@@ -441,6 +443,10 @@ class ToolReadinessService:
         with reduced coverage. Tools listed in ``profile_tools`` (the selected
         assessment profile) are provisioned when absent so the mission does
         not silently rely on them.
+
+        When ``ai_client``/``ai_settings`` are supplied, the AI provider
+        health is evaluated and reported truthfully in the result
+        (``ai_provider`` ∈ available/unavailable/not_configured).
         """
         return self._preflight.run(
             self,
@@ -449,6 +455,8 @@ class ToolReadinessService:
             auto_provision=auto_provision,
             provisioner=self._provisioner,
             profile_tools=profile_tools,
+            ai_client=ai_client,
+            ai_settings=ai_settings,
         )
 
     # -- integration audit --------------------------------------------------

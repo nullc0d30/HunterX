@@ -1222,6 +1222,66 @@ class MissionOrchestrator:
             )
         return decision
 
+    def record_ai_decision(
+        self,
+        mission_id: str,
+        *,
+        decision_id: str = "",
+        capability: str = "",
+        tool_id: str = "",
+        action_id: str = "",
+        reason: str = "",
+        expected_result: str = "",
+        priority: float = 0.7,
+        latency_ms: int = 0,
+        provider: str = "",
+        model: str = "",
+        security_domain: str = "",
+    ) -> MissionDecision:
+        """Persist an AI Hunt Director decision as a first-class record.
+
+        AI-directed actions never pass through the deterministic ranking, so
+        without this record the durable decision log would show only
+        deterministic decisions and understate AI involvement. The record is
+        marked ``ai_assisted`` and carries provider/model provenance (never
+        credentials) in its factors.
+        """
+        mission = self.get(mission_id)
+        decision = MissionDecision(
+            decision_id=decision_id or generate_id(),
+            mission_id=mission_id,
+            next_action=action_id,
+            capability=capability,
+            tool_id=tool_id,
+            reason=reason[:500],
+            expected_result=expected_result[:300],
+            priority=priority,
+            factors={
+                "ai_provider": provider,
+                "ai_model": model,
+                "security_domain": security_domain,
+                "decision_source": "ai_hunt_director",
+            },
+            ai_assisted=True,
+            latency_ms=latency_ms,
+        )
+        mission.add_decision(decision)
+        self._record_trace(
+            mission,
+            kind=ReasoningTraceKind.DECISION,
+            node_id=decision.decision_id,
+            content={
+                "source": "ai_hunt_director",
+                "provider": provider,
+                "model": model,
+                "capability": capability,
+                "tool_id": tool_id,
+                "security_domain": security_domain,
+                "reason": reason[:300],
+            },
+        )
+        return decision
+
     def _candidates_from_plan(self, mission: OrchestratedMission) -> tuple[CandidateAction, ...]:
         """Build candidate actions from the adaptive mission's ready actions.
 

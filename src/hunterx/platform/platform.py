@@ -64,7 +64,7 @@ from hunterx.application.vulnerability_finding import VulnerabilityFindingServic
 from hunterx.application.vulnerability_proof import VulnerabilityProofService
 from hunterx.application.vulnerability_proof_strategy import VulnerabilityProofStrategyService
 from hunterx.application.vulnerability_validation import VulnerabilityValidationService
-from hunterx.config.settings import Settings
+from hunterx.config.settings import AISettings, Settings
 from hunterx.domain.events.spec import EventRegistry
 from hunterx.domain.ports.messaging import CachePort, EventBusPort, QueuePort
 from hunterx.domain.ports.observability import (
@@ -100,6 +100,8 @@ class Platform:
 
     Attributes:
         settings: resolved typed configuration.
+        ai_settings: AI provider configuration (provider/model/keys) for
+            status, health checks and the guided configuration flow.
         container: dependency container holding every port and service.
         core: the :class:`CoreEngine` aggregating all engines and v7 facades.
         tip: Tool Intelligence Platform facade.
@@ -160,6 +162,7 @@ class Platform:
     settings: Settings
     container: Container[Any]
     core: CoreEngine
+    ai_settings: AISettings
     tip: ToolIntelligenceAPI
     execution_engine: ExecutionEngine
     tool_factory: ToolIntegrationFactory
