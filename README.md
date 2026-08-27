@@ -10,6 +10,10 @@
 
 HunterX is an **AI-directed autonomous security assessment engine** for planning and executing authorized security-assessment missions. It combines **reconnaissance**, **tool orchestration**, **AI-directed strategic decision-making**, **active security testing**, **validation**, **proof**, **evidence**, **replay**, **correlation**, **impact assessment**, and **professional reporting** into a single autonomous workflow.
 
+**Ahmed Awad (NullC0d3)** — Creator & Maintainer
+
+[Official Website](https://nullc0d30.github.io/HunterX/) · [GitHub Repository](https://github.com/nullc0d30/HunterX)
+
 [![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -274,10 +278,28 @@ Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Al
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
 
 ---
 
 ## Responsible Use
 
-HunterX is an authorized cybersecurity testing and research platform. You are responsible for obtaining appropriate authorization before testing any system. The author is not responsible for misuse, unauthorized access, illegal activity, or damage caused by the software. See [Responsible Use](docs/responsible-use.md) and [SECURITY.md](SECURITY.md).
+HunterX is an authorized cybersecurity testing and research platform. **You are responsible for obtaining appropriate authorization before testing any system.** The author is not responsible for misuse, unauthorized access, illegal activity, or damage caused by the software.
+
+See [Responsible Use](docs/responsible-use.md) and [SECURITY.md](SECURITY.md).
+
+---
+
+## Copyright & Attribution
+
+**Copyright © 2026 Ahmed Awad (NullC0d3)**
+
+---
+
+## Project Links
+
+- **Official Website** — https://nullc0d30.github.io/HunterX/
+- **GitHub Repository** — https://github.com/nullc0d30/HunterX
+- **License** — Apache License 2.0 — see [LICENSE](LICENSE)
+- **Security** — [SECURITY.md](SECURITY.md)
+- **Responsible Use** — [docs/responsible-use.md](docs/responsible-use.md)
