@@ -426,6 +426,9 @@ hunterx tools install --profile full     # provision the complete external toolc
 # 3. HUNT - plan and start a full-spectrum hunt mission
 hunterx hunt full_security_assessment https://example.com
 
+# Run in deterministic mode (no AI, even if configured)
+hunterx hunt --deterministic full_security_assessment https://example.com
+
 # 4. INSPECT - track the mission and inspect the toolchain
 hunterx hunt status <mission_id>
 hunterx hunt surface <mission_id>
@@ -924,6 +927,9 @@ sequentially. Use `hunterx ai status` to see current provider status.
 ## CLI Commands for AI Management
 
 ```bash
+# Guided interactive AI configuration (recommended for first-time setup)
+hunterx ai configure
+
 # Health check - verify provider connectivity and model availability
 hunterx ai check
 
@@ -933,6 +939,28 @@ hunterx ai models
 # Show detailed provider status and configuration
 hunterx ai status
 ```
+
+---
+
+### Guided AI Configuration
+
+When no AI provider is configured or the health check fails, HunterX can guide you
+through the setup interactively:
+
+```bash
+hunterx ai configure
+```
+
+The guided flow will:
+1. Present a menu of supported providers (OpenRouter, Requesty, OpenAI, Anthropic, Gemini, DeepSeek, Grok, LM Studio, Ollama, Generic OpenAI-compatible)
+2. Prompt for the model identifier
+3. Prompt for the API endpoint/base URL (for local providers)
+4. Securely prompt for the API key (hidden input)
+5. **Validate connectivity and model availability** with a real API call
+6. Persist the configuration to the appropriate `.env` file
+
+For non-interactive environments (CI/CD, Docker), the command fails with clear,
+actionable instructions instead of silently falling back to deterministic mode.
 
 ---
 
