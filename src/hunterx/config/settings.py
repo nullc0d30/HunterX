@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Ahmed Awad (NullC0d3)
+# -*- coding: utf-8 -*-\n# Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
 """Typed configuration settings.
@@ -11,6 +11,7 @@ stored here — they live in the secrets layer (``hunterx.security``).
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 from pydantic import BaseModel, Field, SecretStr
 
@@ -107,7 +108,7 @@ class AISettings(BaseModel):
 
     #: Provider name → key field name. Configuration knowledge only; provider
     #: HTTP behaviour lives in the infrastructure adapters.
-    _PROVIDER_KEY_FIELDS: dict[str, str] = {
+    _PROVIDER_KEY_FIELDS: ClassVar[dict[str, str]] = {
         "openai": "openai_key",
         "anthropic": "anthropic_key",
         "openrouter": "openrouter_key",
@@ -263,3 +264,4 @@ class AppConfig:
     def log_level(self) -> str:
         """Return the root logging level."""
         return self.settings.log_level
+

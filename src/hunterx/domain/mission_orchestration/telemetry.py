@@ -17,6 +17,11 @@ from hunterx.domain.mission_orchestration.mission import OrchestratedMission
 from hunterx.domain.mission_orchestration.models import TelemetrySnapshot
 from hunterx.shared.time import utcnow_iso
 
+#: Hypothesis states that are still open (not settled).
+_OPEN_HYPOTHESIS_STATES = frozenset(
+    {"proposed", "supported", "weakly_supported", "inconclusive", "novel_behavior"}
+)
+
 
 class MissionTelemetry:
     """Record and compute mission telemetry snapshots."""

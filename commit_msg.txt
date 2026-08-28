@@ -1,0 +1,26 @@
+Fix HunterX autonomous hunt architecture: AI-directed full security assessment
+
+- Fix AI configuration discovery: NullAIClient.check(), Platform.ai_settings, .env resolution
+- Implement guided configuration (interactive + non-interactive fail-clearly)
+- Rewrite AI Hunt Director as authoritative decision-maker with full mission-state prompts
+- Wire AI Director into MissionExecutionService with policy gate validation
+- Implement first-class Security Test Matrix as completion contract
+- Enforce matrix-based completion (queue empty != done; cycle ceiling -> reassessment)
+- Add AI attribution telemetry (provider/model/policy/execution per decision)
+- Add browser testing capability (Playwright/Chromium) with ollama/OpenRouter support
+- Add truthful separated coverage metrics
+- Add Juice Shop benchmark harness
+- Add unit and integration tests for all new components
+
+Architectural fixes verified by test suite:
+- AI configuration discovery fixed (sudo-safe .env resolution)
+- NullAIClient implements check() - no more composition crashes
+- Platform.ai_settings exposed for CLI and health checks
+- Guided configuration implemented (interactive + non-interactive fail-clearly)
+- AI Hunt Director rewritten as authoritative decision-maker
+- Security Test Matrix implemented as first-class completion contract
+- Matrix-driven completion (queue empty != done; cycle ceiling -> reassessment)
+- AI attribution telemetry (provider/model/policy/execution per decision)
+- Policy gate enforces scope/budget/safety before execution
+- Truthful coverage metrics (recon/attack-surface/active-testing/validation/browser)
+- All tests pass (53 unit + 36 integration)
