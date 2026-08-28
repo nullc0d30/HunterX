@@ -50,7 +50,7 @@ class StubReadiness:
         self._result = result
         self.calls: list[str] = []
 
-    def preflight(self, capabilities, *, mission_id="", auto_provision=True, profile_tools=()):  # noqa: ANN001
+    def preflight(self, capabilities, *, mission_id="", auto_provision=True, profile_tools=(), **_kwargs):  # noqa: ANN001
         self.calls.append(str(capabilities))
         result = self._result
         return PreflightResult(

@@ -24,9 +24,18 @@ _AI_ENV_KEYS = (
 )
 
 
-def _unset_ai_env(monkeypatch: pytest.MonkeyPatch) -> None:
+def _unset_ai_env(monkeypatch: pytest.MonkeyPatch, tmp_path: object | None = None) -> None:
+    """Clear AI configuration from BOTH the environment and .env discovery.
+
+    Discovery intentionally searches the working directory (and install
+    locations), so tests must opt out explicitly to stay hermetic and to
+    guarantee real credentials never enter test state or assertion output.
+    """
     for key in _AI_ENV_KEYS:
         monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("HUNTERX_SKIP_ENV_FILE", "1")
+    if tmp_path is not None:
+        monkeypatch.chdir(tmp_path)  # type: ignore[attr-defined]
 
 
 class TestAISettingsDefaults:
@@ -68,14 +77,14 @@ class TestAISettingsFromEnvironment:
         for env_key, (provider, _) in mapping.items():
             assert settings.ai.api_key_for(provider) == "sk-x", env_key
 
-    def test_missing_keys_are_handled_safely(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        _unset_ai_env(monkeypatch)
+    def test_missing_keys_are_handled_safely(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pytest.TempPathFactory) -> None:
+        _unset_ai_env(monkeypatch, tmp_path)
         monkeypatch.setenv("HUNTERX_AI_PROVIDER", "openrouter")
         settings = load_default_settings()
         assert settings.ai.api_key_for("openrouter") == ""
 
-    def test_missing_provider_is_handled_safely(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        _unset_ai_env(monkeypatch)
+    def test_missing_provider_is_handled_safely(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pytest.TempPathFactory) -> None:
+        _unset_ai_env(monkeypatch, tmp_path)
         monkeypatch.setenv("HUNTERX_AI_OPENROUTER_KEY", "sk-orphaned")
         settings = load_default_settings()
         assert settings.ai.provider == ""
