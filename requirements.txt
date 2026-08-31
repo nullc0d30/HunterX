@@ -2,16 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 requests==2.33.0
-rich==13.7.1
-pyyaml==6.0.2
+rich==15.0.0
+pyyaml==6.0.3
 python-dotenv==1.2.2
 websocket-client==1.8.0
 beautifulsoup4==4.12.3
 lxml==5.3.0
-networkx==3.4.2
-urllib3==2.3.0
+networkx==3.6.1
+urllib3==2.7.0
 dataclasses-json==0.6.7
-jsonschema==4.23.0
+jsonschema==4.26.0
 # Optional: fastapi, uvicorn, pydantic (for API server)
 # Optional: playwright (for browser intelligence)
 # Optional: graphviz (for graph visualization)
