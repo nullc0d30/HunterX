@@ -8,7 +8,7 @@
 # ============================================================
 # Stage 1: Build stage — install the package into a dedicated venv
 # ============================================================
-FROM python:3.11-slim AS builder
+FROM python:3.12-slim AS builder
 
 ARG VERSION=7.0.1
 ARG BUILD_DATE
@@ -33,7 +33,7 @@ RUN /opt/hunterx-venv/bin/pip install --no-cache-dir --no-compile ".[api]"
 # ============================================================
 # Stage 2: Runtime stage — minimal final image
 # ============================================================
-FROM python:3.11-slim AS runtime
+FROM python:3.12-slim AS runtime
 
 ARG VERSION=7.0.1
 ARG BUILD_DATE
