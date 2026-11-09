@@ -237,9 +237,16 @@ Full reference: [docs/tool-ecosystem.md](docs/tool-ecosystem.md) | [Tool Readine
 
 ---
 
-## Reporting
+## 🚀 New Features & Upgrades
 
-Professional multi-format reports with evidence traceability:
+HunterX has been significantly upgraded with advanced autonomous capabilities:
+
+*   **Multi-Agent Consensus Reviewer:** Introduced a configurable `BaseReviewer` interface and `SimpleMockReviewer` to validate evidence chains, ensuring high-confidence findings and reducing false positives.
+*   **Self-Healing Debugger:** Integrated `DebuggerAgent` into the `MissionExecutor`, allowing the engine to analyze tool execution errors and automatically attempt retries with corrected parameters.
+*   **Threat Modeling Integration:** Added `ThreatModelParser` and `ThreatModelIntegrator` to align mission planning with structured threat models (e.g., STRIDE), allowing for gap analysis between theoretical threats and tested findings.
+*   **Attack Path Visualization:** Added `AttackPathVisualizer` in the `correlation` module, enabling the export of knowledge graphs into visualizable JSON formats for better security analysis and reporting.
+
+These features move HunterX closer to a truly autonomous, context-aware security research platform.
 
 | Format | Purpose |
 |---|---|
