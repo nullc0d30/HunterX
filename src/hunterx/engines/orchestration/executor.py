@@ -27,6 +27,7 @@ from hunterx.engines.orchestration.dedup import (
     ExecutionRecord,
     execution_hash,
 )
+from hunterx.engines.orchestration.debugger import DebuggerAgent
 from hunterx.engines.orchestration.fallback import FallbackDecision, FallbackEngine
 from hunterx.engines.orchestration.graph import MissionDependencyGraph
 from hunterx.engines.orchestration.ratelimit import RateLimiter, normalize_domain
@@ -169,6 +170,7 @@ class MissionExecutor:
         retry: RetryEngine | None = None,
         fallback: FallbackEngine | None = None,
         deduplicator: ExecutionDeduplicator | None = None,
+        debugger: DebuggerAgent | None = None,
         *,
         freshness_window_seconds: int = 0,
     ) -> None:
@@ -182,6 +184,7 @@ class MissionExecutor:
         self._deduplicator = deduplicator or ExecutionDeduplicator(
             freshness_window_seconds=freshness_window_seconds
         )
+        self._debugger = debugger or DebuggerAgent()
         self._decisions: list[dict[str, object]] = []
         self._selections: list[dict[str, object]] = []
         self._failures: list[dict[str, object]] = []
@@ -462,8 +465,21 @@ class MissionExecutor:
         try:
             pipeline = self._engine.execute(context)
         except Exception as exc:  # noqa: BLE001 - surfaced as a classified failure
-            report = self._retry.report(error=str(exc))
-            return _outcome_from_report(step, tool_id, report, started)
+            # Attempt debugger self-healing
+            context_dict = {"args": step.parameters.get("args", []), "tool_id": tool_id}
+            corrected = self._debugger.debug(exc, context_dict)
+            if corrected:
+                # Attempt retry with corrected parameters
+                step.parameters = {**step.parameters, **corrected}
+                context = self._build_context(step, tool_id, mission_id, plan)
+                try:
+                    pipeline = self._engine.execute(context)
+                except Exception as exc2:
+                    report = self._retry.report(error=str(exc2))
+                    return _outcome_from_report(step, tool_id, report, started)
+            else:
+                report = self._retry.report(error=str(exc))
+                return _outcome_from_report(step, tool_id, report, started)
         result = pipeline.result
         report = self._retry.report(
             status=result.status,
