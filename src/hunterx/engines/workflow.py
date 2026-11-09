@@ -54,6 +54,31 @@ class WorkflowDefinition:
         known = {step.id for step in self.steps}
         if not self.steps:
             errors.append("workflow has no steps")
+        
+        # Cycle detection
+        adj = {step.id: set(step.depends_on) for step in self.steps}
+        
+        def has_cycle(node: str, visited: set[str], rec_stack: set[str]) -> bool:
+            visited.add(node)
+            rec_stack.add(node)
+            for neighbor in adj.get(node, ()):
+                if neighbor not in known:
+                    continue
+                if neighbor not in visited:
+                    if has_cycle(neighbor, visited, rec_stack):
+                        return True
+                elif neighbor in rec_stack:
+                    return True
+            rec_stack.remove(node)
+            return False
+
+        visited = set()
+        for step in self.steps:
+            if step.id not in visited:
+                if has_cycle(step.id, visited, set()):
+                    errors.append("Workflow contains a dependency cycle.")
+                    break
+
         for step in self.steps:
             if not step.action:
                 errors.append(f"step '{step.id}' has no action")

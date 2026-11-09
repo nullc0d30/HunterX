@@ -29,6 +29,7 @@ Design rules:
 
 from __future__ import annotations
 
+import psutil
 import contextlib
 import logging
 import os
@@ -653,19 +654,53 @@ class ResourceGovernor:
         }
 
 
-def _process_alive(process: Any) -> bool | None:
-    poll = getattr(process, "poll", None)
-    if callable(poll):
-        try:
-            return poll() is None
-        except Exception:  # noqa: BLE001
-            return None
-    return None
+    def _process_alive(process: Any) -> bool | None:
+        poll = getattr(process, "poll", None)
+        if callable(poll):
+            try:
+                return poll() is None
+            except (OSError, ValueError):  # Specific exceptions
+                return None
+        return None
 
 
 def _signal_process_group(pid: int, sig: int) -> None:
     if os.name == "nt":
-        raise OSError("process-group signalling is POSIX-only")
+        # Windows fallback: terminate process tree using psutil
+        try:
+            parent = psutil.Process(pid)
+            children = parent.children(recursive=True)
+            for child in children:
+                try:
+                    child.terminate()
+                except psutil.NoSuchProcess:
+                    pass
+            # Wait briefly for graceful termination
+            gone, alive = psutil.wait_procs([parent] + children, timeout=0.5)
+            # Force kill remaining processes
+            for p in alive:
+                try:
+                    p.kill()
+                except psutil.NoSuchProcess:
+                    pass
+        except (psutil.NoSuchProcess, psutil.AccessDenied, OSError):
+            # Fallback: do nothing, process may already be dead or inaccessible
+            pass
+        return
+    os.killpg(os.getpgid(pid), sig)  # type: ignore[attr-defined]
+                pass
+            # Wait briefly for graceful termination
+            gone, alive = psutil.wait_procs([parent] + children, timeout=0.5)
+            # Force kill remaining processes
+            for p in alive:
+                try:
+                    p.kill()
+                except psutil.NoSuchProcess:
+                    pass
+        except (psutil.NoSuchProcess, psutil.AccessDenied, OSError):
+            # Fallback: do nothing, process may already be dead or inaccessible
+            pass
+        return
     os.killpg(os.getpgid(pid), sig)  # type: ignore[attr-defined]
 
 
