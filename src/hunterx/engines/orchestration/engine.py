@@ -110,12 +110,14 @@ class OffensiveOrchestrationEngine:
         coverage: CoverageModel | None = None,
         quality: MissionQualityScorer | None = None,
         emitter: MissionEventEmitter | None = None,
+        reviewer: BaseReviewer | None = None,
         freshness_window_seconds: int = 0,
     ) -> None:
         from hunterx.infrastructure.memory.orchestration import (
             InMemoryExecutionPlanRepository,
             InMemoryOffensiveMissionRepository,
         )
+        from hunterx.engines.orchestration.reviewer import BaseReviewer
 
         self._missions = missions or InMemoryOffensiveMissionRepository()
         self._plans = plans or InMemoryExecutionPlanRepository()
@@ -125,6 +127,7 @@ class OffensiveOrchestrationEngine:
         self._operator = MissionLifecycleOperator(self._lifecycle)
         self._planner = planner or MissionPlanner()
         self._emitter = emitter or MissionEventEmitter(event_bus)
+        self._reviewer = reviewer
         self._executor = executor or MissionExecutor(
             engine=execution_engine,
             tip=tip,
@@ -265,6 +268,14 @@ class OffensiveOrchestrationEngine:
             self._missions.save(mission)
 
             run = self._executor.run(mission_id=mission_id, plan=plan, tool_outputs=tool_outputs, stop_check=stop_check)
+
+            # Optional review step before coverage/quality computation
+            if self._reviewer:
+                accepted = self._reviewer.review(run)
+                if not accepted:
+                    mission = _with_state(mission, MissionState.FAILED, completed_at=True)
+                    self._missions.save(mission)
+                    return Failure(Exception("MissionRun rejected by reviewer"))
 
             coverage = self._coverage.from_run(mission_id=mission_id, plan=plan, run=run)
             self._emitter.coverage_computed(mission_id, plan.plan_id, coverage=coverage.to_dict())
