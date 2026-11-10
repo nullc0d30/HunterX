@@ -254,7 +254,15 @@ HunterX has been significantly upgraded with advanced autonomous capabilities:
     - Offensive writeup template with impact-first reporting
     - Zero-break plugin architecture, opt-in, fully rollbackable
 
-These features move HunterX closer to a truly autonomous, context-aware security research platform with professional bug-bounty methodology built-in.
+*   **Capability Verification Matrix:** Added formal verification suite to prove capabilities work together:
+    - Consensus Reviewer: reviewer disagreement and false-positive tests
+    - Self-Healing Debugger: failure recovery and bounded retry tests
+    - Threat Modeling: STRIDE coverage and gap-analysis tests
+    - Attack Path Visualizer: graph integrity and provenance tests
+    - Offensive Doctrine: activation, isolation, rollback, and policy enforcement tests
+    - See `tests/capability_verification/capability_verification_matrix.md` for full matrix
+
+These features move HunterX closer to a truly autonomous, context-aware security research platform with professional bug-bounty methodology built-in and verifiable capability evidence.
 
 | Format | Purpose |
 |---|---|
