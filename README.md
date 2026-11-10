@@ -245,8 +245,16 @@ HunterX has been significantly upgraded with advanced autonomous capabilities:
 *   **Self-Healing Debugger:** Integrated `DebuggerAgent` into the `MissionExecutor`, allowing the engine to analyze tool execution errors and automatically attempt retries with corrected parameters.
 *   **Threat Modeling Integration:** Added `ThreatModelParser` and `ThreatModelIntegrator` to align mission planning with structured threat models (e.g., STRIDE), allowing for gap analysis between theoretical threats and tested findings.
 *   **Attack Path Visualization:** Added `AttackPathVisualizer` in the `correlation` module, enabling the export of knowledge graphs into visualizable JSON formats for better security analysis and reporting.
+*   **Offensive Security Doctrine Plugin:** New internal `skill_offensive_doctrine` plugin adds bug-bounty-grade offensive security methodology to HunterX:
+    - Activation via `HUNT MODE` / `DOCTRINE ON` with confirmation `HUNTERX DOCTRINE LOADED`
+    - Live State Block: `TARGET | SCOPE | AUTH STATE | TECH STACK | INTERESTING ENDPOINTS | FINDINGS | NEXT CHAIN PLAN` via `hunterx state`
+    - Mode shortcuts: `RECON MODE`, `WEB MODE`, `API MODE`, `LLM MODE`, `MOBILE MODE`, `SRC MODE`, `PAYLOAD <class>`, `EXPLOIT MODE`, `REPORT MODE`, `TRIAGE`, `CHAIN`, `BYPASS <thing>`, `WRITEUP`, `RESET`
+    - Doctrine enforcement: Engagement-type gate, ONLY QUESTION gate, Kill List, 17 Critical Rules, Evidence Discipline with marker discipline, body-diff, statistical sampling
+    - Knowledge records for recon pipelines, canonical chains, Web3 Immunefi scorecard, LLM agent injection taxonomy, 2024-2026 field patterns including SAML wave
+    - Offensive writeup template with impact-first reporting
+    - Zero-break plugin architecture, opt-in, fully rollbackable
 
-These features move HunterX closer to a truly autonomous, context-aware security research platform.
+These features move HunterX closer to a truly autonomous, context-aware security research platform with professional bug-bounty methodology built-in.
 
 | Format | Purpose |
 |---|---|
