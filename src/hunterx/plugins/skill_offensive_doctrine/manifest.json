@@ -1,0 +1,1 @@
+{"id": "offensive-doctrine", "name": "Offensive Security Doctrine", "version": "1.0.0", "description": "HunterX internal offensive security bug-bounty doctrine", "capabilities": ["mode_switch", "state_block", "doctrine_enforce", "reporting"], "activation_triggers": ["HUNT MODE", "DOCTRINE ON"], "entry": "hunterx.plugins.skill_offensive_doctrine.activator:activate"}
