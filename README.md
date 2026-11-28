@@ -11,6 +11,10 @@
 [![Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square)](https://github.com/nullc0d30/HunterX/releases)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](LICENSE)
+[![OWASP Community](https://img.shields.io/badge/OWASP-Community-000000?style=flat-square&logo=owasp)](https://owasp.org/)
+[![Awesome List](https://img.shields.io/badge/-Awesome%20List-7dc3ff?style=flat-square&logo=awesomelists)](https://github.com/sindresorhus/awesome)
+[![Awesome Red Teaming](https://img.shields.io/badge/-Awesome%20Red%20Teaming-red?style=flat-square)](https://github.com/yeyintminthuhtut/Awesome-Red-Teaming)
+[![Awesome AI Cybersecurity](https://img.shields.io/badge/-Awesome%20AI%20Cybersecurity-blue?style=flat-square)](https://github.com/avery-ai/awesome-ai-cybersecurity)
 
 </div>
 
