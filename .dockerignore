@@ -77,7 +77,32 @@ Dockerfile
 # Secrets
 *.key
 *.pem
+*.p12
+*.pfx
+*.jks
 *.cert
 *.crt
+*.der
 credentials.json
-*.env.local
+secrets.y*ml
+.env
+.env.*
+!.env.example
+.envrc
+.netrc
+.htpasswd
+id_rsa*
+id_ed25519*
+
+# Patch / backup leftovers and local archives
+*.bak
+*.orig
+*.rej
+*.tmp
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.whl
+nohup.out
+*.pid

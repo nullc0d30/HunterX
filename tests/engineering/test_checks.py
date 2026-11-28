@@ -108,6 +108,54 @@ def test_hygiene_gate_passes_when_complete(tmp_path: pathlib.Path) -> None:
     assert result.status == GateStatus.PASS
 
 
+def _hygienic_repo(tmp_path: pathlib.Path) -> pathlib.Path:
+    """Create the minimum tree the hygiene gate requires."""
+    (tmp_path / ".github").mkdir(parents=True)
+    (tmp_path / ".github" / "ISSUE_TEMPLATE").mkdir()
+    for name in ("SECURITY.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"):
+        (tmp_path / name).write_text("x", encoding="utf-8")
+    (tmp_path / ".github" / "PULL_REQUEST_TEMPLATE.md").write_text("pr", encoding="utf-8")
+    (tmp_path / ".github" / "dependabot.yml").write_text("dependabot", encoding="utf-8")
+    (tmp_path / ".github" / "CODEOWNERS").write_text("* @owner", encoding="utf-8")
+    (tmp_path / ".git").mkdir()
+    return tmp_path
+
+
+def _git_listing(*paths: str) -> _CannedRunner:
+    return _CannedRunner({"git": ToolResult(returncode=0, stdout=chr(0).join(paths))})
+
+
+def test_hygiene_gate_flags_tracked_runtime_artifacts(tmp_path: pathlib.Path) -> None:
+    repo = _hygienic_repo(tmp_path)
+    runner = _git_listing("src/hunterx/app.py", "data/hunterx.db", ".env", "logs/run.log")
+    result = hygiene_gate(runner, repo, GateSpec(name="hygiene"))
+    assert result.status == GateStatus.FAIL
+    assert "data/hunterx.db" in result.detail
+
+
+def test_hygiene_gate_flags_tracked_credentials(tmp_path: pathlib.Path) -> None:
+    repo = _hygienic_repo(tmp_path)
+    runner = _git_listing("certs/server.pem", "deploy/id_rsa")
+    result = hygiene_gate(runner, repo, GateSpec(name="hygiene"))
+    assert result.status == GateStatus.FAIL
+    assert "server.pem" in result.detail
+
+
+def test_hygiene_gate_allows_test_fixture_artifacts(tmp_path: pathlib.Path) -> None:
+    repo = _hygienic_repo(tmp_path)
+    runner = _git_listing("tests/security/artifacts/test_artifact_safety.py", ".env.example")
+    result = hygiene_gate(runner, repo, GateSpec(name="hygiene"))
+    assert result.status == GateStatus.PASS
+
+
+def test_hygiene_gate_skips_listing_without_git(tmp_path: pathlib.Path) -> None:
+    repo = _hygienic_repo(tmp_path)
+    (repo / ".git").rmdir()
+    runner = _git_listing("data/hunterx.db")
+    result = hygiene_gate(runner, repo, GateSpec(name="hygiene"))
+    assert result.status == GateStatus.PASS
+
+
 def test_compliance_gate_detects_missing_attribution(tmp_path: pathlib.Path) -> None:
     (tmp_path / "LICENSE").write_text("apache", encoding="utf-8")
     (tmp_path / "NOTICE").write_text("notice", encoding="utf-8")

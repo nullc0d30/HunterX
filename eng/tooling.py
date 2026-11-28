@@ -8,11 +8,25 @@ Every external tool (ruff, mypy, pytest, coverage, bandit, semgrep,...) is run t
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from typing import Protocol
+
+#: Console script name to importable module name, for tools that are installed
+#: as packages while their entry-point script is absent from ``PATH``.
+_MODULE_FOR = {
+    "ruff": "ruff",
+    "mypy": "mypy",
+    "pytest": "pytest",
+    "vulture": "vulture",
+    "pip-audit": "pip_audit",
+    "bandit": "bandit",
+    "semgrep": "semgrep",
+}
 
 
 @dataclass(slots=True)
@@ -74,8 +88,23 @@ class ToolRunner:
     timeout: int = 600
 
     def available(self, executable: str) -> bool:
-        """Return ``True`` when ``executable`` is resolvable on ``PATH``."""
-        return shutil.which(executable) is not None
+        """Return ``True`` when ``executable`` is runnable here.
+
+        A console script counts when it is on ``PATH``; a tool installed only
+        as an importable package counts when the current interpreter can run
+        it with ``-m``.
+        """
+        if shutil.which(executable) is not None:
+            return True
+        return self._module_command(executable, []) is not None
+
+    @staticmethod
+    def _module_command(executable: str, args: list[str]) -> list[str] | None:
+        """Return ``python -m <module>`` for a tool that has no PATH entry."""
+        module = _MODULE_FOR.get(executable, executable)
+        if importlib.util.find_spec(module) is None:
+            return None
+        return [sys.executable, "-m", module, *args]
 
     def run(
         self,
@@ -101,6 +130,11 @@ class ToolRunner:
         merged_env.update(self.env)
         if env:
             merged_env.update(env)
+        if shutil.which(args[0]) is None:
+            # Installed as a module but not on PATH (for example ``pip --user``).
+            fallback = self._module_command(args[0], args[1:])
+            if fallback is not None:
+                args = fallback
         try:
             proc = subprocess.run(
                 args,

@@ -9,11 +9,8 @@ uniformly.
 
 from __future__ import annotations
 
-import importlib.util
 import pathlib
 import re
-import shutil
-import sys
 import xml.etree.ElementTree as ET
 from typing import Any
 
@@ -38,22 +35,7 @@ def _result(name: str, ok: bool, detail: str, tool: ToolResult | None = None, ar
     )
 
 
-#: Console script name to importable module name, for tools that are installed
-#: as packages but whose entry-point script is not on ``PATH``.
-_MODULE_FOR = {"ruff": "ruff", "mypy": "mypy", "pytest": "pytest", "vulture": "vulture"}
-
-
 def _cmd(executable: str, args: list[str]) -> list[str]:
-    """Build the command for ``executable``, falling back to ``python -m``.
-
-    A tool installed with ``pip --user`` (or into a virtualenv that is not
-    active) is importable but missing from ``PATH``. Running it through the
-    current interpreter keeps the gates usable without a PATH edit.
-    """
-    if shutil.which(executable) is None:
-        module = _MODULE_FOR.get(executable)
-        if module is not None and importlib.util.find_spec(module) is not None:
-            return [sys.executable, "-m", module, *args]
     return [executable, *args]
 
 
@@ -282,8 +264,74 @@ def compliance_gate(runner: ToolRunner, repo_root: pathlib.Path, spec: GateSpec)
     return _result(spec.name, True, "license compliance and attribution verified")
 
 
+#: File suffixes that must never be committed (runtime state, credentials, caches).
+_JUNK_SUFFIXES = (
+    ".db",
+    ".db-journal",
+    ".sqlite",
+    ".sqlite3",
+    ".log",
+    ".pyc",
+    ".pyo",
+    ".pem",
+    ".key",
+    ".p12",
+    ".pfx",
+    ".jks",
+    ".coverage",
+)
+
+#: Repository-root directories that hold generated or private data.
+_JUNK_ROOT_DIRS = (
+    "data/",
+    "artifacts/",
+    "logs/",
+    "reports/",
+    "__pycache__/",
+    ".venv/",
+    "venv/",
+    "dist/",
+    "build/",
+)
+
+#: Exact file names that must never be committed.
+_JUNK_NAMES = (".env", ".env.local", ".netrc", "hunterx.db", "coverage.xml", "nohup.out")
+
+
+def _tracked_junk(repo_root: pathlib.Path, runner: ToolRunner) -> list[str]:
+    """Return tracked paths that look like secrets, caches or runtime output.
+
+    Returns an empty list when git is unavailable (for example when the gates
+    run against an unpacked source archive).
+    """
+    if not (repo_root / ".git").exists():
+        return []
+    result = runner.run(["git", "ls-files", "-z"], cwd=str(repo_root))
+    if result.returncode != 0:
+        return []
+    offenders: list[str] = []
+    for path in result.stdout.split(chr(0)):
+        path = path.strip()
+        if not path:
+            continue
+        name = path.rsplit("/", 1)[-1]
+        env_file = name.startswith(".env") and name != ".env.example"
+        if (
+            path.startswith(_JUNK_ROOT_DIRS)
+            or name in _JUNK_NAMES
+            or path.endswith(_JUNK_SUFFIXES)
+            or env_file
+        ):
+            offenders.append(path)
+    return offenders
+
+
 def hygiene_gate(runner: ToolRunner, repo_root: pathlib.Path, spec: GateSpec) -> GateResult:
-    """Validate repository hygiene: CODEOWNERS, templates, security policy, bots."""
+    """Validate repository hygiene: CODEOWNERS, templates, security policy, bots.
+
+    Also refuses a tree where runtime databases, logs, caches or credential
+    files were committed: ``.gitignore`` stops new ones, this stops old ones.
+    """
     required = {
         "SECURITY.md": repo_root / "SECURITY.md",
         "CONTRIBUTING.md": repo_root / "CONTRIBUTING.md",
@@ -296,6 +344,11 @@ def hygiene_gate(runner: ToolRunner, repo_root: pathlib.Path, spec: GateSpec) ->
     missing = [name for name, path in required.items() if not path.exists()]
     if missing:
         return _result(spec.name, False, "missing: " + ", ".join(missing))
+    junk = _tracked_junk(repo_root, runner)
+    if junk:
+        shown = ", ".join(sorted(junk)[:5])
+        more = f" (+{len(junk) - 5} more)" if len(junk) > 5 else ""
+        return _result(spec.name, False, f"tracked runtime artifacts or secrets: {shown}{more}")
     return _result(spec.name, True, "repository hygiene checks passed")
 
 
