@@ -1,3 +1,0 @@
-# Enforce LF for shell scripts regardless of the host platform's autocrlf
-# setting. CRLF shebangs (`#!/usr/bin/env bash\r`) break execution on Linux.
-*.sh text eol=lf
