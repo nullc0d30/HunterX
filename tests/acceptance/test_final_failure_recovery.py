@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Final failure-recovery acceptance matrix.
-
-Every failure mode is explicit and never silently becomes COMPLETE /
-EXHAUSTED / NO_FINDING: model timeout / unavailable / malformed output, tool
-unavailability / failure, defensive HTTP responses (429 / 403 / 5xx),
-connection resets and partial discovery all preserve mission state and honest
-outcomes.
-"""
+"""Final failure-recovery acceptance matrix."""
 
 from __future__ import annotations
 
@@ -171,7 +164,7 @@ class TestModelFailure:
 
 
 class TestHTTPDefensiveResponses:
-    """429 / 403 / 5xx / reset throttle and record honestly — never exhaust."""
+    """429 / 403 / 5xx / reset throttle and record honestly, never exhaust."""
 
     @pytest.mark.parametrize("status", [429, 403, 500, 503])
     def test_defensive_status_records_honest_outcome(self, status: int) -> None:

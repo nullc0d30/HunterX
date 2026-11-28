@@ -1,11 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""I/O generators: schemas, parser, normalizer and mappings.
-
-Emits the input/output JSON Schemas, the parser and normalizer skeletons, and
-the database / evidence / risk mappings of a Tool Integration Pack.
-"""
+"""I/O generators: schemas, parser, normalizer and mappings."""
 
 from __future__ import annotations
 

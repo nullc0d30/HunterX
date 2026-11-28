@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Final production-readiness assessment.
-
-Combines architecture health, security health, code quality, coverage,
-documentation, dependency and release readiness into a single scored report
-with a production-readiness score and technical-debt summary.
-"""
+"""Final production-readiness assessment."""
 
 from __future__ import annotations
 

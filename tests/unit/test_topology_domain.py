@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the topology domain layer.
-
-Covers entity resolution & normalization, relationship correlation &
-deduplication, conflict preservation, temporal history, analysis, path finding,
-graph views, scope enforcement and the TIDB-derivation rules.
-"""
+"""Tests for the topology domain layer."""
 
 from __future__ import annotations
 
@@ -160,17 +155,17 @@ class TestDeriver:
         data = self._data()
         observations = RelationshipDeriver().derive(data)
         keys = {obs.rel_type.value for obs in observations}
-        assert RelationshipType.PART_OF.value in keys          # subdomain→domain
-        assert RelationshipType.RESOLVES_TO.value in keys      # hostname→ip
-        assert RelationshipType.EXPOSES.value in keys          # ip→port
-        assert RelationshipType.SERVES.value in keys           # port→service
-        assert RelationshipType.USES.value in keys             # hostname→cert
-        assert RelationshipType.CERTIFICATE_FOR.value in keys  # cert→san
-        assert RelationshipType.DELEGATED_TO.value in keys     # domain→ns
-        assert RelationshipType.MAILS_TO.value in keys         # domain→mx
+        assert RelationshipType.PART_OF.value in keys          # subdomain to domain
+        assert RelationshipType.RESOLVES_TO.value in keys      # hostname to ip
+        assert RelationshipType.EXPOSES.value in keys          # ip to port
+        assert RelationshipType.SERVES.value in keys           # port to service
+        assert RelationshipType.USES.value in keys             # hostname to cert
+        assert RelationshipType.CERTIFICATE_FOR.value in keys  # cert to san
+        assert RelationshipType.DELEGATED_TO.value in keys     # domain to ns
+        assert RelationshipType.MAILS_TO.value in keys         # domain to mx
         assert RelationshipType.DISCOVERED_BY.value in keys    # source_tool
         assert RelationshipType.BELONGS_TO.value in keys       # target
-        assert RelationshipType.ANNOUNCED_BY.value in keys     # ip→asn
+        assert RelationshipType.ANNOUNCED_BY.value in keys     # ip to asn
 
     def test_derives_part_of_for_hostname_suffix(self) -> None:
         data = self._data()

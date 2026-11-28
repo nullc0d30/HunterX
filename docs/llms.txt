@@ -82,7 +82,7 @@ safe, structured artifacts (never arbitrary executable scripts). PoCs are
 replayed deterministically; reproducibility requires repeated successful
 replays. Impact is classified strictly from captured evidence; confidence is a
 versioned, weighted policy over named factors. The engine is not a
-weaponization engine — data destruction, persistence, reverse shells, DoS and
+weaponization engine - data destruction, persistence, reverse shells, DoS and
 mass data extraction are never scheduled.
 
 ## Responsible use

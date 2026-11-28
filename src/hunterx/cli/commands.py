@@ -3,9 +3,8 @@
 
 """Default CLI commands.
 
-Foundation-level commands that work without business logic: version, help,
-config snapshot, platform composition status. Mission/scan commands arrive
-with the engine wiring in later sprints.
+Foundation-level commands that work without business logic: version, help, config snapshot, platform composition
+status.
 """
 
 from __future__ import annotations
@@ -55,7 +54,7 @@ def register_default_commands(app: CliApplication, platform: Any | None = None) 
     def _platform(_argv: list[str]) -> int:
         from hunterx.platform.platform import Platform
 
-        assert isinstance(platform, Platform)  # nosec B101  # platform is always built
+        assert isinstance(platform, Platform)  # nosec B101 # platform is always built
         payload = {
             "environment": platform.settings.environment,
             "cache_backend": platform.settings.cache.backend,
@@ -248,7 +247,7 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
         """Run guided AI configuration (provider, model, endpoint, key)."""
         from hunterx.config.guided_setup import run_guided_configuration
 
-        return run_guided_configuration(app=app)  # type: ignore[arg-type]  # app is only used for banners
+        return run_guided_configuration(app=app)  # type: ignore[arg-type] # app is only used for banners
 
     app.registry.register("ai check", _ai_check, help_text="Perform AI provider health check")
     app.registry.register("ai models", _ai_models, help_text="List available models from AI provider")
@@ -258,7 +257,7 @@ def _register_ai_commands(app: CliApplication, platform: Any) -> None:
 def _register_finding_commands(app: CliApplication, platform: Any) -> None:
     """Register the vulnerability finding orchestration commands.
 
-    Commands (Sprint 028): ``finding create``, ``finding list``, ``finding
+    Commands: ``finding create``, ``finding list``, ``finding
     show``, ``finding evidence``, ``finding validate``, ``finding proof``,
     ``finding poc``, ``finding replay``, ``finding explain`` and ``finding
     report-ready``. No unsafe unrestricted execution is exposed through the
@@ -357,7 +356,7 @@ def _register_finding_commands(app: CliApplication, platform: Any) -> None:
 def _register_report_commands(app: CliApplication, platform: Any) -> None:
     """Register the professional reporting commands.
 
-    Commands (Sprint 029): ``report list``, ``report show``, ``report
+    Commands: ``report list``, ``report show``, ``report
     preview``, ``report validate``, ``report generate``, ``report export``,
     ``report evidence``, ``report timeline``, ``report remediation``,
     ``report retest`` and ``report sarif``.
@@ -455,7 +454,7 @@ def _register_report_commands(app: CliApplication, platform: Any) -> None:
 def _register_adaptive_mission_commands(app: CliApplication, platform: Any) -> None:
     """Register the adaptive mission & attack-path planning commands.
 
-    Commands (Sprint 027): ``mission plan``, ``mission status``,
+    Commands: ``mission plan``, ``mission status``,
     ``mission replan``, ``mission pause``, ``mission resume``,
     ``mission paths`` and ``mission explain``.
     """
@@ -525,7 +524,7 @@ def _register_adaptive_mission_commands(app: CliApplication, platform: Any) -> N
 
 
 def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
-    """Register the full-spectrum hunt commands (Sprint 033).
+    """Register the full-spectrum hunt commands.
 
     Commands: ``hunt`` (create+start+execute a mission), ``hunt status``, ``hunt
     surface``, ``hunt coverage``, ``hunt findings``, ``hunt evidence``, ``hunt
@@ -575,9 +574,8 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         deterministic downgrades are forbidden.
         """
         nonlocal platform
-        # Tests and fake-engine runs intentionally run deterministic paths;
+        # Tests and fake-engine runs intentionally run deterministic paths
         # skip guided config for them (detected via pytest or NullAIClient).
-        import sys
 
         if "pytest" in sys.modules:
             return platform
@@ -593,8 +591,8 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
             print("HunterX AI configuration required.\n")
             rc = run_guided_configuration(app=app, interactive=True)
             if rc == 0:
-                from hunterx.platform import build_platform as _build_platform
                 from hunterx.config.loader import load_default_settings
+                from hunterx.platform import build_platform as _build_platform
 
                 platform = _build_platform(load_default_settings(), persistence=True)
                 if _ai_ready(platform):
@@ -619,11 +617,14 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
         if not deterministic and objective == "full_security_assessment":
             # The product contract: AI-directed autonomous assessment. Missing
             # or unhealthy AI triggers guided configuration (TTY) or a clear
-            # actionable failure (non-TTY) — never a silent downgrade.
+            # actionable failure (non-TTY), never a silent downgrade.
             use_platform = _ensure_ai_ready()
         elif not _ai_ready(platform):
-            print("[WARN] AI provider not configured or unreachable; running DETERMINISTIC fallback.")
-            print("       Use 'hunterx ai configure' to enable AI Hunt Director direction.")
+            print(
+                "[WARN] AI provider not configured or unreachable; running DETERMINISTIC fallback.",
+                file=sys.stderr,
+            )
+            print("       Use 'hunterx ai configure' to enable AI Hunt Director direction.", file=sys.stderr)
 
         orchestration = use_platform.mission_orchestration_service
         dashboard = use_platform.mission_dashboard_service
@@ -733,7 +734,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
                 machine_mode = True
             elif arg == "--deterministic":
                 # Explicit operator opt-out of AI direction (provider failure
-                # fallback is never silent — this flag is the documented way).
+                # fallback is never silent, this flag is the documented way).
                 deterministic = True
             elif arg in ("--output", "-o"):
                 index += 1
@@ -823,7 +824,7 @@ def _register_hunt_commands(app: CliApplication, platform: Any) -> None:
 def _register_mission_orchestration_commands(app: CliApplication, platform: Any) -> None:
     """Register the autonomous mission orchestration commands.
 
-    Commands (Sprint 032): ``mission create``, ``mission start``,
+    Commands: ``mission create``, ``mission start``,
     ``mission status``, ``mission pause``, ``mission resume``,
     ``mission cancel``, ``mission finalize``, ``mission timeline``,
     ``mission decisions``, ``mission hypotheses``, ``mission findings``,
@@ -935,7 +936,7 @@ def _register_mission_orchestration_commands(app: CliApplication, platform: Any)
 def _register_target_memory_commands(app: CliApplication, platform: Any) -> None:
     """Register the target memory & campaign intelligence commands.
 
-    Commands (Sprint 030): ``target memory``, ``target snapshot``, ``target
+    Commands: ``target memory``, ``target snapshot``, ``target
     diff``, ``target changes``, ``target history``, ``target coverage``,
     ``target gaps``, ``target risk``, ``target revalidate``, ``campaign list``,
     ``campaign show`` and ``campaign intelligence``.
@@ -1038,13 +1039,13 @@ def _register_target_memory_commands(app: CliApplication, platform: Any) -> None
 
 
 def _register_toolchain_commands(app: CliApplication, platform: Any) -> None:
-    """Register the full-toolchain command group (Sprint 031).
+    """Register the full-toolchain command group.
 
     Commands: ``tools list``, ``tools show``, ``tools capabilities``,
     ``tools health``, ``tools versions``, ``tools execute``,
     ``tools inspect-result``, ``tools parse``, ``tools normalize``,
     ``tools chain`` and ``tools recommend``. Every command is a read or a
-    guarded, structured execution — targets are typed arguments, never shell
+    guarded, structured execution, targets are typed arguments, never shell
     fragments.
     """
 
@@ -1209,17 +1210,7 @@ def _register_toolchain_commands(app: CliApplication, platform: Any) -> None:
 
 
 def _register_tool_readiness_commands(app: CliApplication, platform: Any) -> None:
-    """Register the tool readiness & provisioning commands.
-
-    Commands: ``install`` (base HunterX environment), ``tools check`` (readiness
-    table + capability coverage) and ``tools install`` (provision missing tools
-    via trusted static methods, optionally by profile).
-
-    Human-first by default: ``install`` and ``tools install`` render clean
-    progress/summary output and only emit JSON when ``--json`` is requested.
-    ``tools check`` renders a compact multi-column inventory plus capability
-    coverage, or a full JSON report with ``--json``.
-    """
+    """Register the tool readiness & provisioning commands."""
 
     def _readiness() -> Any:
         return platform.tool_readiness_service
@@ -1496,17 +1487,7 @@ def _install_payload(profile: str, outcomes: list[Any], report: Any) -> dict[str
 
 
 def _exit_code_for(report: Any, profile: str = "") -> int:
-    """Return ``0`` when the required environment is ready, else ``1``.
-
-    Recommended/optional gaps degrade the report but do not fail the exit
-    code; a missing required capability means the environment is not ready.
-
-    The ``minimal`` profile intentionally provisions no external tools: its
-    "required" gate is limited to the base in-process capabilities
-    (``proof_validation`` / ``replay``), mirroring the installer's documented
-    contract that the base environment is complete when its in-process
-    capabilities are available.
-    """
+    """Return ``0`` when the required environment is ready, else ``1``."""
     from hunterx.tools.readiness.models import CapabilityLevel
 
     if profile == "minimal":
@@ -1621,7 +1602,7 @@ def _provision_human(
     """Run the human ``hunterx tools install`` flow with live progress.
 
     Shows the current available/missing inventory first, then provisions
-    missing tools with ``[N/M] tool ... ✓`` lines, then a summary. Failures
+    missing tools with ``[N/M] tool... ✓`` lines, then a summary. Failures
     are isolated per tool and reported with reasons.
     """
     from hunterx.tools.readiness.models import ToolInventory
@@ -1687,7 +1668,6 @@ def _provision_human(
 
 
 def _stdout_is_tty() -> bool:
-    import sys
 
     try:
         return bool(sys.stdout.isatty())
@@ -1714,8 +1694,8 @@ def _render_table(headers: list[str], rows: list[dict[str, str]]) -> str:
 def _install_status(outcomes: list[Any]) -> str:
     """Classify an install run as ``complete`` / ``degraded`` / ``incomplete``.
 
-    All provisioning attempts succeeded → complete. Some failed but others
-    succeeded → degraded. Every attempt failed → incomplete. Failures are never
+    All provisioning attempts succeeded to complete. Some failed but others
+    succeeded to degraded. Every attempt failed to incomplete. Failures are never
     hidden: the caller reports the per-tool outcomes alongside this status.
     """
     succeeded = [outcome for outcome in outcomes if outcome.success]

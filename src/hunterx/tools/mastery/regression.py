@@ -3,13 +3,8 @@
 
 """Parser regression framework.
 
-When a parser changes, HunterX re-runs historical golden outputs and compares
-observations, evidence, classification and confidence contribution. A golden
-fixture pairs a raw tool output artifact with the expected canonical
-observations after parsing + normalization.
-
-The framework is tool-output driven: it replays stored raw artifacts through
-registered parser/normalizer pairs without re-running the external binary.
+When a parser changes, HunterX re-runs historical golden outputs and compares observations, evidence, classification
+and confidence contribution.
 """
 
 from __future__ import annotations
@@ -38,7 +33,7 @@ class GoldenFixture:
         raw: the raw tool output artifact (string or list/dict).
         expected_observations: list of expected canonical observation values
             (each item is a dict of the observation's expected fields).
-        metadata: parser metadata (tool version, target id, ...).
+        metadata: parser metadata (tool version, target id,...).
         description: human-readable description.
 
     """

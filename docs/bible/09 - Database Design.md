@@ -1,7 +1,5 @@
-# 09 — Database Design
+# 09, Database Design
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Target Intelligence Database (TIDB), Knowledge Graph, Object Store, Cache, Indexes
 
 ---
@@ -26,31 +24,31 @@ ports; distributed deployments use the production engines.
 
 ```
 ENGAGEMENT 1───< MISSION >───1 PROFILE(config/profiles)
-   │              │
-   │              ├──< PLAN ──< PLAN_STEP
-   │              ├──< WORKFLOW_RUN ──< TASK_RUN
-   │              └──< TIMELINE_ENTRY
-   │
+ │ │
+ │ ├──< PLAN ──< PLAN_STEP
+ │ ├──< WORKFLOW_RUN ──< TASK_RUN
+ │ └──< TIMELINE_ENTRY
+ │
 TARGET 1───< ASSET(abstract)
-             ├── DOMAIN ──< SUBDOMAIN
-             ├── HOST ──< IP ──< PORT ──< SERVICE ──< TECHNOLOGY
-             ├── URL ──< ENDPOINT ──< PARAMETER
-             ├── DIRECTORY
-             └── API
+ ├── DOMAIN ──< SUBDOMAIN
+ ├── HOST ──< IP ──< PORT ──< SERVICE ──< TECHNOLOGY
+ ├── URL ──< ENDPOINT ──< PARAMETER
+ ├── DIRECTORY
+ └── API
 
 MISSION ──< FINDING ──< EVIDENCE(meta) ──blob──> OBJECT_STORE
-   │          │
-   │          ├──< RISK_RATING
-   │          ├──< VULN_REF  (CVE)
-   │          ├──< CWE_REF
-   │          ├──< CAPEC_REF
-   │          ├──< MITRE_REF
-   │          └──< EPSS_REF
-   └──< REPORT ──< REPORT_ARTIFACT
+ │ │
+ │ ├──< RISK_RATING
+ │ ├──< VULN_REF (CVE)
+ │ ├──< CWE_REF
+ │ ├──< CAPEC_REF
+ │ ├──< MITRE_REF
+ │ └──< EPSS_REF
+ └──< REPORT ──< REPORT_ARTIFACT
 
-GLOBAL REFERENCE: CVE ──< CWE ; CVE ──< EPSS ; CVE ──< CAPEC ; CVE ──< MITRE
+GLOBAL REFERENCE: CVE ──< CWE; CVE ──< EPSS; CVE ──< CAPEC; CVE ──< MITRE
 
-USERS ──< AUTH_SESSION ; USERS ──< ROLE (RBAC) ; USERS ──< AUDIT_LOG
+USERS ──< AUTH_SESSION; USERS ──< ROLE (RBAC); USERS ──< AUDIT_LOG
 ```
 
 ---
@@ -60,9 +58,9 @@ USERS ──< AUTH_SESSION ; USERS ──< ROLE (RBAC) ; USERS ──< AUDIT_LOG
 ### 3.1 Naming & Conventions
 
 - `snake_case`; plural table names; `id` UUID/ULID text PK; all rows carry
-  `created_at`, `updated_at`; soft-delete via `deleted_at` where retention allows.
+ `created_at`, `updated_at`; soft-delete via `deleted_at` where retention allows.
 - Every table has a **bitemporal** twin for history where mutation occurs
-  (see §History below).
+ (see §History below).
 
 ### 3.2 Principal Tables
 
@@ -147,11 +145,11 @@ via Alembic migrations and reviewed in Performance Review
 ## 6. History & Versioning
 
 - **Bitemporal model** for every mutable entity: `valid_from`, `valid_to`
-  (state-time) + `created_at`, `updated_at` (assertion-time).
+ (state-time) + `created_at`, `updated_at` (assertion-time).
 - Implemented via **append-only history tables** (`<table>_history`) or
-  PostgreSQL temporal features; every UPDATE inserts a history row.
+ PostgreSQL temporal features; every UPDATE inserts a history row.
 - History retention: full for `findings`, `evidence`, `missions`, `audit_log`;
-  configurable rollup for high-volume `timeline_entries` (> 90 days → daily summary).
+ configurable rollup for high-volume `timeline_entries` (> 90 days → daily summary).
 - Schema versioning: `schema_migrations` (Alembic) + per-row `schema_version`.
 
 ---
@@ -196,7 +194,7 @@ NDA retention windows).
 - PostgreSQL FTS (tsvector, `gin`) for `findings`, `endpoints`, `hosts`, `urls`.
 - Query: ranking by `ts_rank`, filters on severity/status/category/mission.
 - The Search adapter (`infrastructure/db/search`) exposes a stable API so
-  Elasticsearch can replace it without touching callers.
+ Elasticsearch can replace it without touching callers.
 - Search is scoped: results filtered by the caller's engagement/tenant access.
 
 ---
@@ -229,11 +227,11 @@ and AI grounding subgraph extraction. Graph writes are asynchronous (event-drive
 ## 11. Write Path & Integrity
 
 - All writes happen through the `StorePort`; the Normalizer produces
-  **CanonicalEvents** that the store applies transactionally.
+ **CanonicalEvents** that the store applies transactionally.
 - Events are idempotent: replayed events do not duplicate rows (unique keys +
-  event `id`).
+ event `id`).
 - Referential integrity enforced in SQL; Graph is eventually consistent with
-  the SQL source of truth (rebuilt on demand).
+ the SQL source of truth (rebuilt on demand).
 - Evidence blobs: `sha256` recorded at upload; integrity re-verified on read.
 - Backups: WAL-based, point-in-time recovery; Graph exported via cypher dump.
 
@@ -242,9 +240,9 @@ and AI grounding subgraph extraction. Graph writes are asynchronous (event-drive
 ## 12. Performance Targets (see also `14 - Performance Standards.md`)
 
 - TIDB supports **millions of findings** with the above indexes at <100ms for
-  common queries (triage, dedup, report pulls).
+ common queries (triage, dedup, report pulls).
 - Bulk ingest: ≥ 10,000 canonical events/sec on standard hardware (batch
-  inserts, no per-row commits).
+ inserts, no per-row commits).
 - Query plans are reviewed when a query exceeds 500ms P95 in performance tests.
 
 ---
@@ -254,9 +252,9 @@ and AI grounding subgraph extraction. Graph writes are asynchronous (event-drive
 - All schema changes via Alembic migrations; forward + rollback scripts.
 - Breaking changes require: dual-write window or backfill + versioned API.
 - Migration rollouts staged: staging → canary → production, with verification
-  checks per stage.
+ checks per stage.
 - Schema change approval is part of the Schema Change Process
-  (`24 - Quality Assurance.md` §7).
+ (`24 - Quality Assurance.md` §7).
 
 ---
 
@@ -264,4 +262,4 @@ and AI grounding subgraph extraction. Graph writes are asynchronous (event-drive
 
 - `08 - Unified Security Schema.md` (entity definitions)
 - `14 - Performance Standards.md` (capacity & indexing targets)
-- `02 - Architecture.md` §5.15–5.16 (TIDB & Cache)
+- `02 - Architecture.md` §5.15-5.16 (TIDB & Cache)

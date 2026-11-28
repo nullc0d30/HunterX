@@ -3,9 +3,8 @@
 
 """Health checker.
 
-Verifies that a tool is installed, its recorded version matches the expected
-requirement, and an adapter-supplied health probe reports it functional.
-Health results drive the pipeline's ``verify`` phase and gate execution.
+Verifies that a tool is installed, its recorded version matches the expected requirement, and an adapter-supplied
+health probe reports it functional.
 """
 
 from __future__ import annotations

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission objective catalog.
-
-Each canonical :class:`MissionObjective` maps to a deterministic, explainable
-spec: coverage priorities, allowed capabilities, validation depth, proof
-requirements, risk tolerance and completion criteria. The catalog is the
-single source of truth for how objectives shape planning.
-"""
+"""Mission objective catalog."""
 
 from __future__ import annotations
 
@@ -317,7 +311,7 @@ def default_objective_catalog() -> dict[MissionObjective, MissionObjectiveSpec]:
     return specs
 
 
-#: Mission modes → additive score weights applied to the explainable ranking.
+# : Mission modes to additive score weights applied to the explainable ranking.
 #: Modes adjust priorities only; they never touch authorization or safety.
 MODE_WEIGHTS: dict[MissionMode, dict[str, float]] = {
     MissionMode.FAST: {

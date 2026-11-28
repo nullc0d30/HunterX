@@ -1,8 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the observability platform: service wiring, the
-platform composition root, telemetry providers and dashboard models."""
+"""Integration tests for the observability platform: service wiring, the platform composition root, telemetry providers
+and dashboard models.
+"""
 
 from __future__ import annotations
 

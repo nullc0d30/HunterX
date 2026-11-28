@@ -3,13 +3,7 @@
 
 """Domain events.
 
-Domain events are immutable facts describing something that happened inside
-the platform. They are published on the event bus and consumed by internal
-subsystems and by external plugins. Event payloads must be JSON-serializable.
-
-Every event carries the TIDB-style metadata envelope: event id, correlation
-and causation ids, mission/execution scope, producer/consumer, severity,
-category and payload version. See :mod:`hunterx.domain.events.enums`.
+Domain events are immutable facts describing something that happened inside the platform.
 """
 
 from __future__ import annotations

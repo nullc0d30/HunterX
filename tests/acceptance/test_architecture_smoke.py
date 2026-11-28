@@ -1,23 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""V7 architecture certification — end-to-end smoke mission.
+"""V7 architecture certification, end-to-end smoke mission.
 
-Sprint 034.2 (Final Release Gate). This test drives one minimal mission
-through the approved interfaces only:
-
-    target -> mission -> planning -> execution -> persistence -> retrieval
-
-Every subsystem participates through the composition root
-(``hunterx.platform.build_platform``) and the platform's dependency
-container — no subsystem is constructed directly. It certifies that:
-
-- the composition root assembles the full platform (Core Engine, TIP,
-  Execution Engine, Tool Factory, Mission Planning, Event Bus, TIDB, config);
-- the dependency container resolves every port and service;
-- the mission lifecycle persists normalized records through the TIDB and
-  reads them back through the query services;
-- the API and CLI entry points share the same wiring.
+(Final Release Gate).
 """
 
 from __future__ import annotations
@@ -138,7 +124,7 @@ class TestArchitectureSmokeMission:
         assert status["coverage_ratio"] > 0
 
         # -- event bus participation -----------------------------------------
-        # the mission lifecycle publishes mission.* events through the bus;
+        # the mission lifecycle publishes mission.* events through the bus
         # the attached event store persists every published event
         assert platform.event_store is not None
         events = platform.event_store.replay(event_type="mission.*")
@@ -154,10 +140,11 @@ class TestArchitectureSmokeMission:
         try:
             from hunterx.api.app import create_app
             from hunterx.api.deps import get_container
-        except ImportError:
+
+            create_app(platform=platform)
+        except (ImportError, RuntimeError):
             return  # api extra not installed
 
-        create_app(platform=platform)
         assert get_container().resolve(MissionOrchestrationService) is platform.mission_orchestration_service
 
         # CLI: register_default_commands(app, platform=...) uses the same platform

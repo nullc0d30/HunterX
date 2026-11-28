@@ -1,22 +1,5 @@
-"""target memory & campaign intelligence tables
-
-Revision ID: fc52d0b58c3f
-Revises: b2e3f5a7c9d1
-Create Date: 2026-08-10
-
-Extends the TIDB schema with the Sprint 030 target memory & campaign
-intelligence capability: memory observations with first/last seen tracking,
-reproducible target snapshots, deterministic snapshot diffs, mission memory,
-hypothesis memory (failed and successful), tool observation provenance, target
-risk history, finding memory and recurrence detection, campaigns, coverage
-gaps, revalidation state, attack-path history, preserved memory
-contradictions and advisory next-action records.
-
-Security boundary: every table stores canonical, normalized historical data
-and references to evidence - never raw tool output, never credentials, never
-exploit payloads. Memory is treated as untrusted data: confidence,
-corroboration, freshness and contradiction state are stored alongside every
-observation.
+"""target memory & campaign intelligence tables Revision ID: fc52d0b58c3f Revises: b2e3f5a7c9d1 Create Date:
+2026-08-10.
 """
 from collections.abc import Sequence
 

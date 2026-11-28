@@ -3,16 +3,8 @@
 
 """Base adapter for binary vulnerability scanners.
 
-Every external vulnerability scanner (Nuclei, Trivy, and future scanners)
-implements the SDK :class:`ToolAdapter` lifecycle and shares this base. Scanners
-are invoked through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam and emit canonical
-*candidate* records into the pipeline JSON payload under the ``candidates`` key.
-
-A scanner output is an OBSERVATION / CANDIDATE — never a validated finding. Every
-candidate record carries ``requires_validation = True`` and a bounded confidence
-contribution so the Proof and Validation subsystems retain authority over the
-final verdict.
+Every external vulnerability scanner (Nuclei, Trivy, and future scanners) implements the SDK :class:`ToolAdapter`
+lifecycle and shares this base.
 """
 
 from __future__ import annotations

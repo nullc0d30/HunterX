@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the vulnerability proof strategy library.
-
-Confirms the Sprint 022 modules land in the expected layers and respect the
-dependency policy: the strategy domain stays pure (domain/shared only, never
-imports infrastructure or concrete tools), the application service never
-imports infrastructure/engines/cli/api, reporting imports only domain/shared,
-strategies never execute tools directly and the domain package has no cycles.
-"""
+"""Architecture tests for the vulnerability proof strategy library."""
 
 from __future__ import annotations
 

@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 12 tests — authenticated attack-surface discovery.
+"""Tests, authenticated attack-surface discovery.
 
-Covers the authenticated-session layer added for Phase 12:
-
-- the in-memory ``AuthenticatedSession`` model and its masking guarantees,
-- the generic form-login session service (fixture-driven, never hardcoded),
-- the HTTP page fetcher's POST/header/cookie capture support,
-- session cookie/header propagation into tool argv (katana/httpx/arjun/nuclei),
-- session attachment to differential probes (mission + finding service),
-- the mission-runner auth wiring (establish before discovery, honest
-  negatives, secret hygiene in contexts/events),
-- a no-DVWA-hardcoding guard over the codebase.
+Covers the authenticated-session layer added for.
 """
 
 from __future__ import annotations
@@ -126,7 +117,7 @@ class TestAuthenticatedSession:
 
 
 # ---------------------------------------------------------------------------
-# Session service — generic form login
+# Session service, generic form login
 # ---------------------------------------------------------------------------
 
 
@@ -166,8 +157,9 @@ class TestSessionService:
 
     def test_failed_login_redirect_to_login_page_is_rejected(self) -> None:
         """A login POST that 302-redirects to the login page while issuing a
-        fresh session id is a FAILED authentication — a new PHPSESSID on a
-        redirect-to-login must never be judged an established session."""
+        fresh session id is a FAILED authentication, a new PHPSESSID on a
+        redirect-to-login must never be judged an established session.
+        """
 
         def fetch(url: str, timeout_s: float = 10.0, **kwargs: Any) -> FetchedPage:
             if url.endswith("/login.php") and not kwargs.get("data"):
@@ -269,7 +261,7 @@ class TestSessionService:
 
 
 # ---------------------------------------------------------------------------
-# HttpPageFetcher — POST / headers / Set-Cookie capture
+# HttpPageFetcher, POST / headers / Set-Cookie capture
 # ---------------------------------------------------------------------------
 
 
@@ -282,6 +274,10 @@ class TestHttpPageFetcherExtensions:
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802
+                length = int(self.headers.get("Content-Length") or 0)
+                # Drain the request body before responding: an unread body
+                # makes Windows reset the connection under the client.
+                received["body"] = self.rfile.read(length)
                 received["method"] = self.command
                 received["cookie"] = self.headers.get("Cookie")
                 received["origin"] = self.headers.get("Origin")
@@ -311,6 +307,7 @@ class TestHttpPageFetcherExtensions:
             server.shutdown()
             thread.join(timeout=5)
         assert received["method"] == "POST"
+        assert received["body"] == b"username=admin&password=secret"
         assert received["cookie"] == "PHPSESSID=sess0"
         assert received["origin"] == f"http://127.0.0.1:{port}"
         # Both Set-Cookie headers are captured (session cookie + security flag).
@@ -321,7 +318,7 @@ class TestHttpPageFetcherExtensions:
 
 
 # ---------------------------------------------------------------------------
-# header_args — session propagation into tool argv
+# header_args, session propagation into tool argv
 # ---------------------------------------------------------------------------
 
 
@@ -442,7 +439,7 @@ class TestMissionAuthWiring:
         events: list[dict[str, Any]] = []
         service._publish = lambda name, payload: events.append({"name": name, **payload})  # type: ignore[method-assign]
         service._orchestration = _StubOrchestration()
-        service._establish_auth_session = None  # type: ignore[assignment]  # replaced below
+        service._establish_auth_session = None  # type: ignore[assignment] # replaced below
 
         from hunterx.application.session import SessionService
 

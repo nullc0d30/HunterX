@@ -3,9 +3,7 @@
 
 """Content discovery tool integrations.
 
-SDK adapters and Tool Intelligence registrations for the content discovery
-tools HunterX integrates (ffuf). Every adapter runs through the Tool
-Integration SDK pipeline and emits canonical content-discovery records.
+SDK adapters and Tool Intelligence registrations for the content discovery tools HunterX integrates (ffuf).
 """
 
 from __future__ import annotations

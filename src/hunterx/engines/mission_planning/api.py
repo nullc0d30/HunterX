@@ -3,10 +3,8 @@
 
 """Mission Planning API.
 
-The facade every internal subsystem uses to interact with the mission planning
-engine: create, update, validate, plan, status, cancel, history, execution
-graphs and checkpoints. Composes the engine, profile engine and planner behind
-one surface, mirroring the pattern of ``ToolIntelligenceAPI``.
+The facade every internal subsystem uses to interact with the mission planning engine: create, update, validate,
+plan, status, cancel, history, execution graphs and checkpoints.
 """
 
 from __future__ import annotations

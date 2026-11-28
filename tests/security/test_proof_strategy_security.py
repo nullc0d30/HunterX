@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the vulnerability proof strategy library.
-
-The strategy layer must be fail-closed: strategies are immutable and structurally
-validated (no destructive safety, no allowed/forbidden overlap), scope conflicts
-block proofs, contradictory evidence is never confirmed, evidence values cannot
-inject verdicts, cross-mission/cross-target contamination is prevented, unsafe
-strategy escalation is refused and tool capabilities cannot be spoofed into
-selecting an arbitrary executable.
-"""
+"""Security tests for the vulnerability proof strategy library."""
 
 from __future__ import annotations
 

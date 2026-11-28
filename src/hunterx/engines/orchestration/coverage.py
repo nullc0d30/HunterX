@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission coverage model.
-
-Computes coverage metrics for a mission: scope coverage, asset coverage, port
-coverage, protocol coverage, technology coverage, endpoint coverage,
-vulnerability coverage, validation coverage, tool coverage and evidence
-coverage. Coverage is always expressed relative to the observed attack surface
-and applicable capabilities — never as a raw tool count.
-"""
+"""Mission coverage model."""
 
 from __future__ import annotations
 

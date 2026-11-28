@@ -3,9 +3,7 @@
 
 """Topology confidence engine.
 
-Merges per-source confidence into a single edge confidence and models
-temporal decay for staleness analysis. All rules are deterministic so repeated
-runs over the same evidence produce identical numbers.
+Merges per-source confidence into a single edge confidence and models temporal decay for staleness analysis.
 """
 
 from __future__ import annotations

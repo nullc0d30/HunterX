@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning API routes.
-
-Exposes the application services for: create mission, get current plan, get
-plan history, get candidate actions, approve action, pause/resume, replan,
-attack paths, decision explanation, coverage, evidence gaps and proof gaps.
-Handlers resolve services from the shared dependency container.
-"""
+"""Adaptive Mission & Attack-Path Planning API routes."""
 
 from __future__ import annotations
 

@@ -3,20 +3,7 @@
 
 """Trusted static tool readiness manifest.
 
-The authoritative, machine-readable inventory of the EXTERNAL security tools
-HunterX integrates. It is the single source of truth for:
-
-- planner capability → provider tool ids (used by the tool selection engine
-  and the readiness capability resolver);
-- per-tool binary name, version probe command and version regex;
-- trusted static installation methods (apt/go/cargo/pip/brew/...). Package
-  names and module paths are static constants — user or target input NEVER
-  influences an install command;
-- installation profiles (minimal/recon/web/network/vulnerability/full).
-
-Tool knowledge (purpose, capabilities, arguments, safety) lives in the TIP
-registry; this manifest only adds what discovery/provisioning need so the
-planner never hardcodes tool facts.
+The authoritative, machine-readable inventory of the EXTERNAL security tools HunterX integrates.
 """
 
 from __future__ import annotations
@@ -27,7 +14,7 @@ from hunterx.tools.readiness.platform import PlatformInfo
 #: Canonical profile names understood by ``hunterx tools install --profile``.
 PROFILES: tuple[str, ...] = ("minimal", "recon", "web", "network", "vulnerability", "full")
 
-#: Per-tool install methods. ``go`` methods use the go module path as ``name``;
+# : Per-tool install methods. ``go`` methods use the go module path as ``name``
 #: package-manager methods use the package name as ``package``.
 INSTALL_METHODS: dict[str, tuple[InstallMethod, ...]] = {
     # -- ProjectDiscovery / go toolchain -------------------------------------
@@ -594,7 +581,7 @@ INPROCESS_TOOLS: frozenset[str] = frozenset(
     }
 )
 
-#: Planner capability → ordered provider tool ids.
+# : Planner capability to ordered provider tool ids.
 #: This is the single source of truth consumed by both the tool selection
 #: engine and the readiness capability resolver (never duplicated elsewhere).
 CAPABILITY_PROVIDERS: dict[str, tuple[str, ...]] = {
@@ -668,8 +655,8 @@ CAPABILITY_LEVELS: dict[str, CapabilityLevel] = {
     "replay": CapabilityLevel.OPTIONAL,
 }
 
-#: Installation profiles → tool ids. The ``minimal`` profile is the base
-#: HunterX environment (in-process adapters only — no external installs).
+# : Installation profiles to tool ids. The ``minimal`` profile is the base
+# : HunterX environment (in-process adapters only, no external installs).
 PROFILE_TOOLS: dict[str, tuple[str, ...]] = {
     "minimal": tuple(sorted(INPROCESS_TOOLS)),
     "recon": (
@@ -760,7 +747,7 @@ def install_methods_for(tool_id: str, platform: PlatformInfo) -> tuple[InstallMe
 
 #: Tools each mission objective ("selected assessment profile") explicitly
 #: relies on. These are the tools the preflight provisions when absent, even if
-#: a REQUIRED capability could fall back to a different provider — so the
+# : a REQUIRED capability could fall back to a different provider, so the
 #: profile's intended toolchain is available before the mission depends on it.
 #: Tools NOT listed here stay globally-optional: they are only provisioned when
 #: a REQUIRED capability has no other available provider.

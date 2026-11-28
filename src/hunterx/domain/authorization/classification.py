@@ -3,11 +3,8 @@
 
 """Authorization surface classification.
 
-Deterministic classification of observed authorization material into canonical
-resource kinds, admin-surface kinds and decision indicators. The classifier
-never infers a semantic privilege from a name alone and never claims an
-authorization decision that was not safely observed — every classification is a
-pure function of the observed indicators and is explainable through them.
+Deterministic classification of observed authorization material into canonical resource kinds, admin-surface kinds
+and decision indicators.
 """
 
 from __future__ import annotations

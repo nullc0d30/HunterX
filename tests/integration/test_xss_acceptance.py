@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 8 — XSS end-to-end acceptance.
+"""XSS end-to-end acceptance.
 
-Proves the full chain through the existing architecture against the controlled
-loopback vulnerable fixture:
-
-endpoint discovered → parameter discovered → XSS hypothesis (derived from the
-discovered reflection surface) → XSS capability probe → reflection analysis →
-verification → evidence → reproduction → PoC → replay → VALIDATED →
-REPORT_READY.
-
-The XSS hypothesis is derived from a discovered, unclassified input
-(``msg``) — never hardcoded to a known XSS endpoint.
+Proves the full chain through the existing architecture against the controlled loopback vulnerable fixture.
 """
 
 from __future__ import annotations
@@ -130,7 +121,8 @@ class TestXssFindingService:
 
     def test_report_ready_finding_generates_professional_report(self, app: VulnerableApp) -> None:
         """An actual probe-verified XSS finding produces a professional report
-        with the required fields — and no FindingRootCause exception."""
+        with the required fields, and no FindingRootCause exception.
+        """
         from hunterx.application.professional_reporting import ProfessionalReportingService
         from hunterx.infrastructure.event_bus import InMemoryEventBus
         from hunterx.reporting.exporter import ReportExporter

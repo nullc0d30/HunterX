@@ -3,21 +3,7 @@
 
 """Regression tests: JSON persistence boundary survives arbitrary objects.
 
-Reproduces the v7.1.3 production incident:
-
-    TypeError: Object of type JSToken is not JSON serializable
-    (sqlalchemy.exc.StatementError on ``tidb_audit_logs.after``)
-
-A JavaScript-analysis observation whose ``content`` carried raw
-:class:`~hunterx.domain.javascript.tokenizer.JSToken` objects crashed the
-SQLAlchemy commit because the versioning listener snapshots every column of
-the observation row into ``AuditLogModel.after`` (a JSON column), whose
-serializer received the non-JSON-native dataclass.
-
-The contract under test: any value entering a JSON-backed persistence path —
-observation rows, audit snapshots, timeline payloads, legacy JSON-text
-columns — must already be JSON-compatible. These tests fail (StatementError)
-on a codebase without the canonical :func:`to_json_safe` boundary.
+Reproduces the v7.1.3 production incident.
 """
 
 from __future__ import annotations

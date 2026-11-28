@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Web Crawling.
-
-Registers the web crawling tools (crawler, katana) into a
-:class:`ToolIntelligenceAPI` so the Planner and selection engines can recommend
-them by taxonomy capability (``web-crawling``, ``web-discovery``). The profiles
-mirror the tool descriptors used by the Tool Integration SDK adapters (same
-version pins) so intelligence and execution never disagree about a tool's
-contract.
-"""
+"""Tool Intelligence Platform registration for Web Crawling."""
 
 from __future__ import annotations
 
@@ -104,6 +96,41 @@ _WEB_TOOLS: tuple[WebToolSpec, ...] = (
             "Crawl is bounded by depth, page count and scope policy.",
         ),
         installation_requirements=("Bundled with HunterX; no external tool required.",),
+        alternative_tools=("katana",),
+    ),
+    WebToolSpec(
+        tool_id="browser",
+        display_name="HunterX Browser",
+        vendor="HunterX",
+        project_url="",
+        license="Apache-2.0",
+        subcategory="web",
+        version="1.0.0",
+        language="python",
+        description="In-process headless browser for client-side behaviour and SPA surface testing.",
+        capabilities=("browser_testing",),
+        tags=("browser", "in-process", "javascript", "web"),
+        accepts=("url",),
+        required_inputs=("url",),
+        formats=("json",),
+        cli_binary="",
+        cli_structure="library",
+        arguments=(
+            ToolArgument("url", "", "string", required=True, description="Target URL to render."),
+            ToolArgument("timeout", "", "int", description="Navigation timeout in milliseconds."),
+        ),
+        modes=(
+            ToolExecutionMode(
+                "active",
+                description="Render an in-scope page and observe client-side behaviour.",
+                aggressive=False,
+            ),
+        ),
+        limitations=(
+            "Requires Playwright and a Chromium build on the host.",
+            "Only loopback/authorized targets are rendered.",
+        ),
+        installation_requirements=("pip install playwright && playwright install chromium",),
         alternative_tools=("katana",),
     ),
     WebToolSpec(
@@ -293,7 +320,7 @@ def web_tool_specs() -> tuple[WebToolSpec, ...]:
 
 
 def _metadata(spec: WebToolSpec) -> ToolMetadata:
-    in_process = spec.tool_id == "crawler"
+    in_process = spec.tool_id in ("crawler", "browser")
     return ToolMetadata(
         tool_id=spec.tool_id,
         display_name=spec.display_name,
@@ -354,8 +381,8 @@ def _knowledge(spec: WebToolSpec) -> ToolKnowledge:
         known_issues=(),
         installation_requirements=spec.installation_requirements,
         dependencies=(
-            (ToolDependency(capability="python", description="In-process crawler runs without binaries"),)
-            if spec.tool_id == "crawler"
+            (ToolDependency(capability="python", description="In-process tool runs without external binaries"),)
+            if spec.tool_id in ("crawler", "browser")
             else ()
         ),
         alternative_tools=spec.alternative_tools,

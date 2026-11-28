@@ -3,8 +3,7 @@
 
 """Reporting infrastructure.
 
-View models describe report content; renderers convert those views into
-specific output formats. Templates ship inside :mod:`hunterx.reporting.templates`.
+View models describe report content; renderers convert those views into specific output formats.
 """
 
 from __future__ import annotations

@@ -3,8 +3,8 @@
 
 """Observability facade.
 
-Re-exports the public observability contracts and the default in-memory
-implementations so subsystems can depend on one stable module.
+Re-exports the public observability contracts and the default in-memory implementations so subsystems can depend on
+one stable module.
 """
 
 from __future__ import annotations

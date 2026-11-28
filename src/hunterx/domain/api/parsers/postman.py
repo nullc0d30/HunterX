@@ -3,8 +3,7 @@
 
 """Postman collection parser.
 
-In-process parser that models a Postman collection (JSON) into canonical API
-intelligence observations. Used for documented REST surfaces.
+In-process parser that models a Postman collection (JSON) into canonical API intelligence observations.
 """
 
 from __future__ import annotations

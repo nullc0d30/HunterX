@@ -4,7 +4,6 @@
 """Mail infrastructure intelligence (SPF, DMARC, DKIM).
 
 Analyzes TXT records to determine a domain's mail authentication posture.
-Deterministic, explainable checks over raw TXT content.
 """
 
 from __future__ import annotations

@@ -3,17 +3,7 @@
 
 """DNSx tool adapter.
 
-Integrates ProjectDiscovery's ``dnsx`` — a fast, multi-purpose DNS toolkit —
-into the Tool Integration SDK. The adapter builds the CLI command from the
-execution context (record types, resolvers, rate controls, concurrency),
-parses the JSONL output (``{"host", "type", "ttl", "resp", "resolver"}``)
-into canonical :class:`DnsRecord` instances and publishes them on the
-execution output.
-
-CLI contract (verified against ProjectDiscovery docs):
-    ``dnsx -d <domain> -a -aaaa -cname -mx -ns -txt -soa -ptr -srv -caa
-    -ds -dnskey -any -resp -j`` emits one JSON line per answer; ``-r`` sets
-    custom resolvers, ``-rl`` rate limits and ``-t`` concurrency.
+Integrates ProjectDiscovery's ``dnsx``, a fast, multi-purpose DNS toolkit, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

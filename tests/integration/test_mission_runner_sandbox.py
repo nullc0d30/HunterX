@@ -1,27 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for the mission-runner sandbox permission propagation.
-
-Reproduces the audit finding where ``hunterx hunt`` created missions that
-stayed in ``planning_state = discovery`` / ``current_phase = target_modeling``
-because the mission runner built an :class:`ExecutionContext` with an empty
-permission set. The execution sandbox then rejected every network-capable tool
-(``Tool 'nmap' lacks permission 'network'``), and the denied executions were
-counted as tested coverage — driving coverage past the target and stopping the
-loop with zero real results.
-
-Two defects are covered:
-
-- TEST A — the mission execution context propagates the permissions declared by
-  the selected tool's adapter (so the sandbox authorizes the execution).
-- TEST B — a sandbox-denied / failed execution does NOT count as assessed
-  (tested) coverage; only a genuinely successful execution advances coverage.
-
-The real :class:`ExecutionEngine` + :class:`ExecutionSandbox` are used with a
-network-capable adapter so the actual sandbox authorization path is exercised
-(no external binaries / network access).
-"""
+"""Regression tests for the mission-runner sandbox permission propagation."""
 
 from __future__ import annotations
 
@@ -218,7 +198,7 @@ class TestFailedExecutionCoverage:
         assert mission.coverage_ratio() > 0.0
 
     def test_coverage_target_not_satisfied_by_failures_alone(self) -> None:
-        # All executions fail → coverage stays uncovered → the coverage-target
+        # All executions fail to coverage stays uncovered to the coverage-target
         # stop condition must NOT fire from failures alone.
         engine = _engine()
         runner, orchestration = _runner(engine)

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the Sprint 033 mission dashboard API.
-
-Builds the full platform and drives the ``/missions`` dashboard route group:
-``/overview``, ``/attack-surface``, ``/evidence``, ``/proofs`` and ``/tools``.
-Coverage, hypotheses, findings, attack paths and timeline are covered by the
-mission orchestration API integration tests.
-"""
+"""Integration tests for the mission dashboard API."""
 
 from __future__ import annotations
 

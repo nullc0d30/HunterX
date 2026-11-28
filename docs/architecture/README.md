@@ -10,11 +10,7 @@ permalink: /architecture/
 
 # HunterX Architecture Enforcement Framework
 
-**Status:** Ratified (Sprint 006.7)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
-
-The Architecture Enforcement Framework encodes the ratified Clean Architecture
+The Architecture Enforcement Framework encodes the final Clean Architecture
 rules from the Development Bible (`docs/bible/02 - Architecture.md`,
 `docs/bible/03 - Folder Structure.md`) as machine-checked, automatic validation.
 It catches boundary violations, forbidden imports and new dependency cycles at
@@ -28,7 +24,7 @@ mission behavior. Violations are reported, never silently fixed.
 | Check | Code | Fails CI? | Description |
 |---|---|---|---|
 | Dependency matrix | ARCH-001 | Yes | A module imports a layer its layer is not allowed to reach |
-| Forbidden imports | ARCH-002 | Yes | Matches a forbidden pattern (legacy `core.*`, `scripts.*`, ...) |
+| Forbidden imports | ARCH-002 | Yes | Matches a forbidden pattern (legacy `core.*`, `scripts.*`,...) |
 | Dependency cycles | ARCH-003 | Yes | A new module-level import cycle (Tarjan SCC) |
 | Plugin boundary | ARCH-004 | Yes | A plugin imports something outside the public plugin SDK |
 | Tool boundary | ARCH-005 | Yes | A tool adapter imports something outside the tool SDK |
@@ -43,38 +39,38 @@ code: `config/architecture.yaml` is the single source of truth for every rule.
 ## Quick start
 
 ```bash
-pip install -e ".[all]"          # installs the hunterx-arch console script
+pip install -e ".[all]" # installs the hunterx-arch console script
 
-hunterx-arch lint                # run every check; exit 1 on violations
-hunterx-arch report              # write architecture-report.md (health score)
-hunterx-arch matrix              # print the dependency matrix
-hunterx-arch graph               # Mermaid layer diagram
-hunterx-arch stability --generate  # refresh config/api_baseline.json
+hunterx-arch lint # run every check; exit 1 on violations
+hunterx-arch report # write architecture-report.md (health score)
+hunterx-arch matrix # print the dependency matrix
+hunterx-arch graph # Mermaid layer diagram
+hunterx-arch stability --generate # refresh config/api_baseline.json
 ```
 
 ## Guides
 
-- [Dependency Matrix & Layer Rules](dependency-matrix.md) — the ratified
-  matrix, what every layer may import, and the documented exceptions.
-- [Developer Guide](developer-guide.md) — commands, CI / pre-commit
-  integration, and how to add modules, waivers and API baseline entries.
+- [Dependency Matrix & Layer Rules](dependency-matrix.md), the final
+ matrix, what every layer may import, and the documented exceptions.
+- [Developer Guide](developer-guide.md), commands, CI / pre-commit
+ integration, and how to add modules, waivers and API baseline entries.
 
 ## Architecture
 
 ```
 src/hunterx/architecture/
-├── __init__.py       package (v1.0.0)
-├── layers.py         layer definitions + module→layer resolution
-├── imports.py        AST import scanning
-├── cycles.py         Tarjan SCC cycle detection
-├── violations.py     violation codes + remediation guidance
-├── policy.py         YAML policy loading, default policy
-├── docs.py           documentation validation (ARCH-007)
-├── stability.py      public API snapshot / diff vs baseline
-├── report.py         report model, health score, renderers
-├── lint.py           the linter orchestrating every validator
-├── cli.py            hunterx-arch command line
-└── __main__.py       python -m hunterx.architecture
+├── __init__.py package (v1.0.0)
+├── layers.py layer definitions + module→layer resolution
+├── imports.py AST import scanning
+├── cycles.py Tarjan SCC cycle detection
+├── violations.py violation codes + remediation guidance
+├── policy.py YAML policy loading, default policy
+├── docs.py documentation validation (ARCH-007)
+├── stability.py public API snapshot / diff vs baseline
+├── report.py report model, health score, renderers
+├── lint.py the linter orchestrating every validator
+├── cli.py hunterx-arch command line
+└── __main__.py python -m hunterx.architecture
 ```
 
 ## Governance

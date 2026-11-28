@@ -3,9 +3,7 @@
 
 """Tool Integration Factory exception hierarchy.
 
-Errors raised by the Tool Integration Factory, which generates standardized
-Tool Integration Packs. Every error carries ``HunterXErrorCode.FACTORY`` and
-derives from :class:`ToolFactoryError`.
+Errors raised by the Tool Integration Factory, which generates standardized Tool Integration Packs.
 """
 
 from __future__ import annotations

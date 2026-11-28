@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Final reliability / soak / aggression / resource-limit acceptance.
-
-Proves stability under prolonged autonomous execution (no infinite model or
-hypothesis loops, no unbounded queue or duplicate growth), adaptive aggression
-with bounded recovery, and truthful resource-limit semantics (``RESOURCE_LIMIT``
-is never reported as ``EXHAUSTED``).
-"""
+"""Final reliability / soak / aggression / resource-limit acceptance."""
 
 from __future__ import annotations
 
@@ -118,7 +112,7 @@ class TestAdaptiveAggression:
     def test_normal_aggressive_throttled_recovering_resuming_cycle(self) -> None:
         service = AdaptiveAttackService(mission_id="final", target_key="http://t/")
         seen: list[str] = []
-        # Healthy start → AGGRESSIVE after aggressive_after=3 healthy samples.
+        # Healthy start to AGGRESSIVE after aggressive_after=3 healthy samples.
         for _ in range(5):
             service.observe(status_code=200)
         assert service.attack_state() is AttackState.AGGRESSIVE
@@ -171,7 +165,7 @@ class TestResourceLimits:
     def test_cycle_ceiling_yields_resource_limit_not_exhausted(self) -> None:
         with VulnerableApp() as app:
             surface = _surface(app.base_url)
-            # A model that always proposes a new hypothesis keeps the loop alive;
+            # A model that always proposes a new hypothesis keeps the loop alive
             # the cycle ceiling is a resource limit, never exhaustion.
             scripted = [ContextAwareHypothesisModel(capability="xss")]
             attacker = ModelAttacker(
@@ -201,7 +195,7 @@ class TestResourceLimits:
 
     def test_task_cap_is_not_silent_drop(self) -> None:
         # A bounded task cap on the engine must be recorded, not silently
-        # discarded — Phase 5 already verifies coverage accounting; here we
+        # discarded, already verifies coverage accounting; here we
         # confirm the queue keeps the capped remainder actionable.
         with VulnerableApp() as app:
             surface = _surface(app.base_url)

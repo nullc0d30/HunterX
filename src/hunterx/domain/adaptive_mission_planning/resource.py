@@ -3,10 +3,7 @@
 
 """Resource- and time-aware planning.
 
-The planner understands CPU, memory, network, concurrency, tool limits, target
-rate limits and the mission budget. It avoids launching dozens of redundant
-tools, supports deadlines, time budgets, priority windows, scheduled
-reassessment and long-running tasks.
+The planner understands CPU, memory, network, concurrency, tool limits, target rate limits and the mission budget.
 """
 
 from __future__ import annotations

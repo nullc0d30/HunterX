@@ -4,9 +4,6 @@
 """Topology correlator.
 
 Merges raw relationship observations into canonical, deduplicated graph edges.
-Correlation preserves provenance (source list), merges evidence per source,
-combines confidence deterministically and tracks the first/last observation
-window. Deterministic ordering guarantees stable output across runs.
 """
 
 from __future__ import annotations

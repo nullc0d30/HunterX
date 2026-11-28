@@ -3,16 +3,8 @@
 
 """Performance gate helpers.
 
-Runs the ``pytest-benchmark`` suite over ``tests/performance`` and exposes two
-primitives the performance gate uses:
-
-* :func:`run_benchmarks` — execute the benchmarks and persist both a *latest*
-  result and the *baseline* used for drift comparison.
-* :func:`detect_slow_tests` — parse the ``--durations`` summary for tests that
-  exceed a threshold.
-
-Everything is deterministic and testable; the heavy lifting stays in the
-external tools while the gate only interprets their output.
+Runs the ``pytest-benchmark`` suite over ``tests/performance`` and exposes two primitives the performance gate
+uses.
 """
 
 from __future__ import annotations

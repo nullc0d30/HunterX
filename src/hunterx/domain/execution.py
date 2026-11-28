@@ -3,11 +3,7 @@
 
 """Execution domain models.
 
-Pure data contracts for the Tool Integration SDK execution layer. These models
-describe a single tool execution: its context (mission, target, profile,
-configuration, environment, permissions, timeouts, resource limits), its raw
-output (stdout/stderr/files/structured formats), and its final result. No I/O,
-no execution — the execution framework reads and writes these structures.
+Pure data contracts for the Tool Integration SDK execution layer.
 """
 
 from __future__ import annotations
@@ -24,8 +20,8 @@ from hunterx.shared.time import utcnow_iso
 class ExecutionStatus(Enum):
     """Lifecycle states of a single tool execution.
 
-    Follows the ratified SDK pipeline: pending → scheduled → preparing →
-    running → monitoring → collecting → validating → normalizing → storing →
+    Follows the SDK pipeline: pending to scheduled to preparing to
+    running to monitoring to collecting to validating to normalizing to storing to
     completed, with failure branches (failed, timed-out, cancelled, retrying).
     """
 

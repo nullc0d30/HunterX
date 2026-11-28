@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Platform integration tests for the Sprint 028 finding orchestration capability."""
+"""Platform integration tests for the finding orchestration capability."""
 
 from __future__ import annotations
 

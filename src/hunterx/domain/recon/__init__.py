@@ -3,8 +3,8 @@
 
 """Reconnaissance capability domain.
 
-Pure domain contracts for the recon capability: discovery records, targets,
-modes, confidence scoring and cross-tool correlation. No I/O, no execution.
+Pure domain contracts for the recon capability: discovery records, targets, modes, confidence scoring and cross-tool
+correlation.
 """
 
 from __future__ import annotations

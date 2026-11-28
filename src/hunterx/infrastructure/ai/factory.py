@@ -3,22 +3,8 @@
 
 """AI provider factory.
 
-Composition helper that maps :class:`~hunterx.config.settings.AISettings` to
-a concrete :class:`~hunterx.domain.ports.services.AIPort` adapter. It only
-decides *which* adapter to build; provider-specific HTTP behaviour lives in the
-adapter modules. No global mutable provider state is used — the composition
-root (``hunterx.platform.assembler``) builds the client and injects it.
-
-Responsibilities:
-- Select the AI adapter from settings (fallback, known, unknown, missing key).
-- Raise controlled configuration errors that never include secret material.
-
-Dependencies:
-- ``hunterx.config`` (settings), ``hunterx.domain`` (exceptions and ports),
-  and the adapter modules in this package.
-
-Extension points:
-- Add new adapters to ``_ADAPTERS`` and their keys to ``_KNOWN_PROVIDERS``.
+Composition helper that maps :class:`~hunterx.config.settings.AISettings` to a concrete
+:class:`~hunterx.domain.ports.services.AIPort` adapter.
 """
 
 from __future__ import annotations
@@ -71,10 +57,10 @@ _OPENAI_COMPATIBLE_PROVIDERS: frozenset[str] = frozenset(
 def build_ai_client(settings: AISettings) -> AIPort:
     """Build the AI client selected by ``settings``.
 
-    - No provider configured → :class:`NullAIClient` (safe fallback; HunterX
+    - No provider configured to :class:`NullAIClient` (safe fallback; HunterX
       keeps running without any AI key).
-    - Unknown provider → :class:`ConfigurationError`.
-    - Known provider without an adapter yet → :class:`ConfigurationError`.
+    - Unknown provider to :class:`ConfigurationError`.
+    - Known provider without an adapter yet to :class:`ConfigurationError`.
 
     Error messages reference provider names and environment variable names only
     and never include secret material.

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery confidence engine.
-
-Assigns a defensible, deterministic confidence score to every live discovery
-observation and recomputes it when several tools corroborate the same fact.
-Confidence is a pure function of (tool reliability, validation status,
-detection method, port/fingerprint evidence strength, corroboration count and
-freshness) — the same inputs always yield the same score and the score is
-explainable through the factors that contributed to it.
-"""
+"""Live Host & Service Discovery confidence engine."""
 
 from __future__ import annotations
 

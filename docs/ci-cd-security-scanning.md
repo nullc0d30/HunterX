@@ -1,6 +1,6 @@
 ---
 layout: default
-title: CI/CD Security Scanning — HunterX v7
+title: CI/CD Security Scanning - HunterX v7
 keywords: CI/CD security scanning, security in CI/CD, DevSecOps, shift left security, GitHub Actions security scanning, SARIF, automated security testing pipeline, security scanning pipeline
 description: >-
   Running HunterX v7 in CI/CD pipelines: Docker images, REST API, SARIF 2.1
@@ -11,23 +11,23 @@ description: >-
 # CI/CD Security Scanning
 
 HunterX can be integrated into CI/CD pipelines for authorized security
-scanning. Its design — CLI, REST API, Docker, SARIF 2.1 export and structured
-reports — makes it practical to add validated security checks to your delivery
+scanning. Its design, CLI, REST API, Docker, SARIF 2.1 export and structured
+reports, makes it practical to add validated security checks to your delivery
 pipeline.
 
 ## Integration points
 
-- **Docker image** — `nullc0d30/hunterx` multi-stage image running as a
-  non-root user, ready for containerized pipeline jobs.
-- **CLI** — `hunterx` commands run inside pipeline steps for mission creation,
-  toolchain execution, findings and reports.
-- **REST API** — a FastAPI application (`hunterx.api.app:create_app`) for
-  orchestrating assessments programmatically, with optional API-key
-  authentication (admin/read-only roles).
-- **SARIF 2.1 export** — SARIF integrates natively with VS Code and GitHub
-  CodeQL workflows, letting security results surface where developers work.
-- **Structured reports** — Markdown, HTML, JSON, SARIF, PDF and package exports
-  for artifacts and dashboards.
+- **Docker image**, `nullc0d30/hunterx` multi-stage image running as a
+ non-root user, ready for containerized pipeline jobs.
+- **CLI**, `hunterx` commands run inside pipeline steps for mission creation,
+ toolchain execution, findings and reports.
+- **REST API**, a FastAPI application (`hunterx.api.app:create_app`) for
+ orchestrating assessments programmatically, with optional API-key
+ authentication (admin/read-only roles).
+- **SARIF 2.1 export**, SARIF integrates natively with VS Code and GitHub
+ CodeQL workflows, letting security results surface where developers work.
+- **Structured reports**, Markdown, HTML, JSON, SARIF, PDF and package exports
+ for artifacts and dashboards.
 
 ## Pipeline example
 
@@ -52,7 +52,7 @@ hunterx report sarif
 
 Security scanning that produces only candidate detections creates noise and
 alert fatigue. HunterX's evidence-driven validation, proof and replay model
-helps teams focus on findings that have been verified and can be reproduced —
+helps teams focus on findings that have been verified and can be reproduced,
 reducing false-positive load on the security team.
 
 ## DevSecOps features

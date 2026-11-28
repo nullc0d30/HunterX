@@ -1,20 +1,13 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Orchestration objective vocabulary.
-
-Sprint 032. The orchestration layer accepts the mission-objective vocabulary of
-the sprint (``full_security_assessment``, ``bug_bounty_hunt``, ``pentest``,
-``red_team_assessment``, ...) and maps each name onto the ratified Sprint 027
-:class:`MissionObjective` values — the planning vocabulary is never duplicated.
-Objectives influence strategy through the decision-engine weights.
-"""
+"""Orchestration objective vocabulary."""
 
 from __future__ import annotations
 
 from hunterx.domain.adaptive_mission_planning.enums import MissionObjective
 
-#: Sprint-032 objective names → ratified Sprint-027 planning objectives.
+# : objective names to planning objectives.
 _OBJECTIVE_MAP: dict[str, MissionObjective] = {
     "full_security_assessment": MissionObjective.FULL_SECURITY_ASSESSMENT,
     "bug_bounty_hunt": MissionObjective.BUG_BOUNTY_ASSESSMENT,
@@ -43,7 +36,7 @@ _OBJECTIVE_MAP: dict[str, MissionObjective] = {
 
 
 def resolve_objective(name: str) -> MissionObjective:
-    """Resolve a sprint objective name to a ratified planning objective.
+    """Resolve an objective name to a planning objective.
 
     Unknown names fall back to the full security assessment default so the
     orchestrator always stays functional.

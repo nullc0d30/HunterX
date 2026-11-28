@@ -3,23 +3,7 @@
 
 """Adaptive Next-Action Engine.
 
-Sprint 026. The central decision engine. It receives the current target state,
-coverage, unknowns, hypotheses, mission objective, scope, safety policy,
-available tools, tool health/capabilities/cost/risk, previous executions and
-historical results, then produces ranked, explainable actions.
-
-Ranking uses configurable, explainable weights — never blindly hard-coded
-numerical scores in the ranking logic:
-
-    Priority = information_gain + hypothesis_relevance + coverage_gap
-            + evidence_value + proof_value
-            - execution_cost - risk - redundancy
-
-Each action carries the objective, asset, required capability, selected tool,
-reason, expected information gain, evidence, cost, risk, scope status,
-preconditions, stop conditions, fallback and priority. Tool *selection* is
-delegated to a pluggable adapter (the Sprint 025 selector) so the engine stays
-pure and testable.
+The central decision engine.
 """
 
 from __future__ import annotations
@@ -102,8 +86,8 @@ class RankingWeights:
 class ToolSelectorAdapter(Protocol):
     """Pluggable tool selection for a required capability.
 
-    The application layer wires this to the Sprint 025 selector. Returns a
-    ``(tool_id, alternatives, reason)`` tuple, or ``("", (), reason)`` when no
+    The application layer wires this to the selector. Returns a
+    ``(tool_id, alternatives, reason)`` tuple, or ``("",, reason)`` when no
     tool is available.
     """
 

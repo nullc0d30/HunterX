@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""REST API authentication and authorization (Sprint 034.4 §15).
+"""REST API authentication and authorization (15).
 
-The API is unauthenticated by default (trusted loopback, opt-in control
-plane). When ``api.auth_enabled`` is set, a valid ``X-API-Key`` is required on
-every request and the read-only key cannot issue write operations.
+The API is unauthenticated by default (trusted loopback, opt-in control plane).
 """
 
 from __future__ import annotations

@@ -3,10 +3,8 @@
 
 """Target Intelligence Stores.
 
-Sprint 026. Port contracts and in-memory implementations for the durable stores
-behind the intelligence layer: assets, immutable observations and evidence.
-Stores are tenant/mission/target isolated and SQL-backed via the application
-service; the in-memory variants power tests and ephemeral runs.
+Port contracts and in-memory implementations for the durable stores behind the intelligence layer: assets, immutable
+observations and evidence.
 """
 
 from __future__ import annotations

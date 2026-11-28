@@ -3,9 +3,7 @@
 
 """Security manager.
 
-Provides permission checks, secret resolution and role resolution. The manager
-depends on a :class:`~hunterx.domain.ports.services.SecretsPort` for secrets
-and a :class:`SecurityPolicy` for authorization rules.
+Provides permission checks, secret resolution and role resolution.
 """
 
 from __future__ import annotations

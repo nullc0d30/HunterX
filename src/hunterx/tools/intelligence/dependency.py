@@ -3,9 +3,8 @@
 
 """Dependency engine.
 
-Understands tool dependencies as a graph: a tool requires capabilities, and
-capabilities are provided by other tools. Supports graph traversal to answer
-"what must run before tool X?" and "which tools does this mission need?".
+Understands tool dependencies as a graph: a tool requires capabilities, and capabilities are provided by other
+tools.
 """
 
 from __future__ import annotations
@@ -46,12 +45,8 @@ class DependencyEngine:
     def resolve_dependencies(self, tool_id: str) -> list[str]:
         """Return tool ids that must run before ``tool_id``.
 
-        Traverses the capability graph transitively and returns a topological
-        (breadth-first) ordering of prerequisite tools, excluding ``tool_id``.
-        Dependencies with no registered provider are skipped.
-
-        Raises:
-            ToolNotFoundError: if ``tool_id`` is not registered.
+        Traverses the capability graph transitively and returns a topological (breadth-first) ordering of
+        prerequisite tools, excluding ``tool_id``.
 
         """
         if self._registry.get_metadata(tool_id) is None:
@@ -107,7 +102,7 @@ class DependencyEngine:
         return ordered
 
     def dependency_map(self) -> dict[str, list[str]]:
-        """Return tool_id → prerequisite tool ids for every registered tool."""
+        """Return tool_id to prerequisite tool ids for every registered tool."""
         mapping: dict[str, list[str]] = defaultdict(list)
         for metadata in self._registry.list_metadata():
             mapping[metadata.tool_id] = self.resolve_dependencies(metadata.tool_id)
@@ -117,7 +112,7 @@ class DependencyEngine:
         """Return simple dependency cycles found in the capability graph.
 
         A cycle is a list of capability ids; an empty list means acyclic.
-        Detected via DFS on capability → provider → required-capability edges.
+        Detected via DFS on capability to provider to required-capability edges.
         """
         capabilities = sorted({c for k in self._registry.list_knowledge() for c in k.capabilities})
 

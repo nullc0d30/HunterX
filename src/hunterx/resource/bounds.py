@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — bounded in-memory state.
-
-The durable system-of-record for a mission is the database (TIDB/SQLite): every
-observation, hypothesis, decision, negative-evidence record and finding is
-persisted as it is produced. The in-memory mission aggregate therefore only
-needs to retain the working set the autonomous loop reasons over. To prevent
-unbounded RAM growth while preserving important evidence, the in-memory lists
-are bounded: settled/old entries beyond the configured cap are evicted from
-memory only — the persisted copies remain the durable mission state.
-
-Eviction never deletes evidence from the system of record and never drops
-open work: open (unresolved) hypotheses, validated/verified findings and the
-most recent observations are always retained.
-"""
+"""Resource governance, bounded in-memory state."""
 
 from __future__ import annotations
 
@@ -64,7 +51,7 @@ def truncate_content(content: Any, max_bytes: int) -> Any:
     Preserves structure and keys: lists are truncated to their first elements,
     strings to their first characters, and mappings keep all keys (their values
     are truncated recursively). The result is a *summary* of the original tool
-    output — the durable copy is already persisted to the system of record.
+    output, the durable copy is already persisted to the system of record.
     """
     if max_bytes <= 0 or content_bytes(content) <= max_bytes:
         return content
@@ -168,7 +155,7 @@ def trim_observations_by_bytes(items: list[Any], max_bytes: int) -> list[Any]:
 
     Count caps bound the number of retained items; this byte cap bounds the
     actual resident memory of the retained working set. Only the in-memory
-    copies are dropped — the persisted records remain the durable state.
+    copies are dropped, the persisted records remain the durable state.
     """
     if max_bytes <= 0:
         return items

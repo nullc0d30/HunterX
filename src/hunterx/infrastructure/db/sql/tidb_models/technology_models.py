@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB technology entities.
-
-System-of-record tables for the technology fingerprinting capability: the
-canonical catalogue (categories, families, definitions), per-asset technology
-observations with versions and evidence, and the derived intelligence records
-(conflicts, changes and fingerprint run summaries).
-"""
+"""ORM models for TIDB technology entities."""
 
 from __future__ import annotations
 

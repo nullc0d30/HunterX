@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs Nuclei — Comparison
+title: HunterX vs Nuclei - Comparison
 description: >-
   Detailed technical comparison between HunterX (AI-assisted reasoning engine)
   and ProjectDiscovery Nuclei (template-based scanner). Architecture, detection

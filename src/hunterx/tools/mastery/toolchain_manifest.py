@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Full toolchain capability manifest (Sprint 031).
-
-Generates ``capabilities/full-toolchain-intelligence.json`` — the ratified
-manifest that lists every integrated tool and its capabilities, the canonical
-capability catalog, per-capability toolchain strategies, knowledge sources,
-typed events and interfaces. Generated from the authoritative arsenal so it
-never drifts from reality.
-"""
+"""Full toolchain capability manifest."""
 
 from __future__ import annotations
 
@@ -18,7 +11,7 @@ from typing import Any
 from hunterx.tools.mastery.api import ToolMasteryAPI
 from hunterx.tools.mastery.knowledge_fixtures import ToolKnowledgeFixtureRegistry
 
-#: Major capability → capability-id family used for strategy synthesis.
+# : Major capability to capability-id family used for strategy synthesis.
 _STRATEGY_CAPABILITIES = {
     "subdomain-discovery": ("subdomain-discovery",),
     "dns-records": ("dns-records",),
@@ -160,8 +153,7 @@ def build_toolchain_manifest(mastery: ToolMasteryAPI | None = None) -> dict[str,
         "capability": "full-toolchain-intelligence",
         "name": "Full Toolchain Integration & Professional Tool Intelligence",
         "version": "1.0.0",
-        "wave": 16,
-        "status": "ratified",
+        "status": "stable",
         "description": (
             "HunterX understands the complete authorized offensive-security toolchain: "
             "WHAT each tool does, WHEN to use it, WHAT it requires, HOW to invoke it "

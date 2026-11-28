@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 3 — profile end-to-end acceptance.
+"""Profile end-to-end acceptance.
 
-Proves the real profile/objective identifiers change actual runtime behavior
-(persisted discovery chains and decisions), not just a label. Uses only the
-objectives that exist in the codebase.
+Proves the real profile/objective identifiers change actual runtime behavior (persisted discovery chains and
+decisions), not just a label.
 """
 
 from __future__ import annotations
@@ -22,7 +21,7 @@ from hunterx.engines.mission_orchestration import MissionOrchestrationEngine
 from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory
 from tests.framework.fakes import FakeExecutionEngine
 
-_TARGET = "http://127.0.0.1:9000"
+_TARGET = "http://127.0.0.1:3010"
 
 _CANDIDATES: dict[str, tuple[str, ...]] = {
     "asset_discovery": ("subfinder",),
@@ -91,7 +90,7 @@ class TestProfilesChangeRuntimeBehavior:
         assert chains["bug_bounty_assessment"] != chains["red_team_simulation"]
         assert chains["pentest_assessment"] != chains["vulnerability_discovery"]
         # red_team pursues authorization analysis; bug_bounty pursues the
-        # web/API vulnerability surface — a real behavioral difference.
+        # web/API vulnerability surface, a real behavioral difference.
         assert "authorization_analysis" in chains["red_team_simulation"]
         assert "vulnerability_scanning" in chains["bug_bounty_assessment"]
 

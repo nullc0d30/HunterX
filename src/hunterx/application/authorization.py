@@ -3,26 +3,8 @@
 
 """Authorization intelligence use-case services.
 
-``AuthorizationService`` is the orchestrator — the bridge between a mission and
-the authorization intelligence tooling. Given a target and an input bundle of
-already-acquired static material, it validates scope, builds an
-:class:`AuthorizationStrategy`, runs the in-process analyzer through the
-:class:`ExecutionEngine`, folds in existing TIDB intelligence, classifies,
-validates, correlates, confidence-scores, diffs history, persists everything to
-the TIDB, updates the attack-surface topology and publishes
-``authorization.*`` events.
-
-``AuthorizationQueryService`` reads persisted authorization intelligence back
-from the TIDB and answers the reporting queries (subjects, roles, groups,
-permissions, scopes, claims, policies, resources, actions, identifiers,
-ownership, tenants, admin surfaces, function/object/field-level access control,
-frontend/backend logic, API correlation, GraphQL/WebSocket/service
-authorization, decisions, mass-assignment fields, changes and conflicts). Both
-services depend on ports only.
-
-Security boundary: intelligence only. No authorization testing, no IDOR/BOLA/
-BFLA/privilege-escalation, no identifier substitution, no cross-tenant access,
-no storage of sensitive values.
+``AuthorizationService`` is the orchestrator, the bridge between a mission and the authorization intelligence
+tooling.
 """
 
 from __future__ import annotations

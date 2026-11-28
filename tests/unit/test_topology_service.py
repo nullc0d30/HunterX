@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the TopologyService and TopologyQueryService orchestrators.
-
-Exercises a full topology build: TIDB entity collection, traceroute execution
-through the SDK pipeline with a fake runner, relationship derivation &
-correlation, conflict detection, history comparison, analysis, TIDB
-persistence, the ``topology.*`` event stream and the canonical query
-interfaces.
-"""
+"""Tests for the TopologyService and TopologyQueryService orchestrators."""
 
 from __future__ import annotations
 

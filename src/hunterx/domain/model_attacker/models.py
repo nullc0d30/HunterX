@@ -3,12 +3,7 @@
 
 """Models for the autonomous model-driven attack loop.
 
-The hypothesis is the machine-readable hand-off from the connected model to the
-real HunterX execution pipeline. The model's natural-language reasoning is
-carried in ``reasoning_context`` but the actionable portion — capability,
-surface, attack vector, strategy, expected signal, priority, confidence and
-authentication context — is structured so every accepted hypothesis becomes a
-real assessment task with no parallel fake path.
+The hypothesis is the machine-readable hand-off from the connected model to the real HunterX execution pipeline.
 """
 
 from __future__ import annotations
@@ -78,7 +73,7 @@ class AttackPlan:
 
     ``task_id`` is populated when the hypothesis is queued through the attack-
     surface service; the task then runs through the ordinary capability
-    execution engine — the same pipeline as every discovery-derived task.
+    execution engine, the same pipeline as every discovery-derived task.
     """
 
     plan_id: str = field(default_factory=generate_id)

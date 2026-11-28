@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""OpenAPI / Swagger document parser.
-
-In-process parser that normalizes OpenAPI 2.0 (``swagger``) and OpenAPI
-3.0/3.1 (``openapi``) JSON/YAML documents into canonical API intelligence
-observations: the located spec, endpoint operations with parameters, and
-authentication/authorization schemes. Parsing is deterministic and bounded:
-the document is parsed with ``pyyaml`` (JSON is a YAML subset) and schemas are
-fingerprinted rather than stored in full.
-"""
+"""OpenAPI / Swagger document parser."""
 
 from __future__ import annotations
 

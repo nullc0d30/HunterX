@@ -10,12 +10,12 @@ HunterX is tested and supported on the following platforms.
 
 | OS | Status | Notes |
 |---|---|---|
-| **Linux (x86_64)** | ✅ Fully supported | Primary target platform |
-| **Linux (aarch64/arm64)** | ✅ Fully supported | Including Raspberry Pi 4/5 |
-| **macOS (Intel)** | ✅ Supported | Tested on macOS 14+ |
-| **macOS (Apple Silicon)** | ✅ Supported | Native ARM support |
-| **Windows (native)** | ⚠️ Experimental | Limited testing, WSL recommended |
-| **Windows (WSL2)** | ✅ Supported | Run under Ubuntu/Debian WSL |
+| **Linux (x86_64)** | Fully supported | Primary target platform |
+| **Linux (aarch64/arm64)** | Fully supported | Including Raspberry Pi 4/5 |
+| **macOS (Intel)** | Supported | Tested on macOS 14+ |
+| **macOS (Apple Silicon)** | Supported | Native ARM support |
+| **Windows (native)** | Experimental | Limited testing, WSL recommended |
+| **Windows (WSL2)** | Supported | Run under Ubuntu/Debian WSL |
 
 ---
 
@@ -23,14 +23,14 @@ HunterX is tested and supported on the following platforms.
 
 | Distribution | Status | Notes |
 |---|---|---|
-| **Ubuntu 22.04 LTS** | ✅ Fully supported | Primary CI target |
-| **Ubuntu 24.04 LTS** | ✅ Fully supported | |
-| **Debian 12** | ✅ Fully supported | |
-| **Fedora 39+** | ✅ Supported | |
-| **Arch Linux** | ✅ Supported | |
-| **Alpine Linux 3.19+** | ✅ Supported | Docker image base |
-| **openSUSE Tumbleweed** | ✅ Supported | |
-| **RHEL 9 / Rocky Linux 9** | ✅ Supported | |
+| **Ubuntu 22.04 LTS** | Fully supported | Primary CI target |
+| **Ubuntu 24.04 LTS** | Fully supported | |
+| **Debian 12** | Fully supported | |
+| **Fedora 39+** | Supported | |
+| **Arch Linux** | Supported | |
+| **Alpine Linux 3.19+** | Supported | Docker image base |
+| **openSUSE Tumbleweed** | Supported | |
+| **RHEL 9 / Rocky Linux 9** | Supported | |
 
 ---
 
@@ -38,9 +38,9 @@ HunterX is tested and supported on the following platforms.
 
 | Version | Status |
 |---|---|
-| **3.11** | ✅ Fully supported (minimum) |
-| **3.12** | ✅ Fully supported |
-| **3.13** | ✅ Fully supported |
+| **3.11** | Fully supported (minimum) |
+| **3.12** | Fully supported |
+| **3.13** | Fully supported |
 
 ---
 
@@ -48,9 +48,9 @@ HunterX is tested and supported on the following platforms.
 
 | Platform | Status |
 |---|---|
-| **linux/amd64** | ✅ Tested in CI |
-| **linux/arm64** | ✅ Tested in CI |
-| **Docker Compose** | ✅ Supported |
+| **linux/amd64** | yes Tested in CI |
+| **linux/arm64** | yes Tested in CI |
+| **Docker Compose** | Supported |
 
 ---
 
@@ -58,8 +58,8 @@ HunterX is tested and supported on the following platforms.
 
 | Browser | Status |
 |---|---|
-| **Chromium** | ✅ Supported (via Playwright) |
-| **Firefox** | ✅ Supported (via Playwright) |
+| **Chromium** | Supported (via Playwright) |
+| **Firefox** | Supported (via Playwright) |
 
 ---
 
@@ -67,8 +67,8 @@ HunterX is tested and supported on the following platforms.
 
 | Provider | Status |
 |---|---|
-| **Ollama** (local) | ✅ Fully supported |
-| **OpenAI** (GPT-4, GPT-4o) | ✅ Fully supported |
+| **Ollama** (local) | Fully supported |
+| **OpenAI** (GPT-4, GPT-4o) | Fully supported |
 | **Anthropic** (Claude) | 🔄 In development |
 | **Google Gemini** | 🔄 In development |
 | **AWS Bedrock** | 🔄 In development |

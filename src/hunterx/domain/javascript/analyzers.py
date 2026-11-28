@@ -1,23 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript intelligence analyzers.
-
-The analyzers turn token streams (from :mod:`tokenizer`) and rule matches (from
-:mod:`rules`) into typed findings — endpoints, routes, configuration, storage,
-authentication references, workers, WebAssembly references, security-relevant
-API usage, dynamic imports, third-party services and external domains.
-
-Call/pattern rules (``fetch(...)``, ``new Worker(...)``, ``localStorage.set``)
-scan the **raw source** with the compiled rule; bare-value rules (absolute URLs,
-route paths) additionally scan string/template literal **values**. Every
-analyzer is pure and deterministic, and every finding carries masked evidence
-with an exact ``file:line:col`` location.
-
-Secrets and technology are intentionally *not* here: they have dedicated
-modules (:mod:`secrets`, :mod:`technology`) with their own confidence and
-false-positive handling.
-"""
+"""JavaScript intelligence analyzers."""
 
 from __future__ import annotations
 
@@ -1084,9 +1068,9 @@ def _raw_template_literals(source: str) -> list[tuple[str, int]]:
 
     The token stream is authoritative when it parses cleanly, but minified
     bundles (large embedded CSS/HTML templates with escaped backticks) can
-    desynchronise the tokenizer so that later template literals — and the
-    API/search paths they embed — are never emitted. Scanning the raw source
-    directly is robust against that desynchronisation.
+    desynchronise the tokenizer so that later template literals, and the
+    API/search paths they embed, are never emitted. Scanning the raw source
+    directly is reliable against that desynchronisation.
     """
     return [(match.group(0)[1:-1], match.start() + 1) for match in _TEMPLATE_LITERAL.finditer(source)]
 

@@ -1,10 +1,4 @@
-"""api intelligence tables
-
-Revision ID: 371b8ca7642d
-Revises: c51bafedb05e
-Create Date: 2026-08-09 05:56:36.682935
-
-"""
+"""api intelligence tables Revision ID: 371b8ca7642d Revises: c51bafedb05e Create Date: 2026-08-09 05:56:36.682935."""
 from collections.abc import Sequence
 
 import sqlalchemy as sa

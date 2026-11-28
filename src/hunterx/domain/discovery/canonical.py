@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonicalization and deduplication for discovered assets.
-
-Providers report the same host, URL or port under many equivalent spellings
-(``Example.COM``, ``example.com.``, ``https://example.com:443/``, ...). This
-module collapses those spellings onto one canonical identity so the pipeline can
-deduplicate assets with full provenance merging (best-evidence confidence,
-union of sources, earliest first-seen).
-"""
+"""Canonicalization and deduplication for discovered assets."""
 
 from __future__ import annotations
 
@@ -23,7 +16,7 @@ def canonical_host(host: str) -> str:
     """Lowercase a host, strip a trailing dot and any surrounding whitespace.
 
     Example:
-        ``"  Example.COM. " -> "example.com"``
+        ``" Example.COM. " -> "example.com"``
 
     """
     value = host.strip().rstrip(".").lower()

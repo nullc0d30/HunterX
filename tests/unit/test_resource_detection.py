@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-governance tests: environment-aware resource detection.
-
-Verifies the effective-resource detection used by the mission resource
-governor: cgroup v1/v2 memory limits, CPU quota detection, cpuset-aware CPU
-count, host memory and environment classification (bare-metal / VM / WSL /
-container). The guiding invariant under test: ``physical RAM != RAM available
-to HunterX`` — a container cgroup limit is the effective limit even when the
-physical host has far more RAM.
-"""
+"""Resource-governance tests: environment-aware resource detection."""
 
 from __future__ import annotations
 

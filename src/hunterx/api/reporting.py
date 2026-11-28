@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Professional reporting API routes.
-
-Exposes the Sprint 029 application services: analyze a finding, classify it,
-assess severity/quality/priority/reportability, build evidence bundles and
-timelines, produce remediation and retest plans, create and generate
-professional reports, run report QA, finalize submission readiness, export
-reports (Markdown / HTML / JSON / SARIF / PDF / package), retrieve report
-versions and build executive summaries. Handlers resolve services from the
-shared dependency container.
-"""
+"""Professional reporting API routes."""
 
 from __future__ import annotations
 

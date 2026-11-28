@@ -1,8 +1,14 @@
+"""Live doctrine state block."""
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
+
 
 @dataclass
 class DoctrineState:
+    """Mutable state for the live doctrine block."""
+
     target: str = ""
     scope: str = ""
     auth_state: str = ""
@@ -12,6 +18,7 @@ class DoctrineState:
     next_chain_plan: str = ""
 
     def summary(self) -> str:
+        """Return the rendered state block."""
         return (
             f"TARGET | {self.target}\n"
             f"SCOPE | {self.scope}\n"

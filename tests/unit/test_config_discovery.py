@@ -28,7 +28,7 @@ class TestEnvDiscovery:
         (data_dir / ".env").write_text("HUNTERX_AI_MODEL=x\n", encoding="utf-8")
         monkeypatch.delenv("HUNTERX_ENV_FILE", raising=False)
         monkeypatch.setenv("HUNTERX_DATA_DIR", str(data_dir))
-        monkeypatch.chdir(tmp_path)  # no cwd .env
+        monkeypatch.chdir(tmp_path)  # no cwd.env
         assert discover_env_file() == data_dir / ".env"
 
     def test_cwd_fallback(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

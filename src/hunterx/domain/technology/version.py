@@ -3,10 +3,8 @@
 
 """Technology version intelligence.
 
-Separates a *confirmed* version from a *probable* one, a *range* or an
-*unknown* version — a weak fingerprint is never promoted to a confirmed
-version. Version parsing is deterministic and evidence-backed: every version
-record carries the confidence state and the evidence that supports it.
+Separates a *confirmed* version from a *probable* one, a *range* or an *unknown* version, a weak fingerprint is
+never promoted to a confirmed version.
 """
 
 from __future__ import annotations

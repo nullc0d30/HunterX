@@ -1,6 +1,6 @@
 ---
 layout: default
-title: systemd Service — HunterX v6.0.0
+title: systemd Service - HunterX v6.0.0
 description: >-
   Run HunterX as a systemd service for production deployments.
   Includes service file, environment configuration, and management commands.

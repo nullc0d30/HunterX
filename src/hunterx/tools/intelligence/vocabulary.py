@@ -1,18 +1,14 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical capability vocabulary (Sprint 031).
+"""Canonical capability vocabulary.
 
-HunterX must speak ONE capability language across the toolchain. Different
-layers historically used different vocabularies: the TIP taxonomy says
-``subdomain-discovery`` while the mastery arsenal says ``subdomain-enumeration``.
-This module canonicalizes arsenal capability ids to the canonical taxonomy so
-selection, recommendation, chaining and correlation stay consistent.
+HunterX must speak ONE capability language across the toolchain.
 """
 
 from __future__ import annotations
 
-#: Arsenal capability id → canonical taxonomy capability id.
+# : Arsenal capability id to canonical taxonomy capability id.
 #: Entries absent from this map are already canonical.
 CAPABILITY_ALIASES: dict[str, str] = {
     # -- recon -------------------------------------------------------------
@@ -162,9 +158,9 @@ class CapabilityVocabulary:
     Usage::
 
         vocabulary = CapabilityVocabulary()
-        vocabulary.canonical("subdomain-enumeration")   # "subdomain-discovery"
-        vocabulary.is_known("port-scanning")            # True
-        vocabulary.variants("subdomain-discovery")      # ["subdomain-enumeration", ...]
+        vocabulary.canonical("subdomain-enumeration") # "subdomain-discovery"
+        vocabulary.is_known("port-scanning") # True
+        vocabulary.variants("subdomain-discovery") # ["subdomain-enumeration",...]
     """
 
     def __init__(self) -> None:

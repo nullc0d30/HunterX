@@ -3,9 +3,7 @@
 
 """Security-material Target Intelligence Database entities.
 
-Secrets, credentials and tokens. Secret *values* never live in the TIDB —
-only masked values and one-way hashes are stored, in line with the
-Development Bible security standards (``13 - Security Standards.md``).
+Secrets, credentials and tokens.
 """
 
 from __future__ import annotations
@@ -21,7 +19,7 @@ class Secret(TidbEntity):
 
     Attributes:
         name: secret name.
-        kind: password|token|apikey|private-key|certificate|... .
+        kind: password|token|apikey|private-key|certificate|....
         value_masked: masked display value (never the plaintext).
         checksum: SHA-256 of the secret value for integrity checks.
         secret_key: opaque key in the secrets vault.
@@ -84,7 +82,7 @@ class Token(TidbEntity):
     """A bearer/refresh/other token.
 
     Attributes:
-        kind: bearer|refresh|access|... .
+        kind: bearer|refresh|access|....
         token_hash: SHA-256 of the token value.
         secret_id: owning secret reference.
         expires_at: expiry timestamp (ISO).
@@ -130,7 +128,7 @@ class JWT(TidbEntity):
         subject: JWT subject claim.
         issuer: JWT issuer claim.
         audience: JWT audience claims.
-        algorithm: signing algorithm (``RS256``, ``HS256``, ...).
+        algorithm: signing algorithm (``RS256``, ``HS256``,...).
         expires_at: expiry timestamp (ISO).
         not_before: not-before timestamp (ISO).
 
@@ -152,7 +150,7 @@ class CertificatePrivateKey(TidbEntity):
     Attributes:
         certificate_id: owning certificate.
         key_hash: SHA-256 of the private key material.
-        algorithm: key algorithm (RSA, EC, ...).
+        algorithm: key algorithm (RSA, EC,...).
         bits: key strength in bits.
         encrypted: whether the key is encrypted at rest.
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Acceptance hunt launcher — fully detached, logs everything.
+# Acceptance hunt launcher - fully detached, logs everything.
 export HUNTERX_RESOURCE_TOOL_TIMEOUT_S=120
 LOG=/opt/hunterx/reports/acceptance_hunt_console.log
 cd /root

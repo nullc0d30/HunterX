@@ -3,20 +3,7 @@
 
 """Installer UX tests.
 
-Covers the human-facing installer contract implemented by the provisioning
-layer and the CLI:
-
-- multi-column inventory output (compact, adaptive layout);
-- human vs explicit JSON output for ``install`` / ``tools install``;
-- live progress reporting with the current tool always visible;
-- per-method install timeouts;
-- failure isolation (a failed tool does not abort the run);
-- graceful Ctrl+C handling (no traceback; state preserved);
-- installation state persistence and resume reconciliation;
-- idempotent re-installation;
-- final readiness / exit-code semantics (READY / PARTIAL / NOT READY);
-- non-TTY deterministic output;
-- quick-start output.
+Covers the human-facing installer contract implemented by the provisioning layer and the CLI.
 """
 
 from __future__ import annotations

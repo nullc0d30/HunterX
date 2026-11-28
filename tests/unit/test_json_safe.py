@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the canonical JSON-safe serialization boundary.
-
-Covers the persistence contract: every value that may enter a JSON-backed
-column must survive :func:`hunterx.shared.json_safe.to_json_safe` as strict,
-JSON-native data with its semantics preserved.
-"""
+"""Unit tests for the canonical JSON-safe serialization boundary."""
 
 from __future__ import annotations
 

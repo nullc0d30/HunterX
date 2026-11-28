@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Logging Configuration — HunterX v6.0.0
+title: Logging Configuration - HunterX v6.0.0
 keywords: HunterX Logging, Log Levels, Verbosity
 description: >-
   Reference for HunterX logging configuration. Learn how to control log output

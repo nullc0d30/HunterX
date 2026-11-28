@@ -3,15 +3,7 @@
 
 """Mission decision engine.
 
-Sprint 032. The decision engine ranks candidate actions by **expected
-information gain** — never randomly. Ranking combines: information gain,
-attack-surface expansion, finding-validation potential, evidence improvement,
-hypothesis discrimination, coverage improvement, cost, previous failures and
-tool reliability.
-
-Output contract per decision:
-``NEXT_ACTION / REASON / EXPECTED_RESULT / PRIORITY / DEPENDENCIES /
-ALTERNATIVES`` — all explainable, all persisted.
+The decision engine ranks candidate actions by **expected information gain**, never randomly.
 """
 
 from __future__ import annotations
@@ -32,20 +24,7 @@ from hunterx.shared.time import monotonic_ms, utcnow_iso
 class CandidateAction:
     """A candidate action the decision engine can rank.
 
-    Attributes:
-        action_id: stable action identifier.
-        capability: capability the action exercises.
-        description: one-line action description.
-        tool_ids: ordered compatible tool ids.
-        expected_information_gain: estimated uncertainty removed in ``[0, 1]``.
-        attack_surface_expansion: attack-surface expansion potential.
-        finding_validation_potential: how much the action can validate findings.
-        evidence_improvement: evidence-quality improvement potential.
-        hypothesis_discrimination: hypothesis-discrimination value.
-        coverage_improvement: coverage improvement potential.
-        cost: resource cost estimate.
-        dependencies: action ids that must complete first.
-        reliability: historical tool reliability factor.
+    Attributes: action_id: stable action identifier.
 
     """
 
@@ -96,7 +75,7 @@ class MissionDecisionEngine:
     """Rank candidate actions by expected information gain.
 
     The engine is deterministic: identical inputs yield identical rankings and
-    decision records. AI suggestions are advisory — the ranking factors are
+    decision records. AI suggestions are advisory, the ranking factors are
     always recomputed deterministically.
     """
 
@@ -258,7 +237,7 @@ class MissionDecisionEngine:
         )
         if failures == 0:
             return 1.0
-        return max(0.5, 1.0 - 0.15 * failures)
+        return max(0.5, 1.0 - 0.2 * failures)
 
 
 def _cost_penalty(cost: float) -> float:

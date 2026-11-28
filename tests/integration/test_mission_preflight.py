@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the mission preflight gate.
-
-Verifies that the mission execution runner consults tool readiness BEFORE
-execution: a blocked preflight produces a structured ``blocked`` outcome with
-zero executions, a degraded preflight still executes, and a passed preflight
-executes normally. The external execution layer is a deterministic fake.
-"""
+"""Integration tests for the mission preflight gate."""
 
 from __future__ import annotations
 
@@ -151,7 +145,7 @@ class TestPreflightGate:
         result = runner.run(mission.mission_id, max_cycles=8)
 
         # A passed preflight lets execution happen. The terminal is truthful:
-        # never a budget exhaustion (the budget is nowhere near used) — an
+        # never a budget exhaustion (the budget is nowhere near used), an
         # incomplete mission with open hypothesis work honestly reports
         # ``blocked``, never ``exhausted``.
         assert result["status"] in ("completed", "degraded", "blocked")

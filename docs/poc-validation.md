@@ -1,6 +1,6 @@
 ---
 layout: default
-title: PoC & Validation — HunterX v7 Proof Engine
+title: PoC & Validation - HunterX v7 Proof Engine
 keywords: PoC generation, proof of concept security, vulnerability validation, proof engine, vulnerability proof, PoC validation, reproducible findings, evidence-driven confidence, impact assessment, vulnerability verification
 description: >-
   How HunterX v7 validates vulnerabilities and engineers proofs: the Proof &
@@ -27,8 +27,8 @@ the distinction:
 
 ```
 DETECTED → SUSPECTED → VALIDATING → VALIDATED → PROVEN → CONFIRMED → REPORT_READY
-                                            ↘ FALSE_POSITIVE
-                                            ↘ INCONCLUSIVE
+ ↘ FALSE_POSITIVE
+ ↘ INCONCLUSIVE
 ```
 
 ## Proof Contracts
@@ -47,31 +47,31 @@ indicators and **UNKNOWN_BEHAVIOR** (novel).
 
 Per-class proof emphasis:
 
-- **SQL injection** — baseline vs comparison request, behavioral difference,
-  reproducible observation; prove injection, never extract data.
-- **XSS** — input location, reflection context, encoding behavior, minimal
-  proof markers.
-- **SSRF** — controlled callback infrastructure, correlation token and
-  timestamp match.
-- **LFI / path traversal** — controlled proof resources, expected vs observed
-  content.
-- **IDOR / BOLA** — authorized test identities; Subject A vs Subject B on the
-  same resource; no broad enumeration.
-- **Authentication / authorization** — controlled identities, minimal requests,
-  authorized vs unauthorized comparison.
-- **Known vulnerable component** — component identity, version, vendor,
-  affected range, exposure and independent evidence.
+- **SQL injection**, baseline vs comparison request, behavioral difference,
+ reproducible observation; prove injection, never extract data.
+- **XSS**, input location, reflection context, encoding behavior, minimal
+ proof markers.
+- **SSRF**, controlled callback infrastructure, correlation token and
+ timestamp match.
+- **LFI / path traversal**, controlled proof resources, expected vs observed
+ content.
+- **IDOR / BOLA**, authorized test identities; Subject A vs Subject B on the
+ same resource; no broad enumeration.
+- **Authentication / authorization**, controlled identities, minimal requests,
+ authorized vs unauthorized comparison.
+- **Known vulnerable component**, component identity, version, vendor,
+ affected range, exposure and independent evidence.
 
 ## Minimal Safe Proofs
 
-PoCs are **structured artifacts** — request templates, differential tests and
-configuration snapshots — never arbitrary executable scripts. Generation is
+PoCs are **structured artifacts**, request templates, differential tests and
+configuration snapshots, never arbitrary executable scripts. Generation is
 deterministic and safety-validated:
 
 - inputs are bounded and refuse forbidden markers;
 - secret-looking values are redacted before the PoC is returned;
 - the expected result is derived deterministically from the proof inputs;
-- PoCs are immutable — a changed PoC becomes a new version with lineage.
+- PoCs are immutable, a changed PoC becomes a new version with lineage.
 
 ```
 Scope → Authorization → Safety Policy → Proof Policy → Tool Capability → Execution
@@ -87,18 +87,18 @@ expected behavior, with input, configuration and evidence hashing.
 
 Reproducibility is measured over **repeated** replays:
 
-- `REPRODUCIBLE` — at least two successful replays with no failures.
-- `PARTIAL` — mixed outcomes.
-- `NOT_REPRODUCIBLE` — nothing reproduced.
-- `NOT_ASSESSED` — no replay ran.
+- `REPRODUCIBLE`, at least two successful replays with no failures.
+- `PARTIAL`, mixed outcomes.
+- `NOT_REPRODUCIBLE`, nothing reproduced.
+- `NOT_ASSESSED`, no replay ran.
 
 A single "executed once" is never "reproducible."
 
 ## Evidence-Driven Impact & Confidence
 
-**Impact** is classified strictly from captured evidence — confidentiality,
+**Impact** is classified strictly from captured evidence, confidentiality,
 integrity, availability, authorization, authentication, data exposure, account
-impact, resource access, business logic, cloud resource exposure — never
+impact, resource access, business logic, cloud resource exposure, never
 inferred merely because a vulnerability class is normally severe.
 
 **Confidence** is a versioned, weighted policy over named factors: detection
@@ -126,7 +126,7 @@ New Hypothesis → Minimal Proof Strategy → Replay → Evidence → Candidate 
 
 A novel finding remains a **candidate** until sufficient evidence exists. This
 is hypothesis-driven discovery and investigation of unknown or
-application-specific behaviors — not a guarantee of autonomous zero-day
+application-specific behaviors, not a guarantee of autonomous zero-day
 discovery.
 
 ## Report-Ready Findings
@@ -140,7 +140,7 @@ WHAT scope authorized the test.
 A **ReproductionPackage** bundles the finding summary, affected asset,
 preconditions, PoC, replay instructions, expected and observed results,
 evidence references, impact evidence, tool information, validation timestamp,
-scope and version information — suitable for authorized bug-bounty and pentest
+scope and version information, suitable for authorized bug-bounty and pentest
 reporting.
 
 ## Safety
@@ -153,7 +153,7 @@ execution are **never** scheduled. Proof means demonstrating the vulnerability
 with the minimum necessary interaction and impact.
 
 For RCE specifically, proof emphasizes minimal-impact demonstration, evidence
-of execution, and reproducibility — not destructive commands.
+of execution, and reproducibility, not destructive commands.
 
 ## Related
 

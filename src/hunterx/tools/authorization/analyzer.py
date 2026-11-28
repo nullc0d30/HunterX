@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""In-process authorization intelligence analyzer adapter.
-
-Runs the domain :class:`~hunterx.domain.authorization.analyzer.AuthorizationAnalyzer`
-over an already-acquired :class:`AuthorizationInput` bundle and returns the
-canonical observations. No network I/O, no authorization testing, no identifier
-substitution; sensitive values are masked inside the analyzer before they ever
-reach a record.
-"""
+"""In-process authorization intelligence analyzer adapter."""
 
 from __future__ import annotations
 

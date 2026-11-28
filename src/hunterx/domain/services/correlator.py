@@ -3,8 +3,8 @@
 
 """Correlation domain service.
 
-The correlator groups related findings into attack-path style clusters so the
-final report tells a story instead of listing disconnected observations.
+The correlator groups related findings into attack-path style clusters so the final report tells a story instead of
+listing disconnected observations.
 """
 
 from __future__ import annotations

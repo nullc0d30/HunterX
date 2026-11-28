@@ -3,19 +3,8 @@
 
 """Attack-surface completion gate.
 
-The completion gate answers the Phase 1 mandatory question: has the assessment
-genuinely *exhausted* the applicable attack surface? Completion is never defined
-as "N cycles / N probes / N findings / N parameters". It requires, all at once:
-
-    discovery exhausted
-    AND dynamic discovery exhausted
-    AND every applicable capability×surface×context combination evaluated
-    AND the assessment queue exhausted
-    AND the verification queue exhausted
-    AND no new attack paths remain
-
-Failure is never converted into completion: a target that is unavailable or an
-assessment that is blocked terminates with an explicit non-complete verdict.
+The completion gate answers the mandatory question: has the assessment genuinely *exhausted* the applicable attack
+surface?
 """
 
 from __future__ import annotations

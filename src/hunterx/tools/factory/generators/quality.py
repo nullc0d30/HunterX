@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Quality generators: tests, documentation, validation and packaging.
-
-Emits the test skeletons, the five documentation guides, the generated
-validation rules and the packaging definition (``pyproject.toml``,
-``README.md``, ``MANIFEST.in``) of a Tool Integration Pack, plus the package
-marker files.
-"""
+"""Quality generators: tests, documentation, validation and packaging."""
 
 from __future__ import annotations
 
@@ -131,7 +125,7 @@ class PackagingGenerator(PackGenerator):
         ]
 
 
-_DEVELOPER = """# ${display_name} — Developer Guide
+_DEVELOPER = """# ${display_name} - Developer Guide
 
 ${description}
 
@@ -142,13 +136,13 @@ Structure version: ${structure_version}.
 
 Every pack follows the standard Tool Integration Pack layout:
 
-- ``adapters/adapter.py`` — the :class:`ToolAdapter` for ${tool_name}.
-- ``parsing/parser.py`` — parses raw output into records.
-- ``parsing/normalizer.py`` — normalizes records into findings.
-- ``runtime/`` — typed errors, logging and telemetry.
-- ``mapping/`` — database, evidence and risk mappings.
-- ``rules/`` — execution, mission and workflow rules.
-- ``schemas/`` — input and output JSON Schemas.
+- ``adapters/adapter.py`` - the :class:`ToolAdapter` for ${tool_name}.
+- ``parsing/parser.py`` - parses raw output into records.
+- ``parsing/normalizer.py`` - normalizes records into findings.
+- ``runtime/`` - typed errors, logging and telemetry.
+- ``mapping/`` - database, evidence and risk mappings.
+- ``rules/`` - execution, mission and workflow rules.
+- ``schemas/`` - input and output JSON Schemas.
 
 ## Developing the adapter
 
@@ -167,7 +161,7 @@ python -m pytest tests -q
 ```
 """
 
-_INTEGRATION = """# ${display_name} — Integration Guide
+_INTEGRATION = """# ${display_name} - Integration Guide
 
 Wiring the pack into HunterX.
 
@@ -207,7 +201,7 @@ The pack participates in the following mission profiles:
 ${mission_profiles_list}
 """
 
-_ARCHITECTURE = """# ${display_name} — Architecture Guide
+_ARCHITECTURE = """# ${display_name} - Architecture Guide
 
 ## Overview
 
@@ -226,15 +220,15 @@ target/parameters → adapter.run → collector → parser → normalizer → fi
 
 ## Records
 
-- ``metadata/`` — tool metadata, version, compatibility matrix, migrations.
-- ``knowledge/`` — knowledge profile and capabilities.
-- ``install/`` — installation, dependencies and health checks.
-- ``rules/`` — execution, mission and workflow rules.
-- ``schemas/`` — input and output JSON Schemas.
-- ``mapping/`` — database, evidence and risk mappings.
+- ``metadata/`` - tool metadata, version, compatibility matrix, migrations.
+- ``knowledge/`` - knowledge profile and capabilities.
+- ``install/`` - installation, dependencies and health checks.
+- ``rules/`` - execution, mission and workflow rules.
+- ``schemas/`` - input and output JSON Schemas.
+- ``mapping/`` - database, evidence and risk mappings.
 """
 
-_LIFECYCLE = """# ${display_name} — Lifecycle Guide
+_LIFECYCLE = """# ${display_name} - Lifecycle Guide
 
 ## Versioning
 
@@ -257,7 +251,7 @@ removed on the next major release. See ``metadata/migrations.yaml`` for
 migration notes.
 """
 
-_EXAMPLES = """# ${display_name} — Examples
+_EXAMPLES = """# ${display_name} - Examples
 
 ${description}
 

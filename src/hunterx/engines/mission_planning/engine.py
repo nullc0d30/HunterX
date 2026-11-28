@@ -3,11 +3,8 @@
 
 """Mission planning engine.
 
-Orchestrates the mission planning lifecycle: create → queue → plan → ready →
-start → (pause / wait / retry) → complete / cancel / fail → archive. The
-engine composes the profile engine, configuration resolver, planner, execution
-graph builder, checkpoint manager, timeline recorder and state machine, and
-persists every change through the plan repository port. No tool is executed.
+Orchestrates the mission planning lifecycle: create to queue to plan to ready to start to (pause / wait / retry) to
+complete / cancel / fail to archive.
 """
 
 from __future__ import annotations

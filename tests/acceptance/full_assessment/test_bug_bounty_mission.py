@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sprint 033 §7 — Bug Bounty full-spectrum mission acceptance test.
-
-Runs a complete synthetic bug-bounty hunt against an authorized web target:
-recon → enumeration → technology detection → URL discovery → parameter
-discovery → JS analysis → vulnerability discovery → validation → PoC → replay →
-impact assessment → report readiness. The environment contains an intentional
-SQLi (validated and proven), an XSS false positive (rejected), a tool failure
-(amass) that the mission recovers from, and a second-order endpoint discovered
-through JS analysis.
-"""
+"""7, Bug Bounty full-spectrum mission acceptance test."""
 
 from __future__ import annotations
 
@@ -32,7 +23,7 @@ def _scenario() -> MissionScenario:
         description="Synthetic bug-bounty hunt with an intentional SQLi, an XSS false positive and a tool failure.",
     )
 
-    # 1. Recon — subdomain discovery (subfinder OK, amass fails, assetfinder corroborates)
+    # 1. Recon, subdomain discovery (subfinder OK, amass fails, assetfinder corroborates)
     scenario.add(
         ToolScenario(
             capability="subdomain_enumeration",
@@ -64,7 +55,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 2. Enumeration — DNS, ports, services
+    # 2. Enumeration, DNS, ports, services
     scenario.add(
         ToolScenario(
             capability="dns_enumeration",
@@ -88,7 +79,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 3. Understand — technology fingerprinting
+    # 3. Understand, technology fingerprinting
     scenario.add(
         ToolScenario(
             capability="technology_fingerprint",
@@ -98,7 +89,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 4. Map — URL discovery (katana + GAU corroboration)
+    # 4. Map, URL discovery (katana + GAU corroboration)
     scenario.add(
         ToolScenario(
             capability="endpoint_enumeration",
@@ -133,7 +124,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 6. JS analysis — reveals a hidden second-order endpoint
+    # 6. JS analysis, reveals a hidden second-order endpoint
     def _js_analysis(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.orchestrator.record_coverage(
             mission_id,
@@ -158,7 +149,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 7. Vulnerability discovery — intentional SQLi + XSS false positive
+    # 7. Vulnerability discovery, intentional SQLi + XSS false positive
     def _vuln_scan(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.orchestrator.add_hypothesis(
             mission_id,
@@ -190,7 +181,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 8. Validation — SQLi confirmed via differential + independent tool
+    # 8. Validation, SQLi confirmed via differential + independent tool
     def _sqli_validation(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.orchestrator.capture_baseline(
             mission_id,
@@ -252,7 +243,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 9. False positive rejection — XSS is not exploitable (contradictory tools)
+    # 9. False positive rejection, XSS is not exploitable (contradictory tools)
     def _xss_fp(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.record_negative(
             mission_id,
@@ -305,11 +296,11 @@ class TestBugBountyMission:
         validated = [f for f in mission.context.findings if f.get("stage") in ("proven", "report_ready", "verified")]
         assert any(f.get("vulnerability_class") == "sql_injection" for f in validated)
 
-        # 2. XSS false positive rejected — never promoted
+        # 2. XSS false positive rejected, never promoted
         xss = [f for f in mission.context.findings if f.get("vulnerability_class") == "xss"]
         assert not xss
 
-        # 3. tool failure (amass) recovered — blocked negative evidence recorded
+        # 3. tool failure (amass) recovered, blocked negative evidence recorded
         blocked = [r for r in mission.negative_evidence if r.kind.value == "blocked"]
         assert any(r.tool_id == "amass" for r in blocked)
 

@@ -1,13 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Plugin security & trust model (Sprint 034.4 §17).
+"""Plugin security & trust model (17).
 
-Plugins are Python packages loaded into the HunterX process: there is no
-OS-level isolation. Permissions are *declared* by the manifest and *enforced*
-as policy by SandboxPolicy, but the plugin process itself can do anything the
-HunterX process can (filesystem, network, credentials) unless a deployment adds
-OS isolation. These tests pin the actual boundary.
+Plugins are Python packages loaded into the HunterX process: there is no OS-level isolation.
 """
 
 from __future__ import annotations
@@ -52,8 +48,9 @@ def test_plugin_loader_rejects_missing_class() -> None:
 def test_plugin_is_in_process_code_not_os_isolation() -> None:
     """Documented architectural limitation: a loaded plugin executes arbitrary
     Python in the HunterX process. It can read files, open sockets and import
-    any installed module — permissions only gate the SDK *offered* capabilities,
-    they do not contain the code."""
+    any installed module, permissions only gate the SDK *offered* capabilities,
+    they do not contain the code.
+    """
     manifest = PluginManifest(
         name="osint",
         version="1.0.0",

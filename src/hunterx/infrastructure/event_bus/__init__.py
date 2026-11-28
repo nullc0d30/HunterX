@@ -3,12 +3,7 @@
 
 """Event bus adapters.
 
-The :class:`InMemoryEventBus` is the default (and only shipped) event bus. It
-implements the enriched :class:`ObservabilityEventBusPort`: exact and
-category-prefix routing (``mission.*``), per-subscriber filters, delivery
-priorities, failure isolation and introspection. When an event store and a
-dead-letter queue are attached, every published event is persisted and
-unprocessable events are quarantined.
+The :class:`InMemoryEventBus` is the default (and only shipped) event bus.
 """
 
 from __future__ import annotations
@@ -42,18 +37,7 @@ class _Subscription:
 class InMemoryEventBus(ObservabilityEventBusPort):
     """Synchronous in-process event bus with routing, filtering and priorities.
 
-    Matching rules:
-
-    - An exact subscription (``"mission.started"``) matches that exact type.
-    - A category subscription (``"mission.*"``) matches every type whose
-      category prefix equals ``mission``.
-    - Subscribers with higher :class:`EventPriority` are invoked first.
-    - An optional ``filter`` predicate decides per-event delivery.
-
-    Handler failures are isolated per subscriber: one failing handler does not
-    prevent others from running. The first failure is collected and re-raised
-    by :meth:`publish` (matching the legacy contract). When a ``dead_letter``
-    queue is attached, failed events are quarantined there.
+    Matching rules.
     """
 
     def __init__(

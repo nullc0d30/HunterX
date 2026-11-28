@@ -4,22 +4,19 @@
 """AI Hunt Director Protocol.
 
 Defines the structured protocol between the AI Hunt Director and HunterX.
-The AI Hunt Director is the autonomous decision-making authority for
-security assessment missions.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 from hunterx.domain.mission_orchestration.enums import HypothesisState
-from hunterx.domain.mission_orchestration.models import MissionHypothesis
 
 
-class ActionType(str, Enum):
+class ActionType(StrEnum):
     """Type of action the AI Hunt Director can request."""
 
     EXECUTE_TOOL = "execute_tool"
@@ -34,7 +31,7 @@ class ActionType(str, Enum):
     GENERATE_PROOF = "generate_proof"
 
 
-class PolicyGateResult(str, Enum):
+class PolicyGateResult(StrEnum):
     """Result of the HunterX policy gate validation."""
 
     APPROVED = "approved"
@@ -42,7 +39,7 @@ class PolicyGateResult(str, Enum):
     DEFERRED = "deferred"
 
 
-class PolicyGateReason(str, Enum):
+class PolicyGateReason(StrEnum):
     """Reason for policy gate rejection."""
 
     OUT_OF_SCOPE = "out_of_scope"
@@ -62,7 +59,7 @@ class PolicyGateResultDetail:
     """Detailed result of the policy gate validation."""
 
     result: PolicyGateResult
-    reason: Optional[PolicyGateReason] = None
+    reason: PolicyGateReason | None = None
     message: str = ""
     details: dict[str, Any] = field(default_factory=dict)
 
@@ -153,8 +150,7 @@ class ObservationSummary:
 
 @dataclass(frozen=True, slots=True)
 class HuntContext:
-    """
-    Complete context provided to the AI Hunt Director for decision making.
+    """Complete context provided to the AI Hunt Director for decision making.
 
     This is the primary input to the AI Hunt Director's decision-making process.
     It contains all relevant mission state, observations, hypotheses, findings,
@@ -218,7 +214,7 @@ class HuntContext:
     # Timestamps
     mission_started_at: str = ""
     last_updated_at: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        default_factory=lambda: datetime.now(UTC).isoformat().replace("+00:00", "Z")
     )
 
     # Completion gate status
@@ -233,9 +229,8 @@ class AIHuntDirectorProtocol:
     the next action to take.
     """
 
-    def decide_next_action(self, context: HuntContext) -> "AIHuntDecision":
-        """
-        Determine the next action based on the current mission context.
+    def decide_next_action(self, context: HuntContext) -> AIHuntDecision:
+        """Determine the next action based on the current mission context.
 
         This is the primary decision-making method. The AI Hunt Director
         must analyze the provided context and return a structured decision.
@@ -243,8 +238,7 @@ class AIHuntDirectorProtocol:
         raise NotImplementedError
 
     def initialize_hunt(self, context: HuntContext) -> list[str]:
-        """
-        Initialize the hunt by returning initial hypotheses/priorities.
+        """Initialize the hunt by returning initial hypotheses/priorities.
 
         Called once at the start of a mission to establish initial
         hypotheses and priorities based on the target and objective.
@@ -252,17 +246,15 @@ class AIHuntDirectorProtocol:
         raise NotImplementedError
 
     def reassess(self, context: HuntContext) -> list[str]:
-        """
-        Reassess the current strategy based on new observations.
+        """Reassess the current strategy based on new observations.
 
         Called when significant new information is available that may
         require strategy adjustment.
         """
         raise NotImplementedError
 
-    def validate_finding(self, context: HuntContext, finding_id: str) -> "AIHuntDecision":
-        """
-        Validate a finding candidate and determine if it's report-ready.
+    def validate_finding(self, context: HuntContext, finding_id: str) -> AIHuntDecision:
+        """Validate a finding candidate and determine if it's report-ready.
 
         The AI determines if the evidence is sufficient for the finding
         to advance through the validation pipeline.
@@ -270,8 +262,7 @@ class AIHuntDirectorProtocol:
         raise NotImplementedError
 
     def build_attack_path(self, context: HuntContext) -> list[str]:
-        """
-        Generate attack paths from current observations.
+        """Generate attack paths from current observations.
 
         Returns a list of attack path IDs that should be explored.
         """
@@ -280,8 +271,7 @@ class AIHuntDirectorProtocol:
 
 @dataclass(frozen=True, slots=True)
 class AIHuntDecision:
-    """
-    Structured decision from the AI Hunt Director.
+    """Structured decision from the AI Hunt Director.
 
     This is the structured output from the AI Hunt Director that HunterX
     validates and executes.
@@ -316,13 +306,13 @@ class AIHuntDecision:
     decision_type: str = "EXECUTE_TOOL"  # EXECUTE_TOOL, REASSESS, VALIDATE_FINDING, COLLECT_EVIDENCE, EXPLORE_ATTACK_PATH, COMPLETE, DEFER_HYPOTHESIS, BLOCK_HYPOTHESIS, REQUEST_EVIDENCE, GENERATE_PROOF
 
     # Policy gate result (populated by HunterX after validation)
-    policy_gate_result: Optional[PolicyGateResultDetail] = None
+    policy_gate_result: PolicyGateResultDetail | None = None
 
 
 class AIHuntDirectorError(Exception):
     """Exception raised when the AI Hunt Director encounters an error."""
 
-    def __init__(self, message: str, decision_id: str = "", context: Optional[dict] = None):
+    def __init__(self, message: str, decision_id: str = "", context: dict | None = None):
         super().__init__(message)
         self.decision_id = decision_id
         self.context = context or {}

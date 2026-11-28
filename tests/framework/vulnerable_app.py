@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Intentionally vulnerable local test application.
-
-A threaded HTTP server on a random loopback port exposing deterministic
-vulnerable endpoints (SQLi, NoSQLi, XSS reflection, SSTI eval, LFI, RCE) and
-matching SAFE control endpoints that never produce a class signal. Used only by
-the acceptance tests; never exposed beyond loopback.
-
-The vulnerability engine's differential core distinguishes the vulnerable
-endpoints from the safe controls — the whole point of the no-false-positive gate.
-"""
+"""Intentionally vulnerable local test application."""
 
 from __future__ import annotations
 
@@ -317,7 +308,7 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
     def _rce(self, value: str, *, vulnerable: bool) -> None:
         if vulnerable and value.startswith((";", "|", "$(", "`")):
             try:
-                result = subprocess.run(["id"], capture_output=True, text=True, timeout=3)  # nosec B404  # controlled fixture
+                result = subprocess.run(["id"], capture_output=True, text=True, timeout=3)  # nosec B404 # controlled fixture
                 self._respond(200, result.stdout or "uid=0(root)")
                 return
             except Exception:  # noqa: BLE001
@@ -354,7 +345,7 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
             return
         self._respond(200, "xml ok")
 
-    # -- Phase 2 infrastructure capabilities --------------------------------
+    # -- infrastructure capabilities --------------------------------
 
     @staticmethod
     def _header(headers, name: str) -> str:
@@ -428,7 +419,7 @@ class _VulnerableHandler(BaseHTTPRequestHandler):
             return
         # The vulnerable endpoint performs a REAL server-side request to the
         # client-controlled URL (loopback callback), proving the server
-        # initiates the outbound fetch — never a simulated response.
+        # initiates the outbound fetch, never a simulated response.
         parsed = urlsplit(url)
         if parsed.scheme not in ("http", "https") or parsed.hostname not in ("127.0.0.1", "localhost"):
             self._respond(200, "fetch policy: loopback only")

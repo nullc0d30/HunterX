@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Safe vulnerability discovery & validation TIDB entities.
-
-System-of-record entities for the Wave 13 safe vulnerability discovery &
-validation capability: vulnerability hypotheses, validation rules, validation
-plans and steps, validation executions, validation evidence (provenance-backed
-canonical observations), verdicts, per-target validation history, temporal
-differentials, tool usage observability and policy decisions. Every validation
-fact that matters is persisted here — never only in memory, logs or reports.
-
-Security boundary: these tables store safe-validation metadata, canonical
-observations and redacted evidence only — never exploit payloads, never
-credentials, never out-of-scope request material.
-"""
+"""Safe vulnerability discovery & validation TIDB entities."""
 
 from __future__ import annotations
 

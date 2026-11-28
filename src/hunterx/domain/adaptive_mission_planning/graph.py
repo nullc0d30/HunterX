@@ -3,11 +3,8 @@
 
 """Adaptive execution graph.
 
-A living, dynamically modifiable execution graph of :class:`ActionNode`
-entries connected by typed :class:`DynamicDependency` edges and
-:class:`ConditionalBranch` constructs. The graph is the mission plan: it is
-never a static list of commands. Replanning mutates it through
-:class:`~hunterx.domain.adaptive_mission_planning.models.PlanDelta` changes.
+A living, dynamically modifiable execution graph of :class:`ActionNode` entries connected by typed
+:class:`DynamicDependency` edges and :class:`ConditionalBranch` constructs.
 """
 
 from __future__ import annotations
@@ -35,10 +32,7 @@ class InvalidExecutionGraphError(Exception):
 class AdaptiveExecutionGraph:
     """A dynamic DAG of action nodes with typed dependencies and branches.
 
-    Attributes:
-        actions: index of action id → :class:`ActionNode`.
-        dependencies: index of dependency id → :class:`DynamicDependency`.
-        branches: index of branch id → :class:`ConditionalBranch`.
+    Attributes: actions: index of action id to :class:`ActionNode`.
 
     """
 
@@ -98,7 +92,7 @@ class AdaptiveExecutionGraph:
     def apply_delta(self, delta: PlanDelta) -> list[str]:
         """Apply a :class:`PlanDelta` to the graph; returns affected action ids.
 
-        The full mission is never rebuilt — only the changed nodes are
+        The full mission is never rebuilt, only the changed nodes are
         touched. Applying a delta does not increment any version here; the
         engine owns versioning.
         """
@@ -152,7 +146,7 @@ class AdaptiveExecutionGraph:
         identity (capability, asset, hypothesis, parameter/technology context
         and tool) must not be scheduled again unless new state changed the
         identity. ``include_terminal`` controls whether already-completed (or
-        otherwise terminal) actions still count — the default keeps them in
+        otherwise terminal) actions still count, the default keeps them in
         play so a fully executed action is never silently re-run.
         """
         key = node.identity_key()
@@ -193,7 +187,7 @@ class AdaptiveExecutionGraph:
         """Return action ids in a valid dependency order (Kahn's algorithm).
 
         ``DEPENDS_ON`` edges are treated as ordering constraints; other
-        dependency kinds (``enables``, ``invalidates``, ``blocks``, ...) do
+        dependency kinds (``enables``, ``invalidates``, ``blocks``,...) do
         not order execution.
         """
         order: list[str] = []

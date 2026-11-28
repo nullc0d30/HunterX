@@ -1,23 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous model-driven attacker (Phase 7).
+"""Autonomous model-driven attacker.
 
-The attacker closes the loop the connected model participates in:
-
-    reason → accept → schedule real task → execute real engine →
-    observe → verify → learn → reason again
-
-Every accepted model hypothesis becomes a real attack-surface assessment task
-that runs through the ordinary capability execution engine — the same queue as
-every discovery-derived task. Attack results and validated findings are fed
-back into the model's reasoning context, and a finding never terminates the
-loop: it expands the search (adjacent parameters, sibling endpoints,
-alternative vectors). The loop only reports genuine exhaustion when the queue
-is drained, no hypothesis is pending, no model-generated task remains, and the
-model produced no further attack path — anything else (budgets, cycles, an
-unavailable model) is reported truthfully as a resource limit, never as
-completion.
+The attacker closes the loop the connected model participates in.
 """
 
 from __future__ import annotations
@@ -44,8 +30,8 @@ class ModelAttacker:
 
     Args:
         reasoner: the model-agnostic reasoner (``None`` keeps the attacker
-            inert — no model, no hypotheses, genuine no-op).
-        finding_pipeline: the Phase 6 capability-finding pipeline that turns
+            inert, no model, no hypotheses, genuine no-op).
+        finding_pipeline: the capability-finding pipeline that turns
             capability-execution FINDING records into validated findings.
         max_hypotheses_per_cycle: bounded hypotheses accepted per reasoning
             round (a resource ceiling, never a completion signal).
@@ -195,7 +181,7 @@ class ModelAttacker:
                 break
         if not self.exhausted() and not self._completion_reason:
             # A bounded-round ceiling hit without genuine exhaustion is a
-            # resource limit — never a completion signal.
+            # resource limit, never a completion signal.
             self._completion_reason = AttackerCompletion.RESOURCE_LIMIT.value
         return {"steps": steps, **self.report()}
 

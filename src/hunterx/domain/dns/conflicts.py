@@ -3,11 +3,8 @@
 
 """DNS conflict resolution policy.
 
-When several observations of the same name/type disagree, the capability must
-pick a canonical value without silently discarding the losers. This module
-provides the deterministic resolution policy used by the correlator and the
-application layer, plus a helper to annotate records with the conflict they
-participated in.
+When several observations of the same name/type disagree, the capability must pick a canonical value without
+silently discarding the losers.
 """
 
 from __future__ import annotations

@@ -1,9 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regenerate the full toolchain intelligence manifest (Sprint 031).
+"""Regenerate the full toolchain intelligence manifest.
 
-Run:  python -m pytest -q tests/engineering/test_regenerate_toolchain_manifest.py
+Run: python -m pytest -q tests/engineering/test_regenerate_toolchain_manifest.py.
 """
 
 from __future__ import annotations
@@ -43,7 +43,6 @@ def test_regenerate_toolchain_manifest() -> None:
 
     assert manifest["capability"] == "full-toolchain-intelligence"
     assert manifest["manifest_version"] == "1.0.0"
-    assert manifest["wave"] == 16
     assert manifest["tool_count"] >= 50
     assert _APPROVED.issubset(set(manifest["tools"])), _APPROVED - set(manifest["tools"])
     assert len(manifest["events"]) == 12

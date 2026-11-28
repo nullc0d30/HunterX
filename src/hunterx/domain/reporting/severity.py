@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Evidence-backed severity assessment engine.
-
-Severity is never derived from the vulnerability class alone: it is derived
-from evidence-backed impact dimensions, exploitability signals, proof state,
-confidence, scope and business context. ``Critical`` requires direct evidence
-of high-impact, exploitable impact — a class name alone can never produce it.
-"""
+"""Evidence-backed severity assessment engine."""
 
 from __future__ import annotations
 

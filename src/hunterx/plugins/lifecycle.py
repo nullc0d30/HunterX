@@ -3,10 +3,7 @@
 
 """Plugin lifecycle hooks.
 
-A plugin instance may implement these lifecycle hooks; the manager calls them
-at the appropriate times. Hooks are optional — a plugin may implement only
-``activate``. This is a plain mixin: every hook defaults to a no-op so that
-subclasses can override the subset they need.
+A plugin instance may implement these lifecycle hooks; the manager calls them at the appropriate times.
 """
 
 from __future__ import annotations

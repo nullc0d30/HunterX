@@ -3,19 +3,7 @@
 
 """Authorization & access-control intelligence TIDB entities.
 
-System-of-record entities for the Wave 10 authorization intelligence
-capability (Sprint 016). They carry the canonical, evidence-backed
-authorization inventory of an authorized target: subjects, roles, groups,
-permissions, scopes, claims, policies, resources, actions, resource-identifier
-metadata, ownership relationships, tenant boundaries, administrative surfaces,
-function/object/field-level access-control indicators, frontend/backend
-authorization logic, API authorization correlation, GraphQL/WebSocket/service
-authorization, decision indicators, mass-assignment fields and the derived
-intelligence (observations, evidence, changes and run records).
-
-Security boundary: intelligence only. These entities store metadata and
-masked/derived values — never raw passwords, access/refresh tokens, session
-cookie values, API secrets, authorization-header values, JWT claims or PII.
+System-of-record entities for the authorization intelligence capability.
 """
 
 from __future__ import annotations

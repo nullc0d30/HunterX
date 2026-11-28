@@ -3,10 +3,7 @@
 
 """Tool Intelligence Platform registration for Secret Discovery.
 
-Registers the secret discovery tools (gitleaks) into a
-:class:`ToolIntelligenceAPI` with the full Sprint 023 contracts. The safety
-profile is bounded to ``LOW_IMPACT_ACTIVE`` and the filesystem policy is
-read-only. Secret output is always redacted by the adapter.
+Registers the secret discovery tools (gitleaks) into a :class:`ToolIntelligenceAPI` with the full contracts.
 """
 
 from __future__ import annotations
@@ -215,7 +212,7 @@ def _knowledge(metadata: ToolMetadata) -> ToolKnowledge:
         version_constraints=(">=8.0.0",),
         known_false_positives=("Entropy-only matches on non-secret strings.",),
         known_false_negatives=("Secrets split across lines or in binary files.",),
-        provenance={"source": "sprint-024", "category": "secrets", "license": "MIT"},
+        provenance={"source": "hunterx-tool-registry", "category": "secrets", "license": "MIT"},
         knowledge_version="1.0.0",
     )
 

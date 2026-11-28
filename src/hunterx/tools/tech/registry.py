@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology fingerprinting tool adapter registry.
-
-Builds and registers the fingerprinting tool adapters (httpx binary, whatweb
-binary and the in-process signature detector) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the fingerprinting tool set, so callers (tests, the fingerprinting
-service, the platform) never construct individual adapters.
-"""
+"""Technology fingerprinting tool adapter registry."""
 
 from __future__ import annotations
 

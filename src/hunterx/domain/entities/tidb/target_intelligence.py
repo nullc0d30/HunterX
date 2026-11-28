@@ -3,14 +3,7 @@
 
 """Adaptive Target Intelligence TIDB entities.
 
-Sprint 026. System-of-record entities for the Target Intelligence layer. The
-layer persists normalized entities (never a JSON dump of the whole graph) so
-references, relationships, provenance, history and indexes stay queryable.
-
-Each entity mirrors the pure domain model in
-``hunterx.domain.target_intelligence``; the application service maps between
-them. Envelope (id, timestamps, versioning, soft-delete) comes from
-:class:`TidbEntity`.
+System-of-record entities for the Target Intelligence layer.
 """
 
 from __future__ import annotations
@@ -31,7 +24,7 @@ class IntelligenceTargetRecord(TidbEntity):
         identity: human label.
         classification: target classification.
         criticality: business criticality.
-        kind: target kind (``domain``, ``ip``, ``cloud_account``, ...).
+        kind: target kind (``domain``, ``ip``, ``cloud_account``,...).
         value: canonical target value.
         status: :class:`IntelligenceTargetStatus` value.
         confidence: aggregate confidence in ``[0, 1]``.
@@ -496,9 +489,9 @@ class IntelligenceScoreRecord(TidbEntity):
 
     Attributes:
         target_id: owning target.
-        dimensions: dimension → score (JSON).
+        dimensions: dimension to score (JSON).
         aggregate: overall score in ``[0, 1]``.
-        weights: dimension → weight (JSON).
+        weights: dimension to weight (JSON).
         policy_id: weight/ranking policy id applied.
 
     """

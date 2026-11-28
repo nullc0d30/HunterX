@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Intelligence Engine facade.
-
-Sprint 026. The `TargetIntelligenceEngine` is the runtime aggregate of the
-Adaptive Target Intelligence layer: it ingests scope-checked observations and
-assets, updates the attack-surface graph and coverage matrix, records negative
-results and evidence, detects conflicts and changes, maintains target history,
-regenerates hypotheses, ranks next best actions and assembles the target
-intelligence state snapshot. It is injected with pure domain engines and the
-Sprint 025 tool selector so it can be assembled from the platform composition
-root or from test doubles.
-"""
+"""Target Intelligence Engine facade."""
 
 from __future__ import annotations
 
@@ -315,7 +305,7 @@ class TargetIntelligenceEngine:
 
         Coverage cells are primed (NOT_ASSESSED) for every testable asset that
         has no explicit cell yet, so the matrix is explicit about what has not
-        been tried — missing information is never treated as negative.
+        been tried, missing information is never treated as negative.
         """
         self.coverage.assign_to_assets(
             self.graph.coverage_targets(),
@@ -363,8 +353,8 @@ class TargetIntelligenceEngine:
     ) -> tuple[TargetIntelligenceState, list[IntelligenceAction], IntelligenceDecision]:
         """Run one adaptive intelligence cycle.
 
-        The cycle: refresh state → detect conflicts/changes → generate gaps →
-        generate/refine hypotheses → score → rank next best actions. The
+        The cycle: refresh state to detect conflicts/changes to generate gaps to
+        generate/refine hypotheses to score to rank next best actions. The
         returned actions carry stop conditions and explainable rationales.
         """
         self.scope.check_target(target)

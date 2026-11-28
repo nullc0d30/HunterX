@@ -3,9 +3,7 @@
 
 """Version-aware tool knowledge.
 
-Tool behavior changes over time. Tool version, knowledge version, parser
-version and adapter version are tracked independently. Supports version
-ranges, deprecated/renamed/removed options and changed output formats.
+Tool behavior changes over time.
 """
 
 from __future__ import annotations

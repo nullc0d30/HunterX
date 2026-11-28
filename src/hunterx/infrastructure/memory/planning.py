@@ -3,9 +3,7 @@
 
 """In-memory mission planning repositories.
 
-Reference implementations of the mission planning repository ports without any
-database. Used by the platform composition root as the default persistence
-backend and by the test suite.
+Reference implementations of the mission planning repository ports without any database.
 """
 
 from __future__ import annotations

@@ -1,29 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 4 validation harness.
+"""Validation harness.
 
-Drives HunterX's universal deep-discovery pipeline (Phase 4) end to end
-against a generic target and produces the full Phase 4 evidence:
-
-    * the complete stage plan (ASSET → DNS → SUBDOMAIN → HOST → PORT →
-      SERVICE → TECHNOLOGY → HTTP → API → GRAPHQL → JAVASCRIPT → WORKFLOW →
-      AUTH),
-    * per-provider honest states (available/unavailable/failed/partial/
-      not-applicable/completed) with exact gaps — never a fabricated result,
-    * canonical deduplicated assets with provenance (provider, tool, source,
-      evidence, confidence),
-    * the attack-surface graph growth, capability mapping and assessment-queue
-      scheduling fed from discovery observations,
-    * continuous-discovery feedback (hosts/URLs/scripts discovered early feed
-      later stages),
-    * a real black-box run through the in-process adapters (crawler, JS
-      analyzer, tech signatures, TCP connect probes, DNS, API intelligence,
-      auth analysis) against a generic loopback fixture.
-
-The harness never hardcodes a target: the fixture is a generic SPA/API app on
-``127.0.0.1``, the plan is built from the tool registries, and every provider
-payload is converted through the canonical pipeline.
+Drives HunterX's universal deep-discovery pipeline end to end against a generic target and produces the full
+evidence.
 """
 
 from __future__ import annotations
@@ -69,7 +50,7 @@ IN_PROCESS_ADAPTERS: dict[str, type] = {
 }
 
 #: Binary-only tools in the stage plan but never installed on the harness
-#: engine — the honest ``UNAVAILABLE`` set proving state honesty over
+# : engine, the honest ``UNAVAILABLE`` set proving state honesty over
 #: fabrication. Derived from the plan so it can never drift from the pipeline.
 BINARY_ONLY_TOOL_IDS = tuple(
     sorted(set(build_stage_plan().tool_ids()) - set(IN_PROCESS_ADAPTERS))
@@ -204,7 +185,7 @@ class GenericDiscoveryFixture:
 
     Serves a small SPA with a JavaScript bundle, an OpenAPI document, an API
     endpoint family, a login surface and a GraphQL endpoint on ``127.0.0.1``
-    with an ephemeral port — the same shape any external web application has.
+    with an ephemeral port, the same shape any external web application has.
     """
 
     def __init__(self) -> None:
@@ -242,7 +223,7 @@ class Phase4Harness:
         mode: execution posture (``passive``/``active``/``hybrid``).
         session_state: optional session state label.
         timeout_seconds: per-provider execution timeout.
-        adapters: tool id → adapter class mapping (``None`` uses the
+        adapters: tool id to adapter class mapping (``None`` uses the
             in-process adapter set above).
 
     """
@@ -310,7 +291,7 @@ class Phase4Harness:
         return counts
 
     def report(self) -> dict[str, Any]:
-        """Assemble the complete Phase 4 evidence report."""
+        """Assemble the complete evidence report."""
         assert self.run_result is not None, "run() must be called first"
         return {
             "mission_id": self.mission_id,

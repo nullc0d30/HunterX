@@ -3,9 +3,7 @@
 
 """Plugin loader.
 
-Imports a plugin's entrypoint class from its declared import path and
-instantiates it. Loading is separated from lifecycle management so the loader
-stays small and reusable.
+Imports a plugin's entrypoint class from its declared import path and instantiates it.
 """
 
 from __future__ import annotations

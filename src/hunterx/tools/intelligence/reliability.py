@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reliability and availability tracking (Sprint 023).
+"""Reliability and availability tracking.
 
-Tracks per-tool reliability stats and produces availability reports. Tools are
-never automatically disabled based solely on these metrics — the reports only
-inform selection and surface the reason a capability is (or is not) usable.
+Tracks per-tool reliability stats and produces availability reports.
 """
 
 from __future__ import annotations

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the authorization intelligence TIP registration.
-
-Verifies the Tool Intelligence Platform profile mirrors the Tool SDK adapter
-descriptor: tool id, version, capabilities, passive-mode safety and the
-mission profiles that exercise the capability.
-"""
+"""Tests for the authorization intelligence TIP registration."""
 
 from __future__ import annotations
 

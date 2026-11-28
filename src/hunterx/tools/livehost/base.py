@@ -1,22 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for Live Host & Service Discovery tools.
-
-Every live discovery tool adapter implements the SDK :class:`ToolAdapter`
-lifecycle and shares this base: it invokes the external binary through the
-shared :class:`~hunterx.tools.recon.runner.BinaryRunner` seam, parses the
-captured output into canonical discovery observations (:class:`LiveHost`,
-:class:`PortFinding`, :class:`ServiceFinding`, :class:`TlsFinding`,
-:class:`HttpFinding`) and serialises them into the pipeline's JSON payload
-under the ``observations`` key with a ``type`` discriminator. Adapters stay
-binary-free in unit tests: tests inject a fake runner and assert on the JSON
-payload.
-
-The runner is imported from ``hunterx.tools.recon.runner`` — the single guarded
-subprocess seam — so live discovery adapters never touch ``subprocess``
-directly.
-"""
+"""Base adapter for Live Host & Service Discovery tools."""
 
 from __future__ import annotations
 

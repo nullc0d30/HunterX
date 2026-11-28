@@ -3,10 +3,8 @@
 
 """Plugin manager.
 
-Coordinates the full plugin lifecycle: dependency resolution → load → version
-check → permission grant → activate. The manager implements
-:class:`~hunterx.domain.ports.services.PluginRegistryPort` and delegates
-actual registration to the registry.
+Coordinates the full plugin lifecycle: dependency resolution to load to version check to permission grant to
+activate.
 """
 
 from __future__ import annotations
@@ -30,8 +28,8 @@ class PluginManager:
     Usage::
 
         manager = PluginManager(registry=PluginRegistry())
-        manager.register_manifest(manifest)          # via dependency order
-        manager.activate("my.plugin")                # load + activate
+        manager.register_manifest(manifest) # via dependency order
+        manager.activate("my.plugin") # load + activate
     """
 
     def __init__(

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Evidence bundle & integrity builder.
-
-Assembles an immutable evidence bundle referencing raw observations, requests,
-responses, tool output, validation results, PoCs and replay results, with
-SHA-256 content hashes and full provenance. Full raw evidence stays in the
-evidence store; the bundle carries references and hashes, never duplicate
-payloads.
-"""
+"""Evidence bundle & integrity builder."""
 
 from __future__ import annotations
 

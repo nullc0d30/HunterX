@@ -3,9 +3,7 @@
 
 """Template rendering for the Tool Integration Factory.
 
-The renderer expands ``${placeholder}`` references in integration templates
-using a spec-derived context. Rendering is strict: an unknown placeholder
-raises :class:`TemplateRenderError` so generated packs never ship with a hole.
+The renderer expands ``${placeholder}`` references in integration templates using a spec-derived context.
 """
 
 from __future__ import annotations

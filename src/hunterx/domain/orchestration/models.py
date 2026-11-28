@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission orchestration domain models.
-
-The canonical mission object, its scope and exclusions, the policy envelopes
-(safety, execution, tool, retry, rate-limit), the target set, and the execution
-plan decomposition (phases → steps) with tool bindings and dependencies.
-
-These are pure, storage-agnostic dataclasses. No I/O, no execution.
-"""
+"""Mission orchestration domain models."""
 
 from __future__ import annotations
 

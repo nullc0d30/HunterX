@@ -3,9 +3,7 @@
 
 """Planning engine.
 
-Deterministic planner that expands a mission into an ordered, dependency-aware
-plan. Steps are derived from the mission's kind and the configured workflow
-definition.
+Deterministic planner that expands a mission into an ordered, dependency-aware plan.
 """
 
 from __future__ import annotations
@@ -18,8 +16,8 @@ from hunterx.shared.ids import generate_id
 class DeterministicPlanner(PlannerService):
     """Expand a mission into a concrete execution plan.
 
-    The default recipe is: enumerate assets → fingerprint services → scan
-    for known issues → validate candidate findings. Custom workflows override
+    The default recipe is: enumerate assets to fingerprint services to scan
+    for known issues to validate candidate findings. Custom workflows override
     this recipe via the ``workflow`` field of the mission.
     """
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation — HunterX v7
+title: Installation - HunterX v7
 keywords: HunterX Installation, Setup, Requirements, PyPI, pip install hunterxsec
 description: >-
   Install HunterX v7 on Linux, macOS or Windows, from PyPI, the installer
@@ -60,10 +60,10 @@ docker pull nullc0d30/hunterx:latest
 # CLI
 docker run --rm nullc0d30/hunterx:latest version
 
-# REST API (FastAPI) — health check at http://localhost:8080/health
+# REST API (FastAPI) - health check at http://localhost:8080/health
 docker run -d --name hunterx-api -p 8080:8080 \
-  --entrypoint uvicorn nullc0d30/hunterx:latest \
-  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+ --entrypoint uvicorn nullc0d30/hunterx:latest \
+ --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 Or use the bundled compose stack:
@@ -75,24 +75,23 @@ docker compose up -d hunterx-api
 ## Verify the installation
 
 ```bash
-hunterx version     # HunterX v7.0.0
-hunterx help        # command list
-hunterx platform    # platform composition
-hunterx config      # resolved configuration
+hunterx version # HunterX v7.0.0
+hunterx help # command list
+hunterx platform # platform composition
+hunterx config # resolved configuration
 ```
 
 ## External tool readiness & provisioning
 
-HunterX orchestrates *external* security tools (nmap, subfinder, nuclei, ffuf,
-...). After installing HunterX itself, establish the base environment and check
+HunterX orchestrates *external* security tools (nmap, subfinder, nuclei, ffuf,...). After installing HunterX itself, establish the base environment and check
 which external tools are available:
 
 ```bash
-hunterx install                        # base environment (detect + verify tools)
-hunterx tools check                    # per-tool readiness + capability coverage
-hunterx tools audit                    # integration maturity (knowledge + runtime)
-hunterx tools install --profile recon  # provision missing recon tools
-hunterx tools install --profile full   # provision the complete external toolchain
+hunterx install # base environment (detect + verify tools)
+hunterx tools check # per-tool readiness + capability coverage
+hunterx tools audit # integration maturity (knowledge + runtime)
+hunterx tools install --profile recon # provision missing recon tools
+hunterx tools install --profile full # provision the complete external toolchain
 ```
 
 The `install.sh` script is a full **environment bootstrapper**: it detects the
@@ -100,13 +99,10 @@ platform and available runtimes/package managers, installs the HunterX package,
 invokes the canonical Tool Readiness layer to discover/verify/provision external
 tools, configures PATH (current process and future shells, idempotent), then
 runs the final readiness verification and reports `INSTALLATION COMPLETE`,
-`INSTALLATION COMPLETE — DEGRADED` or `INSTALLATION INCOMPLETE` with exact
+`INSTALLATION COMPLETE, DEGRADED` or `INSTALLATION INCOMPLETE` with exact
 reasons.
 
-```bash
-./install.sh --profile full     # provision the complete external toolchain
-./install.sh --profile recon    # recon toolset
-./install.sh --core             # base package + minimal profile
+```bash./install.sh --profile full # provision the complete external toolchain./install.sh --profile recon # recon toolset./install.sh --core # base package + minimal profile
 ```
 
 Provisioning uses trusted, static installation methods (`apt`/`brew`/`go`/
@@ -125,8 +121,8 @@ explicit migration run:
 alembic upgrade head
 ```
 
-The database URL defaults to the application data directory —
-`<application root>/data/hunterx.db` — resolved at runtime by
+The database URL defaults to the application data directory,
+`<application root>/data/hunterx.db`, resolved at runtime by
 `hunterx.config.paths`. Override it with `HUNTERX_DATABASE_URL` or relocate the
 data directory with `HUNTERX_DATA_DIR` (see
 [Configuration]({{ '/configuration/' | relative_url }})).
@@ -151,12 +147,12 @@ CLI command are `hunterx` either way, so install with
 
 ## Troubleshooting
 
-- `hunterx: command not found` — the install location is not on `PATH`; the
-  installer prints the required `export PATH=...`.
-- `ModuleNotFoundError: sqlalchemy` — install with the `db` extra:
-  `python -m pip install -e ".[db]"` from the source tree.
+- `hunterx: command not found`, the install location is not on `PATH`; the
+ installer prints the required `export PATH=...`.
+- `ModuleNotFoundError: sqlalchemy`, install with the `db` extra:
+ `python -m pip install -e ".[db]"` from the source tree.
 
 ## Next steps
 
-- [Quickstart]({{ '/quickstart/' | relative_url }}) — run your first mission
-- [CLI Reference]({{ '/cli/' | relative_url }}) — command reference
+- [Quickstart]({{ '/quickstart/' | relative_url }}), run your first mission
+- [CLI Reference]({{ '/cli/' | relative_url }}), command reference

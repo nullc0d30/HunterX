@@ -3,8 +3,8 @@
 
 """Risk scoring engine.
 
-Computes a normalized risk score for a finding from its severity band and any
-additional risk metadata the producing tool supplied.
+Computes a normalized risk score for a finding from its severity band and any additional risk metadata the producing
+tool supplied.
 """
 
 from __future__ import annotations

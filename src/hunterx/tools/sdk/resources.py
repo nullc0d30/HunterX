@@ -3,9 +3,7 @@
 
 """Resource manager.
 
-Budgets platform-wide execution resources: CPU, memory, disk, network, threads,
-parallel jobs and queue depth. A shared semaphore caps concurrent executions;
-usage accounting tracks current utilization for telemetry.
+Budgets platform-wide execution resources: CPU, memory, disk, network, threads, parallel jobs and queue depth.
 """
 
 from __future__ import annotations
@@ -46,7 +44,7 @@ class ResourceManager:
 
         manager = ResourceManager(max_parallel_jobs=4, max_queue_size=100)
         with manager.acquire(context):
-            ...  # run the tool
+            ... # run the tool
     """
 
     def __init__(

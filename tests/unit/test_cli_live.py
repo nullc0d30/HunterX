@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the live mission console and artifact recording.
-
-Covers the command redaction guarantees (secrets must never reach the bus or
-the artifacts), the renderer's mapping of real lifecycle events to stderr
-lines, the recorder's ``events.jsonl``/``results.json``/``report.txt``
-artifacts, and the real ``BinaryRunner`` command-observer seam publishing
-redacted commands.
-"""
+"""Unit tests for the live mission console and artifact recording."""
 
 from __future__ import annotations
 

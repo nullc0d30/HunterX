@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target isolation tests (Sprint 034.3 §4 — release-blocking).
+"""Target isolation tests (4, release-blocking).
 
-TARGET-A and TARGET-B receive independent, fully populated records. The suite
-verifies that TARGET-A can never retrieve TARGET-B intelligence and vice versa
-through the repository layer and the application query services.
+TARGET-A and TARGET-B receive independent, fully populated records.
 """
 
 from __future__ import annotations

@@ -3,8 +3,8 @@
 
 """Golden tests for Adaptive Mission & Attack-Path Planning.
 
-Verifies deterministic behavior and replayability: identical inputs produce
-identical planning decisions, plan deltas and attack-path states.
+Verifies deterministic behavior and replayability: identical inputs produce identical planning decisions, plan
+deltas and attack-path states.
 """
 
 from __future__ import annotations

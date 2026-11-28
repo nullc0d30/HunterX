@@ -1,15 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — process-tree sampler.
+"""Resource governance, process-tree sampler.
 
-Samples the resident memory and CPU of the *entire HunterX process tree*
-(parent + children + grandchildren) plus the host memory pressure. On Linux the
-``/proc`` filesystem is walked to compute the exact process-tree RSS and CPU
-time; on platforms without ``/proc`` (e.g. a Windows developer machine) the
-sampler degrades to ``psutil`` when available and otherwise to a best-effort
-self-process reading. The governor never blocks on sampling: every read is
-guarded and bounded.
+Samples the resident memory and CPU of the *entire HunterX process tree* (parent + children + grandchildren) plus
+the host memory pressure.
 """
 
 from __future__ import annotations
@@ -186,7 +181,7 @@ class ProcessTreeSampler:
             import ctypes
             from ctypes import wintypes
 
-            class ProcessMemoryCounters(ctypes.Structure):  # noqa: N801  # ctypes ABI struct name
+            class ProcessMemoryCounters(ctypes.Structure):  # noqa: N801 # ctypes ABI struct name
                 _fields_ = [
                     ("cb", wintypes.DWORD),
                     ("PageFaultCount", wintypes.DWORD),

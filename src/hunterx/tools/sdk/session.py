@@ -3,9 +3,7 @@
 
 """Execution session.
 
-Tracks a single tool execution from start to finish. A session owns the
-execution context, result, artifacts and lifecycle, and provides thread-safe
-state transitions so concurrent monitors can safely observe it.
+Tracks a single tool execution from start to finish.
 """
 
 from __future__ import annotations
@@ -28,7 +26,7 @@ class ExecutionArtifact:
 
     Attributes:
         path: filesystem path to the artifact.
-        kind: artifact kind (file, screenshot, pcap, log, ...).
+        kind: artifact kind (file, screenshot, pcap, log,...).
         content_type: optional MIME type.
         size_bytes: artifact size in bytes.
 

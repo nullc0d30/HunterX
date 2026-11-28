@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the authorization intelligence capability.
-
-Each test maps to one acceptance criterion of Sprint 016: subjects modeled,
-roles/groups/permissions/scopes/claims modeled, policies modeled, resources and
-actions modeled, ownership and tenant boundaries modeled, RBAC/ABAC/ReBAC/ACL
-indicators detected, admin surfaces inventoried, function/object/field-level
-surfaces identified, frontend and backend authorization logic correlated, API
-authorization requirements correlated, GraphQL/WebSocket/service authorization
-represented, historical changes detected, deterministic comparison, no
-authorization exploitation, sensitive values protected, provenance on every
-finding, deterministic confidence, TIDB persistence, topology updates and
-query-service reporting.
-"""
+"""Acceptance tests for the authorization intelligence capability."""
 
 from __future__ import annotations
 

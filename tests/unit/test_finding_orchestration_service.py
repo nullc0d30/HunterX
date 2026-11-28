@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Sprint 028 vulnerability finding orchestration service."""
+"""Unit tests for the vulnerability finding orchestration service."""
 
 from __future__ import annotations
 

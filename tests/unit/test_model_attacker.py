@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Phase 7 autonomous model-driven attack loop domain."""
+"""Unit tests for the autonomous model-driven attack loop domain."""
 
 from __future__ import annotations
 

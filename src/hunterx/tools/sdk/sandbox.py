@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Execution sandbox.
-
-Isolates tool execution: permission enforcement, filesystem isolation via
-per-execution temporary directories, environment isolation (secret-safe env
-construction) and secret masking in captured output. The sandbox is the single
-place where execution security policies are applied.
-"""
+"""Execution sandbox."""
 
 from __future__ import annotations
 

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the Adaptive Mission & Attack-Path Planning layer.
-
-Validates that the planner cannot be tricked into scope bypass, safety bypass,
-authorization bypass, AI policy bypass or cross-mission leakage: excluded
-assets always win, AI can never override authorization, a forbidden AI
-proposal is rejected, attack paths never trigger execution, and missions are
-isolated from each other.
-"""
+"""Security tests for the Adaptive Mission & Attack-Path Planning layer."""
 
 from __future__ import annotations
 

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Genuine-exhaustion semantics for the autonomous attack loop.
-
-The loop may terminate as ``EXHAUSTED`` only when every applicable work source
-is genuinely empty: unexplored attack surfaces, pending capability tasks,
-pending verification, accepted-but-unexecuted hypotheses, model-generated
-paths and dynamic discovery. Model inactivity alone is not exhaustion, a
-finding is not exhaustion, and a fixed budget/cycle/token ceiling is
-``RESOURCE_LIMIT`` — never ``COMPLETE``.
-"""
+"""Genuine-exhaustion semantics for the autonomous attack loop."""
 
 from __future__ import annotations
 
@@ -41,7 +33,7 @@ def classify_completion(
     """Return the truthful completion reason for the loop.
 
     A resource ceiling or an unavailable model while work remains is never
-    reported as completion — it is ``RESOURCE_LIMIT`` / ``MODEL_UNAVAILABLE``.
+    reported as completion, it is ``RESOURCE_LIMIT`` / ``MODEL_UNAVAILABLE``.
     """
     if exhausted:
         return "exhausted"

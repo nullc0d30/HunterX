@@ -1,16 +1,14 @@
 {
   "capability": "offensive-tool-orchestration-and-full-mission-execution",
   "version": "1.0.0",
-  "sprint": 20,
-  "wave": 14,
-  "status": "ratified",
+  "status": "stable",
   "summary": "The orchestration layer that turns authorized security missions into complete adaptive execution graphs: mission lifecycle (created → scoping → planning → ready → running → paused → waiting → replanning → blocked → completed | partial | failed | cancelled), capability-driven planning, scope enforcement before every task, safety/execution policy enforcement before every task, tool selection and chaining, dependency-graph execution with sequential/parallel/conditional/fan-out/fan-in semantics, retry/fallback/dedup/rate-limit engines, checkpoints and resume, persistent target mission memory, adaptive replanning that never expands scope, correlation feedback, coverage and mission quality scoring, canonical mission events, TIDB persistence and knowledge-graph updates. Never executes unrestricted exploitation; every task passes scope, safety and rate-limit gates before execution.",
   "inputs": {
     "mission": "mission_id, mission_type, objective, scope (roots/includes/excludes), exclusions, authorization, priority, policies (execution/safety/tool/retry/rate-limit), target_set, analysis_version",
     "target_intelligence": [
       "discovered assets (hostnames, IPs, CIDRs, URLs)",
       "known technologies (product:version)",
-      "known services (http, https, dns, ...)",
+      "known services (http, https, dns,...)",
       "known endpoints (web, api, js, cloud)",
       "cloud providers and resources",
       "authentication/authorization surfaces",

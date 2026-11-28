@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 7 — toolchain readiness + arjun runtime repair regression tests.
-
-Proves:
-- profile-required tools (katana, nuclei) are provisioned when absent;
-- optional tools stay optional when not required by the selected profile;
-- the arjun adapter builds a valid command and reads its JSON report;
-- readiness does not report a broken arjun invocation as healthy.
+"""Toolchain readiness + arjun runtime repair regression tests.
 """
 
 from __future__ import annotations
@@ -212,10 +206,10 @@ class TestArjunCommand:
 
         assert argv[0] == "arjun"
         assert "-u" in argv
-        assert "-oJ" in argv
-        index = argv.index("-oJ")
+        assert "-o" in argv
+        index = argv.index("-o")
         json_arg = argv[index + 1]
-        # ``-oJ`` must carry a file argument (not the next flag) or arjun
+        # ``-o`` must carry a file argument (not the next flag) or arjun
         # exits with an argparse usage error.
         assert not json_arg.startswith("-")
         assert json_arg.endswith(".json")

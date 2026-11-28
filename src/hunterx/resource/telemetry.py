@@ -1,27 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — mission memory instrumentation.
+"""Resource governance, mission memory instrumentation.
 
 The real-runtime memory probe answers the question *where did the memory go*.
-It records, at the same instant:
-
-- the process RSS / VmRSS / VmHWM / VmPeak (``/proc/<pid>/status`` on Linux),
-- the process-tree RSS/CPU (the governor's own sampler),
-- the Python heap (``tracemalloc`` current/top, opt-in),
-- the mission aggregate: per-collection item counts AND approximate serialized
-  bytes (observations, hypotheses, decisions, findings, endpoints, parameters,
-  attack paths, trace, history, tool executions, negative evidence, coverage,
-  branches, baselines, runs),
-- the model attacker context (hypotheses, plans, learning context items/bytes,
-  prompt size, response size),
-- the assessment-queue depth,
-- and the :class:`ResourceGovernor`'s own measurement taken at the same time.
-
-The probe is designed to be cheap: per-item serialized-size measurement is
-capped per item, and the whole snapshot is produced only when requested (the
-mission runner requests it at a throttled interval). Output is appended as
-JSON-lines to a file configured via ``HUNTERX_RESOURCE_TELEMETRY_FILE``.
 """
 
 from __future__ import annotations

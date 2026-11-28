@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the web crawling capability.
-
-Exercises the full wiring through the assembled platform: the crawl service
-and query service registered in the container, the crawling tools (crawler,
-katana) available on the execution engine and TIP, and an end-to-end crawl run
-over a scripted page map with persisted web intelligence and topology
-integration.
-"""
+"""Integration tests for the web crawling capability."""
 
 from __future__ import annotations
 

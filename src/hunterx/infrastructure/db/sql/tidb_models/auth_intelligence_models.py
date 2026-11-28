@@ -3,10 +3,7 @@
 
 """ORM models for TIDB authentication-intelligence entities.
 
-Mirrors ``hunterx.domain.entities.tidb.auth_intelligence`` one-to-one. Every
-model carries the shared TIDB envelope via :class:`TidbModelMixin` plus the
-canonical authentication-inventory columns. No model stores raw credentials,
-token values or session-cookie values — only metadata and masked indicators.
+Mirrors ``hunterx.domain.entities.tidb.auth_intelligence`` one-to-one.
 """
 
 from __future__ import annotations

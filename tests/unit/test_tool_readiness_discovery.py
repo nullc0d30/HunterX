@@ -3,8 +3,8 @@
 
 """Unit tests for tool discovery (readiness probing).
 
-Covers available executable, missing executable, broken executable and version
-detection, including the wrong-binary false-positive guard.
+Covers available executable, missing executable, broken executable and version detection, including the wrong-binary
+false-positive guard.
 """
 
 from __future__ import annotations
@@ -128,7 +128,7 @@ class TestBrokenExecutable:
         # A same-named binary whose version probe output does not match the
         # declared pattern (e.g. the Python 'httpx' package vs ProjectDiscovery
         # httpx) must NEVER be AVAILABLE. When a competing provider exists it
-        # is SHADOWED; without a competitor it is BROKEN — both are honest
+        # is SHADOWED; without a competitor it is BROKEN, both are honest
         # "the resolved executable is not the expected tool" verdicts.
         fake_executable(binaries, "httpx", "Usage: httpx [OPTIONS] URL")
         tip = tip_with(["httpx"])

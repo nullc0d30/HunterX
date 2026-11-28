@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Attack-vector selection.
-
-Phase 2. Maps a discovered surface to the attack vectors that actually apply:
-a query parameter selects QUERY, a header selects HEADERS, a JSON field selects
-JSON/API_BODY, a form field selects FORM, an upload selects MULTIPART, a GraphQL
-operation selects GRAPHQL, an object identifier selects OBJECT_IDENTIFIER, a
-workflow selects WORKFLOW_STATE, and so on. Only applicable vectors are
-scheduled — never every vector against every surface.
-"""
+"""Attack-vector selection."""
 
 from __future__ import annotations
 
@@ -19,7 +11,7 @@ from hunterx.domain.adaptive_attack.enums import AttackVector
 from hunterx.domain.attack_surface.enums import AuthContextState, SurfaceKind
 from hunterx.domain.attack_surface.models import SurfaceNode
 
-#: Surface-kind string → applicable vectors (default rules). Kinds are strings
+# : Surface-kind string to applicable vectors (default rules). Kinds are strings
 #: so adapters can register new mappings without core changes.
 _DEFAULT_MAPPING: dict[str, tuple[AttackVector, ...]] = {
     SurfaceKind.PARAMETER.value: (AttackVector.QUERY,),
@@ -57,7 +49,7 @@ class VectorSelector:
     """Selects the applicable attack vectors for a discovered surface.
 
     Args:
-        extra_mapping: kind string → extra vectors merged over the defaults.
+        extra_mapping: kind string to extra vectors merged over the defaults.
 
     """
 

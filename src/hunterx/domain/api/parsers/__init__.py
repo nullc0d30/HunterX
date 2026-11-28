@@ -3,10 +3,8 @@
 
 """In-process API specification parsers.
 
-Parse OpenAPI 2/3/3.1, GraphQL SDL, WebSocket, WSDL/SOAP and Postman
-collections into canonical API intelligence observations. All parsing is
-in-process and deterministic: YAML via ``pyyaml``, XML via ``xml.etree``, no
-subprocess and no new parser dependency.
+Parse OpenAPI 2/3/3.1, GraphQL SDL, WebSocket, WSDL/SOAP and Postman collections into canonical API intelligence
+observations.
 """
 
 from __future__ import annotations

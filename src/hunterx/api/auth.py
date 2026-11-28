@@ -3,19 +3,8 @@
 
 """Optional REST API authentication and coarse role enforcement.
 
-The REST API is an *opt-in* control plane: by default it binds to loopback and
-trusts the local operator (no authentication). When ``HUNTERX_API_AUTH_ENABLED``
-(``Settings.api.auth_enabled``) is set or an ``api_key`` is configured, every
-request must present a valid ``X-API-Key`` header.
-
-Roles:
-
-- ``admin``: full access (the configured ``api_key``).
-- ``readonly``: the optional ``read_only_key``; may only issue safe ``GET``,
-  ``HEAD`` and ``OPTIONS`` requests. Write requests are refused with ``403``.
-
-This is authentication + coarse authorization. Fine-grained per-object RBAC is
-not enforced here; see the certification document for the residual risk.
+The REST API is an *opt-in* control plane: by default it binds to loopback and trusts the local operator (no
+authentication).
 """
 
 from __future__ import annotations

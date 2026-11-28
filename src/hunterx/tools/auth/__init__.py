@@ -3,8 +3,7 @@
 
 """Authentication intelligence tool adapters.
 
-The authentication intelligence capability ships a single in-process analyzer
-adapter. Importing this package exposes the adapter, base and registry helpers.
+The authentication intelligence capability ships a single in-process analyzer adapter.
 """
 
 from __future__ import annotations

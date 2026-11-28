@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Duplicate control tests (Sprint 034.3 §12).
+"""Duplicate control tests (12).
 
-Canonical uniqueness: assets, URLs, services, observations, findings,
-evidence fingerprints and tool executions. The same observation from Nmap,
-Naabu and Masscan must remain separately attributable while resolving into
-canonical target intelligence.
+Canonical uniqueness: assets, URLs, services, observations, findings, evidence fingerprints and tool executions.
 """
 
 from __future__ import annotations

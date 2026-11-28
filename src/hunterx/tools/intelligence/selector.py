@@ -1,21 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Selector (Sprint 023).
+"""Tool Selector.
 
-The ToolSelector extends the classic :class:`ToolSelectionEngine` with the
-Sprint 023 knowledge contracts. Where the classic engine returns a bare score,
-the selector produces a full :class:`ToolSelection` that captures *why* a tool
-was chosen — required inputs, expected outputs, expected evidence, proof
-capability, confidence ceiling, safety class and estimated cost.
-
-Invariants enforced here:
-
-- A tool whose ``safety_class`` exceeds the authorization ceiling is never
-  selected.
-- A tool is never selected for a vulnerability class it cannot evidence.
-- ``expected_evidence`` and ``confidence_ceiling`` come from the tool's
-  evidence mappings / confidence ceiling, never from raw output.
+The ToolSelector extends the classic :class:`ToolSelectionEngine` with the knowledge contracts.
 """
 
 from __future__ import annotations
@@ -36,7 +24,7 @@ from hunterx.tools.intelligence.selection import ToolSelectionEngine
 
 
 class ToolSelector:
-    """Sprint 023 selection: ranked, safety-aware :class:`ToolSelection`.
+    """Tool selection: ranked, safety-aware :class:`ToolSelection`.
 
     Usage::
 

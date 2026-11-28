@@ -1,19 +1,4 @@
-"""offensive orchestration tables
-
-Revision ID: c7d3e9f1a4b8
-Revises: a1b2c3d4e5f6
-Create Date: 2026-08-10
-
-Extends the TIDB schema with the Wave 14 offensive tool orchestration
-canonical inventory: execution plans, phases and steps, tool selections,
-execution dependencies, execution checkpoints, gate policy decisions, replan
-events, coverage metrics, mission quality scores, classified mission failures
-and per-step task history.
-
-Security boundary: every table stores orchestration metadata, canonical
-targets, tool selections and redacted evidence references only - never exploit
-payloads, never credentials and never out-of-scope request material.
-"""
+"""offensive orchestration tables Revision ID: c7d3e9f1a4b8 Revises: a1b2c3d4e5f6 Create Date: 2026-08-10."""
 from collections.abc import Sequence
 
 import sqlalchemy as sa

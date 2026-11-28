@@ -3,9 +3,7 @@
 
 """Cloud & SaaS intelligence TIDB ORM models.
 
-Mirrors ``hunterx.domain.entities.tidb.cloud_intelligence`` one-to-one. Every
-table stores metadata and masked indicators only — never cloud credentials,
-access keys, secret values, tokens or private keys.
+Mirrors ``hunterx.domain.entities.tidb.cloud_intelligence`` one-to-one.
 """
 
 from __future__ import annotations

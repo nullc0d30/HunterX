@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden scenarios for the Sprint 028 finding validation & proof orchestration.
-
-Each scenario is a controlled fixture describing the initial observation, the
-collected evidence, the validation strategy family, the expected evidence
-sufficiency, the expected confidence level and the expected final finding
-state. The golden test drives the deterministic domain engines and asserts the
-outcome — proving that detection never equals a validated finding and that
-evidence quality (not tool count) drives the lifecycle.
-"""
+"""Golden scenarios for the finding validation & proof orchestration."""
 
 from __future__ import annotations
 
@@ -206,7 +198,7 @@ def test_golden_scenario_conflict_duplicate_unknown(scenario: dict[str, object])
 
 
 def test_required_vulnerability_classes_covered() -> None:
-    """Every required Sprint 028 class must appear in the golden dataset."""
+    """Every required class must appear in the golden dataset."""
     required = {
         "sql_injection",
         "xss",

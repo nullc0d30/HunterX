@@ -3,18 +3,8 @@
 
 """Execution graph builder.
 
-Turns a :class:`~hunterx.domain.mission_planning.MissionPlan` into a directed
-acyclic graph (:class:`~hunterx.domain.mission_planning.ExecutionGraph`) of
-execution nodes. Nodes model steps; edges encode intra-phase sequencing and
-cross-phase dependencies. The builder also applies graph configuration:
-conditional nodes, fallback edges (rollback/recovery) and retryable flags.
-
-Supported graph configuration (under ``plan.config["graph"]``):
-
-- ``conditions``: ``{phase_id: expression}`` marks a phase's nodes conditional.
-- ``fallbacks``: ``{phase_id: fallback_phase_id}`` routes the last node of a
-  phase to the first node of a fallback phase on failure.
-- ``retryable``: ``[phase_id | action, ...]`` marks matching nodes retryable.
+Turns a :class:`~hunterx.domain.mission_planning.MissionPlan` into a directed acyclic graph
+(:class:`~hunterx.domain.mission_planning.ExecutionGraph`) of execution nodes.
 """
 
 from __future__ import annotations

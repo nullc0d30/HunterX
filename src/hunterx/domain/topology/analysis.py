@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology analyzer.
-
-Deterministic analysis over the correlated graph: asset clusters, shared
-infrastructure, network/service concentration, density, orphan/dangling/
-unresolved/stale assets and connected components. Analysis output feeds
-reporting and the SHARES_* relationships in the graph.
-"""
+"""Topology analyzer."""
 
 from __future__ import annotations
 

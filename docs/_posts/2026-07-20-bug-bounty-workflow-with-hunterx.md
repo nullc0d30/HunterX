@@ -27,8 +27,8 @@ Bug bounty hunting requires a careful balance between coverage and safety. Hunte
 
 ```
 Max Requests: 500
-Rate Limit:   10 req/s
-Destructive:  false
+Rate Limit: 10 req/s
+Destructive: false
 ```
 
 This profile ensures you stay within program limits while maximizing coverage.

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology path & relationship queries.
-
-Safe, read-only graph navigation over the correlated topology: neighbors,
-ancestors, descendants, shortest relationship paths, related assets and shared
-infrastructure. These are infrastructure-intelligence queries only — no
-exploitation, no state mutation.
-"""
+"""Topology path & relationship queries."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Architecture — HunterX v6.0.0
+title: Architecture - HunterX v6.0.0
 keywords: HunterX Architecture, System Design, Components, Modules
 description: >-
   Detailed architecture of HunterX v6.0.0, including core components, data flow, and modular design.

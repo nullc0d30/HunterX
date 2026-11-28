@@ -3,10 +3,7 @@
 
 """Tool Integration Factory.
 
-Generates standardized Tool Integration Packs for future security tools using
-one unified development standard. The factory composes generators, integration
-templates, a validator, compatibility checks and versioning; every generated
-pack follows the exact same layout and engineering standards.
+Generates standardized Tool Integration Packs for future security tools using one unified development standard.
 """
 
 from __future__ import annotations

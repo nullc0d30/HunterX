@@ -3,13 +3,7 @@
 
 """GraphQL testing tool adapters.
 
-Integrates ``graphqlmap`` and ``inql`` — the GraphQL introspection and testing
-tools — into the Tool Integration SDK. External binaries run through the shared
-runner seam and emit canonical API observations under the pipeline ``apis``
-payload with a ``type`` discriminator.
-
-Introspection results are observations; they never constitute a finding on
-their own.
+Integrates ``graphqlmap`` and ``inql``, the GraphQL introspection and testing tools, into the Tool Integration SDK.
 """
 
 from __future__ import annotations
@@ -98,7 +92,7 @@ class GraphQLBinaryAdapter(ToolAdapter, abc.ABC):
 
 
 class GraphQLmapAdapter(GraphQLBinaryAdapter):
-    """SDK adapter for ``graphqlmap`` — GraphQL attack surface testing."""
+    """SDK adapter for ``graphqlmap``, GraphQL attack surface testing."""
 
     descriptor = ToolDescriptor(
         name="graphqlmap",
@@ -143,7 +137,7 @@ class GraphQLmapAdapter(GraphQLBinaryAdapter):
 
 
 class InQLAdapter(GraphQLBinaryAdapter):
-    """SDK adapter for ``inql`` — GraphQL introspection schema generation."""
+    """SDK adapter for ``inql``, GraphQL introspection schema generation."""
 
     descriptor = ToolDescriptor(
         name="inql",

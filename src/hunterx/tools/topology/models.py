@@ -3,10 +3,7 @@
 
 """Route observation models for topology tools.
 
-Canonical hop-level observations produced by route-mapping tools (traceroute,
-tracepath, mtr). A :class:`RouteRecord` describes one hop of a route; the
-topology service translates consecutive hops into ``routes_to`` relationships
-between IP nodes.
+Canonical hop-level observations produced by route-mapping tools (traceroute, tracepath, mtr).
 """
 
 from __future__ import annotations
@@ -92,8 +89,8 @@ def routes_to_observations(
 ) -> list[Any]:
     """Convert consecutive route hops into ``routes_to`` observations.
 
-    For a route ``[h1, h2, ..., hn, target]`` the emitted directed edges are
-    ``h1 → h2 → ... → hn → target`` (unreachable asterisk hops are skipped).
+    For a route ``[h1, h2,..., hn, target]`` the emitted directed edges are
+    ``h1 to h2 to... to hn to target`` (unreachable asterisk hops are skipped).
     Returned observations are :class:`RelationshipObservation` instances ready
     for the topology correlator.
     """

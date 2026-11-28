@@ -3,10 +3,7 @@
 
 """Content discovery tool adapter registry.
 
-Builds and registers the content discovery adapters (ffuf) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the content tool set, so callers (tests, the arsenal orchestrator,
-the platform) never construct individual adapters.
+Builds and registers the content discovery adapters (ffuf) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

@@ -3,10 +3,7 @@
 
 """Telemetry adapters.
 
-Collects metrics, traces and logs through the
-:class:`~hunterx.domain.ports.services.TelemetryPort` contract. The default
-adapter keeps everything in memory and hands values to a sink function; export
-adapters (Prometheus, OTLP) arrive in future sprints.
+Collects metrics, traces and logs through the :class:`~hunterx.domain.ports.services.TelemetryPort` contract.
 """
 
 from __future__ import annotations

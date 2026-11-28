@@ -3,14 +3,12 @@
 
 """Sandbox adapters.
 
-The sandbox isolates untrusted plugin/tool code. The default implementation
-uses ``subprocess`` with a fresh interpreter and enforced timeout; real
-deployments replace it with OS-level isolation (containers, gVisor, ...).
+The sandbox isolates untrusted plugin/tool code.
 """
 
 from __future__ import annotations
 
-import subprocess  # nosec B404  # sandbox isolates untrusted code via subprocess
+import subprocess  # nosec B404 # sandbox isolates untrusted code via subprocess
 import sys
 from typing import Any
 
@@ -39,7 +37,7 @@ class SubprocessSandbox(SandboxPort):
             preamble += f"import {module}\n"
         script = preamble + code
         try:
-            result = subprocess.run(  # nosec B603  # runs only the caller's own code
+            result = subprocess.run(  # nosec B603 # runs only the caller's own code
                 [sys.executable, "-c", script],
                 capture_output=True,
                 text=True,

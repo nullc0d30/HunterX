@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Security Skills Framework (SSF) — HunterX v6.0.0
+title: Security Skills Framework (SSF) - HunterX v6.0.0
 description: >-
   Security Skills Framework (SSF) for HunterX v6.0.0 vulnerability scanner.
   41 built-in security skills for web, API, cloud, and infrastructure
@@ -11,7 +11,7 @@ permalink: /security-skills-framework/
 
 ## Security Skills Framework (SSF)
 
-> HunterX v6.0.0 — Architecture, Components, and SDK
+> HunterX v6.0.0 - Architecture, Components, and SDK
 
 ---
 
@@ -37,13 +37,13 @@ permalink: /security-skills-framework/
 4. [Built-in Default Skills](#built-in-default-skills)
 5. [CLI Reference](#cli-reference)
 6. [REST API Reference](#rest-api-reference)
-7. [SDK — Creating a Custom Skill](#sdk--creating-a-custom-skill)
+7. [SDK - Creating a Custom Skill](#sdk--creating-a-custom-skill)
 
 ---
 
 ## Overview
 
-The Security Skills Framework (SSF) is the modular skill execution engine powering HunterX v6.0.0. All components are implemented under `core/skills/`. The framework provides a pluggable architecture for security assessment capabilities — from reconnaissance and analysis to exploitation and reporting — governed by a safety policy system, telemetry, caching, and a full lifecycle management layer.
+The Security Skills Framework (SSF) is the modular skill execution engine powering HunterX v6.0.0. All components are implemented under `core/skills/`. The framework provides a pluggable architecture for security assessment capabilities - from reconnaissance and analysis to exploitation and reporting - governed by a safety policy system, telemetry, caching, and a full lifecycle management layer.
 
 ---
 
@@ -72,7 +72,7 @@ core/skills/
 
 ## Core Components
 
-### 1. `base.py` — SecuritySkill
+### 1. `base.py` - SecuritySkill
 
 **Abstract class** that every skill must implement.
 
@@ -105,7 +105,7 @@ core/skills/
 
 ---
 
-### 2. `registry.py` — SkillRegistry
+### 2. `registry.py` - SkillRegistry
 
 **Singleton** that maintains the global catalog of registered skills.
 
@@ -125,7 +125,7 @@ core/skills/
 
 ---
 
-### 3. `loader.py` — SkillLoader
+### 3. `loader.py` - SkillLoader
 
 Discovers and loads skill definitions from disk.
 
@@ -137,16 +137,16 @@ Discovers and loads skill definitions from disk.
 
 ---
 
-### 4. `metadata.py` — SkillMetadata
+### 4. `metadata.py` - SkillMetadata
 
 Data model describing a skill's identity, constraints, and security posture.
 
 | Field | Type / Values |
 |---|---|
-| `skill_id` | `str` — unique identifier |
-| `name` | `str` — human-readable name |
-| `description` | `str` — detailed description |
-| `version` | `str` — semver |
+| `skill_id` | `str` - unique identifier |
+| `name` | `str` - human-readable name |
+| `description` | `str` - detailed description |
+| `version` | `str` - semver |
 | `author` | `str` |
 | `license` | `str` |
 | `tags` | `list[str]` |
@@ -155,15 +155,15 @@ Data model describing a skill's identity, constraints, and security posture.
 | `supported_protocols` | `list[str]` |
 | `supported_technologies` | `list[str]` |
 | `supported_languages` | `list[str]` |
-| `risk_level` | `RiskLevel` — `NONE`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |
-| `noise_level` | `NoiseLevel` — `SILENT`, `LOW`, `MEDIUM`, `HIGH`, `AGGRESSIVE` |
+| `risk_level` | `RiskLevel` - `NONE`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |
+| `noise_level` | `NoiseLevel` - `SILENT`, `LOW`, `MEDIUM`, `HIGH`, `AGGRESSIVE` |
 | `safety_policy` | `str` or policy reference |
 | `dependencies` | `list[str]` |
-| `mitre_techniques` | `list[str]` — MITRE ATT&CK technique IDs |
-| `owasp_categories` | `list[str]` — OWASP Top 10 / ASVS categories |
-| `cwe_ids` | `list[str]` — CWE identifiers |
-| `capec_ids` | `list[str]` — CAPEC identifiers |
-| `cvss_reference` | `str` — CVSS vector or reference |
+| `mitre_techniques` | `list[str]` - MITRE ATT&CK technique IDs |
+| `owasp_categories` | `list[str]` - OWASP Top 10 / ASVS categories |
+| `cwe_ids` | `list[str]` - CWE identifiers |
+| `capec_ids` | `list[str]` - CAPEC identifiers |
+| `cvss_reference` | `str` - CVSS vector or reference |
 | `required_permissions` | `list[str]` |
 | `expected_artifacts` | `list[str]` |
 | `timeout_seconds` | `int` |
@@ -174,7 +174,7 @@ Data model describing a skill's identity, constraints, and security posture.
 
 ---
 
-### 5. `capability.py` — SkillCapability
+### 5. `capability.py` - SkillCapability
 
 Enumeration of **45 capability values** organized into categories.
 
@@ -197,7 +197,7 @@ Enumeration of **45 capability values** organized into categories.
 
 ---
 
-### 6. `executor.py` — SkillExecutor
+### 6. `executor.py` - SkillExecutor
 
 Central execution engine responsible for running skills with caching, telemetry, and concurrency controls.
 
@@ -213,7 +213,7 @@ Central execution engine responsible for running skills with caching, telemetry,
 
 ---
 
-### 7. `planner.py` — SkillPlanner
+### 7. `planner.py` - SkillPlanner
 
 Recommends and sequences skills based on goals or objectives.
 
@@ -226,7 +226,7 @@ Uses a **keyword-to-capability mapping** to match natural-language objectives to
 
 ---
 
-### 8. `validator.py` — SkillValidator
+### 8. `validator.py` - SkillValidator
 
 Multi-layered validation for targets, policies, results, evidence, and safety.
 
@@ -236,11 +236,11 @@ Multi-layered validation for targets, policies, results, evidence, and safety.
 | `validate_policy(skill, policy)` | Checks whether a skill complies with the active safety policy |
 | `validate_result(result, schema)` | Validates that a result matches the expected schema |
 | `validate_evidence(result, min_confidence)` | Checks whether evidence meets the minimum confidence threshold |
-| `validate_safety(skill, policy, target)` | Comprehensive safety check combining target, policy, and skill validation |
+| `validate_safety(skill, policy, target)` | complete safety check combining target, policy, and skill validation |
 
 ---
 
-### 9. `context.py` — SkillContext
+### 9. `context.py` - SkillContext
 
 Rich runtime context provided to every skill during execution.
 
@@ -259,7 +259,7 @@ Rich runtime context provided to every skill during execution.
 
 ---
 
-### 10. `result.py` — SkillResult
+### 10. `result.py` - SkillResult
 
 Standardized output model for all skill executions.
 
@@ -271,20 +271,20 @@ Standardized output model for all skill executions.
 | `summary` | `str` |
 | `details` | `str` or structured data |
 | `evidence` | `list[dict]` |
-| `artifacts` | `list[str]` — file paths or references |
-| `purple_team_rules` | `dict` — detection rules for purple team exercises |
-| `mitre_mappings` | `list[str]` — MITRE ATT&CK technique IDs |
-| `cwe_mappings` | `list[str]` — CWE identifiers |
-| `capec_mappings` | `list[str]` — CAPEC identifiers |
+| `artifacts` | `list[str]` - file paths or references |
+| `purple_team_rules` | `dict` - detection rules for purple team exercises |
+| `mitre_mappings` | `list[str]` - MITRE ATT&CK technique IDs |
+| `cwe_mappings` | `list[str]` - CWE identifiers |
+| `capec_mappings` | `list[str]` - CAPEC identifiers |
 | `risk_score` | `float` |
-| `severity` | `str` — severity label |
-| `duration_ms` | `int` — execution time in milliseconds |
-| `error` | `str` or `None` — error message if status is ERROR |
-| `metadata` | `dict` — additional metadata |
+| `severity` | `str` - severity label |
+| `duration_ms` | `int` - execution time in milliseconds |
+| `error` | `str` or `None` - error message if status is ERROR |
+| `metadata` | `dict` - additional metadata |
 
 ---
 
-### 11. `policy.py` — SkillPolicy & SafetyLevel
+### 11. `policy.py` - SkillPolicy & SafetyLevel
 
 Five safety levels governing skill behavior and constraints.
 
@@ -292,11 +292,11 @@ Five safety levels governing skill behavior and constraints.
 
 | Level | Description |
 |---|---|
-| `SAFE` | Maximum safety — no destructive actions, strict evidence requirements |
-| `BALANCED` | Moderate — allows low-risk destructive actions |
-| `AGGRESSIVE` | Permissive — allows medium-risk actions |
-| `RESEARCH` | Highly permissive — allows high/critical risk actions with minimal constraints |
-| `PARANOID` | Extreme caution — maximum restrictions, everything requires explicit approval |
+| `SAFE` | Maximum safety - no destructive actions, strict evidence requirements |
+| `BALANCED` | Moderate - allows low-risk destructive actions |
+| `AGGRESSIVE` | Permissive - allows medium-risk actions |
+| `RESEARCH` | Highly permissive - allows high/critical risk actions with minimal constraints |
+| `PARANOID` | Extreme caution - maximum restrictions, everything requires explicit approval |
 
 #### Per-Level Configuration
 
@@ -315,7 +315,7 @@ Each level defines:
 
 ---
 
-### 12. `cache.py` — SkillCache
+### 12. `cache.py` - SkillCache
 
 Result cache to avoid redundant skill executions.
 
@@ -323,12 +323,12 @@ Result cache to avoid redundant skill executions.
 |---|---|
 | **Key derivation** | SHA256 of skill ID + serialized parameters + target identifier |
 | **TTL** | 300 seconds (default) |
-| **Eviction** | LRU — maximum 1000 entries |
+| **Eviction** | LRU - maximum 1000 entries |
 | **Tracking** | Hit/miss counters |
 
 ---
 
-### 13. `telemetry.py` — SkillTelemetry
+### 13. `telemetry.py` - SkillTelemetry
 
 Tracks per-skill execution statistics.
 
@@ -351,7 +351,7 @@ Tracks per-skill execution statistics.
 
 ---
 
-### 14. `marketplace.py` — SkillMarketplace
+### 14. `marketplace.py` - SkillMarketplace
 
 Manages the lifecycle of skill packages (install, uninstall, verify, export).
 
@@ -453,7 +453,7 @@ All skill management commands are under the `hunterx skills` namespace.
 
 ---
 
-## SDK — Creating a Custom Skill
+## SDK - Creating a Custom Skill
 
 Skills are implemented by subclassing `SecuritySkill` and implementing the required abstract methods. Below is a minimal template.
 
@@ -486,8 +486,8 @@ class MySkill(SecuritySkill):
 
 ### Key points
 
-- **`metadata` property** — must return a fully populated `SkillMetadata` instance.
-- **`capabilities` property** — must return a list of `SkillCapability` values the skill provides.
-- **`execute` method** — receives a `SkillContext` and optional parameters; returns a `SkillResult`.
+- **`metadata` property** - must return a fully populated `SkillMetadata` instance.
+- **`capabilities` property** - must return a list of `SkillCapability` values the skill provides.
+- **`execute` method** - receives a `SkillContext` and optional parameters; returns a `SkillResult`.
 - Helper methods (`_success`, `_fail`, `_error`) on `SecuritySkill` simplify result construction.
 - Skills can override `initialize`, `validate`, `verify`, `cleanup`, and other lifecycle methods as needed.

@@ -1,14 +1,7 @@
-"""autonomous mission orchestration tables
-
-Sprint 032. Creates the normalized Autonomous Mission Orchestration entities:
-orchestrated missions, runs, phases, actions, decisions, hypotheses, branches,
-checkpoints, policies, objectives, coverage cells, timeline entries,
-observations, negative evidence, baselines, reasoning-trace entries, telemetry
+"""autonomous mission orchestration tables Creates the normalized Autonomous Mission Orchestration entities:
+orchestrated missions, runs, phases, actions, decisions, hypotheses, branches, checkpoints, policies, objectives,
+coverage cells, timeline entries, observations, negative evidence, baselines, reasoning-trace entries, telemetry
 snapshots and impact analyses.
-
-Revision ID: a3f5b7c9d1e3
-Revises: fc52d0b58c3f
-Create Date: 2026-08-10 14:00:00.000000
 
 """
 from collections.abc import Sequence

@@ -3,12 +3,7 @@
 
 """Base adapter for API intelligence tools.
 
-Every API intelligence adapter implements the SDK :class:`ToolAdapter`
-lifecycle and shares this base. Adapters serialize canonical API observations
-into the pipeline's JSON payload under the ``apis`` key, each entry carrying a
-``type`` discriminator so :func:`~hunterx.domain.api.models.observations_from_payload`
-can rebuild typed records. The base provides provenance helpers so adapters
-stay focused on their tool-specific discovery logic.
+Every API intelligence adapter implements the SDK :class:`ToolAdapter` lifecycle and shares this base.
 """
 
 from __future__ import annotations

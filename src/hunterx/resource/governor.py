@@ -3,33 +3,11 @@
 
 """Mission Resource Governor.
 
-The single authoritative resource-governance layer for a HunterX mission. It
-manages the resource envelope of the ENTIRE mission process tree (HunterX
-process + child tools + grandchildren + external binaries) across RAM budget,
-CPU/concurrency budget, execution budget, tool concurrency, probe concurrency,
-model-call concurrency, queue limits, evidence/context limits and graceful
-degradation.
-
-Design rules:
-
-- The absolute HunterX RAM ceiling is 3 GB by default and is an upper safety
-  ceiling, never a default allocation. The effective mission budget is derived
-  from the runtime environment (bare-metal/VM/WSL/container via
-  :mod:`hunterx.resource.detect`).
-- The governor evaluates a :class:`~hunterx.resource.state.ResourceState`
-  (NORMAL / CONSTRAINED / DEGRADED / CRITICAL / EMERGENCY) from the live
-  process-tree RSS and host pressure, and adapts concurrency/admission.
-- Every external tool execution, probe, model call and assessment scheduling
-  passes through the governor for admission control.
-- On EMERGENCY the governor stops new work, terminates the registered process
-  tree gracefully, and the mission runner persists state and marks the mission
-  degraded with a structured resource reason.
-- Telemetry logs are throttled (``[RESOURCE] ...``) so stdout is never flooded.
+The single authoritative resource-governance layer for a HunterX mission.
 """
 
 from __future__ import annotations
 
-import psutil
 import contextlib
 import logging
 import os
@@ -38,6 +16,8 @@ import threading
 import time
 from dataclasses import dataclass
 from typing import Any
+
+import psutil
 
 from hunterx.resource.admission import Admission
 from hunterx.resource.config import ResourceConfig, ResourceMetrics
@@ -266,16 +246,7 @@ class ResourceGovernor:
     def evaluate(self) -> ResourceState:
         """Evaluate the live resource state of the process tree and host.
 
-        State transitions (see :class:`ResourceState` for behaviour):
-
-        - EMERGENCY: process-tree RSS >= effective ceiling, or host memory
-          pressure >= ``system_emergency_ratio``.
-        - CRITICAL: pressure >= ``memory_hard_ratio`` (or host pressure 0.90).
-        - DEGRADED: pressure >= ``memory_high_ratio`` (or host pressure 0.85).
-        - CONSTRAINED: pressure >= ``memory_soft_ratio``.
-        - otherwise NORMAL.
-
-        Thresholds are configuration-driven (``ResourceConfig``).
+        State transitions (see :class:`ResourceState` for behaviour).
         """
         sample = self.snapshot()
         with self._lock:
@@ -366,8 +337,8 @@ class ResourceGovernor:
     def suggested_concurrency(self, base: int) -> int:
         """Return the bounded concurrency suggested by the current resource state.
 
-        NORMAL → ``base``; CONSTRAINED → ~60%; DEGRADED → ~35%; CRITICAL → 1;
-        EMERGENCY → 0 (no new work).
+        NORMAL to ``base``; CONSTRAINED to ~60%; DEGRADED to ~35%; CRITICAL to 1;
+        EMERGENCY to 0 (no new work).
         """
         if base <= 0:
             return 0
@@ -578,16 +549,16 @@ class ResourceGovernor:
 
     def _terminate_one(self, process: Any, *, grace_s: float) -> bool:
         pid = getattr(process, "pid", None)
-        if pid is None or _process_alive(process) is False:
+        if pid is None or self._process_alive(process) is False:
             return False
         try:
             _signal_process_group(pid, signal.SIGTERM)
             deadline = time.monotonic() + grace_s
             while time.monotonic() < deadline:
-                if _process_alive(process) is False:
+                if self._process_alive(process) is False:
                     return True
                 time.sleep(0.05)
-            if _process_alive(process) is False:
+            if self._process_alive(process) is False:
                 return True
             _signal_process_group(pid, signal.SIGKILL)
             return True
@@ -654,6 +625,7 @@ class ResourceGovernor:
         }
 
 
+    @staticmethod
     def _process_alive(process: Any) -> bool | None:
         poll = getattr(process, "poll", None)
         if callable(poll):
@@ -671,32 +643,14 @@ def _signal_process_group(pid: int, sig: int) -> None:
             parent = psutil.Process(pid)
             children = parent.children(recursive=True)
             for child in children:
-                try:
+                with contextlib.suppress(psutil.NoSuchProcess):
                     child.terminate()
-                except psutil.NoSuchProcess:
-                    pass
             # Wait briefly for graceful termination
             gone, alive = psutil.wait_procs([parent] + children, timeout=0.5)
             # Force kill remaining processes
             for p in alive:
-                try:
+                with contextlib.suppress(psutil.NoSuchProcess):
                     p.kill()
-                except psutil.NoSuchProcess:
-                    pass
-        except (psutil.NoSuchProcess, psutil.AccessDenied, OSError):
-            # Fallback: do nothing, process may already be dead or inaccessible
-            pass
-        return
-    os.killpg(os.getpgid(pid), sig)  # type: ignore[attr-defined]
-                pass
-            # Wait briefly for graceful termination
-            gone, alive = psutil.wait_procs([parent] + children, timeout=0.5)
-            # Force kill remaining processes
-            for p in alive:
-                try:
-                    p.kill()
-                except psutil.NoSuchProcess:
-                    pass
         except (psutil.NoSuchProcess, psutil.AccessDenied, OSError):
             # Fallback: do nothing, process may already be dead or inaccessible
             pass

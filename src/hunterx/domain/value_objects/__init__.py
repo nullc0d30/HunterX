@@ -3,8 +3,7 @@
 
 """Value objects.
 
-Value objects are immutable, interchangeable domain primitives identified by
-their value rather than their identity.
+Value objects are immutable, interchangeable domain primitives identified by their value rather than their identity.
 """
 
 from __future__ import annotations

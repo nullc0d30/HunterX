@@ -3,10 +3,7 @@
 
 """Tool fallback selection.
 
-Selects a capability-equivalent fallback tool when the primary tool is
-unavailable or failed. Fallbacks preserve the input contract (capability +
-target type), the output contract (same capability semantics) and the mission
-tool policy.
+Selects a capability-equivalent fallback tool when the primary tool is unavailable or failed.
 """
 
 from __future__ import annotations

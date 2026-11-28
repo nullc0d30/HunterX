@@ -1,22 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 7 — autonomous model-driven attack loop acceptance.
-
-Validates the Phase 7 contract end to end: the connected model participates in
-the real execution loop (reason → hypothesis → real assessment task → real
-engine → observation → verification → finding → learn → new hypotheses) and
-continues after findings until genuine exhaustion.
-
-    1. a generic vulnerable fixture yields multiple findings with the model
-       continuously re-entering the loop (Finding A → continue → Finding B →
-       continue → exhaustion),
-    2. the telemetry invariant holds: ``validated_findings > 0`` AND
-       ``post_finding_model_calls > 0`` for any mission with remaining surface,
-    3. an "Autonomous Loop Proof" sequence is produced from real execution,
-    4. a real black-box regression against ``http://localhost:3010`` runs the
-       same contract (Juice Shop is only a regression target),
-    5. the core carries no target-specific references.
+"""Autonomous model-driven attack loop acceptance.
 """
 
 from __future__ import annotations
@@ -74,8 +59,8 @@ class _ContextAwareModel:
 
     Implements the same :class:`AIPort` interface as every real provider, so it
     participates in the real loop. It proposes one hypothesis per round against
-    an unproposed discovered surface — preferring a discovered parameter, then
-    falling back to a default vector on endpoint-level surfaces — and concludes
+    an unproposed discovered surface, preferring a discovered parameter, then
+    falling back to a default vector on endpoint-level surfaces, and concludes
     ``[]`` once no further path remains (the "no further attack path" signal
     the exhaustion semantics require).
     """
@@ -168,7 +153,7 @@ def _fixture_surface(target: str) -> AttackSurfaceService:
 
 
 def _autonomous_loop_proof(report: dict[str, Any]) -> dict[str, Any]:
-    """Build the Finding N → model → hypothesis → attack sequence proof."""
+    """Build the Finding N to model to hypothesis to attack sequence proof."""
     telemetry = report["telemetry"]
     findings = report["learning"]["validated_findings"]
     steps = []
@@ -275,9 +260,9 @@ class TestPhase7BlackBox:
         telemetry = report["telemetry"]
         assert telemetry["model_calls"] >= 1
         assert telemetry["model_task_execution_count"] >= 1, "model hypotheses must execute real tasks"
-        # Phase 8 invariant (conditional on remaining work): once a finding is
+        # invariant (conditional on remaining work): once a finding is
         # validated, the loop must keep reasoning and attacking until genuine
-        # exhaustion — never stopping on the first (or any) finding.
+        # exhaustion, never stopping on the first (or any) finding.
         if telemetry["validated_findings"] > 0 and not report["exhaustion"]["exhausted"]:
             assert telemetry["post_finding_model_calls"] > 0, "a finding must never stop the loop"
         if telemetry["validated_findings"] > 0:
@@ -291,7 +276,7 @@ class TestPhase7BlackBox:
 
 
 class TestNoTargetCoupling:
-    """The Phase 7 core carries no target-specific references."""
+    """The core carries no target-specific references."""
 
     def test_application_pipeline_carries_no_target_references(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2] / "src" / "hunterx" / "application" / "model_attacker.py"

@@ -3,10 +3,8 @@
 
 """SQL-backed generic TIDB CRUD repository.
 
-Implements :class:`~hunterx.domain.ports.tidb_repositories.TidbRepository`
-generically for any TIDB entity type using the row mapper. Bulk writes use a
-single flush, reads are paginated without N+1 (whole rows are mapped in one
-pass), and :meth:`stream` yields results in batches for large tables.
+Implements :class:`~hunterx.domain.ports.tidb_repositories.TidbRepository` generically for any TIDB entity type
+using the row mapper.
 """
 
 from __future__ import annotations

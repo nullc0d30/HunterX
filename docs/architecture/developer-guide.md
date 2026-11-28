@@ -1,17 +1,13 @@
 ---
 layout: default
-title: Developer Guide — Architecture Enforcement
+title: Developer Guide - Architecture Enforcement
 description: >-
   How to use hunterx-arch day to day: commands, CI and pre-commit integration,
   adding modules, API stability baseline, and resolving violations.
 permalink: /architecture/developer-guide/
 ---
 
-# Developer Guide — Architecture Enforcement
-
-**Status:** Ratified (Sprint 006.7)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# Developer Guide, Architecture Enforcement
 
 ## Install
 
@@ -28,8 +24,8 @@ The linter is also usable as a library:
 from hunterx.architecture.lint import LintOptions, run_lint
 
 report = run_lint(options=LintOptions(repo_root=repo_root))
-print(report.health)   # e.g. 85.0
-print(report.clean)    # False if any error-grade violation exists
+print(report.health) # e.g. 85.0
+print(report.clean) # False if any error-grade violation exists
 ```
 
 ## Commands
@@ -49,12 +45,12 @@ subcommand.
 
 ## Where enforcement runs
 
-1. **Editor** — any IDE hook on save can run `hunterx-arch lint`.
-2. **Pre-commit** — the `architecture-lint` hook in `.pre-commit-config.yaml`
-   runs `hunterx-arch lint --root .` (needs the package installed).
-3. **CI** — the `Test` workflow (`.github/workflows/test.yml`) runs
-   `hunterx-arch lint` on every push/PR to `main`/`master`, after ruff and
-   before pytest. A violation fails the build.
+1. **Editor**, any IDE hook on save can run `hunterx-arch lint`.
+2. **Pre-commit**, the `architecture-lint` hook in `.pre-commit-config.yaml`
+ runs `hunterx-arch lint --root.` (needs the package installed).
+3. **CI**, the `Test` workflow (`.github/workflows/test.yml`) runs
+ `hunterx-arch lint` on every push/PR to `main`/`master`, after ruff and
+ before pytest. A violation fails the build.
 
 The `tests/architecture/test_codebase_conformance.py` suite additionally runs
 the real linter against the live source tree in CI, so a regression in the
@@ -63,19 +59,19 @@ framework itself fails the build too.
 ## Adding a new module
 
 1. Place it under the layer's `src/hunterx/<layer>/` prefix (see
-   [Dependency Matrix & Layer Rules](dependency-matrix.md)).
-2. Import only what the matrix allows — check with `hunterx-arch lint`.
+ [Dependency Matrix & Layer Rules](dependency-matrix.md)).
+2. Import only what the matrix allows, check with `hunterx-arch lint`.
 3. Give every new package `__init__.py` a docstring with a
-   *Responsibilities* section (ARCH-007 warns otherwise).
+ *Responsibilities* section (ARCH-007 warns otherwise).
 4. Do not introduce cycles: `__init__.py` files must stay re-export-only.
 
 ## Reading a violation
 
 ```
 ARCH-001 (error): hunterx.application.foo imports hunterx.agents.bar
-  The 'application' layer may not depend on the 'agents' layer.
-  Allowed: application -> [application, domain, shared, engines, tools].
-  Fix: invert the dependency or move the type to a shared/domain contract.
+ The 'application' layer may not depend on the 'agents' layer.
+ Allowed: application -> [application, domain, shared, engines, tools].
+ Fix: invert the dependency or move the type to a shared/domain contract.
 ```
 
 Every code has a concrete remediation in `src/hunterx/architecture/violations.py`.
@@ -89,21 +85,21 @@ ARCH-009 API stability, ARCH-011 expired waiver.
 `src/hunterx` module (classes, functions, constants, signatures).
 
 - You must **not** delete or rename a public symbol without an approved
-  breaking-change; CI fails (ARCH-009).
-- Adding new public symbols is fine — extend the baseline with:
-  `hunterx-arch stability --generate`, then commit the refreshed JSON.
+ breaking-change; CI fails (ARCH-009).
+- Adding new public symbols is fine, extend the baseline with:
+ `hunterx-arch stability --generate`, then commit the refreshed JSON.
 - Use `hunterx-arch stability` locally to see exactly what changed before
-  committing.
+ committing.
 
 ## Exceptions to the rules
 
 The framework deliberately has **no silent escapes**. Every exception is
 visible:
 
-- **Conditional imports** — narrow, module-level allowances in
-  `config/architecture.yaml` (e.g. DI raising domain exceptions).
-- **Waivers** — documented, time-boxed known issues (e.g. ARCH-W-001). They
-  show in reports and fail CI once expired.
+- **Conditional imports**, narrow, module-level allowances in
+ `config/architecture.yaml` (e.g. DI raising domain exceptions).
+- **Waivers**, documented, time-boxed known issues (e.g. ARCH-W-001). They
+ show in reports and fail CI once expired.
 
 To request either, open an issue for the Architecture Council; do not edit the
 YAML unilaterally.

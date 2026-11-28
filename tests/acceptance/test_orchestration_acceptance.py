@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the offensive tool orchestration capability.
-
-End-to-end scenario: through the assembled platform, create a mission, plan it
-into an execution plan, run the full OBSERVE → DECIDE → PLAN → EXECUTE → LEARN
-→ REPLAN → VERIFY loop, and verify deterministic outcomes against the golden
-mission datasets: final mission state, planned phases/capabilities, scope
-enforcement, coverage and quality.
-"""
+"""Acceptance tests for the offensive tool orchestration capability."""
 
 from __future__ import annotations
 

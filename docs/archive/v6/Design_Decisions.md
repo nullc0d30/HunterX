@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Design Decisions — HunterX v6.0.0
+title: Design Decisions - HunterX v6.0.0
 description: >-
   Key architectural design decisions for HunterX AI-assisted vulnerability
   scanner and red team framework. Rationale behind security testing framework
@@ -76,9 +76,9 @@ This document explains the key architectural decisions made in HunterX and the r
 
 **Rationale:** Centralizing all AI communication through a single component simplifies:
 
-- **Auditing** — Every AI interaction passes through one code path
-- **Rate limiting** — Enforcement at a single point prevents accidental circumvention
-- **Safety enforcement** — Policy checks, prompt validation, and response validation occur in one place
-- **Provider abstraction** — Changing AI providers requires changes in only one component
+- **Auditing** - Every AI interaction passes through one code path
+- **Rate limiting** - Enforcement at a single point prevents accidental circumvention
+- **Safety enforcement** - Policy checks, prompt validation, and response validation occur in one place
+- **Provider abstraction** - Changing AI providers requires changes in only one component
 
 This decision is complementary to decisions 1 and 2: agents don't talk to AI, skills don't talk to AI, and the Reasoning Engine is the only component that does.

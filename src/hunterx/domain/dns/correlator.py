@@ -3,10 +3,8 @@
 
 """DNS correlation and conflict detection.
 
-Correlates DNS observations from multiple tools/resolvers/executions into a
-single canonical record set, merging corroborating answers and surfacing
-conflicts. The correlator never silently discards an observation: values that
-disagree across sources are reported as conflicts with full provenance.
+Correlates DNS observations from multiple tools/resolvers/executions into a single canonical record set, merging
+corroborating answers and surfacing conflicts.
 """
 
 from __future__ import annotations

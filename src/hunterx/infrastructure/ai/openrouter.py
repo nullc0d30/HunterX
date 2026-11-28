@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""OpenRouter AI provider adapter.
-
-OpenRouter exposes the OpenAI-compatible ``/chat/completions`` and
-``/embeddings`` APIs, so it shares the common transport in
-:mod:`hunterx.infrastructure.ai.providers` and only declares its identity,
-endpoint and default model. ``httpx`` is imported lazily so the base install
-(without the ``ai`` extra) stays fully functional until a real provider is
-actually selected.
-
-Implements :class:`~hunterx.domain.ports.services.AIPort`.
-"""
+"""OpenRouter AI provider adapter."""
 
 from __future__ import annotations
 

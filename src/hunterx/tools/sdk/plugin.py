@@ -3,10 +3,7 @@
 
 """Execution plugin manager.
 
-Hot-loads and unloads execution plugin modules that provide tool adapters and
-configuration hooks. Plugins are loaded by entrypoint (``module.path:Object``)
-or by module path, mirroring the platform plugin loader contract while staying
-SDK-local.
+Hot-loads and unloads execution plugin modules that provide tool adapters and configuration hooks.
 """
 
 from __future__ import annotations

@@ -3,11 +3,8 @@
 
 """Event spec and registry.
 
-An :class:`EventSpec` declares the contract for one canonical event type:
-its category, default severity, current payload version and a human-readable
-description. The :class:`EventRegistry` is the authoritative catalog of every
-event the platform knows how to publish and consume, and is the backbone of
-event versioning (a consumer may assert compatibility with a payload version).
+An :class:`EventSpec` declares the contract for one canonical event type: its category, default severity, current
+payload version and a human-readable description.
 """
 
 from __future__ import annotations

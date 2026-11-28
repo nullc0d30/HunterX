@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the network-mapping topology capability.
-
-Exercises the full wiring through the assembled platform: topology services
-registered in the container, traceroute available on the execution engine and
-TIP, an end-to-end topology build over seeded TIDB data, persisted topology
-entities and the canonical query interfaces.
-"""
+"""Integration tests for the network-mapping topology capability."""
 
 from __future__ import annotations
 

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared TIP test fixtures: tool metadata/knowledge builders and a standard tool set.
-
-The standard set models real-world tools without integrating them: a crawler
-(katana-like), a port scanner (nmap-like), an HTTP prober (httpx-like) and a
-fuzzer (ffuf-like). Tools reference each other through capability dependencies
-so dependency, recommendation and validation tests share one registry.
-"""
+"""Shared TIP test fixtures: tool metadata/knowledge builders and a standard tool set."""
 
 from __future__ import annotations
 

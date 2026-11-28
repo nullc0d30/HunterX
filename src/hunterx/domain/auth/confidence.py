@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authentication intelligence confidence engine.
-
-Assigns a defensible, deterministic confidence score to every authentication
-observation and recomputes it when several sources corroborate the same
-observation. Confidence is a pure function of (source reliability, evidence
-strength, corroboration count, historical stability and conflict discount) —
-the same inputs always yield the same score and the score is explainable
-through the factors that contributed to it.
-"""
+"""Authentication intelligence confidence engine."""
 
 from __future__ import annotations
 

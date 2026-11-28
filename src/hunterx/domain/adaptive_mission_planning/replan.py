@@ -3,9 +3,8 @@
 
 """Replanning engine.
 
-Decides whether new intelligence invalidates part of the current plan and, if
-so, produces a :class:`PlanDelta` (never a full-plan rebuild). Every revision
-is versioned and replayable through :class:`PlanVersion`.
+Decides whether new intelligence invalidates part of the current plan and, if so, produces a :class:`PlanDelta`
+(never a full-plan rebuild).
 """
 
 from __future__ import annotations
@@ -137,7 +136,7 @@ class ReplanningEngine:
         Replay protection lives in the planning domain so it applies to every
         replanning trigger, not just one caller: an action that shares the
         identity (capability, asset, hypothesis, parameter/technology context,
-        tool) of an existing graph action — terminal or not — must not be
+        tool) of an existing graph action, terminal or not, must not be
         scheduled again. Only genuinely new state (a new endpoint, parameter,
         technology, asset or hypothesis) produces a new identity and is
         permitted.
@@ -421,7 +420,7 @@ class ReplanningEngine:
         return []
 
 
-#: Capability → canonical action type used by the deterministic planner when it
+# : Capability to canonical action type used by the deterministic planner when it
 #: schedules a capability explicitly (``CAPABILITY_SCHEDULED``).
 _ACTION_TYPE_BY_CAPABILITY: dict[str, ActionType] = {
     "asset_discovery": ActionType.DISCOVER_SUBDOMAINS,

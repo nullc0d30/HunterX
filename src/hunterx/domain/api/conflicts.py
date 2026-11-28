@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API intelligence conflict resolution.
-
-Detects and resolves disagreements between sources over the same API subject:
-version differences, identity disagreements, documentation/source conflicts and
-method mismatches. Resolution is deterministic — documented spec evidence beats
-inferred hints, stronger evidence beats weaker, and the rationale is preserved
-as a :class:`ApiConflict` record.
-"""
+"""API intelligence conflict resolution."""
 
 from __future__ import annotations
 

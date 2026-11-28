@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the Adaptive Target Intelligence layer.
-
-Verifies layer discipline (pure domain vs engine vs application vs
-infrastructure), import hygiene and the absence of hardcoded tool sequences or
-black-box action selection.
-"""
+"""Architecture tests for the Adaptive Target Intelligence layer."""
 
 from __future__ import annotations
 

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the Live Host & Service Discovery capability.
-
-Covers the live discovery security model: command/argument injection through
-tool parameters, credential leakage into argv, scope/safety enforcement and
-untrusted tool output never being executed.
-"""
+"""Security tests for the Live Host & Service Discovery capability."""
 
 from __future__ import annotations
 

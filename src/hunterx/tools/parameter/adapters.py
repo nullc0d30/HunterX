@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Parameter discovery adapters.
-
-Integrates ``arjun`` (get/post parameter discovery), ``paramspider`` (passive
-parameter harvesting from archived URLs) and ``kiterunner`` (route/endpoint
-bruteforcing) into the Tool Integration SDK. External binaries run through the
-shared runner seam and emit canonical parameter records.
-"""
+"""Parameter discovery adapters."""
 
 from __future__ import annotations
 
@@ -131,7 +125,7 @@ class ArjunAdapter(ParameterToolAdapter):
         """Extract parameter records from either arjun report shape.
 
         * JSON report file (``-oJ``): ``{url: {headers, method, params: [..]}}``.
-        * stdout JSON: ``{parameter_name: [values, ...]}``.
+        * stdout JSON: ``{parameter_name: [values,...]}``.
         """
         records: list[dict[str, Any]] = []
         for key, value in payload.items():

@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for vulnerability knowledge providers.
-
-Every external vulnerability-knowledge source (NVD, CISA KEV, MITRE CVE/CWE,
-EPSS, vendor advisories, GHSA/OSV) integrates with HunterX through the Tool
-Integration SDK :class:`ToolAdapter` lifecycle. This base class defines the
-provider contract: each provider adapter receives raw source material through
-the execution parameters, normalizes it to the canonical vulnerability models
-and serializes the records into the pipeline's JSON payload under the
-``vulnerabilities``/``knowledge`` keys.
-
-No provider may bypass the SDK. No provider ever downloads, executes or verifies
-exploits — normalization is data-in/data-out.
-"""
+"""Base adapter for vulnerability knowledge providers."""
 
 from __future__ import annotations
 

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB orchestration entities.
-
-System-of-record tables for the Wave 14 offensive tool orchestration
-capability: execution plans, phases, steps, tool selections, execution
-dependencies, checkpoints, policy decisions, replans, coverage, quality,
-failures and task history.
-
-Security boundary: these tables store orchestration metadata, canonical
-targets, tool selections and redacted evidence references only.
-"""
+"""ORM models for TIDB orchestration entities."""
 
 from __future__ import annotations
 

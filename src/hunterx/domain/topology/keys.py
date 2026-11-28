@@ -3,10 +3,7 @@
 
 """Canonical key helpers for topology entities.
 
-Every topology node is addressed by a stable, deterministic canonical key of the
-form ``kind:name``. Normalization collapses equivalent spellings (lowercasing,
-trailing-dot removal, canonical IP/CIDR notation) so correlation never
-duplicates an entity.
+Every topology node is addressed by a stable, deterministic canonical key of the form ``kind:name``.
 """
 
 from __future__ import annotations
@@ -83,7 +80,7 @@ def relationship_key(rel_type: str, source_key: str, target_key: str) -> str:
 def domain_of_hostname(hostname: str) -> str | None:
     """Return the parent domain label of ``hostname`` or ``None`` for apex hosts.
 
-    ``www.example.co.uk`` → ``example.co.uk``; ``example.com`` → ``None`` (the
+    ``www.example.co.uk`` to ``example.co.uk``; ``example.com`` to ``None`` (the
     name is already a registrable-looking apex). This is a best-effort public
     suffix heuristic used only for intra-graph PART_OF edges.
     """

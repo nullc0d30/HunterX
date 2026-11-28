@@ -3,9 +3,7 @@
 
 """Event enums.
 
-Shared enums that give every event its category, severity, priority and
-payload-version stamp. These are pure values: they carry no behavior and are
-safe to import from any layer.
+Shared enums that give every event its category, severity, priority and payload-version stamp.
 """
 
 from __future__ import annotations

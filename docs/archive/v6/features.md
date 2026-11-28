@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Features & Architecture — HunterX v6.0.0
+title: Features & Architecture - HunterX v6.0.0
 keywords: Security Skills Framework, Reasoning Engine, Multi-Agent Platform, offensive security
 description: >-
   Complete feature breakdown of HunterX v6.0.0 open-source offensive security
@@ -134,12 +134,12 @@ The Reasoning Engine accepts goals (structured tasks), creates execution plans, 
 Goal -> Planner -> Prompt Builder -> AI Provider -> Validator -> Consensus -> Result
 ```
 
-1. **Planner** — Decomposes a goal into execution steps
-2. **Prompt Builder** — Constructs structured prompts with context window management
-3. **AI Provider** — Routes through the provider layer with caching and retry
-4. **Validator** — Validates responses against schema and confidence thresholds
-5. **Consensus** — Reaches agreement across multiple AI calls (majority, weighted, unanimous)
-6. **Result** — Returns structured output with confidence score, evidence, and decision trace
+1. **Planner** - Decomposes a goal into execution steps
+2. **Prompt Builder** - Constructs structured prompts with context window management
+3. **AI Provider** - Routes through the provider layer with caching and retry
+4. **Validator** - Validates responses against schema and confidence thresholds
+5. **Consensus** - Reaches agreement across multiple AI calls (majority, weighted, unanimous)
+6. **Result** - Returns structured output with confidence score, evidence, and decision trace
 
 Full reference: [Reasoning Engine](/features/reasoning-engine/)
 
@@ -287,17 +287,17 @@ Full reference: [Plugin Development](/PLUGIN_DEVELOPMENT/) | [Skill SDK](/SKILL_
 
 ## Safety & Security
 
-- **Destructive Payload Blocklist** — Hard-coded, non-bypassable blocklist for rm -rf, reverse shells, fork bombs, SQL writes
-- **5-Level Safety Policy** — Safe, Balanced, Aggressive, Research, Paranoid — applied at reasoning, skill, and payload execution layers
-- **SSL Verification** — Enabled by default for all outbound connections
-- **Rate Limiting** — Token-bucket algorithm with configurable max RPS
-- **WAF Auto-Abort** — 50+ WAF signatures with configurable auto-abort threshold
-- **Thread Safety** — All shared state synchronized with threading locks
+- **Destructive Payload Blocklist** - Hard-coded, non-bypassable blocklist for rm -rf, reverse shells, fork bombs, SQL writes
+- **5-Level Safety Policy** - Safe, Balanced, Aggressive, Research, Paranoid - applied at reasoning, skill, and payload execution layers
+- **SSL Verification** - Enabled by default for all outbound connections
+- **Rate Limiting** - Token-bucket algorithm with configurable max RPS
+- **WAF Auto-Abort** - 50+ WAF signatures with configurable auto-abort threshold
+- **Thread Safety** - All shared state synchronized with threading locks
 
 ---
 
 ## Deployment
 
-- **Docker** — Multi-stage build, 271MB image, non-root user, OCI labels
-- **CI/CD** — GitHub Actions matrix (3.11/3.12/3.13) with Ruff, pytest, and Docker smoke test
-- **Python Package** — pyproject.toml-based, pip installable from source
+- **Docker** - Multi-stage build, 271MB image, non-root user, OCI labels
+- **CI/CD** - GitHub Actions matrix (3.11/3.12/3.13) with Ruff, pytest, and Docker smoke test
+- **Python Package** - pyproject.toml-based, pip installable from source

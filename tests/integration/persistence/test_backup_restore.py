@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Backup / restore smoke test (Sprint 034.3 §24).
+"""Backup / restore smoke test (24).
 
-No dedicated backup tooling ships with HunterX v7 (recorded as technical
-debt). This smoke test verifies the durability contract that any restore path
-must preserve: targets, missions, evidence, findings, proofs and relationships
-survive a database close/reopen cycle on a file-backed store.
+No dedicated backup tooling ships with HunterX v7 (recorded as technical debt).
 """
 
 from __future__ import annotations
@@ -77,7 +74,7 @@ def test_data_survives_close_and_reopen(tmp_path) -> None:
     ids = _populate(store)
     factory.dispose()  # close the database (durability point)
 
-    # Reopen the same file with a fresh engine — the restore-equivalent.
+    # Reopen the same file with a fresh engine, the restore-equivalent.
     reopened = SessionFactory(DatabaseSettings(url=url))
     reopened.create_all()
     try:
@@ -102,8 +99,9 @@ def test_data_survives_close_and_reopen(tmp_path) -> None:
 
 
 def test_relationship_references_survive_restore(tmp_path) -> None:
-    """Cross-entity references (evidence → finding → proof → relationship) stay
-    intact after a reopen."""
+    """Cross-entity references (evidence to finding to proof to relationship) stay
+    intact after a reopen.
+    """
     db_path = tmp_path / "backup2.db"
     url = f"sqlite:///{db_path}"
     factory = SessionFactory(DatabaseSettings(url=url))

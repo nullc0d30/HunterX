@@ -3,14 +3,17 @@
 
 """Static-analysis, test, coverage, architecture and dependency gates.
 
-Every checker has the same signature: ``(runner, repo_root, spec) -> GateResult``
-so the gate runner can treat them uniformly.
+Every checker has the same signature: ``(runner, repo_root, spec) -> GateResult`` so the gate runner can treat them
+uniformly.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import pathlib
 import re
+import shutil
+import sys
 import xml.etree.ElementTree as ET
 from typing import Any
 
@@ -35,7 +38,22 @@ def _result(name: str, ok: bool, detail: str, tool: ToolResult | None = None, ar
     )
 
 
+#: Console script name to importable module name, for tools that are installed
+#: as packages but whose entry-point script is not on ``PATH``.
+_MODULE_FOR = {"ruff": "ruff", "mypy": "mypy", "pytest": "pytest", "vulture": "vulture"}
+
+
 def _cmd(executable: str, args: list[str]) -> list[str]:
+    """Build the command for ``executable``, falling back to ``python -m``.
+
+    A tool installed with ``pip --user`` (or into a virtualenv that is not
+    active) is importable but missing from ``PATH``. Running it through the
+    current interpreter keeps the gates usable without a PATH edit.
+    """
+    if shutil.which(executable) is None:
+        module = _MODULE_FOR.get(executable)
+        if module is not None and importlib.util.find_spec(module) is not None:
+            return [sys.executable, "-m", module, *args]
     return [executable, *args]
 
 

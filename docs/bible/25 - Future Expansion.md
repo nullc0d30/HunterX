@@ -1,7 +1,5 @@
-# 25 — Future Expansion
+# 25, Future Expansion
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Growth strategy; guarantees of extensibility without core changes
 
 ---
@@ -48,16 +46,16 @@ the growth targets above is **adding data or a plugin**, not changing the core.
 - Registry + knowledge base scale by data, not code.
 - Capability vocabulary is the stable contract (`22` §5); new tools map to it.
 - Tool execution is horizontally scalable: workers pull tool jobs from the
-  shared queue.
+ shared queue.
 - Tool availability is optional: missions degrade gracefully when a tool is
-  missing (`17` §7).
+ missing (`17` §7).
 
 ### 3.2 Plugins (1,000+)
 
 - Plugin host isolates load/execution; per-plugin resource budgets.
 - Marketplace scales as an external catalog (`05`).
 - Plugin conflicts resolved by the dependency resolver; registry remains a
-  single catalog.
+ single catalog.
 - Signed/untrusted tiers keep risk bounded.
 
 ### 3.3 Distributed Execution
@@ -66,18 +64,18 @@ the growth targets above is **adding data or a plugin**, not changing the core.
 - Consumers are **idempotent**; results checkpointed (`10` §6).
 - State stored centrally (TIDB); workers are stateless.
 - **Cloud workers:** workers may run in cloud/kubernetes
-  (deploy manifests in `deploy/helm`), registered to the same queue.
+ (deploy manifests in `deploy/helm`), registered to the same queue.
 - **Heterogeneous hosts:** worker capability tags (tools installed, GPU,
-  network position) let the planner route steps to capable workers.
+ network position) let the planner route steps to capable workers.
 
 ### 3.4 Multi-Agent AI
 
 - Agent platform (`02` §5.2 / agents) is plugin-based: new agents register
-  capabilities; orchestrator/coordinator route goals.
+ capabilities; orchestrator/coordinator route goals.
 - **Roles & delegation:** coordinator resolves conflicts; schedulers prioritize.
 - **Consensus:** strict/relaxed strategies are configurable per decision class.
 - **Learning:** aggregated, de-identified priors feed calibration without
-  cross-tenant data (`11` §10).
+ cross-tenant data (`11` §10).
 - Scaling AI: provider routing + caching + token budgets (`11` §11).
 
 ### 3.5 Future Modules
@@ -101,17 +99,17 @@ Anticipated modules (implemented as plugins/modules, not core changes):
 
 - **Domain ports** are stable; implementation changes never break consumers.
 - **SDK ABI** (`05`/`06`) versioned; breaking SDK changes require major SDK
-  version + migration guide.
+ version + migration guide.
 - **REST API** versioned (`/api/vN`); additive changes backward-compatible.
 - **Knowledge/schema** versioned; upgrades validated before load.
 - **Event taxonomy** (`18` §3) extensible by new event types without breaking
-  subscribers (wildcards).
+ subscribers (wildcards).
 
 ---
 
 ## 5. Guarantees Checklist (enforced in reviews)
 
-- [ ] New feature implemented as plugin/adapter/profile — not core fork.
+- [ ] New feature implemented as plugin/adapter/profile, not core fork.
 - [ ] No new framework/dependency imported into `domain` layer.
 - [ ] No cross-subsystem internal imports (events/messages instead).
 - [ ] New event/entity added to schema with minor bump + goldens.
@@ -124,12 +122,12 @@ Anticipated modules (implemented as plugins/modules, not core changes):
 ## 6. Air-Gapped & Enterprise Deployments
 
 - All external datasets (CVE/CWE/CAPEC/MITRE/EPSS) support offline mirrors
-  (`09` §mirror, `03` `data/mirror/`).
+ (`09` §mirror, `03` `data/mirror/`).
 - AI works with local models (Ollama/local) via provider abstraction
-  (`11` §14).
+ (`11` §14).
 - Telemetry: local exporters or console (`18`).
 - No hard runtime dependency on a public registry/marketplace (plugins install
-  from local archives).
+ from local archives).
 
 ---
 
@@ -150,7 +148,7 @@ reporting scale, and audit retention.
 
 - New capabilities/schema/ADR follow `24` processes (they keep the Core stable).
 - The Future Expansion Board (Architecture Owner + leads) reviews growth
-  proposals quarterly.
+ proposals quarterly.
 - Backward-compatibility is a first-class requirement for every merged change.
 
 ---

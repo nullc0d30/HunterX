@@ -3,9 +3,7 @@
 
 """Scheduler service.
 
-Triggers scheduled jobs and dispatches them to the work queue. The scheduler
-is independent from the agent scheduler: it handles mission-level operations
-while the agent scheduler handles recurring agent dispatches.
+Triggers scheduled jobs and dispatches them to the work queue.
 """
 
 from __future__ import annotations

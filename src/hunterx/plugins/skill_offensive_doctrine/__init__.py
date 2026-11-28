@@ -1,3 +1,5 @@
+"""Offensive security doctrine plugin for HunterX."""
+
 # Offensive Security Doctrine Plugin for HunterX
 # Implements Bug Bounty / Offensive Security doctrine without external branding
 

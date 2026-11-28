@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""OSV-scanner adapter — dependency vulnerability scanning.
-
-Runs the installed ``osv-scanner scan --format json`` against a lockfile or
-local path and parses the OSV JSON into dependency-vulnerability candidates.
-Against a remote URL target with no local manifest, the scan is bounded to the
-mission's temp directory and honestly produces no candidates (there is no
-dependency evidence) rather than fabricating one.
-"""
+"""OSV-scanner adapter, dependency vulnerability scanning."""
 
 from __future__ import annotations
 

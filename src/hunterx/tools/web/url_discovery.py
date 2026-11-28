@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""URL discovery and crawler adapters.
-
-Integrates the URL discovery / passive-history crawlers used for attack-surface
-collection: ``gau``, ``waybackurls``, ``urlfinder`` (passive/historical URL
-collection) and ``gospider``, ``hakrawler`` (active lightweight crawlers).
-
-All five invoke their external binary through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam and normalize JSONL or
-plain-URL output into canonical :class:`URLObservation` instances. URLs are
-data; malformed lines are skipped.
-"""
+"""URL discovery and crawler adapters."""
 
 from __future__ import annotations
 
@@ -29,7 +19,7 @@ _URLFINDER_VERSION = "1.0.0"
 
 
 class GauAdapter(UrlDiscoveryAdapter):
-    """SDK adapter for ``gau`` — GetAllURLs passive URL collection."""
+    """SDK adapter for ``gau``, GetAllURLs passive URL collection."""
 
     source = "gau"
 
@@ -68,7 +58,7 @@ class GauAdapter(UrlDiscoveryAdapter):
 
 
 class WaybackurlsAdapter(UrlDiscoveryAdapter):
-    """SDK adapter for ``waybackurls`` — Wayback Machine URL collection."""
+    """SDK adapter for ``waybackurls``, Wayback Machine URL collection."""
 
     source = "waybackurls"
 
@@ -105,7 +95,7 @@ class WaybackurlsAdapter(UrlDiscoveryAdapter):
 
 
 class UrlfinderAdapter(UrlDiscoveryAdapter):
-    """SDK adapter for ``urlfinder`` — link and endpoint discovery from JS/content."""
+    """SDK adapter for ``urlfinder``, link and endpoint discovery from JS/content."""
 
     source = "urlfinder"
 
@@ -144,7 +134,7 @@ class UrlfinderAdapter(UrlDiscoveryAdapter):
 
 
 class GospiderAdapter(UrlDiscoveryAdapter):
-    """SDK adapter for ``gospider`` — fast active web crawler."""
+    """SDK adapter for ``gospider``, fast active web crawler."""
 
     source = "gospider"
 
@@ -190,7 +180,7 @@ class GospiderAdapter(UrlDiscoveryAdapter):
 
 
 class HakrawlerAdapter(UrlDiscoveryAdapter):
-    """SDK adapter for ``hakrawler`` — simple lightweight crawler."""
+    """SDK adapter for ``hakrawler``, simple lightweight crawler."""
 
     source = "hakrawler"
 

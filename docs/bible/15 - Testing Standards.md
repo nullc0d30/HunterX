@@ -1,7 +1,5 @@
-# 15 — Testing Standards
+# 15, Testing Standards
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All code, `tests/`, CI gates, golden datasets
 
 ---
@@ -9,12 +7,12 @@
 ## 1. Testing Pyramid
 
 ```
-          acceptance (E2E, few)
-         integration (adapters, API, DB)
-        unit (many, fast, isolated)
-      component (per subsystem, in-process)
-    ────────────────────────────────────
-    golden (regression datasets, cross-layer)
+ acceptance (E2E, few)
+ integration (adapters, API, DB)
+ unit (many, fast, isolated)
+ component (per subsystem, in-process)
+ ────────────────────────────────────
+ golden (regression datasets, cross-layer)
 ```
 
 | Level | Scope | Environment | Speed |
@@ -43,11 +41,11 @@
 
 - Real PostgreSQL/Redis/queue against test databases (CI services or docker-compose).
 - Adapter tests run real tool binaries where available; otherwise skipped with
-  marker `@pytest.mark.tools` (explicit skip rationale logged).
+ marker `@pytest.mark.tools` (explicit skip rationale logged).
 - API tests exercise routes against the real app factory with the same
-  dependency overrides used in production composition.
+ dependency overrides used in production composition.
 - AI provider tests use a **mock provider** implementing the provider contract
-  (no external calls); one smoke test per real provider gated by env key.
+ (no external calls); one smoke test per real provider gated by env key.
 
 ---
 
@@ -55,8 +53,8 @@
 
 - Every bug fix ships with a regression test that fails on the old behavior.
 - Golden tests guard parser/normalizer output stability
-  (`data/golden/`): inputs → expected canonical events; any schema/output change
-  requires updating goldens deliberately (reviewed in PR).
+ (`data/golden/`): inputs → expected canonical events; any schema/output change
+ requires updating goldens deliberately (reviewed in PR).
 
 ---
 
@@ -73,15 +71,15 @@
 
 - **Sandbox escape:** fixtures attempt escapes; assert blocked + quarantined.
 - **Injection:** tool args with `;`, `|`, `$(...)`, path traversal, template
-  injection — assert neutralization.
+ injection, assert neutralization.
 - **Secret leakage:** run representative paths; assert no secrets in logs,
-  errors, reports, or AI prompts (grep-style assertions on masked output).
+ errors, reports, or AI prompts (grep-style assertions on masked output).
 - **Scope enforcement:** out-of-scope target rejected at planner, executor, and
-  sandbox.
+ sandbox.
 - **RBAC:** forbidden resource access returns 403; tenant isolation verified.
 - **Deserialization:** malicious payloads rejected.
 - **Prompt injection:** poisoned tool output does not alter decisions
-  (`UNSUPPORTED` flagged).
+ (`UNSUPPORTED` flagged).
 - **Supply chain:** dependency scan + plugin signature verification tests.
 - See `13 - Security Standards.md` §15.
 
@@ -94,9 +92,9 @@ Located `data/golden/`. Structure:
 ```
 data/golden/
 ├── tools/<tool-id>/
-│   ├── input_<case>.txt|jsonl      # raw tool output fixture
-│   └── expected_<case>.json         # expected canonical events
-└── workflows/<workflow-id>/         # end-to-end pipeline goldens
+│ ├── input_<case>.txt|jsonl # raw tool output fixture
+│ └── expected_<case>.json # expected canonical events
+└── workflows/<workflow-id>/ # end-to-end pipeline goldens
 ```
 
 Rules:
@@ -110,9 +108,9 @@ Rules:
 ## 8. Acceptance Tests
 
 - Full mission runs on **sandboxed/vulnerable-by-design targets**
-  (e.g., DVWA, OWASP Juice Shop, Metasploitable in isolated docker network).
+ (e.g., DVWA, OWASP Juice Shop, Metasploitable in isolated docker network).
 - Assert: mission completes, expected findings present with evidence, reports
-  generated in required formats, no scope violation, audit log populated.
+ generated in required formats, no scope violation, audit log populated.
 - Acceptance criteria per profile: see `24 - Quality Assurance.md` §2.
 
 ---
@@ -129,13 +127,13 @@ Rules:
 
 - Coverage enforced in CI (`coverage` + threshold fail).
 - Exceptions (adapters without binaries) require explicit `# pragma: no cover`
-  with justification, reviewed.
+ with justification, reviewed.
 
 ---
 
 ## 10. Test Doubles
 
-- **Fakes** for ports (in-memory stores, fake queue, fake cache) — preferred.
+- **Fakes** for ports (in-memory stores, fake queue, fake cache), preferred.
 - **Stubs** for canned tool outputs.
 - **Mock provider** for AI contract testing.
 - **Spies** for event-bus assertions.
@@ -164,11 +162,11 @@ Rules:
 ## 12. Local Testing Commands
 
 ```bash
-pytest                                   # default: unit+golden+component
-pytest -m integration                    # integration (needs services)
-pytest -m tools                          # real tool binaries
-pytest -m security                       # security suite
-pytest -m perf --benchmark-enable        # performance subset
+pytest # default: unit+golden+component
+pytest -m integration # integration (needs services)
+pytest -m tools # real tool binaries
+pytest -m security # security suite
+pytest -m perf --benchmark-enable # performance subset
 ```
 
 ---

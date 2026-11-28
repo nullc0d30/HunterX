@@ -3,16 +3,7 @@
 
 """Web crawling & web attack-surface discovery use-case services.
 
-``CrawlService`` is the orchestrator — the bridge between a mission and the web
-crawling tooling. Given a target and a posture, it validates scope, builds a
-:class:`CrawlStrategy`, selects the registered crawling tools, runs each through
-the :class:`ExecutionEngine` pipeline, normalizes, correlates and confidence-
-scores the observations, diffs history, persists everything to the TIDB, folds
-discoveries into the attack-surface topology and publishes ``crawl.*`` events.
-
-``CrawlQueryService`` reads persisted web intelligence back from the TIDB and
-answers the reporting queries (origins, URLs, endpoints, redirects, auth
-boundaries and execution history). Both services depend on ports only.
+``CrawlService`` is the orchestrator, the bridge between a mission and the web crawling tooling.
 """
 
 from __future__ import annotations

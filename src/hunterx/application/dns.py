@@ -3,17 +3,7 @@
 
 """DNS intelligence use-case service.
 
-The DNS orchestrator — the bridge between a mission and the DNS tooling. Given
-a target and a posture, it builds a :class:`DnsStrategy`, selects the
-registered DNS tools, runs each through the :class:`ExecutionEngine` pipeline,
-collects the canonical records, validates, normalizes, correlates them across
-tools, detects wildcards, analyzes DNSSEC and mail posture, compares against
-historical state, persists everything to the TIDB and publishes ``dns.*``
-events.
-
-The service depends on ports only: the execution engine (tools layer), the
-TIDB repository factory (domain port) and the cache port. Concrete
-SQL/in-memory stores are injected by the platform assembler.
+The DNS orchestrator, the bridge between a mission and the DNS tooling.
 """
 
 from __future__ import annotations

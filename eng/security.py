@@ -3,10 +3,8 @@
 
 """Security pipeline.
 
-Orchestrates the static/dependency/container secret scanners and generates
-machine-readable reports under ``artifacts/security/``. Scanners that are not
-installed are reported as skipped so a local run degrades gracefully while CI
-installs the full toolchain.
+Orchestrates the static/dependency/container secret scanners and generates machine-readable reports under
+``artifacts/security/``.
 """
 
 from __future__ import annotations
@@ -164,7 +162,7 @@ def _count_findings(name: str, result: ToolResult) -> int:
     if name == "safety":
         import json as _json
 
-        # Safety v3 emits a JSON dict with report_meta.vulnerabilities_found;
+        # Safety v3 emits a JSON dict with report_meta.vulnerabilities_found
         # the CLI may prefix deprecation warnings to stdout, so locate the
         # JSON document before parsing.
         start = text.find('{"')

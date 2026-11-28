@@ -3,8 +3,8 @@
 
 """Knowledge engine.
 
-Answers questions like "what does CWE-79 mean?" and "which records relate to
-this finding?" by combining the knowledge registry with the knowledge graph.
+Answers questions like "what does CWE-79 mean?" and "which records relate to this finding?" by combining the
+knowledge registry with the knowledge graph.
 """
 
 from __future__ import annotations

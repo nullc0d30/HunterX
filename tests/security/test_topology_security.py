@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the network-mapping topology capability.
-
-Covers the topology security model: scope enforcement without unauthorized
-expansion, cross-target/mission isolation, traceroute argument injection
-through tool parameters, credential leakage into argv, and untrusted tool
-output being treated as data (never executed).
-"""
+"""Security tests for the network-mapping topology capability."""
 
 from __future__ import annotations
 

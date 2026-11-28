@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the Sprint 028 finding orchestration capability.
-
-Covers scope escape, cross-target/cross-mission leakage, malicious tool
-output, secret and credential leakage, unsafe proof escalation, replay
-against the wrong target, stale evidence reuse and malicious PoC content.
-"""
+"""Security tests for the finding orchestration capability."""
 
 from __future__ import annotations
 

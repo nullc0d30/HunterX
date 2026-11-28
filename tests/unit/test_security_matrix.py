@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security Test Matrix unit tests — the completion contract."""
+"""Security Test Matrix unit tests, the completion contract."""
 
 from __future__ import annotations
 

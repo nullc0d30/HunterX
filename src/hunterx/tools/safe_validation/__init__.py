@@ -3,9 +3,7 @@
 
 """Safe validation tool adapters.
 
-Deterministic, in-process safe-probe adapters for the Wave 13 vulnerability
-validation engine. Every adapter integrates through the Tool Integration SDK
-and only ever emits canonical observations from bounded, already-gated inputs.
+Deterministic, in-process safe-probe adapters for the vulnerability validation engine.
 """
 
 from __future__ import annotations

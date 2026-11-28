@@ -65,12 +65,12 @@ class FailingTool(BaseTool):
 class FakeExecutionEngine:
     """A deterministic :class:`ExecutionEngine` double for mission tests.
 
-    Maps ``tool_id`` → ``output.json`` so the mission execution runner and the
+    Maps ``tool_id`` to ``output.json`` so the mission execution runner and the
     observation ingestion / target-modeling path see deterministic content
     without touching the network or spawning external binaries.
 
     Args:
-        outputs: ``tool_id`` → JSON output payload (the execution ``json``).
+        outputs: ``tool_id`` to JSON output payload (the execution ``json``).
         fail_tools: tool ids whose executions fail (structured failure).
         error: failure message used for failing tools.
         not_found_output: payload returned for tool ids not in ``outputs``.

@@ -3,9 +3,7 @@
 
 """Capability registry.
 
-Maps capability ids to the tools that provide them and records which
-capabilities an execution requires. Used by the dependency resolver and the
-execution pipeline to decide tool eligibility before running.
+Maps capability ids to the tools that provide them and records which capabilities an execution requires.
 """
 
 from __future__ import annotations
@@ -15,13 +13,13 @@ from collections import defaultdict
 
 
 class ExecutionCapabilityRegistry:
-    """Thread-safe registry of capability → provider tool ids.
+    """Thread-safe registry of capability to provider tool ids.
 
     Usage::
 
         registry = ExecutionCapabilityRegistry()
         registry.register("web.scan", "httpx")
-        registry.providers_for("web.scan")   # ["httpx"]
+        registry.providers_for("web.scan") # ["httpx"]
     """
 
     def __init__(self) -> None:

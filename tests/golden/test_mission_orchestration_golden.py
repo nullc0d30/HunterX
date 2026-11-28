@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden tests for Autonomous Mission Orchestration.
-
-Replays the scripted mission fixtures under ``tests/golden/missions/`` through
-the orchestrator and verifies deterministic behavior: identical scripts produce
-identical decisions, and the final outcome matches the fixture's expectations.
-"""
+"""Golden tests for Autonomous Mission Orchestration."""
 
 from __future__ import annotations
 
@@ -16,7 +11,7 @@ import pathlib
 import pytest
 
 from hunterx.domain.mission_orchestration.baseline import TestResponse
-from hunterx.domain.mission_orchestration.enums import FindingStage
+from hunterx.domain.mission_orchestration.enums import FindingStage, StopCondition
 from hunterx.domain.mission_orchestration.orchestrator import MissionOrchestrator
 
 _FIXTURES = pathlib.Path(__file__).parent / "missions"
@@ -140,7 +135,10 @@ def _replay(fixture: dict[str, object]) -> MissionOrchestrator:
         elif action == "cascade":
             orchestrator.cascade_findings(orchestrator.missions()[0].mission_id)
         elif action == "finalize":
-            orchestrator.finalize(orchestrator.missions()[0].mission_id)
+            orchestrator.finalize(
+                orchestrator.missions()[0].mission_id,
+                stop_condition=StopCondition.OBJECTIVES_COMPLETE,
+            )
         else:  # pragma: no cover - fixture authoring guard
             raise AssertionError(f"unknown script action {action!r}")
     return orchestrator

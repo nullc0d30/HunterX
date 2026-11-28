@@ -3,17 +3,7 @@
 
 """API intelligence Target Intelligence Database entities.
 
-System-of-record entities for the API Discovery & API Attack-Surface
-Intelligence capability (Sprint 014 / Wave 8). They carry the canonical,
-evidence-backed API inventory: hosts, located spec documents, versions,
-operations, parameters, schemas, authentication/authorization schemes,
-rate-limit, pagination and filter indicators, plus the derived intelligence
-(conflicts, changes, evidence and run records).
-
-These entities complement the legacy API-surface entities in
-:mod:`hunterx.domain.entities.tidb.api` — the Wave-8 canonical inventory is
-persisted here and cross-references the existing topology and web-crawl
-projections rather than duplicating them.
+System-of-record entities for the API Discovery & API Attack-Surface Intelligence capability (/).
 """
 
 from __future__ import annotations

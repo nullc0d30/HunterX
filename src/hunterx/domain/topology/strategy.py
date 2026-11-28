@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology build strategy.
-
-Configures a topology build run: mode, scope policy, which relationship types
-to derive, which tools to execute, confidence and staleness thresholds and
-which analysis features to enable. The builder derives a strategy from a target
-and caller parameters with sensible defaults.
-"""
+"""Topology build strategy."""
 
 from __future__ import annotations
 

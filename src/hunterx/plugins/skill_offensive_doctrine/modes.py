@@ -1,3 +1,5 @@
+"""Doctrine mode shortcuts and their CLI equivalents."""
+
 from __future__ import annotations
 
 MODE_MAP = {
@@ -19,4 +21,5 @@ MODE_MAP = {
 }
 
 def resolve_mode(mode_name: str) -> str:
+    """Resolve a doctrine mode shortcut to its CLI command."""
     return MODE_MAP.get(mode_name, mode_name)

@@ -3,9 +3,7 @@
 
 """Domain exception hierarchy.
 
-All errors raised by HunterX derive from :class:`HunterXError`. Subclasses are
-grouped by concern so application and infrastructure layers can catch and map
-them to API/CLI error responses consistently.
+All errors raised by HunterX derive from :class:`HunterXError`.
 """
 
 from __future__ import annotations

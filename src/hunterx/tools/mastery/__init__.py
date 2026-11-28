@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Mastery — the Sprint 025 knowledge and decision layer.
-
-Transforms HunterX from "an orchestrator that can execute security tools"
-into "a professional security operator that understands and correctly uses
-every integrated tool". Composes the Tool Intelligence Platform (TIP) with
-master profiles, a relationship graph, data-driven playbooks, mission-aware
-selection, target-specific tool history, dataset provenance, parser
-regression and result replay.
-"""
+"""Tool Mastery, the knowledge and decision layer."""
 
 from __future__ import annotations
 

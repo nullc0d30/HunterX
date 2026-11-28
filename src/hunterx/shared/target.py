@@ -3,17 +3,7 @@
 
 """Scheme-aware target normalization.
 
-Security tools take the mission target in one of two shapes:
-
-- web-facing tools (``httpx``, ``whatweb``, ...) need a full URL;
-- host/domain/network tools (``nmap``, ``subfinder``, ``dnsx``, ...) need a
-  bare hostname, IP or domain.
-
-Passing a full URL (``http://host.example:8080/app``) to a host tool silently
-yields empty results — the tool runs, finds nothing and reports success. This
-module normalizes the raw mission target into a structured :class:`TargetSpec`
-so the execution runner can hand every adapter the shape its descriptor
-declares, instead of stripping the scheme globally or passing the URL verbatim.
+Security tools take the mission target in one of two shapes.
 """
 
 from __future__ import annotations
@@ -66,7 +56,9 @@ class TargetSpec:
     @property
     def is_domain(self) -> bool:
         """Return ``True`` when the host part looks like a domain name."""
-        return bool(self.host_or_ip) and not self.is_ip and ("." in self.host_or_ip or _WILDCARD_DOMAIN_RE.match(self.host_or_ip))
+        if not self.host_or_ip or self.is_ip:
+            return False
+        return "." in self.host_or_ip or _WILDCARD_DOMAIN_RE.match(self.host_or_ip) is not None
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-safe mapping of this target spec."""
@@ -161,7 +153,7 @@ def has_meaningful_content(content: object) -> bool:
     """Return ``True`` when a normalized observation content carries evidence.
 
     A dict whose values are all empty (empty strings, ``None``, empty lists,
-    empty dicts, ``0``) carries no meaningful evidence — an empty-but-successful
+    empty dicts, ``0``) carries no meaningful evidence, an empty-but-successful
     execution must never be treated as an assessment of the target.
     """
     if isinstance(content, dict):

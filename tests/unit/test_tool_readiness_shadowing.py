@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for Defect 4 — executable shadowing detection.
-
-The live failure: the venv Python ``httpx`` CLI sat earlier in PATH than the
-Go ``httpx`` binary HunterX expects, so every httpx execution silently ran the
-wrong binary. The launcher now pins ``tools/bin`` before the venv, and
-discovery reports same-named competitors so a shadowed provider is a BROKEN
-verdict with the shadow documented — never a silent AVAILABLE.
-"""
+"""Regression tests for Defect 4, executable shadowing detection."""
 
 from __future__ import annotations
 
@@ -81,7 +74,7 @@ class TestShadowedExecutable:
     def test_venv_python_cli_shadowing_go_binary_is_shadowed_with_collision(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
         # The Python 'httpx' package CLI sits earlier in PATH (the venv). Its
         # version probe output cannot match the declared identity, so the
-        # verdict must be SHADOWED — with the preferred Go binary reported as
+        # verdict must be SHADOWED, with the preferred Go binary reported as
         # a collision so the shadowing is visible. This is never a silent
         # AVAILABLE and never a vague MISSING/NOT_INSTALLED.
         venv_bin = tmp_path / "venv" / "bin"
@@ -111,7 +104,7 @@ class TestShadowedExecutable:
     def test_tools_bin_go_binary_first_resolves_available_with_venv_shadow(self, tmp_path: pathlib.Path, _httpx_definition) -> None:  # noqa: ANN001
         # After the launcher fix, tools/bin precedes the venv: the Go binary is
         # the provider (AVAILABLE v1.10.0) and the venv Python CLI is reported
-        # as a collision — it exists but must never be executed.
+        # as a collision, it exists but must never be executed.
         tools_bin = tmp_path / "tools" / "bin"
         tools_bin.mkdir(parents=True)
         fake_executable(tools_bin, "httpx", "[INF] Current Version: v1.10.0")

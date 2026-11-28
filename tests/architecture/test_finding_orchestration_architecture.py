@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture conformance tests for the Sprint 028 finding orchestration capability.
-
-Confirms the modules land in the expected layers and respect the dependency
-policy: the finding orchestration domain stays pure (domain/shared only, never
-imports infrastructure, application or concrete tools), the application service
-never imports infrastructure/engines/cli/api, no domain module executes tools
-directly, the domain package has no cycles and the events are typed and
-catalogued.
-"""
+"""Architecture conformance tests for the finding orchestration capability."""
 
 from __future__ import annotations
 
@@ -92,7 +84,7 @@ def test_finding_domain_has_no_cycles() -> None:
 
 def test_finding_domain_never_executes_tools_directly() -> None:
     # The domain declares engines (ValidationExecutionEngine is a pure planner)
-    # but must never execute external tools: no subprocess, no dynamic code,
+    # but must never execute external tools: no subprocess, no dynamic code
     # and no imports from the tool layer (covered separately).
     for module in DOMAIN_MODULES:
         source = _read(module)

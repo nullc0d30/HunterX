@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Vulnerable target for real-mission regression: JS content + reflected SQLi on /rest/products/search?q="""
+"""Local vulnerable target for real-mission regression runs.
+
+Serves a page with inline JavaScript and a reflected SQL injection point at
+``/rest/products/search?q=``.
+"""
 import http.server
 import json
-import threading
 import urllib.parse
 
 JS_CONTENT = """
@@ -51,7 +54,10 @@ HTML_PAGE = """<!DOCTYPE html>
 """
 
 class Handler(http.server.BaseHTTPRequestHandler):
+    """Serve the regression fixture pages."""
+
     def do_GET(self):
+        """Route a request to its fixture page."""
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         if path == "/":
@@ -89,10 +95,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(b"Not Found")
 
     def log_message(self, *args):
+        """Suppress request logging."""
         pass
 
 
 def main():
+    """Run the fixture server on port 18080."""
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 18080), Handler)
     print("Serving on http://127.0.0.1:18080")
     server.serve_forever()

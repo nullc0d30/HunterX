@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sprint 033 §10 — External Attack Surface full-spectrum mission acceptance test.
-
-The target contains domains, subdomains, IPs, ports, services, cloud assets,
-SaaS integrations, CDNs, APIs, web applications, storage and third-party
-integrations. The mission constructs a unified attack-surface graph via the
-adaptive planning engine and discovers a multi-step attack path that is
-reassessed as evidence accumulates.
-"""
+"""10, External Attack Surface full-spectrum mission acceptance test."""
 
 from __future__ import annotations
 
@@ -185,7 +178,7 @@ def _scenario() -> MissionScenario:
             capability="cloud_ownership_mapping",
             kind="inconclusive",
             tool_id="manual-probe",
-            outcome="webhook signature not verifiable; ambiguous — retained not reported",
+            outcome="webhook signature not verifiable; ambiguous - retained not reported",
         )
 
     scenario.add(
@@ -198,7 +191,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 5. API surface scan (Nuclei) — no additional validated findings
+    # 5. API surface scan (Nuclei), no additional validated findings
     scenario.add(
         ToolScenario(
             capability="vulnerability_scanning",

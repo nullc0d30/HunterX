@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs Burp Suite — Comparison
+title: HunterX vs Burp Suite - Comparison
 keywords: HunterX vs Burp Suite, Burp Suite comparison, web application security testing, Burp integration
 description: >-
   HunterX vs Burp Suite: how the AI-assisted vulnerability discovery, validation
@@ -24,15 +24,15 @@ workflow.
 
 ## What HunterX offers
 
-- **Open source, Apache-2.0** — free to use, modify and distribute.
-- **Orchestration** — integrates and orchestrates the open-source security-tool
-  ecosystem (92 tools), including proxy tools.
-- **Validation and proof** — evidence-driven validation, proof contracts,
-  PoC replay and reproducibility.
-- **Automation-first** — CLI / API / Docker-first design for pipelines and
-  missions.
-- **Report-ready output** — professional reports in Markdown, HTML, JSON,
-  SARIF, PDF and package formats.
+- **Open source, Apache-2.0**, free to use, modify and distribute.
+- **Orchestration**, integrates and orchestrates the open-source security-tool
+ ecosystem (92 tools), including proxy tools.
+- **Validation and proof**, evidence-driven validation, proof contracts,
+ PoC replay and reproducibility.
+- **Automation-first**, CLI / API / Docker-first design for pipelines and
+ missions.
+- **Report-ready output**, professional reports in Markdown, HTML, JSON,
+ SARIF, PDF and package formats.
 
 ## Key differences
 
@@ -48,10 +48,10 @@ workflow.
 ## Which to choose
 
 - Use **Burp Suite** when you want a commercial, GUI-centric web testing
-  platform with deep manual controls.
+ platform with deep manual controls.
 - Use **HunterX** when you want an open-source, automated, evidence-driven
-  workflow: orchestrate many tools, validate with evidence, engineer and
-  replay PoCs, and produce report-ready findings — especially in CI/CD.
+ workflow: orchestrate many tools, validate with evidence, engineer and
+ replay PoCs, and produce report-ready findings, especially in CI/CD.
 
 ## Related
 

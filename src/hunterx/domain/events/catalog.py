@@ -3,10 +3,7 @@
 
 """Canonical event catalog.
 
-The catalog is the single source of truth for every event type the platform
-can publish. Each entry is an :class:`~hunterx.domain.events.spec.EventSpec`
-with a stable ``event_type``, category, default severity and payload version.
-Consumers subscribe by exact type or by category prefix (e.g. ``mission.*``).
+The catalog is the single source of truth for every event type the platform can publish.
 """
 
 from __future__ import annotations
@@ -93,7 +90,7 @@ def build_catalog() -> list[EventSpec]:
         _spec("mission.partial", EventCategory.MISSION, "A mission completed partially with gaps"),
         _spec("mission.quality.computed", EventCategory.MISSION, "The mission quality score was computed"),
         _spec("mission.coverage.computed", EventCategory.MISSION, "The mission coverage metrics were computed"),
-        # -- adaptive mission & attack-path planning (Sprint 027) ------------
+        # -- adaptive mission & attack-path planning () ------------
         _spec("mission.plan.revised", EventCategory.MISSION, "A mission plan revision (plan delta) was applied"),
         _spec("mission.action.proposed", EventCategory.MISSION, "A candidate action was proposed by the decision engine"),
         _spec("mission.action.approved", EventCategory.MISSION, "A proposed action was approved and scheduled"),
@@ -127,7 +124,7 @@ def build_catalog() -> list[EventSpec]:
         _spec("tool.registered", EventCategory.TOOL, "A tool adapter was registered"),
         _spec("tool.executed", EventCategory.TOOL, "A tool completed an execution"),
         _spec("tool.health", EventCategory.TOOL, "Tool health state changed"),
-        # -- toolchain intelligence (Sprint 031) ------------------------------
+        # -- toolchain intelligence () ------------------------------
         _spec("tool.execution.started", EventCategory.TOOL, "A tool execution began"),
         _spec("tool.execution.completed", EventCategory.TOOL, "A tool execution completed"),
         _spec("tool.execution.failed", EventCategory.TOOL, "A tool execution failed"),
@@ -669,7 +666,7 @@ def build_catalog() -> list[EventSpec]:
             EventCategory.VULNERABILITY,
             "A finding became REPORT_READY",
         ),
-        # -- finding orchestration (Sprint 028) ------------------------------
+        # -- finding orchestration () ------------------------------
         _spec(
             "finding.created",
             EventCategory.VULNERABILITY,
@@ -832,7 +829,7 @@ def build_catalog() -> list[EventSpec]:
         _spec("reporting.generated", EventCategory.REPORTING, "A report was generated"),
         _spec("reporting.rendered", EventCategory.REPORTING, "A report was rendered"),
         _spec("reporting.failed", EventCategory.REPORTING, "Report generation failed"),
-        # -- professional reporting (Sprint 029) -----------------------------
+        # -- professional reporting () -----------------------------
         _spec("report.created", EventCategory.REPORTING, "A professional report was created"),
         _spec("report.updated", EventCategory.REPORTING, "A professional report transitioned state"),
         _spec("report.qa.started", EventCategory.REPORTING, "Professional report QA began"),
@@ -845,7 +842,7 @@ def build_catalog() -> list[EventSpec]:
         _spec("report.retest.completed", EventCategory.REPORTING, "A professional report retest completed"),
         _spec("report.closed", EventCategory.REPORTING, "A professional report was closed"),
         _spec("report.reopened", EventCategory.REPORTING, "A professional report was reopened"),
-        # -- target memory & campaign intelligence (Sprint 030) --------------
+        # -- target memory & campaign intelligence () --------------
         _spec("target.memory.updated", EventCategory.TARGET, "Target memory observations were recorded"),
         _spec("target.snapshot.created", EventCategory.TARGET, "A reproducible target snapshot was created"),
         _spec("target.diff.created", EventCategory.TARGET, "A deterministic snapshot diff was created"),
@@ -864,11 +861,6 @@ def build_catalog() -> list[EventSpec]:
         _spec("finding.recurred", EventCategory.VULNERABILITY, "A previously remediated finding recurred"),
         # -- vulnerability capability engine (differential probes) ------------
         _spec(
-            "vulnerability.hypothesis.created",
-            EventCategory.VULNERABILITY,
-            "A vulnerability capability created a class-specific hypothesis",
-        ),
-        _spec(
             "vulnerability.probe.started",
             EventCategory.VULNERABILITY,
             "A targeted differential probe started against an authorized target",
@@ -882,16 +874,6 @@ def build_catalog() -> list[EventSpec]:
             "vulnerability.hypothesis.updated",
             EventCategory.VULNERABILITY,
             "A vulnerability hypothesis was updated by a probe verdict",
-        ),
-        _spec(
-            "vulnerability.validation.started",
-            EventCategory.VULNERABILITY,
-            "Independent validation of a vulnerability hypothesis began",
-        ),
-        _spec(
-            "vulnerability.validation.completed",
-            EventCategory.VULNERABILITY,
-            "Independent validation of a vulnerability hypothesis completed",
         ),
         _spec(
             "vulnerability.finding.validated",

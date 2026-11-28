@@ -3,9 +3,7 @@
 
 """Result types.
 
-A lightweight tagged union used instead of ad-hoc ``(ok, value, error)``
-tuples. Every public operation that can fail returns a :class:`Result`, which
-forces callers to handle both branches explicitly.
+A lightweight tagged union used instead of ad-hoc ``(ok, value, error)`` tuples.
 """
 
 from __future__ import annotations

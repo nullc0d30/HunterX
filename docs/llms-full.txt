@@ -1,4 +1,4 @@
-# HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine
+# HunterX - AI-Assisted Vulnerability Discovery, Validation & Proof Engine
 
 Full documentation index for HunterX. This file complements llms.txt with the
 complete sitemap of the documentation site and product pages.

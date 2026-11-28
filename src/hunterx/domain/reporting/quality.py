@@ -3,12 +3,8 @@
 
 """Finding quality engine.
 
-Confidence answers "how likely is this finding correct?" while quality
-answers "how strong and defensible is this report?". The quality score
-evaluates evidence quality, validation quality, proof quality,
-reproducibility, impact evidence, scope certainty, asset certainty,
-root-cause certainty, freshness, tool reliability, contradiction state and
-report completeness.
+Confidence answers "how likely is this finding correct?" while quality answers "how strong and defensible is this
+report?".
 """
 
 from __future__ import annotations

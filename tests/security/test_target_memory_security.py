@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for Target Memory & Campaign Intelligence.
-
-Verifies tenant/target isolation, cross-mission and cross-target leakage
-defense, unauthorized historical access, evidence/secret non-leakage (memory
-stores normalized references, never raw output), memory-poisoning defense,
-timestamp-manipulation handling and state-tamper resistance (immutable memory
-records).
-"""
+"""Security tests for Target Memory & Campaign Intelligence."""
 
 from __future__ import annotations
 

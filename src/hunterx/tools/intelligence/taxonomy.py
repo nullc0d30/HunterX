@@ -3,9 +3,8 @@
 
 """Tool taxonomy.
 
-A hierarchical classification of everything HunterX understands about tools:
-category → subcategory → capability → technique → mission. The taxonomy is
-data-driven so new capabilities can be added without changing the engine.
+A hierarchical classification of everything HunterX understands about tools: category to subcategory to capability
+to technique to mission.
 """
 
 from __future__ import annotations

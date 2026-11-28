@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Execution result helpers.
-
-Constructs and mutates :class:`ExecutionResult` objects across the pipeline,
-and bridges raw execution output into canonical tool output
-(:class:`ToolExecutionEvidence`) for the correlation and reporting layers.
-"""
+"""Execution result helpers."""
 
 from __future__ import annotations
 

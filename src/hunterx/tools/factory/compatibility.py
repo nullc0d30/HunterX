@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Compatibility validator for Tool Integration Packs.
-
-Builds the compatibility matrix for a pack, checks a tool version against a
-HunterX version under the SemVer compatibility rule, and reports deprecation
-status. Incompatible or malformed declarations produce a
-:class:`CompatibilityError`.
-"""
+"""Compatibility validator for Tool Integration Packs."""
 
 from __future__ import annotations
 

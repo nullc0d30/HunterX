@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API surface classification.
-
-Assigns every raw API intelligence record a canonical :class:`ApiKind` (REST,
-GraphQL, WebSocket, SOAP, RPC, unknown) and an :class:`ApiSurfaceForm` (where
-the record came from). Classification is a pure, deterministic function of the
-record's evidence — spec type, path patterns, content types, headers, query
-tokens and known signatures — so the same inputs always yield the same kind
-and form, and every result is explainable through the signals that matched.
-"""
+"""API surface classification."""
 
 from __future__ import annotations
 

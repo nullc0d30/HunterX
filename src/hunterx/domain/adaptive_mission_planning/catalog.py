@@ -3,11 +3,7 @@
 
 """Deterministic planning policies.
 
-The system must remain fully functional without AI. These policies provide the
-deterministic planning behaviors for asset discovery, coverage completion,
-hypothesis validation, proof completion, recovery, replanning and novel
-behaviour investigation. AI is an enhancement, never a single point of
-failure.
+The system must remain fully functional without AI.
 """
 
 from __future__ import annotations
@@ -102,7 +98,7 @@ _DISCOVERY_CHAINS: dict[MissionObjective, tuple[str, ...]] = {
     MissionObjective.PROOF_COLLECTION: ("proof_validation", "replay"),
 }
 
-#: Hypothesis type → validation capability chain.
+# : Hypothesis type to validation capability chain.
 _HYPOTHESIS_VALIDATION: dict[str, tuple[str, ...]] = {
     "injection": ("sql_injection", "proof_validation"),
     "xss": ("xss", "proof_validation"),

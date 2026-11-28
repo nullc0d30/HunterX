@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Generic safe fixture: a minimal loopback web server with no vulnerable surface.
-
-Used by the zero-finding release gate: a real CLI mission against this target
-must terminate honestly with 0 validated and 0 report-ready findings, must not
-invent a vulnerability, and must not loop forever. Nothing here is
-HunterX-specific or DVWA-specific.
-"""
+"""Generic safe fixture: a minimal loopback web server with no vulnerable surface."""
 
 from __future__ import annotations
 

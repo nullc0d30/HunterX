@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Secret / credential storage tests (Sprint 034.3 §22).
-
-Secrets must never be persisted in plaintext by the TIDB: the security material
-entities store masked values and hashes only, and the masking utilities are
-used at the storage boundary.
-"""
+"""Secret / credential storage tests (22)."""
 
 from __future__ import annotations
 

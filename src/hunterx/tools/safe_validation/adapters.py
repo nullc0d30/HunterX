@@ -4,10 +4,6 @@
 """Safe validation tool adapters.
 
 Deterministic, in-process safe-probe adapters used by the validation engine.
-They only ever emit canonical observations derived from bounded inputs — they
-never fetch, execute or modify anything outside the parameters they receive,
-and every probe is expected to be a read-only/passive/benign-marker check that
-already passed the scope and safety gates.
 """
 
 from __future__ import annotations
@@ -27,7 +23,7 @@ class PassiveProbeAdapter(ValidationToolAdapter):
     The ``observations`` parameter carries a list of ``{"kind", "value",
     "confidence", "metadata"}`` entries that a caller (the validation engine or
     a test harness) has already normalized. The adapter re-emits them as
-    canonical observations without alteration — raw tool output is never
+    canonical observations without alteration, raw tool output is never
     treated as a verdict by the engine.
     """
 

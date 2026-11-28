@@ -3,10 +3,8 @@
 
 """Target Intelligence scope & isolation enforcement.
 
-Sprint 026. Target intelligence MUST be isolated by tenant, mission, scope and
-authorization context — no cross-target leakage, no cross-mission
-contamination. The enforcer validates that observations, assets and changes are
-only ingested into their authorized scope, and that reads never span tenants.
+Target intelligence MUST be isolated by tenant, mission, scope and authorization context, no cross-target leakage,
+no cross-mission contamination.
 """
 
 from __future__ import annotations

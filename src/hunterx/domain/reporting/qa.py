@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Report QA engine.
-
-The QA engine checks the report before submission: missing fields,
-unsupported claims, missing evidence, missing PoC where required, invalid
-severity, invalid CVSS, invalid CWE, scope issues, secret leakage, PII
-leakage, contradictions, duplicate findings, broken references, stale
-evidence, unsupported impact and AI-hallucination indicators. Each check
-returns PASS / FAIL / WARN; a report with a blocking FAIL can never become
-``READY_FOR_SUBMISSION``.
-"""
+"""Report QA engine."""
 
 from __future__ import annotations
 

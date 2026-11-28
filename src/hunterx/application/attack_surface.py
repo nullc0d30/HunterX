@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Attack-surface application service.
-
-Bridges the target-agnostic attack-surface domain model into mission execution:
-observation intake → surface classification → graph update → capability mapping
-→ assessment-queue scheduling → exhaustion evaluation.
-
-The capability list is sourced from the live HunterX catalog (the
-vulnerability-capability registry plus the coverage vocabulary) — this module
-never hardcodes a capability set, so it stays aligned with the platform even as
-the catalog grows.
-"""
+"""Attack-surface application service."""
 
 from __future__ import annotations
 
@@ -39,7 +29,7 @@ from hunterx.domain.target_intelligence.enums import CoverageCapability
 from hunterx.shared.time import utcnow_iso
 
 #: Surface kinds whose node name is a URL. Any classified observation kind in
-#: this set is preserved verbatim on the URL node — a ``javascript``/``sink``/
+# : this set is preserved verbatim on the URL node, a ``javascript``/``sink``/
 #: ``source``/``upload``/``client_route``/``workflow`` observation never
 #: silently degrades to a generic ``endpoint`` (the discovery information is
 #: preserved for capability mapping and surface-kind coverage).
@@ -66,7 +56,7 @@ _URL_BEARING_KINDS: frozenset[str] = frozenset(
 
 #: Parameter-name hints that indicate a surface fetches remote URLs (SSRF
 #: surface) or exposes object identifiers (IDOR/BOLA surface). Applied to
-#: input attributes generically — never to a hardcoded target endpoint.
+# : input attributes generically, never to a hardcoded target endpoint.
 _FETCH_HINT_NAMES = {"url", "uri", "fetch", "next", "redirect", "callback", "destination", "return"}
 _OBJECT_HINT_NAMES = {"id", "uid", "userid", "user_id", "object", "resource", "item", "account", "key"}
 
@@ -231,7 +221,7 @@ class AttackSurfaceService:
         existing_names: dict[str, str] = {node.name: node.kind_value() for node in self.graph.nodes()}
         for entry in entries:
             # A URL already registered as a *specific* URL-bearing surface kind
-            # is never re-registered as a generic ``endpoint``/``url`` — the
+            # is never re-registered as a generic ``endpoint``/``url``, the
             # same endpoint must not be represented by two graph nodes under
             # different kinds. Nodes of non-URL kinds (target/host/technology)
             # never suppress a URL surface.
@@ -395,8 +385,8 @@ class AttackSurfaceService:
     ) -> list[dict[str, Any]]:
         """Extract URL/endpoint surface entries from discovery payload shapes.
 
-        ``default_kind`` lets a classified observation type (e.g. ``api`` →
-        ``api_endpoint``, ``graphql`` → ``graphql_operation``) shape the node
+        ``default_kind`` lets a classified observation type (e.g. ``api`` to
+        ``api_endpoint``, ``graphql`` to ``graphql_operation``) shape the node
         kind instead of defaulting every URL to ``endpoint``/``url``.
         """
         urls: list[str] = []
@@ -524,7 +514,7 @@ class AttackSurfaceService:
 
         A business object is represented dynamically: its discovered type and
         identifiers are arbitrary strings (``user``, ``order``, ``product``,
-        ...) — never hardcoded classes.
+        ...), never hardcoded classes.
         """
         entries: list[dict[str, Any]] = []
         objects: list[Any] = []

@@ -3,10 +3,7 @@
 
 """Generic mapper between TIDB domain entities and ORM model rows.
 
-TIDB entities are dataclasses whose fields mirror the ORM columns 1:1. The
-mapper copies entity fields onto a model instance (and back), converting enums
-to their stored string values and JSON-serializable values to/from the JSON
-columns. This keeps the storage adapter free of per-entity boilerplate.
+TIDB entities are dataclasses whose fields mirror the ORM columns 1:1.
 """
 
 from __future__ import annotations

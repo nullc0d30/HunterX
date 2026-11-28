@@ -3,8 +3,8 @@
 
 """API-surface Target Intelligence Database entities.
 
-Discovered API endpoints and their security posture: REST, GraphQL, SOAP and
-RPC services plus authentication/authorization models.
+Discovered API endpoints and their security posture: REST, GraphQL, SOAP and RPC services plus
+authentication/authorization models.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ class API(TidbEntity):
         base_url: API base URL.
         api_version: API version.
         auth_scheme: default authentication scheme.
-        spec_source: swagger|openapi|wsdl|... .
+        spec_source: swagger|openapi|wsdl|....
         discovered_by: tool/step that discovered it.
 
     """
@@ -103,7 +103,7 @@ class RPCService(TidbEntity):
     Attributes:
         api_id: owning API.
         name: service name.
-        protocol: rpc protocol (gRPC, XML-RPC, JSON-RPC, ...).
+        protocol: rpc protocol (gRPC, XML-RPC, JSON-RPC,...).
         endpoints: list of RPC endpoint/method references.
 
     """

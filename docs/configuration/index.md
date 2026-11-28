@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration — HunterX v7
+title: Configuration - HunterX v7
 keywords: HunterX Configuration, settings, environment variables
 description: >-
   HunterX v7 configuration reference: bundled YAML defaults, profile files, and
@@ -14,9 +14,9 @@ HunterX v7 resolves settings in order of increasing precedence:
 1. Built-in defaults.
 2. The bundled `hunterx.yaml` default profile (in the package).
 3. A user profile file (`HUNTERX_CONFIG` or `hunterx.yaml` in the current
-   directory).
-4. `HUNTERX_*` environment variables — including values loaded from a local
-   `.env` file (real environment variables win over the file).
+ directory).
+4. `HUNTERX_*` environment variables, including values loaded from a local
+ `.env` file (real environment variables win over the file).
 
 The result is a validated, typed settings object shown by `hunterx config`.
 
@@ -26,12 +26,12 @@ AI is optional. With no provider configured, HunterX uses a safe
 `NullAIClient` fallback and stays fully functional; AI-dependent operations
 report that no AI provider is configured when invoked.
 
-When you want AI, configure it **externally** — you never need to edit files
+When you want AI, configure it **externally**, you never need to edit files
 under `src/`. Create a private `.env` from the template and set the provider,
 model and API key:
 
 ```bash
-cp .env.example .env
+cp.env.example.env
 ```
 
 ```env
@@ -96,8 +96,8 @@ managed with `alembic upgrade head` / `alembic downgrade`.
 
 ## See also
 
-- [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI
-  with `.env`, Docker and troubleshooting
-- [Quickstart]({{ '/quickstart/' | relative_url }}) — getting started
-- [CLI Reference]({{ '/cli/' | relative_url }}) — `hunterx config` and friends
-- [Persistence (TIDB)]({{ '/v7-tidb/' | relative_url }}) — database design and migrations
+- [AI Configuration]({{ '/configuration/ai/' | relative_url }}), enable AI
+ with `.env`, Docker and troubleshooting
+- [Quickstart]({{ '/quickstart/' | relative_url }}), getting started
+- [CLI Reference]({{ '/cli/' | relative_url }}), `hunterx config` and friends
+- [Persistence (TIDB)]({{ '/v7-tidb/' | relative_url }}), database design and migrations

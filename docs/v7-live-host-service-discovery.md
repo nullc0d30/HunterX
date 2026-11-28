@@ -13,11 +13,7 @@ description: >-
 permalink: /v7-live-host-service-discovery/
 ---
 
-# HunterX v7 Live Host & Service Discovery Capability — Architecture & Reference
-
-**Status:** Ratified (Sprint 009)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Live Host & Service Discovery Capability, Architecture & Reference
 
 ---
 
@@ -32,28 +28,27 @@ Intelligence.
 It has two mandates:
 
 1. **Collect.** `LiveHostService` (the application use-case) selects the
-   registered live discovery tools from a mission's target and posture, runs
-   each through the guarded SDK lifecycle, and collects canonical observations
-   — regardless of whether the tool is an external binary (nmap, naabu,
-   masscan) or an in-process probe (tcp-connect).
+ registered live discovery tools from a mission's target and posture, runs
+ each through the guarded SDK lifecycle, and collects canonical observations, regardless of whether the tool is an external binary (nmap, naabu,
+ masscan) or an in-process probe (tcp-connect).
 2. **Turn observations into intelligence.** Hosts, ports, services, TLS
-   certificates and HTTP surfaces are validated, normalized, correlated across
-   tools with a defensible confidence score, scoped to the mission, diffed
-   against historical state, persisted into the TIDB `network` entity set and
-   reported through the `host.*` event stream.
+ certificates and HTTP surfaces are validated, normalized, correlated across
+ tools with a defensible confidence score, scoped to the mission, diffed
+ against historical state, persisted into the TIDB `network` entity set and
+ reported through the `host.*` event stream.
 
 Hard constraints (mirroring Reconnaissance and DNS Intelligence):
 
 - **SDK-only execution.** No live discovery adapter or service invokes
-  `subprocess` directly. External execution flows through
-  `hunterx.tools.recon.runner.BinaryRunner`; the in-process probe goes through
-  an injectable `ProbeFn = Callable[[str, int, float], tuple[PortState, int]]`
-  seam.
+ `subprocess` directly. External execution flows through
+ `hunterx.tools.recon.runner.BinaryRunner`; the in-process probe goes through
+ an injectable `ProbeFn = Callable[[str, int, float], tuple[PortState, int]]`
+ seam.
 - **No direct Core access.** Adapters and the service depend on ports, domain
-  models and the SDK only.
+ models and the SDK only.
 - **Golden-data tested.** The binary adapters are exercised against checked-in
-  golden output (`tests/golden/livehost/`); no real external tool is required
-  in CI.
+ golden output (`tests/golden/livehost/`); no real external tool is required
+ in CI.
 
 Scope: `src/hunterx/domain/livehost/`, `src/hunterx/tools/livehost/`,
 `src/hunterx/application/livehost.py`, the `host.*` event catalog and the
@@ -67,22 +62,22 @@ the v6 `ReconAgent`. The TIP knowledge plane is described in
 
 ## 2. Design Goals
 
-- **One canonical observation shape per kind.** Every tool — a binary parser
-  or an in-process probe — is parsed into the same `LiveHost`,
-  `PortFinding`, `ServiceFinding`, `TlsFinding` and `HttpFinding` shapes, so
-  correlation and persistence never branch on tool-specific formats.
+- **One canonical observation shape per kind.** Every tool, a binary parser
+ or an in-process probe, is parsed into the same `LiveHost`,
+ `PortFinding`, `ServiceFinding`, `TlsFinding` and `HttpFinding` shapes, so
+ correlation and persistence never branch on tool-specific formats.
 - **Tool-agnostic correlation.** Observations merge on a canonical key (e.g.
-  `address|tcp|22` for ports); two tools observing the same open port are one
-  finding, not two, and a state/fingerprint disagreement is surfaced as an
-  explicit `DiscoveryConflict` rather than silently kept.
+ `address|tcp|22` for ports); two tools observing the same open port are one
+ finding, not two, and a state/fingerprint disagreement is surfaced as an
+ explicit `DiscoveryConflict` rather than silently kept.
 - **Defensible confidence.** Every observation carries a score that is a pure
-  function of tool reliability, validation status, reachability method, port
-  state, fingerprint method, corroboration count and freshness — comparable
-  across runs and tools.
+ function of tool reliability, validation status, reachability method, port
+ state, fingerprint method, corroboration count and freshness, comparable
+ across runs and tools.
 - **Binary-free tests.** All four adapters are covered by unit tests that
-  inject a fake binary runner or a fake probe callable.
+ inject a fake binary runner or a fake probe callable.
 - **Posture-aware collection.** Passive runs fail closed: they select no live
-  tools (`LiveStrategyBuilder.tools_for(PASSIVE) == ()`).
+ tools (`LiveStrategyBuilder.tools_for(PASSIVE) == `).
 
 ---
 
@@ -90,45 +85,45 @@ the v6 `ReconAgent`. The TIP knowledge plane is described in
 
 ```mermaid
 flowchart LR
-    MP[Mission Planning] --> LS[LiveHostService]
-    LS -->|strategy + contexts| EE[ExecutionEngine]
-    EE --> PL[Lifecycle Pipeline]
-    PL --> NM[NmapAdapter]
-    NM --> BR[BinaryRunner]
-    PL --> NB[NaabuAdapter]
-    NB --> BR
-    PL --> MS[MasscanAdapter]
-    MS --> BR
-    PL --> TC[TcpConnectAdapter]
-    TC --> PF[ProbeFn seam]
-    PL -->|observations JSON| LS
-    LS -->|normalize + validate| NV[LiveNormalizer / LiveValidator]
-    NV -->|correlate| CO[LiveCorrelator]
-    CO -->|scope filter| SE[LiveScopeEnforcer]
-    SE -->|history diff| HI[LiveHistory]
-    SE -->|persist| TI[TIDB network stores]
-    LS -->|host.* events| EB[Event Bus]
+ MP[Mission Planning] --> LS[LiveHostService]
+ LS -->|strategy + contexts| EE[ExecutionEngine]
+ EE --> PL[Lifecycle Pipeline]
+ PL --> NM[NmapAdapter]
+ NM --> BR[BinaryRunner]
+ PL --> NB[NaabuAdapter]
+ NB --> BR
+ PL --> MS[MasscanAdapter]
+ MS --> BR
+ PL --> TC[TcpConnectAdapter]
+ TC --> PF[ProbeFn seam]
+ PL -->|observations JSON| LS
+ LS -->|normalize + validate| NV[LiveNormalizer / LiveValidator]
+ NV -->|correlate| CO[LiveCorrelator]
+ CO -->|scope filter| SE[LiveScopeEnforcer]
+ SE -->|history diff| HI[LiveHistory]
+ SE -->|persist| TI[TIDB network stores]
+ LS -->|host.* events| EB[Event Bus]
 ```
 
 Data flow for one run:
 
-1. `LiveHostService.run(mission_id, target, mode, tools, ...)` builds a
-   `LiveStrategy` (target kind, ports, protocol, feature flags) and selects the
-   registered live discovery tools (`ExecutionEngine.adapter_for`).
+1. `LiveHostService.run(mission_id, target, mode, tools,...)` builds a
+ `LiveStrategy` (target kind, ports, protocol, feature flags) and selects the
+ registered live discovery tools (`ExecutionEngine.adapter_for`).
 2. A shared correlation id is generated; per tool an `ExecutionContext` is
-   built with mission, target, `livehost` profile, `("network",)` permissions
-   and the merged parameters (mode, target id, ports, protocol, service
-   detection, TLS/HTTP flags).
+ built with mission, target, `livehost` profile, `("network",)` permissions
+ and the merged parameters (mode, target id, ports, protocol, service
+ detection, TLS/HTTP flags).
 3. `ExecutionEngine.execute` runs the guarded lifecycle; on success the
-   adapter's JSON payload (`observations` with a `type` discriminator) is
-   rebuilt into typed observations via `observations_from_payload`.
+ adapter's JSON payload (`observations` with a `type` discriminator) is
+ rebuilt into typed observations via `observations_from_payload`.
 4. Observations are normalized (`LiveNormalizer`) and validated
-   (`LiveValidator`), then correlated across tools by `LiveCorrelator` and
-   filtered through `LiveScopeEnforcer`.
+ (`LiveValidator`), then correlated across tools by `LiveCorrelator` and
+ filtered through `LiveScopeEnforcer`.
 5. When enabled, `LiveHistory` diffs current observations against `historical`;
-   conflicts and changes are surfaced on the batch and as events.
+ conflicts and changes are surfaced on the batch and as events.
 6. When a `TidbRepositoryFactory` is injected, observations are persisted into
-   the TIDB `network` entity set.
+ the TIDB `network` entity set.
 7. The `host.*` event stream is published at every stage.
 
 ---
@@ -173,20 +168,20 @@ Base reliability per tool (unknown tools score `0.2`):
 
 Scoring factors:
 
-- **Validation status** — multiplicative factor: `valid` 1.0, `unknown` 0.75,
-  `invalid` 0.3.
-- **Reachability method** — `tcp-syn`/`tcp-connect`/`application` 1.0, `icmp`
-  0.9, `dns` 0.7.
-- **Port state** — `open` 1.0, `closed` 0.9, `unfiltered` 0.8, `filtered` 0.7,
-  `unknown` 0.4.
-- **Fingerprint method** — `probed` 1.0, `matched` 0.95, `syn-ack` 0.7,
-  `unknown` 0.5.
-- **Corroboration** — `+0.08` per corroborating observation beyond the
-  strongest (`merged_confidence`).
-- **Freshness** — `freshness_confidence(base, age_hours)` decays toward a
-  floor of `0.5 * base` after 24h.
+- **Validation status**, multiplicative factor: `valid` 1.0, `unknown` 0.75,
+ `invalid` 0.3.
+- **Reachability method**, `tcp-syn`/`tcp-connect`/`application` 1.0, `icmp`
+ 0.9, `dns` 0.7.
+- **Port state**, `open` 1.0, `closed` 0.9, `unfiltered` 0.8, `filtered` 0.7,
+ `unknown` 0.4.
+- **Fingerprint method**, `probed` 1.0, `matched` 0.95, `syn-ack` 0.7,
+ `unknown` 0.5.
+- **Corroboration**, `+0.08` per corroborating observation beyond the
+ strongest (`merged_confidence`).
+- **Freshness**, `freshness_confidence(base, age_hours)` decays toward a
+ floor of `0.5 * base` after 24h.
 
-Scores are pure functions — the same inputs always yield the same output — and
+Scores are pure functions, the same inputs always yield the same output, and
 clamp to `[0, max_confidence]`.
 
 ---
@@ -196,23 +191,23 @@ clamp to `[0, max_confidence]`.
 `src/hunterx/domain/livehost/correlator.py`, `conflicts.py`, `scope.py`
 
 - `LiveCorrelator.correlate(...)` groups observations by canonical key per kind
-  (hosts by address, ports by `address|protocol|port`, services/TLS/HTTP by
-  their own keys) and merges corroborating observations (folding sources,
-  methods, evidence and the merged confidence). State/fingerprint disagreements
-  within a group are reported as `DiscoveryConflict`s, resolved
-  deterministically by the configured strategy (`most-confident` default).
+ (hosts by address, ports by `address|protocol|port`, services/TLS/HTTP by
+ their own keys) and merges corroborating observations (folding sources,
+ methods, evidence and the merged confidence). State/fingerprint disagreements
+ within a group are reported as `DiscoveryConflict`s, resolved
+ deterministically by the configured strategy (`most-confident` default).
 - `LiveScopeEnforcer` enforces a `LiveScopePolicy`:
-  - `roots` — an allow-list of names.
-  - `root_cidrs` — an allow-list of address spaces; out-of-scope addresses are
-    denied.
-  - `excludes` / `excluded_cidrs` — explicit deny lists.
-  - `excluded_ip` / `excluded_ports` — per-address and per-port denies.
-  - An empty policy (no roots/cidrs configured) is fail-open: nothing is out of
-    scope.
-  - `filter_observations(observations)` drops denied observations before
-    persistence.
+ - `roots`, an allow-list of names.
+ - `root_cidrs`, an allow-list of address spaces; out-of-scope addresses are
+ denied.
+ - `excludes` / `excluded_cidrs`, explicit deny lists.
+ - `excluded_ip` / `excluded_ports`, per-address and per-port denies.
+ - An empty policy (no roots/cidrs configured) is fail-open: nothing is out of
+ scope.
+ - `filter_observations(observations)` drops denied observations before
+ persistence.
 - `LiveConflictResolver` (`conflicts.py`) picks the surviving value and records
-  the reason, so downstream consumers can trace why one answer won.
+ the reason, so downstream consumers can trace why one answer won.
 
 ---
 
@@ -297,40 +292,40 @@ drops them first.
 
 1. Registers the live discovery tools into TIP (`register_live_tools`).
 2. Registers the four adapters on the `ExecutionEngine`
-   (`register_live_adapters`).
+ (`register_live_adapters`).
 3. Builds the TIDB factory: `SqlTidbRepositoryFactory` when a SQL session is
-   configured, else `InMemoryTidbRepositoryFactory`.
-4. Wires `LiveHostService(engine, stores, event_bus, scope)` and registers it —
-   plus the `TidbRepositoryFactory` port — in the dependency container.
+ configured, else `InMemoryTidbRepositoryFactory`.
+4. Wires `LiveHostService(engine, stores, event_bus, scope)` and registers it,
+ plus the `TidbRepositoryFactory` port, in the dependency container.
 5. Exposes `Platform.livehost_service` and `Platform.tidb`.
 
 ---
 
 ## 11. Testing Strategy
 
-- `tests/unit/test_livehost_domain.py` — models, normalization, validation,
-  confidence, correlation, conflict resolution, scope enforcement, strategy,
-  history (71 tests).
-- `tests/unit/test_livehost_adapters.py` — nmap argv generation and golden-XML
-  parsing, naabu JSONL, masscan JSON, tcp-connect probe outcomes via
-  `FakeRunner`/injected `ProbeFn`, registry/TIP binding, one adapter exercised
-  end-to-end through the real SDK pipeline.
-- `tests/unit/test_livehost_service.py` — tool selection (and `ValueError` for
-  unregistered tools), multi-tool correlation, normalization/validation
-  outcomes, TIDB persistence via `InMemoryTidbRepositoryFactory`, `host.*`
-  event stream ordering, history comparison, passive posture selection, failure
-  path (`host.discovery.failed`).
-- `tests/unit/test_livehost_tip.py` — TIP registration, capability providers,
-  recommendation, metadata-adapter sync.
-- `tests/security/test_livehost_security.py` — argv injection resistance
-  (shell metacharacters, flag injection, credential parameters never landing in
-  argv), scope safety, excluded ports, untrusted/malformed output never
-  executed.
-- `tests/performance/test_benchmarks.py` — live normalize/validate, correlate,
-  confidence, scope and validator throughput benchmarks for the performance
-  quality gate.
-- `tests/unit/test_platform.py` — live discovery wiring in the composed
-  platform.
+- `tests/unit/test_livehost_domain.py`, models, normalization, validation,
+ confidence, correlation, conflict resolution, scope enforcement, strategy,
+ history (71 tests).
+- `tests/unit/test_livehost_adapters.py`, nmap argv generation and golden-XML
+ parsing, naabu JSONL, masscan JSON, tcp-connect probe outcomes via
+ `FakeRunner`/injected `ProbeFn`, registry/TIP binding, one adapter exercised
+ end-to-end through the real SDK pipeline.
+- `tests/unit/test_livehost_service.py`, tool selection (and `ValueError` for
+ unregistered tools), multi-tool correlation, normalization/validation
+ outcomes, TIDB persistence via `InMemoryTidbRepositoryFactory`, `host.*`
+ event stream ordering, history comparison, passive posture selection, failure
+ path (`host.discovery.failed`).
+- `tests/unit/test_livehost_tip.py`, TIP registration, capability providers,
+ recommendation, metadata-adapter sync.
+- `tests/security/test_livehost_security.py`, argv injection resistance
+ (shell metacharacters, flag injection, credential parameters never landing in
+ argv), scope safety, excluded ports, untrusted/malformed output never
+ executed.
+- `tests/performance/test_benchmarks.py`, live normalize/validate, correlate,
+ confidence, scope and validator throughput benchmarks for the performance
+ quality gate.
+- `tests/unit/test_platform.py`, live discovery wiring in the composed
+ platform.
 - Golden data lives in `tests/golden/livehost/`.
 
 All run under the default pytest gate (`-m 'not tools'`); tests that would
@@ -343,11 +338,11 @@ invoke real external binaries require the `tools` marker.
 To add a new live discovery tool:
 
 1. Add `src/hunterx/tools/livehost/<tool>.py` with an adapter subclassing
-   `LiveToolAdapter` (declare `descriptor`, implement `build_argv` and
-   `parse_output` — or, for in-process tools, a run path over the injectable
-   probe seam).
+ `LiveToolAdapter` (declare `descriptor`, implement `build_argv` and
+ `parse_output`, or, for in-process tools, a run path over the injectable
+ probe seam).
 2. Register it in `registry.py` (`LIVE_TOOL_IDS`, `LiveAdapterFactory`).
 3. Add a goldens file under `tests/golden/livehost/` and an adapter test.
 4. Add a base-reliability entry in `confidence.py` and, if it exercises new
-   taxonomy capabilities, an entry in `tip.py`.
+ taxonomy capabilities, an entry in `tip.py`.
 5. Run `pytest`, `python -m ruff check src tests`, `python -m mypy src`.

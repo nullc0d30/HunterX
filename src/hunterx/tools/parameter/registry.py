@@ -3,8 +3,8 @@
 
 """Parameter discovery tool adapter registry.
 
-Builds and registers the parameter discovery adapters (arjun, paramspider,
-kiterunner) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
+Builds and registers the parameter discovery adapters (arjun, paramspider, kiterunner) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

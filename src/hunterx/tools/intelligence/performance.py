@@ -3,8 +3,8 @@
 
 """Tool performance analyzer.
 
-Maintains historical statistics for every tool: average duration, average
-findings, success rate, false positive rate, failure rate and execution cost.
+Maintains historical statistics for every tool: average duration, average findings, success rate, false positive
+rate, failure rate and execution cost.
 """
 
 from __future__ import annotations

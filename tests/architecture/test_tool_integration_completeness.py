@@ -3,21 +3,8 @@
 
 """Tool integration completeness gate (CI).
 
-Every tool HunterX publicly claims to integrate must have machine-actionable
-knowledge — a registry that is "just a list of names" is a CI failure.
-
-The gate enforces:
-
-1. Every claimed tool has at least identity + capability + discovery knowledge
-   (it is discoverable, not merely named).
-2. The audit is internally consistent: a tool's derived maturity level always
-   matches its actual dimensions (no false ``FULLY_INTEGRATED`` claims) and a
-   ``FULLY_INTEGRATED`` tool has every dimension present.
-3. A quality floor: most claimed tools reach ``FULLY_INTEGRATED`` (command,
-   argument, invocation, output, parser, platform and safety knowledge all
-   present). Tools that honestly cannot (e.g. no reliable version probe) are
-   classified at a lower level with the missing dimensions reported — never
-   silently upgraded.
+Every tool HunterX publicly claims to integrate must have machine-actionable knowledge, a registry that is "just a
+list of names" is a CI failure.
 """
 
 from __future__ import annotations

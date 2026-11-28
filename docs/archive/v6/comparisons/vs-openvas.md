@@ -1,10 +1,10 @@
 ---
 layout: default
-title: HunterX vs OpenVAS — Comparison
+title: HunterX vs OpenVAS - Comparison
 description: >-
   Technical comparison between HunterX (web application scanner) and OpenVAS
   (network vulnerability scanner). Architecture, focus area, deployment, and
-  use case analysis.
+  Use case analysis.
 ---
 
 ## HunterX vs OpenVAS
@@ -45,4 +45,4 @@ description: >-
 - **OpenVAS** for network-level vulnerability discovery and compliance
 - **HunterX** for deep web application security testing and CI/CD integration
 
-Both tools complement each other in a comprehensive security assessment program.
+Both tools complement each other in a complete security assessment program.

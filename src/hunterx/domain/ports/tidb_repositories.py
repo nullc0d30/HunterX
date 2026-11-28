@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Repository port for TIDB entities.
-
-A generic, entity-typed CRUD contract covering the system-of-record needs of
-the TIDB: paginated reads, field filters, bulk writes, streaming for large
-result sets and both hard and soft deletion. SQL and in-memory adapters
-implement this port.
-"""
+"""Repository port for TIDB entities."""
 
 from __future__ import annotations
 

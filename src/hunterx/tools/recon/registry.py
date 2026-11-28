@@ -3,10 +3,7 @@
 
 """Recon tool adapter registry.
 
-Builds and registers the six recon adapters on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the recon tool set, so callers (tests, the recon service, the
-platform) never construct individual adapters.
+Builds and registers the six recon adapters on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

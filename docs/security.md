@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Security Policy — HunterX
+title: Security Policy - HunterX
 description: >-
   HunterX security policy: responsible use, vulnerability disclosure,
   supported versions, and security-related configuration for the security
@@ -25,9 +25,9 @@ illegal activity, damage, or any other unethical use of the software. See the
 
 | Version | Supported |
 |---------|-----------|
-| 7.x | ✅ |
-| 6.x | ❌ (archived) |
-| < 6 | ❌ |
+| 7.x | yes |
+| 6.x | no (archived) |
+| < 6 | no |
 
 ## Reporting a Vulnerability
 
@@ -35,9 +35,9 @@ HunterX takes security seriously. If you discover a security vulnerability in
 HunterX itself (not a target being scanned), please report it privately:
 
 1. **GitHub Private Vulnerability Reporting**: Use the "Security" tab in the
-   repository
+ repository
 2. **Email**: Open a public issue requesting a secure communication channel
-   (do NOT include vulnerability details)
+ (do NOT include vulnerability details)
 
 Do NOT report security vulnerabilities in public GitHub issues.
 
@@ -52,20 +52,20 @@ Do NOT report security vulnerabilities in public GitHub issues.
 
 HunterX v7 is designed for safe, evidence-driven, authorized assessment:
 
-- **Scope and authorization guards** — missions carry authorization contexts and
-  scope policies; targets outside scope are rejected.
-- **Sandboxing** — plugins and tool execution run in an isolated sandbox with
-  timeout and resource limits.
-- **Evidence-gated confidence** — findings require reproducible, controlled
-  evidence; PoC replay never treats a bare HTTP 200 as success.
-- **Secret masking** — credentials and tokens are masked and never persisted in
-  findings or reports.
-- **Safe XML parsing** — `defusedxml` hardens all XML parsing (no XXE / entity
-  expansion).
-- **Non-root Docker** — the container runs as a non-root user.
-- **Rate limiting** — token-bucket algorithm prevents accidental DoS.
-- **Opt-in API authentication** — the REST API supports API-key auth with
-  admin/read-only roles.
+- **Scope and authorization guards**, missions carry authorization contexts and
+ scope policies; targets outside scope are rejected.
+- **Sandboxing**, plugins and tool execution run in an isolated sandbox with
+ timeout and resource limits.
+- **Evidence-gated confidence**, findings require reproducible, controlled
+ evidence; PoC replay never treats a bare HTTP 200 as success.
+- **Secret masking**, credentials and tokens are masked and never persisted in
+ findings or reports.
+- **Safe XML parsing**, `defusedxml` hardens all XML parsing (no XXE / entity
+ expansion).
+- **Non-root Docker**, the container runs as a non-root user.
+- **Rate limiting**, token-bucket algorithm prevents accidental DoS.
+- **Opt-in API authentication**, the REST API supports API-key auth with
+ admin/read-only roles.
 
 See [Responsible Use]({{ '/responsible-use/' | relative_url }}) and the
 [Security Pipeline]({{ '/v7-security-pipeline/' | relative_url }}) guide for details.

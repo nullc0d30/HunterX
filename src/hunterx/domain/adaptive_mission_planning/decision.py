@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Action decision engine.
-
-The decision engine transforms target intelligence, coverage, unknowns,
-hypotheses, mission objective, constraints, available tools and proof state
-into ranked, policy-filtered candidate actions. Every candidate carries an
-explainable rationale (why this action, why now, what information it provides,
-what hypothesis it tests, what evidence is expected, what proof it enables,
-which alternatives were rejected and why).
-"""
+"""Action decision engine."""
 
 from __future__ import annotations
 
@@ -77,7 +69,7 @@ class DecisionResult:
 
     Attributes:
         proposals: ranked :class:`ActionProposal` list (already policy-filtered).
-        rejected: policy rejections (action id → :class:`PolicyDecision`).
+        rejected: policy rejections (action id to :class:`PolicyDecision`).
         decision: the explainable decision record.
         scores: per-action :class:`ScoringResult` map.
 

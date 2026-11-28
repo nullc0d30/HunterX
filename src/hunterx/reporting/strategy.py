@@ -3,13 +3,7 @@
 
 """Vulnerability Proof Strategy report views and builders.
 
-Presentation-facing projection of the Sprint 022 strategy intelligence layer.
-The builder aggregates strategies, the evidence matrix, proof validation results
-and strategy candidates into a renderer-friendly view that explains WHY a proof
-was (or was not) validated: which security property was tested, which strategy
-was selected, which evidence was required, which was present/missing, what was
-contradictory, what the replay showed and what impact was legitimately claimed.
-Reports never expose secrets.
+Presentation-facing projection of the strategy intelligence layer.
 """
 
 from __future__ import annotations

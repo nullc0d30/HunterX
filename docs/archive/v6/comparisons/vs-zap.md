@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs OWASP ZAP — Comparison
+title: HunterX vs OWASP ZAP - Comparison
 description: >-
   Detailed technical comparison between HunterX and OWASP ZAP. Architecture,
   detection methodology, deployment models, and use case analysis for Red Team

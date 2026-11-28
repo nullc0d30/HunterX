@@ -3,10 +3,8 @@
 
 """WSDL / SOAP parser.
 
-In-process parser that models a WSDL 1.1/2.0 document into canonical SOAP API
-intelligence operations: services, ports, port types and operations with
-parameter style. Parsing is bounded to the WSDL structure (no deep XSD schema
-traversal) and never issues network traffic.
+In-process parser that models a WSDL 1.1/2.0 document into canonical SOAP API intelligence operations: services,
+ports, port types and operations with parameter style.
 """
 
 from __future__ import annotations

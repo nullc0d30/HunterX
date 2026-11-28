@@ -3,15 +3,7 @@
 
 """Focused regression tests for the mission-runner workflow defects.
 
-Each test class pins one defect:
-
-1. Scheme-aware target normalization (web vs host tools).
-2. Empty-but-successful results are never TESTED coverage without evidence.
-3. Replanned capabilities are re-checked against tool readiness.
-5. Empty observations never fabricate phantom target-model entities.
-6. Observations only create hypotheses/findings when they carry evidence.
-7. The orchestration phase advances with the meaningful workflow state.
-8. Every terminal runner exit finalizes the run (idempotent).
+Each test class pins one defect.
 """
 
 from __future__ import annotations
@@ -318,7 +310,7 @@ class TestDefect5NoPhantomEntities:
         runner.run(mission_id, max_cycles=8)
 
         mission = orchestration.get(mission_id)
-        # The target's root asset is a legitimate entity (Target → Asset); an
+        # The target's root asset is a legitimate entity (Target to Asset); an
         # empty/uninformative observation must never fabricate phantom
         # *discovered* child assets, services, endpoints or technologies.
         assert mission.context.assets, "the URL target must register a root asset"
@@ -502,7 +494,7 @@ class TestDefect7PhaseAdvancement:
         runner.run(mission_id, max_cycles=16)
 
         mission = orchestration.get(mission_id)
-        # The phase reflects the workflow state — it is never stuck at
+        # The phase reflects the workflow state, it is never stuck at
         # target_modeling after meaningful discovery. An assessment that cannot
         # discharge its actionable hypotheses stops at the last genuine phase
         # (blocked), never a false reporting.
@@ -551,7 +543,7 @@ class TestDefect8RunFinalization:
 
         mission = orchestration.get(mission_id)
         # The run finalizes deterministically, but with the objectives still
-        # incomplete the truthful terminal is BLOCKED — never "completed".
+        # incomplete the truthful terminal is BLOCKED, never "completed".
         assert result["status"] == "blocked"
         assert mission.outcome is not None
         assert mission.outcome.objectives_complete is False

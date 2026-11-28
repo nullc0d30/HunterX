@@ -3,9 +3,7 @@
 
 """Asset entity.
 
-An asset is a discovered resource within scope: a host, a service, a web
-application, or a cloud resource. Assets form the graph nodes the knowledge
-engine and correlation engine operate on.
+An asset is a discovered resource within scope: a host, a service, a web application, or a cloud resource.
 """
 
 from __future__ import annotations
@@ -23,7 +21,7 @@ class Asset(TidbEnvelopeMixin):
 
     Attributes:
         name: display name of the asset.
-        asset_type: kind of asset (host, service, application, ...).
+        asset_type: kind of asset (host, service, application,...).
         mission_id: mission that discovered this asset.
         properties: JSON-serializable attribute map.
         updated_at / first_seen / last_seen / version / revision /

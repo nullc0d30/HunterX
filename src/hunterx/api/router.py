@@ -3,9 +3,8 @@
 
 """API router registry.
 
-Routes are declared as :class:`RouteSpec` data instead of being bound to a
-web framework, so the same route table can drive FastAPI today and another
-framework later.
+Routes are declared as :class:`RouteSpec` data instead of being bound to a web framework, so the same route table
+can drive FastAPI today and another framework later.
 """
 
 from __future__ import annotations
@@ -22,7 +21,7 @@ class RouteSpec:
     """A declarative API route.
 
     Attributes:
-        method: HTTP method (``GET``, ``POST``, ...).
+        method: HTTP method (``GET``, ``POST``,...).
         path: URL path with ``{placeholders}``.
         handler: the callable serving the route.
         summary: one-line description for OpenAPI docs.

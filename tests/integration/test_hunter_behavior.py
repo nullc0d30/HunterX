@@ -3,19 +3,7 @@
 
 """Hunter behavior acceptance tests.
 
-Prove the engine is a reasoning-driven autonomous security hunter, not a
-static tool orchestrator:
-
-    A. Recon drives target-modeling
-    B. Modeling drives evidence-derived hypotheses
-    C. Hypothesis drives a targeted next action
-    D. Probe result drives reassessment (hypothesis update + next decision)
-    E. Validation drives finding state (candidate -> validated finding)
-    F. Negative result affects reasoning
-    G. Profiles differ behaviorally (not just by name)
-    H. Coverage never terminates while high-value hypotheses are unresolved
-    I. The live CLI reflects reasoning state
-    J. The report reconstructs the causal chain
+Prove the engine is a reasoning-driven autonomous security hunter, not a static tool orchestrator.
 """
 
 from __future__ import annotations
@@ -149,7 +137,7 @@ class TestCHypothesisDrivesDecision:
 
         # The replanning layer must have bound a validation action to the
         # hypothesis so the decision engine can rank an evidence-driven probe.
-        graph = runner._planning.get_plan(mission_id)  # noqa: SLF001  # runner owns the plan
+        graph = runner._planning.get_plan(mission_id)  # noqa: SLF001 # runner owns the plan
         bound = [
             action
             for action in graph.actions.values()
@@ -210,9 +198,11 @@ class TestFNegativeAffectsReasoning:
         # The next decision after the failure must differ from re-running the
         # failed capability as the first choice whenever alternatives exist.
         failed_cap = nuclei_negatives[0].capability
-        for decision in mission.decisions:
-            if decision.capability == failed_cap:
-                assert decision.factors.get("information_gain", 1.0) < 0.8
+        failed_decisions = [d for d in mission.decisions if d.capability == failed_cap]
+        assert failed_decisions, "the failed capability must have been decided"
+        # The *later* decisions (after the failure was recorded) carry the
+        # reduced information gain; the first decision predates the failure.
+        assert failed_decisions[-1].factors.get("information_gain", 1.0) < 0.8
 
 
 class TestGProfilesDifferBehaviorally:
@@ -238,7 +228,7 @@ class TestHNoDumpOnlyBehavior:
         policy = MissionPolicyEngine()
 
         # An evidence-driven mission can discover high-value hypotheses; with
-        # coverage trivially satisfied and an unresolved high-value hypothesis,
+        # coverage trivially satisfied and an unresolved high-value hypothesis
         # the coverage stop condition MUST NOT terminate the mission.
         orchestration.add_hypothesis(
             mission_id,

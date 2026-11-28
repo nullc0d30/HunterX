@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden tests for the Adaptive Target Intelligence layer.
-
-The entire intelligence pipeline must be replayable from stored artifacts:
-artifact -> parser -> observation -> correlation -> hypothesis -> action
-recommendation, without rerunning external tools. These tests exercise the
-replay runner against golden observation fixtures and assert the derived
-state is deterministic and provenance-preserving.
-"""
+"""Golden tests for the Adaptive Target Intelligence layer."""
 
 from __future__ import annotations
 

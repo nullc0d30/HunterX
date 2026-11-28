@@ -4,12 +4,6 @@
 """Audit and version-history recording for the TIDB.
 
 Append-only audit trail plus field-level change history and version markers.
-The :class:`VersioningListener` hooks SQLAlchemy session events and records
-every create/update/soft-delete/hard-delete against the TIDB audit tables
-(``AuditLog``, ``AuditEvent``, ``ChangeHistory``, ``VersionHistory``). These
-records make every change attributable and replayable per the Development
-Bible (`09 - Database Design.md` §6). Capability logic never writes these
-tables directly; the persistence layer does.
 """
 
 from __future__ import annotations
@@ -32,7 +26,7 @@ from hunterx.shared.json_safe import to_json_safe
 from hunterx.shared.time import utcnow_iso
 
 # Audit models carry the same envelope (they extend ``TidbModelMixin``) but are
-# themselves never versioned — recording them would recurse forever.
+# themselves never versioned, recording them would recurse forever.
 _AUDIT_MODEL_CLASSES: tuple[type, ...] = (
     AuditLogModel,
     AuditEventModel,
@@ -57,7 +51,7 @@ def _snapshot(row: TidbModelMixin) -> dict[str, object]:
 
     Values are passed through the canonical :func:`to_json_safe` boundary so
     audit/history payloads are JSON-native Python structures even before the
-    engine serializer runs — a parser object that leaked into a JSON column
+    engine serializer runs, a parser object that leaked into a JSON column
     (e.g. a JavaScript ``JSToken``) can never crash the commit and is preserved
     with its semantic fields for forensics.
     """
@@ -332,7 +326,7 @@ def _install_json_sanitizer(session_factory: Any) -> None:
     This runs before every flush and ensures that any JSON/JSONB column values
     on new or dirty TIDB model instances are JSON-safe. This is a defense-in-
     depth measure that catches any non-JSON-native objects (parser tokens,
-    dataclasses, enums, datetimes, UUIDs, paths, ...) before they reach the
+    dataclasses, enums, datetimes, UUIDs, paths,...) before they reach the
     engine's JSON serializer or the versioning listener's snapshot logic.
     """
     import sqlalchemy.event

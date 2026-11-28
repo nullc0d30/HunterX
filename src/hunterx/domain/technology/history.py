@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology historical comparison.
-
-Compares current technology state against historical records to detect changes
-over time: technologies added, technologies removed, versions changed, web
-servers/frameworks/CMS swapped, CDN/WAF/hosting changes and technology
-conflicts. Every change is reported with the before/after values, timestamps
-and sources so it can be traced and correlated with security events.
-"""
+"""Technology historical comparison."""
 
 from __future__ import annotations
 

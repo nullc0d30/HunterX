@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Scope enforcement for JavaScript intelligence.
-
-Decides whether a domain or URL referenced by a script may be collected,
-reported or persisted, based on the mission's authorized root domains and
-exclusions. The enforcer is pure and deterministic, and every denial carries a
-human-readable reason.
-"""
+"""Scope enforcement for JavaScript intelligence."""
 
 from __future__ import annotations
 

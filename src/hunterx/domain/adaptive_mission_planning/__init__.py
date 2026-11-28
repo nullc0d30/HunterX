@@ -1,25 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning (Sprint 027).
-
-Transforms target intelligence, the attack-surface graph, coverage, unknowns,
-hypotheses, tool capabilities, proof requirements and the mission objective
-into a dynamic, explainable and continuously re-plannable mission.
-
-The mission is a living execution graph of :class:`ActionNode` entries
-connected by typed :class:`DynamicDependency` edges and
-:class:`ConditionalBranch` constructs. The :class:`ActionDecisionEngine`
-ranks candidate actions with explainable factors, the
-:class:`ReplanningEngine` produces versioned :class:`PlanDelta` mutations, and
-the :class:`AttackPathEngine` tracks security-relevant chains whose states are
-never collapsed (HYPOTHETICAL → SUPPORTED → VALIDATED → PROVED).
-
-Pure domain models and engines — no I/O, no tool execution. The engine facade
-(``hunterx.engines.adaptive_mission_planning``) and the application layer
-(``hunterx.application.adaptive_mission_planning``) wire these to the TIDB,
-the Sprint 025 selector and the Sprint 026 target intelligence.
-"""
+"""Adaptive Mission & Attack-Path Planning."""
 
 from __future__ import annotations
 

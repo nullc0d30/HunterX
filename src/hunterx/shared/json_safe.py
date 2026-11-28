@@ -1,43 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical JSON-safe serialization boundary.
-
-Every value that enters a JSON-backed persistence structure (SQLAlchemy
-``JSON``/``JSONB`` columns, audit snapshots, JSON-text columns, event payloads)
-MUST already be JSON-compatible. This module is the single canonical helper
-that enforces that invariant: :func:`to_json_safe` recursively transforms any
-Python value into a JSON-native structure while preserving as much semantic
-information as possible.
-
-Contract:
-
-* JSON-native scalars (``None``, ``bool``, ``int``, ``float``, ``str``) are
-  preserved exactly.
-* Mappings, sequences and sets are recursed; set/frozenset elements are sorted
-  so the output is deterministic.
-* Non-string mapping keys are stringified deterministically; collisions are
-  disambiguated with a numeric suffix so no key is silently dropped.
-* Well-known standard-library values get faithful typed representations:
-  enums keep their semantic value, datetimes become ISO-8601, UUIDs and paths
-  become strings, bytes become a bounded typed preview.
-* Dataclasses and project objects exposing ``to_json_safe_dict``/``to_dict``/
-  ``model_dump`` are expanded structurally (never reduced to ``str()``), so
-  domain objects such as the JavaScript tokenizer's ``JSToken`` survive
-  persistence with their fields intact.
-* Arbitrary objects without a structured representation fall back to a typed
-  marker with a memory-address-free ``repr`` — never ``<X object at 0x...>``.
-* Circular references terminate deterministically with a ``__circular__``
-  marker; pathological depth terminates with ``__truncated__``.
-* Non-finite floats (NaN/Infinity) become their canonical string forms so the
-  emitted document is always valid strict JSON.
-* Credential-looking mapping keys (passwords, tokens, authorization headers,
-  cookies, API keys) are masked through :mod:`hunterx.shared.masking`, so
-  fallback serialization can never leak secrets into durable storage.
-
-The function never raises on unsupported input, never mutates its arguments,
-and returns fresh containers.
-"""
+"""Canonical JSON-safe serialization boundary."""
 
 from __future__ import annotations
 
@@ -259,7 +223,7 @@ def to_json_safe(
             return {"__type__": type(value).__name__, "__circular__": True}
         active = _active | {obj_id}
         payload: dict[str, Any] = {"__type__": type(value).__name__}
-        for field_info in dataclasses.fields(value):  # type: ignore[arg-type]
+        for field_info in dataclasses.fields(value):
             field_value = getattr(value, field_info.name, None)
             safe_field = to_json_safe(field_value, _depth=_depth + 1, _active=active)
             payload[field_info.name] = _sanitize_entry(field_info.name, safe_field)

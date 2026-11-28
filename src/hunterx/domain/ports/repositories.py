@@ -3,8 +3,7 @@
 
 """Repository ports.
 
-Repositories encapsulate persistence of aggregates. Application and engine
-layers call these interfaces; SQL/object-store/graph adapters implement them.
+Repositories encapsulate persistence of aggregates.
 """
 
 from __future__ import annotations

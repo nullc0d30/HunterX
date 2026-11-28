@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology observation validation.
-
-Deterministic structural and semantic validation of technology observations:
-every record must carry a non-empty asset, a resolvable name, a valid category
-and a confidence within ``[0, 1]``. Invalid records are flagged with a
-machine-readable issue so downstream stages can drop or repair them without
-ever trusting malformed input.
-"""
+"""Technology observation validation."""
 
 from __future__ import annotations
 

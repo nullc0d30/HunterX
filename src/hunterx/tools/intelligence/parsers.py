@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Parser and normalizer registries.
-
-Sprint 023 introduces structured, typed output handling: every tool declares a
-``parser_id`` and ``normalizer_id`` in its knowledge profile, and the platform
-looks the actual callables up in these registries. A parser turns raw tool
-output into structured records; a normalizer turns those records into
-canonical observations (:class:`CanonicalObservation`).
-
-The registries are deliberately decoupled from the SDK execution pipeline so
-the Tool Intelligence Layer can validate parser/normalizer references at
-registration time and resolve them lazily at execution time.
-"""
+"""Parser and normalizer registries."""
 
 from __future__ import annotations
 
@@ -37,7 +26,7 @@ BUILTIN_NORMALIZERS: tuple[str, ...] = ("default", "domain", "url", "ip", "port"
 
 
 class ParserRegistry:
-    """Thread-safe registry mapping ``parser_id`` → parser callable.
+    """Thread-safe registry mapping ``parser_id`` to parser callable.
 
     Parser signatures: ``parser(raw_output, metadata) -> list[dict]`` where
     ``metadata`` is the tool's knowledge profile (as a mapping) and each
@@ -81,7 +70,7 @@ class ParserRegistry:
 
 
 class NormalizerRegistry:
-    """Thread-safe registry mapping ``normalizer_id`` → normalizer callable.
+    """Thread-safe registry mapping ``normalizer_id`` to normalizer callable.
 
     Normalizer signatures: ``normalizer(record, metadata) -> CanonicalObservation``.
     """

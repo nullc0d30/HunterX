@@ -4,11 +4,6 @@
 """Universal assessment queue.
 
 A target-agnostic queue of scheduled capabilities against discovered surfaces.
-Every item bundles ``surface · capability · context · authentication state ·
-authorization state · strategy · priority · status · attempts · evidence ·
-verification state`` — nothing target-specific. The queue is the scheduler's
-work source; the completion gate treats its exhaustion as one of the mandatory
-completion criteria.
 """
 
 from __future__ import annotations
@@ -21,18 +16,7 @@ from hunterx.domain.attack_surface.models import AssessmentTask, SurfaceContext
 
 
 class AssessmentQueue:
-    """A priority-aware queue of :class:`AssessmentTask` items.
-
-    Deduplication is by ``surface × capability × context``: the same
-    capability against the same surface under the same context is never queued
-    twice, while a *changed* context (a new session, a new authorization scope)
-    legitimately produces a new task.
-
-    The pending (actionable) depth is optionally bounded by ``max_pending``:
-    when the consumers cannot keep up and the queue reaches its cap, new
-    submissions are marked ``SKIPPED`` (a terminal state) with a structured
-    reason — hard backpressure so the queue can never consume unbounded RAM.
-    """
+    """A priority-aware queue of :class:`AssessmentTask` items."""
 
     def __init__(self, *, max_pending: int = 0) -> None:
         self._tasks: dict[str, AssessmentTask] = {}
@@ -57,7 +41,7 @@ class AssessmentQueue:
         A duplicate submission returns the existing task unchanged, so repeated
         discovery of the same surface never floods the queue. When the queue is
         at capacity (``max_pending``), the task is created and immediately
-        marked ``SKIPPED`` — the backpressure signal — rather than allowed to
+        marked ``SKIPPED``, the backpressure signal, rather than allowed to
         grow the actionable backlog without bound.
         """
         context = context if context is not None else SurfaceContext()

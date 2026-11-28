@@ -3,9 +3,7 @@
 
 """CLI framework.
 
-A small, dependency-free command framework. Commands are registered by name
-and dispatched from ``hunterx.cli:main``. Output rendering is pluggable
-(text, json, yaml, csv).
+A small, dependency-free command framework.
 """
 
 from __future__ import annotations

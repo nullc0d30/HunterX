@@ -3,12 +3,7 @@
 
 """Mission scope guard.
 
-The scope guard executes before every tool task. It checks the target, asset,
-endpoint, protocol, port, hostname, IP, cloud resource, URL and redirect
-target against the mission scope and classifies any discovered identifier as
-in-scope, out-of-scope, requires-authorization or unknown. Out-of-scope and
-requires-authorization identifiers are never acted upon; the decision is
-persisted and surfaced as an event.
+The scope guard executes before every tool task.
 """
 
 from __future__ import annotations

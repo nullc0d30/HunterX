@@ -1,9 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the DNS intelligence domain: models, normalization, validation,
-confidence, wildcard/DNSSEC/mail analysis, correlation, conflicts, scope,
-strategy and history."""
+"""Tests for the DNS intelligence domain: models, normalization, validation, confidence, wildcard/DNSSEC/mail analysis,
+correlation, conflicts, scope, strategy and history.
+"""
 
 from __future__ import annotations
 

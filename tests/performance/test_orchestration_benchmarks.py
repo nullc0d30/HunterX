@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance benchmarks: offensive tool orchestration.
-
-Benchmarks mission planning, dependency-graph construction, tool selection,
-execution (deterministic), coverage computation, quality scoring and
-deduplication. These are micro-benchmarks over in-memory components.
-"""
+"""Performance benchmarks: offensive tool orchestration."""
 
 from __future__ import annotations
 

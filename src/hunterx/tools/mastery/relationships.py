@@ -3,10 +3,8 @@
 
 """Tool relationship graph.
 
-Models how tools relate to one another: which tool enables another, which
-validates another, which replaces another, which conflicts, which must
-precede/follow another. The graph powers chaining, alternatives, conflict
-detection and "what should I run next" reasoning.
+Models how tools relate to one another: which tool enables another, which validates another, which replaces another,
+which conflicts, which must precede/follow another.
 """
 
 from __future__ import annotations

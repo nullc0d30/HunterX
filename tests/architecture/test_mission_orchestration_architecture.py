@@ -3,11 +3,7 @@
 
 """Architecture tests for the Autonomous Mission Orchestration layer.
 
-Sprint 032 §55. Verifies the Domain → Application → Ports → Adapters →
-Infrastructure layering: the orchestration domain stays free of I/O and
-concrete tools, the engine facade is injectable/composable, decisions are
-explainable, and mission orchestration never depends on concrete tool
-implementations.
+55.
 """
 
 from __future__ import annotations

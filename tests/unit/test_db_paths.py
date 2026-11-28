@@ -3,16 +3,7 @@
 
 """Regression tests for the database-path / persistence behaviour.
 
-Covers the database-path contract:
-
-- the default database URL resolves to ``<application root>/data/hunterx.db``
-  (never a CWD-relative ``./hunterx.db``);
-- ``HUNTERX_DATA_DIR`` overrides the data directory;
-- the ``data/`` directory is created automatically before SQLAlchemy opens the
-  database;
-- an explicitly configured ``HUNTERX_DATABASE_URL`` is honoured unchanged;
-- ``:memory:`` databases are untouched;
-- the API forces the SQL persistence layer (no silent in-memory fallback).
+Covers the database-path contract.
 """
 
 from __future__ import annotations
@@ -38,17 +29,18 @@ class TestDatabasePathResolution:
         monkeypatch.delenv("HUNTERX_ROOT", raising=False)
         resolved = resolve_database_url("sqlite:///hunterx.db")
         db_path = pathlib.Path(resolved[len("sqlite:///"):])
-        assert resolved.startswith("sqlite:////")
-        assert db_path.parent == hunterx_root() / "data"
+        assert resolved.startswith("sqlite:///")
+        assert db_path.parent == hunterx_data_dir()
         assert db_path.name == "hunterx.db"
 
     def test_data_dir_is_derived_from_root(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("HUNTERX_DATA_DIR", raising=False)
         assert hunterx_data_dir() == hunterx_root() / "data"
 
-    def test_env_override_wins(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setenv("HUNTERX_DATA_DIR", "/tmp/hx-custom-data")
-        assert hunterx_data_dir() == pathlib.Path("/tmp/hx-custom-data")
+    def test_env_override_wins(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path) -> None:
+        custom = tmp_path / "hx-custom-data"
+        monkeypatch.setenv("HUNTERX_DATA_DIR", str(custom))
+        assert hunterx_data_dir() == custom.resolve()
 
     def test_explicit_url_is_untouched(self) -> None:
         explicit = "sqlite:////custom/absolute/path/hunterx.db"
@@ -57,11 +49,12 @@ class TestDatabasePathResolution:
     def test_memory_url_is_untouched(self) -> None:
         assert resolve_database_url("sqlite:///:memory:") == "sqlite:///:memory:"
 
-    def test_root_override_wins(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setenv("HUNTERX_ROOT", "/srv/hunterx-app")
+    def test_root_override_wins(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path) -> None:
+        root = tmp_path / "hunterx-app"
+        monkeypatch.setenv("HUNTERX_ROOT", str(root))
         monkeypatch.delenv("HUNTERX_DATA_DIR", raising=False)
-        assert hunterx_root() == pathlib.Path("/srv/hunterx-app")
-        assert hunterx_data_dir() == pathlib.Path("/srv/hunterx-app/data")
+        assert hunterx_root() == root.resolve()
+        assert hunterx_data_dir() == root.resolve() / "data"
 
 
 class TestDirectoryAutoCreation:

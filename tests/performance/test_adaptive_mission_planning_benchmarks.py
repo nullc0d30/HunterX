@@ -3,9 +3,8 @@
 
 """Performance benchmarks: Adaptive Mission & Attack-Path Planning.
 
-Benchmarks initial plan creation, candidate ranking, replanning, attack-path
-discovery over large graphs and checkpoint/resume. These are micro-benchmarks
-over in-memory components.
+Benchmarks initial plan creation, candidate ranking, replanning, attack-path discovery over large graphs and
+checkpoint/resume.
 """
 
 from __future__ import annotations

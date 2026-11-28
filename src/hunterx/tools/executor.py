@@ -3,9 +3,7 @@
 
 """Tool executor.
 
-The executor is the runtime that runs tool adapters by name and returns their
-normalized output. It also implements the executor contract the workflow
-engine depends on, wiring workflow actions to concrete tools.
+The executor is the runtime that runs tool adapters by name and returns their normalized output.
 """
 
 from __future__ import annotations
@@ -61,7 +59,7 @@ class ToolExecutor:
     ) -> ToolOutput:
         """Run ``tool`` against ``target`` and return its output.
 
-        This never raises for tool failures — errors are captured inside
+        This never raises for tool failures, errors are captured inside
         :class:`ToolOutput`.
         """
         try:

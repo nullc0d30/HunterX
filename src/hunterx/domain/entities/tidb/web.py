@@ -3,9 +3,7 @@
 
 """Web-layer Target Intelligence Database entities.
 
-Technologies, HTTP surface, application structure and content entities. These
-describe what an application exposes over HTTP(S) and power fingerprinting,
-content discovery and API mapping in future capability waves.
+Technologies, HTTP surface, application structure and content entities.
 """
 
 from __future__ import annotations
@@ -21,7 +19,7 @@ class Technology(TidbEntity):
 
     Attributes:
         name: technology name.
-        category: web-server|framework|cms|waf|language|... .
+        category: web-server|framework|cms|waf|language|....
         software_version: detected version.
         cpe: CPE 2.3 identifier when known.
         service_id: owning service when detected at network layer.
@@ -90,7 +88,7 @@ class Framework(TidbEntity):
     Attributes:
         name: framework name.
         software_version: detected version.
-        language: primary language (``python``, ``javascript``, ...).
+        language: primary language (``python``, ``javascript``,...).
         url_id: owning web application URL.
         confidence: detection confidence in ``[0, 1]``.
 
@@ -268,7 +266,7 @@ class Parameter(TidbEntity):
         name: parameter name.
         location: query|body|path|cookie|header.
         value: observed value (masked when sensitive).
-        parameter_type: string|int|file|json|xml|... .
+        parameter_type: string|int|file|json|xml|....
         is_interesting: session/id/file/upload-like parameter.
 
     """
@@ -327,7 +325,7 @@ class Directory(TidbEntity):
 
 @dataclass(slots=True)
 class File(TidbEntity):
-    """A discovered file (static asset, download, backup, ...).
+    """A discovered file (static asset, download, backup,...).
 
     Attributes:
         directory_id: owning directory (when known).
@@ -377,7 +375,7 @@ class SensitiveFile(TidbEntity):
 
     Attributes:
         file_id: owning file.
-        category: backup|config|source-map|credentials|database-dump|... .
+        category: backup|config|source-map|credentials|database-dump|....
         content_hash: content hash when computed.
         discovered_by: tool/step that discovered it.
 

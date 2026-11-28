@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud intelligence tool registry.
-
-Defines the canonical ``cloud-analysis`` tool id, the adapter factory and the
-``register_cloud_adapters`` entry point used by the platform assembler to wire
-the adapter into the Tool Integration SDK execution engine.
-"""
+"""Cloud intelligence tool registry."""
 
 from __future__ import annotations
 

@@ -3,8 +3,7 @@
 
 """Tool Integration Factory application service.
 
-Framework-agnostic use-case facade over the Tool Integration Factory for API
-and CLI layers.
+Framework-agnostic use-case facade over the Tool Integration Factory for API and CLI layers.
 """
 
 from __future__ import annotations

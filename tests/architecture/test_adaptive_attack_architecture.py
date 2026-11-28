@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the adaptive attack subsystem.
-
-Verifies the Phase 2 discipline: pure domain (no infrastructure/tools/engines),
-no hardcoded tool chains, bounded controls (no runaway concurrency/retries),
-explainable state transitions, and target-agnosticism (no Juice Shop or
-target-specific objects).
-"""
+"""Architecture tests for the adaptive attack subsystem."""
 
 from __future__ import annotations
 
@@ -58,7 +52,7 @@ def test_no_hardcoded_universal_tool_pipeline() -> None:
 
 
 def test_controls_are_bounded() -> None:
-    """Every intensity control must be config-capped — never runaway."""
+    """Every intensity control must be config-capped, never runaway."""
     source = inspect.getsource(AttackControlConfig)
     for knob in ("max_concurrency", "max_pacing_s", "max_backoff_s", "max_retries"):
         assert knob in source, f"AttackControlConfig missing bound {knob}"

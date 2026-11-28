@@ -3,9 +3,7 @@
 
 """Plugin runtime context.
 
-Handed to a plugin when it activates or executes. Provides access to the
-mission, target, parameters and a sandboxed interaction surface. Secrets are
-never exposed directly — only through the redacted secrets resolver.
+Handed to a plugin when it activates or executes.
 """
 
 from __future__ import annotations

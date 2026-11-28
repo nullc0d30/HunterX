@@ -3,8 +3,7 @@
 
 """Plugin system.
 
-Manages plugin discovery, loading, lifecycle and permissions. The public
-plugin authoring surface lives in :mod:`hunterx.plugins.sdk`.
+Manages plugin discovery, loading, lifecycle and permissions.
 """
 
 from __future__ import annotations

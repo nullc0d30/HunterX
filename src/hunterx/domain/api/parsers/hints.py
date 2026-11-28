@@ -3,10 +3,8 @@
 
 """Web/JS hint fold-in parser.
 
-Converts already-persisted web-crawl, JavaScript, technology and topology
-observations into canonical API intelligence raw observations. This is the
-passive path: it consumes existing TIDB intelligence and never issues network
-traffic, so it is safe for passive postures and unit tests.
+Converts already-persisted web-crawl, JavaScript, technology and topology observations into canonical API
+intelligence raw observations.
 """
 
 from __future__ import annotations

@@ -3,10 +3,7 @@
 
 """Topology conflict detection & resolution.
 
-Preserves contradictions found while correlating relationships instead of
-silently discarding them. The detector works on raw observations grouped by
-endpoint pair; when observations disagree on the relationship type the pair is
-flagged and the highest-confidence type is selected with an explainable reason.
+Preserves contradictions found while correlating relationships instead of silently discarding them.
 """
 
 from __future__ import annotations

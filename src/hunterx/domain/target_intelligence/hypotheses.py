@@ -3,12 +3,8 @@
 
 """Hypothesis Engine.
 
-Sprint 026. The Hypothesis Engine turns observations, technologies, endpoint
-behavior, history, relationships and known-vulnerability knowledge into
-conjectures to validate. Hypotheses are never conclusions: they carry supporting
-and contradicting observations, required evidence, and validation/proof
-strategies. Novel behavior that matches no known signature enters as
-``UNKNOWN_BEHAVIOR``/``NOVEL_VARIANT`` so a finding never requires a CVE first.
+The Hypothesis Engine turns observations, technologies, endpoint behavior, history, relationships and
+known-vulnerability knowledge into conjectures to validate.
 """
 
 from __future__ import annotations

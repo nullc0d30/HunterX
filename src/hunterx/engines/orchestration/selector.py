@@ -3,11 +3,7 @@
 
 """Mission tool selection.
 
-Capability-driven tool selection for mission steps. The selector queries the
-Tool Intelligence Platform (TIP) for candidates that provide a capability,
-filters by the mission tool policy and the registered execution adapters, and
-ranks by the TIP selection score. Fallback selection returns the next best
-compatible provider when the primary tool is unavailable.
+Capability-driven tool selection for mission steps.
 """
 
 from __future__ import annotations

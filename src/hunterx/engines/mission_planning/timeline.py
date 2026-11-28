@@ -3,10 +3,7 @@
 
 """Mission timeline recorder.
 
-Appends JSON-safe facts about a mission's lifecycle to a timeline and exposes
-the history. Every state transition and notable planning event produces a
-:class:`~hunterx.domain.mission_planning.MissionTimelineEntry`. Records are
-also appended to a :class:`MissionTimelineRepository` when one is wired in.
+Appends JSON-safe facts about a mission's lifecycle to a timeline and exposes the history.
 """
 
 from __future__ import annotations

@@ -1,8 +1,6 @@
-# 01 — HunterX Vision
+# 01, HunterX Vision
 
-**Status:** Ratified
-**Version:** 1.0.0
-**Applies to:** All HunterX modules, plugins, adapters, and future sprints
+**Applies to:** All HunterX modules, plugins, adapters and future work
 **Scope:** Engineering foundation and product direction
 
 ---
@@ -10,8 +8,8 @@
 ## 1. Vision
 
 HunterX will become the industry-standard open-source security operations
-platform that any organization — from a solo bug bounty hunter to an enterprise
-red team — can deploy to plan, orchestrate, execute, validate, correlate, and
+platform that any organization, from a solo bug bounty hunter to an enterprise
+red team, can deploy to plan, orchestrate, execute, validate, correlate, and
 report complete security assessments. HunterX is the operating system for
 security testing: it does not replace the tools an operator already trusts; it
 unifies them under one intelligent, AI-driven command plane.
@@ -27,21 +25,21 @@ what tool, with what confidence, and with what business risk.
 > **To deliver a single, AI-driven security operating platform that plans,
 > orchestrates, executes, validates, correlates, and reports end-to-end security
 > assessments by integrating open-source security tools through a unified,
-> extensible, and auditable architecture — without locking operators into a
+> extensible, and auditable architecture, without locking operators into a
 > vendor toolchain.**
 
 The mission has four operational pillars:
 
-1. **Orchestrate** — Run complete, multi-phase assessments (reconnaissance →
-   enumeration → detection → validation → exploitation support → reporting)
-   as reproducible workflows, not one-off commands.
-2. **Intelligently decide** — Let an AI planner decide what to do next based on
-   live evidence, target profile, mission profile, and risk posture; never
-   blindly.
-3. **Integrate without friction** — Add any tool in a day using a documented SDK,
-   a structured knowledge file, and a validated adapter contract.
-4. **Prove everything** — Every finding is a first-class, evidence-backed,
-   versioned, and correlated data object, not a line of console text.
+1. **Orchestrate**, Run complete, multi-phase assessments (reconnaissance →
+ enumeration → detection → validation → exploitation support → reporting)
+ as reproducible workflows, not one-off commands.
+2. **Intelligently decide**, Let an AI planner decide what to do next based on
+ live evidence, target profile, mission profile, and risk posture; never
+ blindly.
+3. **Integrate without friction**, Add any tool in a day using a documented SDK,
+ a structured knowledge file, and a validated adapter contract.
+4. **Prove everything**, Every finding is a first-class, evidence-backed,
+ versioned, and correlated data object, not a line of console text.
 
 ---
 
@@ -78,20 +76,20 @@ The mission has four operational pillars:
 
 HunterX is in scope for the following **functional domains**:
 
-- **Assessment planning** — automatic and assisted planning of security missions.
-- **Orchestration** — lifecycle, scheduling, parallelization, retries, recovery.
-- **Tool integration** — adapters, parsers, normalizers, knowledge files.
-- **Intelligence gathering** — passive and active recon, OSINT, certificate
-  transparency, DNS, WHOIS, subdomain enumeration.
-- **Vulnerability detection** — scanning, fuzzing, DAST/SAST-style checks,
-  manual-probe automation, exploitation support.
-- **Validation** — proof of exploitability, false-positive reduction, evidence capture.
-- **Correlation & analysis** — attack-path reconstruction, deduplication, risk aggregation.
-- **AI assistance** — planning, reasoning, triage, correlation, report drafting.
-- **Reporting** — technical, executive, compliance, evidence packages in
-  multiple export formats (JSON, Markdown, HTML, PDF, SARIF).
-- **Operations** — CLI, REST API, scheduling, caching, telemetry, secrets, config.
-- **Knowledge** — Target Intelligence Database, Knowledge Graph, CVE/CWE/CAPEC/MITRE/EPSS enrichment.
+- **Assessment planning**, automatic and assisted planning of security missions.
+- **Orchestration**, lifecycle, scheduling, parallelization, retries, recovery.
+- **Tool integration**, adapters, parsers, normalizers, knowledge files.
+- **Intelligence gathering**, passive and active recon, OSINT, certificate
+ transparency, DNS, WHOIS, subdomain enumeration.
+- **Vulnerability detection**, scanning, fuzzing, DAST/SAST-style checks,
+ manual-probe automation, exploitation support.
+- **Validation**, proof of exploitability, false-positive reduction, evidence capture.
+- **Correlation & analysis**, attack-path reconstruction, deduplication, risk aggregation.
+- **AI assistance**, planning, reasoning, triage, correlation, report drafting.
+- **Reporting**, technical, executive, compliance, evidence packages in
+ multiple export formats (JSON, Markdown, HTML, PDF, SARIF).
+- **Operations**, CLI, REST API, scheduling, caching, telemetry, secrets, config.
+- **Knowledge**, Target Intelligence Database, Knowledge Graph, CVE/CWE/CAPEC/MITRE/EPSS enrichment.
 
 The following **assessment types** are explicitly supported (see `12 - Mission Profiles.md`):
 
@@ -113,7 +111,7 @@ The following **assessment types** are explicitly supported (see `12 - Mission P
 ## 5. Non-Goals
 
 The following are **explicitly out of scope** and must NOT be implemented in the
-core, as plugins, or as adapters without a ratified scope amendment:
+core, as plugins, or as adapters without a final scope amendment:
 
 | Non-Goal | Rationale |
 |----------|-----------|
@@ -160,7 +158,7 @@ model. See `12 - Mission Profiles.md` for the full definition.
 
 The following principles are **constitutionally binding** for every module,
 plugin, and line of engineering work in HunterX. A change that violates a
-philosophy principle requires a ratified exception in `24 - Quality Assurance.md`.
+philosophy principle requires a final exception in `24 - Quality Assurance.md`.
 
 ### P-01 · Orchestrate, Don't Rebuild
 HunterX integrates battle-tested OSS tools. We add value through
@@ -228,9 +226,9 @@ least privilege, signed artifacts, and a hardened supply chain are non-negotiabl
 - **Primary interfaces:** CLI and REST API; both are first-class citizens.
 - **Deployment:** single-node to distributed; air-gapped supported.
 - **Data stores:** SQL (relational core), Graph (knowledge), Object (evidence),
-  KV (cache). Abstraction chosen per concern; never a single global store.
+ KV (cache). Abstraction chosen per concern; never a single global store.
 - **Versioning:** Semantic Versioning (SemVer 2.0.0) across core, API, SDK, schema,
-  and knowledge base.
+ and knowledge base.
 - **Licensing:** Apache-2.0 (consistent with `pyproject.toml`).
 
 ---
@@ -239,11 +237,11 @@ least privilege, signed artifacts, and a hardened supply chain are non-negotiabl
 
 A feature, module, plugin, or tool integration is **done** when:
 
-- [ ] It complies with all ratified documents in this Bible.
+- [ ] It complies with all final documents in this Bible.
 - [ ] It passes the Quality Gates in `24 - Quality Assurance.md`.
 - [ ] It is fully covered by unit, integration, and (where relevant) golden-set tests.
 - [ ] It ships with a knowledge file, adapter, parser, normalizer, and tests
-      (for tool integrations, per `22 - Tool Integration Standard.md`).
+ (for tool integrations, per `22 - Tool Integration Standard.md`).
 - [ ] It is observable: emits structured logs, metrics, traces, and audit events.
 - [ ] It documents failure modes and recovery behavior (`17 - Error Handling Standards.md`).
 - [ ] It is documented per `16 - Documentation Standards.md`.
@@ -254,7 +252,7 @@ A feature, module, plugin, or tool integration is **done** when:
 
 ## 10. Reference
 
-- `02 - Architecture.md` — system design and subsystem contracts
-- `12 - Mission Profiles.md` — per-mission workflow and risk definitions
-- `22 - Tool Integration Standard.md` — full tool integration checklist
-- `25 - Future Expansion.md` — growth beyond 100 tools / 1,000 plugins
+- `02 - Architecture.md`, system design and subsystem contracts
+- `12 - Mission Profiles.md`, per-mission workflow and risk definitions
+- `22 - Tool Integration Standard.md`, full tool integration checklist
+- `25 - Future Expansion.md`, growth beyond 100 tools / 1,000 plugins

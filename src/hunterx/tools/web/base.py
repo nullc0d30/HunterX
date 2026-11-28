@@ -3,11 +3,7 @@
 
 """Base adapter for web crawling tools.
 
-Every web crawling tool adapter implements the SDK :class:`ToolAdapter`
-lifecycle and shares this base. External binaries (Katana) are invoked through
-the shared :class:`~hunterx.tools.recon.runner.BinaryRunner` seam; in-process
-tools run directly. All adapters serialize canonical crawl observations into
-the pipeline's JSON payload under the ``crawl`` key.
+Every web crawling tool adapter implements the SDK :class:`ToolAdapter` lifecycle and shares this base.
 """
 
 from __future__ import annotations

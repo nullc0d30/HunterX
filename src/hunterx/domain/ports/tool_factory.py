@@ -3,9 +3,7 @@
 
 """Tool Integration Factory ports.
 
-Persistence contracts for integration templates and generated tool
-integration packs. Adapters implement these (SQL, filesystem, in-memory)
-without the factory knowing where records live.
+Persistence contracts for integration templates and generated tool integration packs.
 """
 
 from __future__ import annotations

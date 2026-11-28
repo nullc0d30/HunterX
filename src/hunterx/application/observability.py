@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Observability application service.
-
-The unified internal API over the observability platform: publishing and
-subscribing to events, collecting metrics, tracing spans, checking health and
-exporting telemetry. Subsystems (engines, tools, plugins, schedulers) use this
-service instead of reaching into infrastructure directly.
-"""
+"""Observability application service."""
 
 from __future__ import annotations
 

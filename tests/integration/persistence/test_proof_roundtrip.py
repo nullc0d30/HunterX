@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Proof / PoC persistence tests (Sprint 034.3 §8).
-
-PoC metadata and evidence must round-trip with target, finding, execution
-context, tool, operation, reproduction information, validation result,
-evidence, timestamp and provenance intact, and stay linked to the correct
-finding.
-"""
+"""Proof / PoC persistence tests (8)."""
 
 from __future__ import annotations
 

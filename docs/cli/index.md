@@ -1,6 +1,6 @@
 ---
 layout: default
-title: CLI Reference — HunterX v7
+title: CLI Reference - HunterX v7
 keywords: HunterX CLI, Command Line Interface, hunterx commands
 description: >-
   Reference for the HunterX v7 command-line interface: missions, hunts,
@@ -91,7 +91,7 @@ linter for developers). Commands are grouped by capability.
 |---|---|
 | `hunterx install [--profile <name>]` | Establish the base HunterX environment (detect + verify tools) |
 | `hunterx tools check [--json]` | Show per-tool readiness and capability coverage |
-| `hunterx tools install [--profile <name>] [tool_id ...]` | Provision missing tools via trusted static methods |
+| `hunterx tools install [--profile <name>] [tool_id...]` | Provision missing tools via trusted static methods |
 | `hunterx tools audit [--json]` | Show tool integration maturity (knowledge + runtime) |
 
 Install profiles: `minimal`, `recon`, `web`, `network`, `vulnerability`, `full`.
@@ -112,6 +112,6 @@ hunterx report generate <finding_id>
 
 ## See also
 
-- [Quickstart]({{ '/quickstart/' | relative_url }}) — run a first mission
-- [Configuration]({{ '/configuration/' | relative_url }}) — environment overrides
-- [Architecture]({{ '/architecture/' | relative_url }}) — platform internals
+- [Quickstart]({{ '/quickstart/' | relative_url }}), run a first mission
+- [Configuration]({{ '/configuration/' | relative_url }}), environment overrides
+- [Architecture]({{ '/architecture/' | relative_url }}), platform internals

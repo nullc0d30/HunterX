@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool contract certification (Sprint 034.5).
-
-Proves the gate requirement "every registered tool has a defined contract":
-every tool in the certified registry exposes a consolidated machine-readable
-contract covering identity, version, category, capabilities, requirements,
-input schema, argument builder, scope model, execution profile, timeout,
-resource limits, output formats, exit-code mapping, parser, normalizer,
-artifact handling, error mapping, retry policy, evidence mapping and
-downstream capabilities.
-"""
+"""Tool contract certification."""
 
 from __future__ import annotations
 
@@ -21,7 +12,7 @@ from hunterx.platform import build_platform
 from hunterx.tools.mastery.api import ToolMasteryAPI
 from hunterx.tools.mastery.contract import build_contract
 
-#: The certified toolchain named in Sprint 034.5.
+#: The certified toolchain.
 CERTIFIED_TOOLCHAIN = {
     "amass", "subfinder", "assetfinder", "findomain", "dnsx", "massdns",
     "shuffledns", "naabu", "nmap", "masscan", "rustscan", "httpx", "whatweb",
@@ -34,7 +25,7 @@ CERTIFIED_TOOLCHAIN = {
     "exploitdb", "payloadsallthethings", "seclists", "fuzzdb",
 }
 
-#: Minimum contract dimensions mandated by the sprint brief.
+#: Minimum contract dimensions required of every tool.
 CONTRACT_DIMENSIONS = {
     "identity", "version", "category", "capabilities", "requirements",
     "input_schema", "argument_builder", "scope_model", "execution_profile",

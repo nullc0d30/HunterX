@@ -1,7 +1,5 @@
-# 14 — Performance Standards
+# 14, Performance Standards
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All components, `tests/performance/`, capacity planning, scaling
 
 ---
@@ -25,13 +23,13 @@
 ## 2. Memory
 
 - **Streaming-first:** tool outputs and large files are processed in chunks/lines;
-  no unbounded slurping. Parser API is iterator-based (`06` §3).
+ no unbounded slurping. Parser API is iterator-based (`06` §3).
 - **Bounded caches:** every cache has TTL + max entries + eviction (LRU/LFU);
-  no unbounded memoization.
+ no unbounded memoization.
 - **Graphs/adjacency:** subgraphs loaded on demand, never the full graph.
 - **AI context:** hard token budgets (`11` §4); never whole-database in prompt.
 - **Leak discipline:** async resources closed via context managers; per-mission
-  heaps released; `ResourceWarning` treated as test failure.
+ heaps released; `ResourceWarning` treated as test failure.
 - Per-process ceilings: workers enforce `max_memory_mb` per tool run (sandbox).
 
 ---
@@ -39,7 +37,7 @@
 ## 3. CPU
 
 - CPU-bound work (normalization, hashing, dedup, report rendering) off the
-  event loop: `asyncio.to_thread`/executor pools, or process pools for heavy jobs.
+ event loop: `asyncio.to_thread`/executor pools, or process pools for heavy jobs.
 - Hot paths are lazy and cached (e.g., knowledge file lookups compiled once).
 - No busy-wait loops; all waits are async/sleep-based with cancellation.
 
@@ -49,11 +47,11 @@
 
 - asyncio for I/O; per-mission and global concurrency semaphores.
 - Worker fleet for tool execution (process isolation); worker count
-  configurable; default = `2 × cores`.
+ configurable; default = `2 × cores`.
 - Distributed mode: workers consume from the shared queue
-  (`02` §5.18); mission steps execute on any worker (idempotent consumers).
+ (`02` §5.18); mission steps execute on any worker (idempotent consumers).
 - Rate limiting at the tool layer prevents target/network saturation
-  (from knowledge file `performance` + `rate_limit`).
+ (from knowledge file `performance` + `rate_limit`).
 
 ---
 
@@ -80,12 +78,12 @@ Target sizing model (approximate per engagement):
 Mechanisms:
 
 - **Chunking:** tools run over chunks (100 hosts/URLs per invocation) with
-  configurable chunk size.
+ configurable chunk size.
 - **Streaming ingest:** events batched (executemany); no per-event commits.
 - **Sampling/prioritization:** when full coverage impossible within budget,
-  prioritize by risk exposure and mark coverage gaps.
+ prioritize by risk exposure and mark coverage gaps.
 - **Rollup:** high-volume data (timeline, raw outputs) rolled up per
-  `09` §8 retention.
+ `09` §8 retention.
 
 ---
 
@@ -114,7 +112,7 @@ Mechanisms:
 - Regression gates in CI: core hot-path benchmarks must not regress > 10%.
 - Load tests: `tests/performance/load/` (locust or k6) for API and ingest.
 - Capacity tests: 1M findings triage, 10k/s ingest, 1,000 concurrent targets
-  (staged: CI smoke + nightly full).
+ (staged: CI smoke + nightly full).
 - Profiling artifacts committed on failures (cProfile/flame graphs).
 
 ---
@@ -122,9 +120,9 @@ Mechanisms:
 ## 10. Operational SLAs
 
 - SLO: API availability 99.9% (distributed); no data loss on worker crash
-  (at-least-once queue + checkpointing).
+ (at-least-once queue + checkpointing).
 - Degradation mode: on resource pressure, scheduler lowers concurrency and
-  pauses non-critical missions (graceful, logged).
+ pauses non-critical missions (graceful, logged).
 
 ---
 

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-governance tests: runtime memory instrumentation.
-
-The probe records a cross-sectional snapshot (process RSS/VmRSS, process-tree
-RSS, heap, mission aggregate sizes and serialized bytes, model context) used to
-classify where a runaway's memory actually lives.
-"""
+"""Resource-governance tests: runtime memory instrumentation."""
 
 from __future__ import annotations
 

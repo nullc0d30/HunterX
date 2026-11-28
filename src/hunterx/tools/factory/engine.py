@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Integration Factory generator engine.
-
-Runs every pack generator in a fixed order, renders integration templates,
-assembles the resulting files into a :class:`ToolPack`, validates it and
-persists it through a :class:`ToolPackRepository`. All pack generation funnels
-through this engine so every pack follows identical engineering standards.
-"""
+"""Tool Integration Factory generator engine."""
 
 from __future__ import annotations
 

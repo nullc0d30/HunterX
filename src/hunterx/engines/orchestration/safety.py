@@ -4,10 +4,6 @@
 """Mission safety enforcer.
 
 The safety enforcer executes before every tool task alongside the scope guard.
-It checks the execution policy level, the allowed safety classes, forbidden
-action names and forbidden parameter markers, and refuses anything destructive
-unless the mission safety policy explicitly permits it (which, in practice, is
-never for the default policies).
 """
 
 from __future__ import annotations

@@ -3,13 +3,7 @@
 
 """RustScan tool adapter.
 
-Integrates ``rustscan`` — an ultra-fast port scanner written in Rust — into the
-Tool Integration SDK. The adapter builds the CLI command from the execution
-context (target, port range, batches, ulimit) and parses the ``--json`` output
-(``{"host", "port", "proto"}``) into canonical :class:`PortFinding` records.
-
-RustScan is a discovery tool: an open port is an observation that must be
-confirmed and fingerprinted before it becomes a service finding.
+Integrates ``rustscan``, an ultra-fast port scanner written in Rust, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

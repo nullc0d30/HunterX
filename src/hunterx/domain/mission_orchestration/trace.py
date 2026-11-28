@@ -3,11 +3,8 @@
 
 """Structured reasoning trace.
 
-Sprint 032. Persists structured reasoning metadata — observation, hypothesis,
-decision, evidence, action, result, decision rationale — as an auditable
-reasoning graph. It never stores arbitrary uncontrolled internal
-chain-of-thought. Every entry links to its parent so the full reasoning path
-can be replayed.
+Persists structured reasoning metadata, observation, hypothesis, decision, evidence, action, result, decision
+rationale, as an auditable reasoning graph.
 """
 
 from __future__ import annotations

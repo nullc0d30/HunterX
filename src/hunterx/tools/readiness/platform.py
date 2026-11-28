@@ -3,10 +3,7 @@
 
 """Platform detection for the Tool Readiness subsystem.
 
-Detects the runtime environment so the provisioner can pick a safe, supported
-installation method. Supported families: Debian/Ubuntu/Kali/Parrot (apt),
-Arch-based (pacman), Fedora/RHEL (dnf), macOS (brew), Windows, WSL and Docker
-containers. Unsupported environments are reported clearly and never guessed.
+Detects the runtime environment so the provisioner can pick a safe, supported installation method.
 """
 
 from __future__ import annotations
@@ -29,11 +26,11 @@ class PlatformInfo:
 
     Attributes:
         os: base operating system (``linux``, ``darwin``, ``windows``).
-        distro: Linux distribution id (``ubuntu``, ``kali``, ...) or ``""``.
+        distro: Linux distribution id (``ubuntu``, ``kali``,...) or ``""``.
         distro_version: distribution version id or ``""``.
         package_manager: canonical package-manager family (``apt``, ``pacman``,
             ``dnf``, ``brew``, ``choco``, ``none``).
-        arch: machine architecture (``x86_64``, ``aarch64``, ...).
+        arch: machine architecture (``x86_64``, ``aarch64``,...).
         wsl: ``True`` when running under Windows Subsystem for Linux.
         container: ``True`` when running inside a container.
         supported: ``True`` when the platform has a supported install family.
@@ -209,7 +206,7 @@ def _is_admin() -> bool:
             return bool(ctypes.windll.shell32.IsUserAnAdmin())
         except Exception:  # noqa: BLE001 - best-effort elevation probe
             return False
-    return bool(os.geteuid() == 0)  # type: ignore[attr-defined]  # POSIX-only branch
+    return bool(os.geteuid() == 0)  # type: ignore[attr-defined] # POSIX-only branch
 
 
 __all__ = ["PlatformDetector", "PlatformInfo"]

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical web crawling domain models.
-
-Pure data contracts for the web crawling capability: the normalized URL
-observation, web origins, redirects, API/WebSocket/GraphQL endpoints,
-authentication boundaries, crawl evidence, the crawl run batch and per-tool
-execution summaries. Adapters emit these; the service correlates and persists
-them; the query service answers from the TIDB.
-"""
+"""Canonical web crawling domain models."""
 
 from __future__ import annotations
 
@@ -28,7 +21,7 @@ HTTP_METHODS_DEFAULT: tuple[str, ...] = ("GET", "HEAD")
 class WebCrawlMode(StrEnum):
     """Execution mode of a web crawl run.
 
-    Values mirror the capability matrix in the sprint: passive (no active
+    Values follow the capability matrix: passive (no active
     requests), active (in-process crawler), targeted (explicit seeds), sitemap
     (sitemap.xml), robots (robots.txt), historical (passive/historical URL
     sources), api (API-focused mapping), browser (headless-browser assisted)

@@ -3,18 +3,7 @@
 
 """JavaScript intelligence use-case services.
 
-``JavaScriptService`` is the orchestrator - the bridge between a mission and
-the JavaScript analysis tooling. Given a target, a posture and acquired script
-content, it validates scope, builds a :class:`JSStrategy`, runs the registered
-JavaScript analyzer through the :class:`ExecutionEngine` pipeline per asset,
-correlates and confidence-filters the findings, diffs history, persists
-everything to the TIDB and publishes ``javascript.*`` events.
-
-``JavaScriptQueryService`` reads persisted JavaScript intelligence back from
-the TIDB and answers the reporting queries (assets, endpoints, routes, auth,
-domains, services, storage, secrets, technology, dependencies, configuration,
-workers, wasm, security, dynamic imports, conflicts, changes and executions).
-Both services depend on ports only.
+``JavaScriptService`` is the orchestrator - the bridge between a mission and the JavaScript analysis tooling.
 """
 
 from __future__ import annotations
@@ -175,7 +164,7 @@ class JavaScriptService:
                 :class:`ValueError`.
             parameters: per-tool parameters merged into each execution
                 context. Supply ``content``/``url`` for a single asset or
-                ``assets`` (a list of ``{"content", "url", ...}`` mappings)
+                ``assets`` (a list of ``{"content", "url",...}`` mappings)
                 for multiple assets.
             with_history: compare current findings against ``historical``.
             historical: historical snapshot to diff against.

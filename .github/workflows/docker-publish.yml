@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Offensive Security Framework
+# HunterX - AI-Assisted Offensive Security Framework
 # Docker image publish workflow
 #
 # Publishes to Docker Hub: nullc0d30/hunterx

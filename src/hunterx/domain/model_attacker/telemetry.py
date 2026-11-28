@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Machine-readable telemetry for the autonomous attack loop.
-
-The invariants here are testable: for any mission with remaining applicable
-attack surface, ``validated_findings > 0`` and ``post_finding_model_calls > 0``
-must both hold — a finding must never terminate the loop.
-"""
+"""Machine-readable telemetry for the autonomous attack loop."""
 
 from __future__ import annotations
 

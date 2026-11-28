@@ -3,22 +3,7 @@
 
 """Mission orchestrator engine.
 
-Sprint 032. The stateful, adaptive, evidence-driven orchestrator. After EVERY
-meaningful result it:
-
-    1. Parses and normalizes the result into observations.
-    2. Updates target state (context, coverage, negative evidence).
-    3. Updates evidence and hypotheses (hypothesis loop).
-    4. Recalculates the attack surface.
-    5. Determines knowledge gaps.
-    6. Determines candidate actions.
-    7. Ranks actions (expected information gain).
-    8. Selects the next action.
-
-It never blindly continues a static DAG. It delegates plan mutation, attack
-paths, tool selection and failure recovery to the Sprint 027 engine
-(:class:`AdaptiveMissionPlanningEngine`) and adds the reasoning/evidence layer
-on top.
+The stateful, adaptive, evidence-driven orchestrator.
 """
 
 from __future__ import annotations
@@ -96,6 +81,7 @@ from hunterx.domain.target_intelligence.enums import (
     CoverageState,
     HypothesisType,
 )
+from hunterx.domain.vulnerability_capability.models import category_for_template as _category_for_template
 from hunterx.shared.ids import generate_id
 from hunterx.shared.target import has_meaningful_content
 from hunterx.shared.time import utcnow_iso
@@ -122,7 +108,7 @@ class MissionOrchestrator:
     The orchestrator composes the pure engines (hypothesis loop, decision,
     baseline, differential, negative evidence, coverage, knowledge gap,
     confidence, branches, telemetry, trace, policies, impact, cascade) over the
-    Sprint 027 adaptive planning engine. It is injected, never constructed with
+    adaptive planning engine. It is injected, never constructed with
     concrete tool implementations.
     """
 
@@ -173,7 +159,7 @@ class MissionOrchestrator:
 
         ``pending_plan_work`` is derived from the planning graph (non-terminal
         actions still scheduled). An objective is complete only when its
-        contract gates all pass — coverage alone never completes a full
+        contract gates all pass, coverage alone never completes a full
         assessment.
         """
         from hunterx.domain.mission_orchestration.completion import contract_for_objective
@@ -299,9 +285,9 @@ class MissionOrchestrator:
     def _seed_root_asset(self, mission: OrchestratedMission) -> None:
         """Ensure the mission context holds a valid root asset for the target.
 
-        A URL target (e.g. ``http://localhost:3010``) must produce a root asset
+        A URL target (e.g. ``http://app.example.com:8080``) must produce a root asset
         entity before any downstream services/endpoints/technologies are
-        attached — otherwise the target model is an orphaned set of children.
+        attached, otherwise the target model is an orphaned set of children.
         Idempotent: the root is seeded once.
         """
         target = mission.context.target_id or ""
@@ -460,21 +446,8 @@ class MissionOrchestrator:
     def finalize(self, mission_id: str, *, stop_condition: StopCondition | None = None) -> OrchestratedMission:
         """Finalize a mission and record its outcome.
 
-        Idempotent: an already-finalized mission (outcome recorded) is
-        returned unchanged, so every terminal runner exit path may call this
-        safely.
-
-        Termination is truthful: the stop condition is the genuinely fired one
-        (explicit or policy-evaluated). When nothing fired and the objectives
-        are NOT complete, the mission is reported as ``BLOCKED`` (no actionable
-        work / exhausted) — it is never silently converted into success.
-
-        Open non-actionable hypotheses (recon facts with no runnable test) are
-        first recorded as ``DEFERRED`` with an explicit reason so the aggregate
-        distinguishes "assessed and deferred" from "untested actionable work".
-        The planning state walks to COMPLETED only when the objectives are
-        genuinely complete; an incomplete mission walks to BLOCKED instead —
-        ``planning_state=completed`` never implies execution was complete.
+        Idempotent: an already-finalized mission (outcome recorded) is returned unchanged, so every terminal runner
+        exit path may call this safely.
         """
         mission = self.get(mission_id)
         if mission.outcome is not None:
@@ -499,7 +472,7 @@ class MissionOrchestrator:
         # ONLY be emitted when the corresponding real resource predicate is
         # true. A resource stop supplied explicitly while no resource is
         # actually exhausted is a semantic lie (the real regression: 16/1000
-        # executions with 984 remaining reported as resource exhaustion) — it
+        # executions with 984 remaining reported as resource exhaustion), it
         # is downgraded to an honest blocked/no-actionable terminal.
         if (
             condition is StopCondition.RESOURCE_BUDGET_EXHAUSTED and not mission.budget.exhausted
@@ -634,10 +607,10 @@ class MissionOrchestrator:
     def record_attack_paths(self, mission_id: str) -> list[dict[str, Any]]:
         """Record attack paths from the discovered attack-surface context.
 
-        Attack paths are intelligence only — they never trigger execution. The
-        surface graph is derived from the mission context (host → port/service
-        → endpoint) and the planning engine's attack-path engine discovers the
-        exposure→application chains. Paths are stored on the mission context
+        Attack paths are intelligence only, they never trigger execution. The
+        surface graph is derived from the mission context (host to port/service
+        to endpoint) and the planning engine's attack-path engine discovers the
+        exposure to application chains. Paths are stored on the mission context
         (for dashboards/reports) and on the adaptive mission aggregate, and
         validation state is fed from the mission's findings.
         """
@@ -780,10 +753,10 @@ class MissionOrchestrator:
             validated_map=validated_map,
         )
         mission.mission.attack_paths = paths
-        # Attack-path semantics (Phase 11): only evidence-supported paths are
+        # Attack-path semantics (): only evidence-supported paths are
         # reported as discovered attack paths. Purely structural adjacency
-        # chains (port→service, service→URL, ...) are recorded as surface
-        # relationships — never labelled as discovered attacks.
+        # chains (port to service, service to URL,...) are recorded as surface
+        # relationships, never labelled as discovered attacks.
         from hunterx.domain.adaptive_mission_planning.enums import AttackPathState
 
         supported = [path for path in paths if path.state in (AttackPathState.SUPPORTED, AttackPathState.VALIDATED, AttackPathState.PROVED)]
@@ -812,7 +785,7 @@ class MissionOrchestrator:
 
         A probe observation proves that a targeted probe ran and what it
         observed (baseline vs. payload response summary and verdict). It is
-        advisory evidence for the hypothesis loop — it is NOT vulnerability
+        advisory evidence for the hypothesis loop, it is NOT vulnerability
         evidence. Vulnerability evidence is persisted only when the probe
         verdict supports the class and flows into the finding record
         (e.g. ``BEHAVIORAL_DIFFERENTIAL``), so
@@ -876,7 +849,7 @@ class MissionOrchestrator:
         """Parse and normalize a tool result into a mission observation.
 
         This is the entry point of the adaptive loop: the orchestrator treats
-        the raw output as data — never as an instruction.
+        the raw output as data, never as an instruction.
         """
         mission = self.get(mission_id)
         observation = MissionObservation(
@@ -984,9 +957,9 @@ class MissionOrchestrator:
     def sync_phase(self, mission_id: str) -> MissionPhase:
         """Synchronize the orchestration phase from the planning state.
 
-        The canonical ``MissionPhase`` mirrors the Sprint 027 ``MissionState``
+        The canonical ``MissionPhase`` mirrors the ``MissionState``
         progression; the orchestration phase is derived from the meaningful
-        workflow state — never from the number of tools that ran.
+        workflow state, never from the number of tools that ran.
         """
         mission = self.get(mission_id)
         if self.planning is None:
@@ -1021,7 +994,7 @@ class MissionOrchestrator:
             if existing.statement == statement:
                 # The hypothesis already exists: merge the new supporting
                 # evidence so independent observations accumulate on one
-                # hypothesis (drives SUPPORTED → VALIDATED), instead of a fresh
+                # hypothesis (drives SUPPORTED to VALIDATED), instead of a fresh
                 # duplicate per observation.
                 merged_supporting = tuple(dict.fromkeys(existing.supporting_evidence + tuple(supporting)))
                 if merged_supporting and merged_supporting != existing.supporting_evidence:
@@ -1118,7 +1091,7 @@ class MissionOrchestrator:
         """Refute a hypothesis whose class-specific probe found no signal.
 
         A contradicted differential verdict means the specific weakness class
-        was not observed — the hypothesis is REFUTED (honest negative), never
+        was not observed, the hypothesis is REFUTED (honest negative), never
         silently dropped and never validated. The candidate finding stays
         candidate.
         """
@@ -1283,19 +1256,7 @@ class MissionOrchestrator:
         return decision
 
     def _candidates_from_plan(self, mission: OrchestratedMission) -> tuple[CandidateAction, ...]:
-        """Build candidate actions from the adaptive mission's ready actions.
-
-        An action explicitly bound to an open hypothesis (the replanning layer
-        links a NEW_HYPOTHESIS_CREATED validation node to its hypothesis) is
-        marked with ``hypothesis_id`` so the decision engine can rank evidence-
-        driven probes above unrelated work.
-
-        Replay protection: a ready action whose identity was already executed
-        (a materially identical action completed earlier with no new state) is
-        invalidated — its repeated branch is dropped (``SUPERSEDED``) — so the
-        planner selects another actionable branch instead of blindly re-running
-        the same tool against the same input.
-        """
+        """Build candidate actions from the adaptive mission's ready actions."""
         if self.planning is None:
             return ()
         graph = self.planning.get_plan(mission.mission_id)
@@ -1564,7 +1525,7 @@ class MissionOrchestrator:
 
         Registration is deduplicated: a candidate carrying the same
         vulnerability class and asset (endpoint) as an existing finding is
-        merged into it — accumulating unique evidence references — instead of
+        merged into it, accumulating unique evidence references, instead of
         creating a duplicate. Repeated identical observations from the same
         tool, target and endpoint therefore never multiply findings, and a
         single candidate per class+endpoint is what a validated hypothesis may
@@ -1764,7 +1725,7 @@ class MissionOrchestrator:
     def _hypothesize_from_observation(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
         """Create a hypothesis from a meaningful observation (evidence-grounded).
 
-        Hypotheses are conjectures that probing can validate — they are only
+        Hypotheses are conjectures that probing can validate, they are only
         created when the observation actually carries data supporting them, and
         never merely because a tool ran. Creation is idempotent by statement.
         """
@@ -1776,15 +1737,15 @@ class MissionOrchestrator:
         if observation.observation_type == "vulnerability":
             # Every candidate produces its own class-specific hypothesis so
             # multiple classes in one observation chain into separate probes.
-            # Informational results (WAF/DNS/tech detection, fingerprinting,
+            # Informational results (WAF/DNS/tech detection, fingerprinting
             # robots.txt, WHOIS/RDAP) are intelligence, never hypotheses.
             for candidate in _vulnerability_candidates(content):
                 if not isinstance(candidate, dict) or not candidate:
                     continue
                 if not _is_vulnerability_signal(candidate):
-                    # Explicit classification (Phase 4): an informational
+                    # Explicit classification (): an informational
                     # candidate is never silently dropped. A security-relevant
-                    # config signal (e.g. nuclei ``deprecated-tls`` →
+                    # config signal (e.g. nuclei ``deprecated-tls`` to
                     # ``security-misconfiguration``) becomes a low-priority
                     # MISCONFIGURATION hypothesis; everything else is recorded
                     # as informational evidence on the context.
@@ -1855,7 +1816,7 @@ class MissionOrchestrator:
                         continue
                 proposed.append((f"{endpoint} is a reachable endpoint of the target", HypothesisType.UNKNOWN_BEHAVIOR, {"endpoint": endpoint}, 0.0))
                 # Query parameters on the discovered surface drive targeted
-                # hypotheses (e.g. ``/redirect?to=`` → open redirect).
+                # hypotheses (e.g. ``/redirect?to=`` to open redirect).
                 for parameter in _url_query_parameters(endpoint):
                     for class_id, class_priority in _classes_for_surface(parameter):
                         proposed.append(
@@ -1940,8 +1901,8 @@ class MissionOrchestrator:
         """Derive security hypotheses from the canonical attack-surface model.
 
         Endpoints and parameters recorded in the mission context are actionable
-        surface: a discovered parameter with a class hint (``q`` → SQL
-        injection, ``id`` → IDOR, ``url`` → SSRF, ``to`` → open redirect, ...)
+        surface: a discovered parameter with a class hint (``q`` to SQL
+        injection, ``id`` to IDOR, ``url`` to SSRF, ``to`` to open redirect,...)
         produces a targeted vulnerability hypothesis even when the producing
         scanner payload had a different shape (e.g. httpx technologies with an
         ``asset`` URL). Idempotent by statement.
@@ -2032,7 +1993,7 @@ class MissionOrchestrator:
 
         Guards the attack-surface-model against duplicating a vulnerability
         hypothesis that a scanner observation (or an earlier derivation)
-        already produced for the same class and endpoint — settled or not
+        already produced for the same class and endpoint, settled or not
         (statements differ, so idempotency-by-statement alone cannot merge
         them; re-deriving a validated or refuted surface would duplicate
         probes).
@@ -2051,14 +2012,7 @@ class MissionOrchestrator:
     def _populate_context(self, mission: OrchestratedMission, observation: MissionObservation) -> None:
         """Update the target-centric context from a normalized observation.
 
-        The observation content is treated as data, never as instructions. The
-        context maps are keyed by (type:key) so the same target keeps a single
-        authoritative record per discovered item.
-
-        An observation only creates context entities when it carries meaningful
-        evidence: an empty-but-successful result (or junk with no usable
-        values) must never fabricate phantom assets, services, technologies or
-        endpoints in the target model.
+        The observation content is treated as data, never as instructions.
         """
         content = observation.content
         if not has_meaningful_content(content):
@@ -2106,7 +2060,7 @@ class MissionOrchestrator:
                 # resolve against the mission target so downstream probes stay
                 # absolute and loopback-checkable. Third-party references a JS
                 # bundle embeds (SoundCloud embeds, public RPC endpoints, SVG
-                # namespaces, ...) are NOT the target's attack surface and are
+                # namespaces,...) are NOT the target's attack surface and are
                 # skipped.
                 if observation.observation_type == "javascript":
                     endpoint = _resolve_endpoint(str(endpoint), mission.context.target_id)
@@ -2127,7 +2081,7 @@ class MissionOrchestrator:
                     }
                 # Structured records (crawler API endpoints / form actions)
                 # carry ``parameters`` and an explicit HTTP ``method``; a
-                # POST/PUT form field must be probed through a request body,
+                # POST/PUT form field must be probed through a request body
                 # which the downstream probes honor via the recorded method.
                 for record in records:
                     record_url = str(
@@ -2154,7 +2108,7 @@ class MissionOrchestrator:
             if raw is None:
                 raw = content.get("parameter")
             # Arjun's payload nests its findings: ``{"parameters": {"findings":
-            # [{"name", "endpoint", "method"}, ...]}}``.
+            # [{"name", "endpoint", "method"},...]}}``.
             if isinstance(raw, dict):
                 raw = raw.get("findings") or raw.get("parameters") or []
             parameter_records: list[dict[str, str]] = []
@@ -2185,7 +2139,7 @@ class MissionOrchestrator:
                     continue
                 if not _is_vulnerability_signal(finding):
                     # Informational scanner results (WAF detection, tech / DNS /
-                    # SPF / MX fingerprinting, robots.txt, WHOIS / RDAP, ...)
+                    # SPF / MX fingerprinting, robots.txt, WHOIS / RDAP,...)
                     # stay observations/intelligence: they never enter the
                     # candidate-finding pipeline.
                     continue
@@ -2210,17 +2164,7 @@ class MissionOrchestrator:
                     }
 
     def _objectives_satisfied(self, mission: OrchestratedMission) -> bool:
-        """Return ``True`` when the mission has genuinely satisfied its objectives.
-
-        The completion gate (Phase 12): a full security assessment is complete
-        only when its objective completion contract is satisfied — meaningful
-        work happened, no pending plan work remains, no actionable hypothesis is
-        silently left open, and every mandatory dimension (active testing,
-        browser, attack paths, validation) was assessed or explicitly
-        classified. Reconnaissance completion alone never satisfies the
-        objectives, and a mission that never ran any work is never reported as
-        complete.
-        """
+        """Return ``True`` when the mission has genuinely satisfied its objectives."""
         has_work = bool(mission.observations) or bool(mission.hypotheses) or mission.budget.executions_used > 0
         if not has_work:
             return False
@@ -2249,7 +2193,7 @@ class MissionOrchestrator:
         """Return ``True`` when open work remains but cannot be discharged.
 
         A mission is *blocked* (honest incomplete terminal) when high-value
-        hypotheses remain open with no bound, non-terminal probe action — the
+        hypotheses remain open with no bound, non-terminal probe action, the
         probe capabilities are unavailable or the target is not probeable. This
         is never reported as success and never as a budget exhaustion.
         """
@@ -2266,7 +2210,7 @@ class MissionOrchestrator:
     def _advance_to_completed(self, mission_id: str) -> None:
         """Walk the planning state machine to COMPLETED through legal hops.
 
-        The Sprint 027 state machine only permits REASSESSMENT → REPORTING →
+        The state machine only permits REASSESSMENT to REPORTING to
         COMPLETED at the tail, so the orchestrator advances the mission along
         allowed transitions instead of forcing a forbidden jump.
         """
@@ -2288,7 +2232,7 @@ class MissionOrchestrator:
             self.planning.transition(mission_id, MissionState.REPORTING)
             self.planning.complete(mission_id)
             return
-        # walk forward: any active state → REASSESSMENT → REPORTING → COMPLETED
+        # walk forward: any active state to REASSESSMENT to REPORTING to COMPLETED
         self.planning.transition(mission_id, MissionState.REASSESSMENT)
         self.planning.transition(mission_id, MissionState.REPORTING)
         self.planning.complete(mission_id)
@@ -2373,7 +2317,7 @@ def _normalize_content(raw: Any) -> dict[str, Any]:
 
 
 def _as_list(value: Any) -> list[Any]:
-    """Return a value as a list (``None`` → empty)."""
+    """Return a value as a list (``None`` to empty)."""
     if value is None:
         return []
     if isinstance(value, list):
@@ -2434,27 +2378,17 @@ def _vulnerability_class_of(candidate: Any) -> str:
 
 
 def _is_vulnerability_signal(candidate: Any) -> bool:
-    """Return ``True`` when a scanner candidate is a real vulnerability signal.
-
-    Semantic boundary: informational scanner results (WAF detection, technology
-    / DNS / SPF / MX fingerprinting, robots.txt, WHOIS / RDAP lookups, ...) are
-    observations/intelligence — they never become candidate findings or
-    vulnerability hypotheses. Only a class the engine recognizes as a real
-    vulnerability may enter the candidate pipeline. Candidates explicitly
-    rated informational (``severity: info``) are also intelligence even when
-    their template happens to canonicalize to a real class (e.g. nuclei
-    ``http-missing-security-headers``): a generic per-page detection must
-    never become a validated, report-ready finding by itself.
-    """
+    """Return ``True`` when a scanner candidate is a real vulnerability signal."""
     if not isinstance(candidate, dict) or not candidate:
         return False
     if str(candidate.get("severity") or "").strip().lower() in ("info", "informational", "none"):
         return False
+    # A real scanner detection is a vulnerability signal even when its
+    # template does not map to one of our class-specific probe capabilities:
+    # the class stays "unknown" and validation falls back to the generic
+    # scanner capability instead of silently discarding the hit.
     raw = candidate.get("vulnerability_class") or _template_of(candidate)
-    raw = str(raw).strip() or "unknown"
-    from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
-
-    return is_vulnerability_class(raw)
+    return bool(str(raw).strip())
 
 
 def _candidate_field(candidate: Any, name: str) -> str:
@@ -2503,15 +2437,15 @@ def _candidate_summary(candidate: Any) -> str:
     return json.dumps(safe, ensure_ascii=True, default=str)[:400]
 
 
-#: Parameter name hints → (canonical vulnerability class, priority). Targeted
+# : Parameter name hints to (canonical vulnerability class, priority). Targeted
 #: reasoning: a discovered parameter maps to the class its semantics imply (an
-#: object-lookup ``id`` → IDOR/BOLA, a server-side ``url`` → SSRF, a redirect
-#: ``to`` → open redirect, a search ``q`` → SQL injection, a ``file`` → LFI, a
-#: ``cmd`` → command injection, ``password``/``username`` → authentication).
+# : object-lookup ``id`` to IDOR/BOLA, a server-side ``url`` to SSRF, a redirect
+# : ``to`` to open redirect, a search ``q`` to SQL injection, a ``file`` to LFI, a
+# : ``cmd`` to command injection, ``password``/``username`` to authentication).
 #: The engine never runs every class against an endpoint. A hint may list
 #: several candidate classes; the engine derives one hypothesis per candidate
-#: so a semantically ambiguous input (``id`` → IDOR *and* SQL injection) is
-#: assessed by every capability its name implies — each candidate is then
+# : so a semantically ambiguous input (``id`` to IDOR *and* SQL injection) is
+# : assessed by every capability its name implies, each candidate is then
 #: honestly refuted or validated by differential probing.
 _PARAMETER_CLASS_HINTS: dict[str, tuple[tuple[str, float], ...]] = {
     "id": (("idor", 0.8), ("sql-injection", 0.6)),
@@ -2561,8 +2495,8 @@ def _hint_matches(hint: str, name: str) -> bool:
     """Return ``True`` when ``hint`` denotes the parameter ``name``.
 
     Matching is token-based: ``hint`` must equal the whole name or one of its
-    ``_``/``-``/``/``-separated tokens (``user_id`` → ``id``, ``callback-url``
-    → ``callback``). Substring matching would misclassify short hints (``ip``
+    ``_``/``-``/``/``-separated tokens (``user_id`` to ``id``, ``callback-url``
+    to ``callback``). Substring matching would misclassify short hints (``ip``
     would hit ``api``/``skip``, ``id`` would hit ``ids``) and fabricate
     attacker-injected hypotheses on unrelated parameters.
     """
@@ -2575,17 +2509,7 @@ def _hint_matches(hint: str, name: str) -> bool:
 
 
 def _classes_for_surface(name: str) -> list[tuple[str, float]]:
-    """Return every candidate ``(canonical_class, priority)`` for ``name``.
-
-    A named parameter maps to the semantic classes its name implies; a hint
-    with several candidates yields one class per entry (``id`` → IDOR, then
-    SQL injection). An unclassified discovered input is a candidate
-    *reflection* surface and therefore derives a cross-site scripting
-    hypothesis: the XSS capability independently probes for unescaped
-    reflection, so a non-reflecting input is honestly contradicted rather than
-    ever flagged. This is the attack-surface → XSS derivation — it is driven by
-    actual discovered parameters, never by a hardcoded endpoint.
-    """
+    """Return every candidate ``(canonical_class, priority)`` for ``name``."""
     for hint, candidates in _PARAMETER_CLASS_HINTS.items():
         if _hint_matches(hint, name):
             if candidates and isinstance(candidates[0], tuple):
@@ -2654,7 +2578,7 @@ def _url_query_parameters(url: str) -> list[str]:
 
     A crawler URL such as ``/redirect?to=https`` exposes a ``to`` parameter
     even before a dedicated parameter tool runs; recording it lets the engine
-    derive targeted hypotheses (``to`` → open redirect, ``id`` → IDOR, ...)
+    derive targeted hypotheses (``to`` to open redirect, ``id`` to IDOR,...)
     directly from the discovered surface.
     """
     from urllib.parse import parse_qsl, urlsplit
@@ -2664,7 +2588,7 @@ def _url_query_parameters(url: str) -> list[str]:
     except (ValueError, TypeError):
         return []
     # ``keep_blank_values`` keeps parameters whose value is empty (e.g. a JS
-    # template ``?q=${expr}`` records ``q`` with an empty placeholder value) —
+    # template ``?q=${expr}`` records ``q`` with an empty placeholder value)
     # the parameter name is real surface regardless of the recorded value.
     return [str(name) for name, _ in parse_qsl(query, keep_blank_values=True) if str(name).strip()]
 
@@ -2687,7 +2611,7 @@ def _endpoint_records(content: Any) -> list[Any]:
         if isinstance(crawl, dict):
             entries.extend(_as_list(crawl.get("urls")))
         # In-process javascript analysis payload: ``{"javascript": {"analyses": [
-        #   {"endpoints": [{"url": ...}, ...], ...}, ...]}}``.
+        # {"endpoints": [{"url":...},...],...},...]}}``.
         javascript = content.get("javascript")
         if isinstance(javascript, dict):
             for analysis in _as_list(javascript.get("analyses")):
@@ -2866,7 +2790,7 @@ def _coerce_candidate(value: Any) -> CandidateAction:
     raise TypeError(f"cannot coerce candidate action from {type(value).__name__}")
 
 
-#: Tool-report category names → canonical hypothesis categories.
+# : Tool-report category names to canonical hypothesis categories.
 _CATEGORY_MAP: dict[str, HypothesisType] = {
     "sql-injection": HypothesisType.INJECTION,
     "sql_injection": HypothesisType.INJECTION,
@@ -2901,8 +2825,8 @@ def _coerce_category(category: HypothesisType | str) -> HypothesisType:
         return HypothesisType.UNKNOWN_BEHAVIOR
 
 
-#: Category → hypothesis priority. Evidence that implies a weakness (injection,
-#: XSS, SSRF, ...) is high-value; discovery facts (asset/service) are low-value.
+# : Category to hypothesis priority. Evidence that implies a weakness (injection
+# : XSS, SSRF,...) is high-value; discovery facts (asset/service) are low-value.
 _HYPOTHESIS_PRIORITY: dict[str, float] = {
     "injection": 0.75,
     "xss": 0.75,
@@ -2970,7 +2894,7 @@ def _promote_stage(current: str, incoming: str) -> str:
 
 #: Stop conditions that genuinely mean the mission objectives were met. These
 #: are the only conditions that may set ``objectives_complete``; any other
-#: terminal (budget/time exhausted, operator cancelled, unrecoverable failure,
+# : terminal (budget/time exhausted, operator cancelled, unrecoverable failure
 #: blocked) leaves the objectives incomplete and is never reported as success.
 _SUCCESS_STOP_CONDITIONS = frozenset(
     {
@@ -2982,8 +2906,8 @@ _SUCCESS_STOP_CONDITIONS = frozenset(
     }
 )
 
-#: Orchestration phase derived from the Sprint 027 planning state. The phase is
-#: workflow-driven — it reflects where the mission actually is, not what ran.
+# : Orchestration phase derived from the planning state. The phase is
+# : workflow-driven, it reflects where the mission actually is, not what ran.
 _PHASE_BY_PLANNING_STATE: dict[MissionState, MissionPhase] = {
     MissionState.CREATED: MissionPhase.TARGET_MODELING,
     MissionState.SCOPING: MissionPhase.TARGET_MODELING,
@@ -3045,44 +2969,6 @@ def _ai_unavailable(mission: OrchestratedMission) -> bool:
         if content.get("ai_usable"):
             usable += 1
     return attempted and usable == 0
-
-
-def _category_for_template(template: str) -> HypothesisType:
-    """Map a vulnerability template/class name to a canonical hypothesis type."""
-    name = str(template or "").strip().lower()
-    if not name:
-        return HypothesisType.UNKNOWN_BEHAVIOR
-    if "xss" in name:
-        return HypothesisType.XSS
-    if "ssrf" in name:
-        return HypothesisType.SSRF
-    if "ssti" in name:
-        return HypothesisType.SSTI
-    if "xxe" in name:
-        return HypothesisType.XXE
-    if "lfi" in name or "rfi" in name or "path traversal" in name:
-        return HypothesisType.LFI
-    if "rce" in name or "code execution" in name or "command injection" in name:
-        return HypothesisType.RCE
-    if "sql" in name or "injection" in name:
-        return HypothesisType.INJECTION
-    if "idor" in name or "access control" in name:
-        return HypothesisType.IDOR
-    if "secret" in name or "credential" in name:
-        return HypothesisType.SECRET_EXPOSURE
-    if "auth" in name:
-        return HypothesisType.AUTHENTICATION_ISSUE
-    if "authorization" in name or "access" in name:
-        return HypothesisType.AUTHORIZATION_ISSUE
-    if "api" in name:
-        return HypothesisType.API_SECURITY
-    if "graphql" in name:
-        return HypothesisType.GRAPHQL_SECURITY
-    if "dependency" in name or "cve-" in name:
-        return HypothesisType.DEPENDENCY_VULNERABILITY
-    if "missing" in name or "misconfig" in name or "default" in name or "header" in name:
-        return HypothesisType.MISCONFIGURATION
-    return HypothesisType.UNKNOWN_BEHAVIOR
 
 
 __all__ = ["MissionOrchestrator"]

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Adaptive Mission & Attack-Path Planning engine.
-
-The golden end-to-end test (Sprint 027 §50) drives a controlled synthetic
-target through the assembled platform: create mission → establish scope →
-initial plan → discovery actions → observations → graph update → information
-gaps → plan revision → hypothesis validation → tool-capability selection →
-proof requirements → minimal safe proof → finding state → attack-path
-reassessment → final plan delta → report-ready evidence. The exact sequence of
-tools is NOT hardcoded — it emerges from the plan.
-"""
+"""Acceptance tests for the Adaptive Mission & Attack-Path Planning engine."""
 
 from __future__ import annotations
 

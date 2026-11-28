@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Governance — HunterX v7
+title: Governance - HunterX v7
 description: >-
   Governance model for HunterX open-source security project. Community
   guidelines, decision-making, and contribution process for the Linux security
@@ -72,10 +72,10 @@ Maintainers are appointed by the BDFL and can be removed for sustained inactivit
 
 ## Decision-Making Process
 
-1. **Minor changes** (bug fixes, documentation, tests) — Pull requests are reviewed and merged by maintainers.
-2. **Feature additions** — Should be discussed in a GitHub issue before implementation. The BDFL or a maintainer must approve the design.
-3. **Architectural changes** — Require a design document and discussion. The BDFL makes the final decision.
-4. **Governance changes** — Require community discussion and BDFL approval.
+1. **Minor changes** (bug fixes, documentation, tests), Pull requests are reviewed and merged by maintainers.
+2. **Feature additions**, Should be discussed in a GitHub issue before implementation. The BDFL or a maintainer must approve the design.
+3. **Architectural changes**, Require a design document and discussion. The BDFL makes the final decision.
+4. **Governance changes**, Require community discussion and BDFL approval.
 
 ---
 
@@ -83,9 +83,9 @@ Maintainers are appointed by the BDFL and can be removed for sustained inactivit
 
 Disagreements are expected in any open project. The resolution process is:
 
-1. **Direct discussion** — The parties involved discuss the issue respectfully.
-2. **Maintainer mediation** — If direct discussion fails, a maintainer mediates.
-3. **BDFL decision** — If mediation fails, the BDFL makes a final decision.
+1. **Direct discussion**, The parties involved discuss the issue respectfully.
+2. **Maintainer mediation**, If direct discussion fails, a maintainer mediates.
+3. **BDFL decision**, If mediation fails, the BDFL makes a final decision.
 
 All participants are expected to follow the Code of Conduct. Harassment, personal attacks, or other unacceptable behavior will not be tolerated.
 
@@ -98,8 +98,8 @@ HunterX follows **semantic versioning** (MAJOR.MINOR.PATCH):
 1. **Development** occurs on the `main` branch.
 2. **Release candidates** are tagged as `vMAJOR.MINOR.PATCH-rc.N` for testing.
 3. **Stable releases** are tagged as `vMAJOR.MINOR.PATCH`.
-4. **Changelog** — All notable changes are documented in `CHANGELOG.md`.
-5. **Release notes** — Each release includes notes summarizing changes, new contributors, and migration instructions.
+4. **Changelog**, All notable changes are documented in `CHANGELOG.md`.
+5. **Release notes**, Each release includes notes summarizing changes, new contributors, and migration instructions.
 
 ---
 

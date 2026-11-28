@@ -1,28 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration Engine (Sprint 032).
+"""Autonomous Mission Orchestration Engine.
 
-Turns HunterX from a *planner of command lists* into a stateful, adaptive,
-evidence-driven mission orchestrator. It reuses the Sprint 027 planning
-aggregate (:class:`AdaptiveMission` + ``AdaptiveExecutionGraph``) as the
-executable mission and adds the reasoning/evidence layer that drives the
-adaptive loop:
-
-    OBSERVE → HYPOTHESIZE → TEST → OBSERVE → UPDATE HYPOTHESIS → TEST →
-    VERIFY → PROVE
-
-The orchestrator ranks every candidate action by expected information gain,
-maintains baseline + differential testing, bounded negative evidence, mission
-coverage, knowledge gaps, evidence-driven confidence, mission branches,
-telemetry, a structured reasoning trace, mission policies and stop conditions,
-impact analysis and finding cascades. AI suggestions are advisory only —
-deterministic components enforce schema, state transitions, tool contracts,
-scope, persistence and evidence provenance.
-
-Pure domain models and engines — no I/O, no tool execution. The engine facade
-(``hunterx.engines.mission_orchestration``) and the application layer
-(``hunterx.application.mission_orchestration``) wire these to the platform.
+Turns HunterX from a *planner of command lists* into a stateful, adaptive, evidence-driven mission orchestrator.
 """
 
 from __future__ import annotations

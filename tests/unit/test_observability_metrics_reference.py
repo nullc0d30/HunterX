@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Metrics reference tests.
-
-Covers the twelve canonical metrics the platform must collect (Development
-Bible `Performance Standards`): execution duration, tool runtime, queue size,
-mission duration, error/success/failure rates, retry count, memory and CPU
-usage, database latency and cache hit ratio.
-"""
+"""Metrics reference tests."""
 
 from __future__ import annotations
 

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authorization intelligence correlation and conflict detection.
-
-Correlates authorization observations from multiple sources into a single
-canonical set, merging corroborating facts and surfacing conflicts. The
-correlator never silently discards an observation: evidence that disagrees
-(e.g. the same permission reported with different action/resource values) is
-reported as :class:`AuthorizationConflict` records with full provenance, and
-every out-of-scope or below-threshold observation is counted rather than
-dropped silently.
-"""
+"""Authorization intelligence correlation and conflict detection."""
 
 from __future__ import annotations
 

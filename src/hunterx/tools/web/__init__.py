@@ -3,11 +3,8 @@
 
 """Web crawling tool adapters.
 
-The integrated web crawling tool set: the in-process
-:class:`~hunterx.tools.web.crawler.CrawlerAdapter` and the external
-:class:`~hunterx.tools.web.katana.KatanaAdapter`. The registry and TIP
-registration functions wire the set into the SDK engine and the Tool
-Intelligence Platform.
+The integrated web crawling tool set: the in-process :class:`~hunterx.tools.web.crawler.CrawlerAdapter` and the
+external :class:`~hunterx.tools.web.katana.KatanaAdapter`.
 """
 
 from hunterx.tools.web.base import WebToolAdapter

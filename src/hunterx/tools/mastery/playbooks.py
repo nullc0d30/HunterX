@@ -3,10 +3,8 @@
 
 """Data-driven tool playbooks.
 
-Playbooks define an objective, the capabilities required to achieve it,
-preferred/fallback tools, preconditions, stop conditions and evidence/
-proof requirements. They never hardcode unrestricted attack commands —
-concrete tool selection is delegated to the mission-aware selector at runtime.
+Playbooks define an objective, the capabilities required to achieve it, preferred/fallback tools, preconditions,
+stop conditions and evidence/ proof requirements.
 """
 
 from __future__ import annotations
@@ -19,7 +17,7 @@ from hunterx.domain.tool_mastery import (
     ToolPlaybookStep,
 )
 
-#: Canonical playbook identifiers defined by the Sprint 025 contract.
+# : Canonical playbook identifiers defined by the contract.
 PLAYBOOK_IDS = (
     "web-initial-recon",
     "api-discovery",

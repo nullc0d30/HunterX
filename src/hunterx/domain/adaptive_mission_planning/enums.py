@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning — canonical value vocabulary.
-
-Sprint 027. Every enum consumed by the adaptive mission planning engine:
-mission objectives, mission states, action node types, dynamic dependency
-kinds, conditional branch constructs, replanning triggers, plan-delta kinds,
-attack-path states, mission modes, failure classes and explainable decision
-factors. These enums are the machine vocabulary of the machine-readable
-contract ``capabilities/adaptive-mission-planning.json``.
-"""
+"""Adaptive Mission & Attack-Path Planning, canonical value vocabulary."""
 
 from __future__ import annotations
 
@@ -68,6 +60,7 @@ class MissionState(StrEnum):
         """Return ``True`` for states that end a mission."""
         return self in (
             MissionState.COMPLETED,
+            MissionState.BLOCKED,
             MissionState.FAILED,
             MissionState.CANCELLED,
         )

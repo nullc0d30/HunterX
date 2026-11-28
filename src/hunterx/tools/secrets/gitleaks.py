@@ -3,18 +3,8 @@
 
 """Gitleaks tool adapter.
 
-Integrates ``gitleaks`` — a SAST tool for detecting hardcoded secrets — into
-the Tool Integration SDK for secret discovery over filesystem, repository and
-artifact inputs. The adapter requests JSON report output (``--report-format
-json --report-path -``) and parses the findings into canonical *redacted*
-secret records.
-
-SECURITY BOUNDARY: gitleaks JSON records contain the raw ``Secret``/``Match``
-values. This adapter drops those fields at parse time and persists only
-``secret_type``, ``location``, ``fingerprint``, ``masked_value``, ``source``,
-``confidence`` and ``provenance``. Raw output is preserved (when requested)
-only inside the sandboxed execution artifact store, never in findings or the
-target database.
+Integrates ``gitleaks``, a SAST tool for detecting hardcoded secrets, into the Tool Integration SDK for secret
+discovery over filesystem, repository and artifact inputs.
 """
 
 from __future__ import annotations

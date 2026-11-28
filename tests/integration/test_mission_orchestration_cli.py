@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the Autonomous Mission Orchestration CLI.
-
-Builds the full platform and drives the ``hunterx mission ...`` command group:
-create/start/status/pause/resume/cancel/finalize plus timeline/decisions/
-hypotheses/findings/attack-paths/coverage/tools views.
-"""
+"""Integration tests for the Autonomous Mission Orchestration CLI."""
 
 from __future__ import annotations
 

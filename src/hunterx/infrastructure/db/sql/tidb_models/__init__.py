@@ -3,9 +3,7 @@
 
 """TIDB SQLAlchemy ORM models.
 
-Mirrors ``hunterx.domain.entities.tidb`` one-to-one. Importing this package
-registers every model against the shared ``Base`` metadata so that
-``create_all``/Alembic autogenerate can produce the full TIDB schema.
+Mirrors ``hunterx.domain.entities.tidb`` one-to-one.
 """
 
 from __future__ import annotations

@@ -3,11 +3,7 @@
 
 """Core Target Intelligence Database entities.
 
-Organizations, programs and scope policies form the authorization envelope of
-HunterX. Asset groups and tags organise discovered resources across missions.
-The ``Target`` entity itself lives in ``hunterx.domain.entities.target`` and is
-extended with scope-program linkage there; this module focuses on the entities
-that organise and classify targets.
+Organizations, programs and scope policies form the authorization envelope of HunterX.
 """
 
 from __future__ import annotations

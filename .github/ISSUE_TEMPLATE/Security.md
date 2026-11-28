@@ -6,7 +6,7 @@ labels: security
 assignees: ""
 ---
 
-## ⚠️ IMPORTANT
+## partial IMPORTANT
 
 **Do NOT include vulnerability details in this public issue.**
 

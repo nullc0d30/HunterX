@@ -3,11 +3,8 @@
 
 """Web crawling tool adapter registry.
 
-Builds and registers the web crawling adapters (in-process crawler and the
-external Katana crawler) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the web tool set, so callers (tests, the crawl service, the
-platform) never construct individual adapters.
+Builds and registers the web crawling adapters (in-process crawler and the external Katana crawler) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

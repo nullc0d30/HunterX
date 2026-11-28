@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the ``hunterx tools`` command group (Sprint 034.5)."""
+"""Integration tests for the ``hunterx tools`` command group."""
 
 from __future__ import annotations
 

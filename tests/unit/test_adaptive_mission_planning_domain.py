@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Adaptive Mission & Attack-Path Planning domain.
-
-Covers the pure domain engines: execution graph, decision engine, replanning
-engine, policy gates, attack-path engine, checkpoint/resume, failure recovery
-and deterministic fallback planning.
-"""
+"""Unit tests for the Adaptive Mission & Attack-Path Planning domain."""
 
 from __future__ import annotations
 
@@ -361,7 +356,7 @@ class TestAttackPathEngine:
         engine = AttackPathEngine(max_paths=50)
         paths = engine.discover(surface, mission_id="m1")
         assert isinstance(paths, list)
-        # no path is ever automatically executed — this is intelligence only
+        # no path is ever automatically executed, this is intelligence only
         for path in paths:
             assert path.state.value in ("hypothetical", "supported", "validated", "proved")
 

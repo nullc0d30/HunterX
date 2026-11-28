@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive mission aggregate and deterministic planner.
-
-``AdaptiveMission`` is the planning aggregate: mission identity, objective,
-mode, constraints, lifecycle state, execution graph, plan versions, plan
-deltas, decision records, attack paths, gaps, checkpoints, failures, fallbacks
-and tool selections. ``DeterministicMissionPlanner`` builds an initial,
-explainable execution graph from a mission objective — the deterministic
-fallback that keeps the system functional without AI.
-"""
+"""Adaptive mission aggregate and deterministic planner."""
 
 from __future__ import annotations
 

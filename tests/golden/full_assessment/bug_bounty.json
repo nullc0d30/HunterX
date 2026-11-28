@@ -1,6 +1,6 @@
 {
   "name": "bug_bounty_golden",
-  "description": "Golden dataset for the Sprint 033 bug-bounty full-spectrum mission: an intentional SQLi validated and proven, an XSS false positive rejected, and a tool failure recovered.",
+  "description": "Golden dataset for the bug-bounty full-spectrum mission: an intentional SQLi validated and proven, an XSS false positive rejected, and a tool failure recovered.",
   "objective": "bug_bounty_hunt",
   "target": "shop.example.com",
   "assets": [

@@ -3,10 +3,7 @@
 
 """Audit and history Target Intelligence Database entities.
 
-Append-only audit trail plus version/history records that make every change
-to the TIDB attributable and replayable. These tables are written by the
-persistence layer (via the versioning listener) and must never be edited by
-capability logic.
+Append-only audit trail plus version/history records that make every change to the TIDB attributable and replayable.
 """
 
 from __future__ import annotations
@@ -22,8 +19,8 @@ class AuditLog(TidbEntity):
 
     Attributes:
         actor: acting user/service identifier.
-        action: verb (create, update, delete, login, export, ...).
-        object_type: type of object affected (finding, target, ...).
+        action: verb (create, update, delete, login, export,...).
+        object_type: type of object affected (finding, target,...).
         object_id: identifier of the affected object.
         object_version: version of the object at event time.
         before: snapshot of the object before the change.
@@ -105,7 +102,7 @@ class VersionHistory(TidbEntity):
         entity_id: identifier of the entity versioned.
         recorded_version: monotonically increasing version number.
         recorded_revision: monotonically increasing revision number.
-        status: version status (draft, current, superseded, ...).
+        status: version status (draft, current, superseded,...).
         reason: reason for the version.
         snapshot: full JSON-safe entity snapshot.
         created_by: actor creating the version.

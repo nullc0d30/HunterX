@@ -3,14 +3,7 @@
 
 """Static import extraction.
 
-Parses Python modules with :mod:`ast` and records every import statement as a
-:class:`ImportRecord`. Records carry the information the linter needs:
-
-- whether the import is guarded by ``if TYPE_CHECKING:`` (never executed at
-  runtime, so it cannot create a real import cycle);
-- whether it appears inside a function body (a lazy import);
-- the resolved absolute target module (relative imports are resolved against
-  the source package).
+Parses Python modules with :mod:`ast` and records every import statement as a :class:`ImportRecord`.
 """
 
 from __future__ import annotations
@@ -28,7 +21,7 @@ class ImportRecord:
     Attributes:
         source: absolute dotted name of the importing module.
         target: absolute dotted name of the imported module (``None`` for
-            relative ``from . import x`` with no resolved package).
+            relative ``from. import x`` with no resolved package).
         line: 1-based line number of the statement.
         kind: ``"import"`` or ``"from"``.
         is_type_checking: imported inside ``if TYPE_CHECKING:``.

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Vulnerability Knowledge.
-
-Registers the vulnerability knowledge provider adapters (NVD, CISA KEV, EPSS,
-MITRE CWE, vendor advisory, OSV/GHSA) into a :class:`ToolIntelligenceAPI` so
-the Planner and selection engines can recommend them by taxonomy capability
-(``vulnerability-knowledge``, ``cve-intelligence``, ``epss-intelligence``,
-``kev-intelligence``). The profiles mirror the tool descriptors used by the
-Tool Integration SDK adapters so intelligence and execution never disagree
-about a provider's contract.
-"""
+"""Tool Intelligence Platform registration for Vulnerability Knowledge."""
 
 from __future__ import annotations
 
@@ -491,7 +482,7 @@ def _scanner_knowledge(spec: VulnerabilityScannerSpec) -> ToolKnowledge:
         version_constraints=(">=3.0.0",),
         known_false_positives=("Template matches require manual validation; not all are exploitable.",),
         known_false_negatives=("Templates outside the active set; OAST detection disabled by default.",),
-        provenance={"source": "sprint-024", "category": "vulnerability", "license": "MIT"},
+        provenance={"source": "hunterx-tool-registry", "category": "vulnerability", "license": "MIT"},
         knowledge_version="1.0.0",
     )
 

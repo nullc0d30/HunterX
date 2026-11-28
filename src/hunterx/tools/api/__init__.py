@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API intelligence tool adapters.
-
-The SDK-integrated tool set for the API Discovery & API Attack-Surface
-Intelligence capability: OpenAPI/Swagger document discovery and parsing,
-GraphQL surface modeling, WebSocket endpoint modeling, WSDL/SOAP document
-discovery and the passive fold-in of existing web/JS/technology intelligence.
-"""
+"""API intelligence tool adapters."""
 
 from __future__ import annotations
 

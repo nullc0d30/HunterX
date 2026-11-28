@@ -3,25 +3,7 @@
 
 """Cloud & SaaS attack-surface intelligence use-case services.
 
-``CloudService`` is the orchestrator — the bridge between a mission and the
-cloud intelligence tooling. Given a target and an input bundle of already-
-acquired static material, it validates scope, builds a :class:`CloudStrategy`,
-runs the in-process analyzer through the :class:`ExecutionEngine`, folds in
-existing TIDB intelligence, classifies, validates, correlates, confidence-
-scores, diffs history, persists everything to the TIDB, updates the attack-
-surface topology and publishes ``cloud.*`` events.
-
-``CloudQueryService`` reads persisted cloud intelligence back from the TIDB and
-answers the reporting queries (providers, accounts, regions, resources,
-services, endpoints, environments, identities, roles, permissions,
-integrations, SaaS providers, SaaS integrations, webhooks, dependencies,
-storage, compute, containers, Kubernetes, databases, message infrastructure,
-API gateways, CDNs, load balancers, CI/CD, secret-management indicators,
-exposure indicators, changes and runs). Both services depend on ports only.
-
-Security boundary: intelligence & discovery only. No cloud exploitation, no
-credential use, no authentication to cloud accounts, no secret retrieval, no
-bucket takeover and no privilege testing.
+``CloudService`` is the orchestrator, the bridge between a mission and the cloud intelligence tooling.
 """
 
 from __future__ import annotations

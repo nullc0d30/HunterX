@@ -3,8 +3,8 @@
 
 """Version resolution for Tool Integration Packs.
 
-Helpers over :class:`SemanticVersion` for sorting, constraint satisfaction,
-compatibility ranges and the deprecation policy every pack carries.
+Helpers over :class:`SemanticVersion` for sorting, constraint satisfaction, compatibility ranges and the deprecation
+policy every pack carries.
 """
 
 from __future__ import annotations

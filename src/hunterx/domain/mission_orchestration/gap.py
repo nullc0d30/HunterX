@@ -3,15 +3,7 @@
 
 """Knowledge-gap engine.
 
-Sprint 032. After each phase the engine answers:
-
-    WHAT DO WE KNOW?
-    WHAT DO WE NOT KNOW?
-    WHAT COULD CHANGE OUR CONCLUSION?
-    WHAT ACTION WOULD REDUCE THAT UNCERTAINTY?
-
-The output drives adaptive planning: a ranked list of knowledge gaps, each
-paired with the action that would reduce the uncertainty it represents.
+After each phase the engine answers.
 """
 
 from __future__ import annotations

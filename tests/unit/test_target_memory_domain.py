@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for Target Memory & Campaign Intelligence domain engines.
-
-Covers freshness classification, memory assembly with first/last seen
-tracking, deterministic snapshots and diffs, change significance, revalidation
-planning, coverage-gap detection, finding recurrence detection, preserved
-contradictions, memory confidence/poisoning defense, next-action
-recommendations, risk evolution and campaign intelligence.
-"""
+"""Unit tests for Target Memory & Campaign Intelligence domain engines."""
 
 from __future__ import annotations
 

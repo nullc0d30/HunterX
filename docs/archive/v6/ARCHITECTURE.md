@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX Architecture Guide — HunterX v6.0.0
+title: HunterX Architecture Guide - HunterX v6.0.0
 description: >-
   Architecture guide for HunterX v6.0.0 AI-assisted vulnerability scanner.
   System design, component relationships, and data flow for the open-source

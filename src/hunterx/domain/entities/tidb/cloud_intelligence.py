@@ -3,21 +3,7 @@
 
 """Cloud & SaaS attack-surface intelligence TIDB entities.
 
-System-of-record entities for the Wave 11 cloud & SaaS attack-surface
-intelligence capability (Sprint 017). They carry the canonical, evidence-backed
-cloud inventory of an authorized target: cloud providers, accounts/subscriptions/
-projects/organizations/tenants, regions, resources, services, endpoints (with
-control/data/identity/management plane classification), environments, identity
-& IAM indicators, SaaS platforms, SaaS integrations, webhooks, third-party
-dependencies, storage/compute/container/Kubernetes/database/message/gateway/CDN/
-load-balancer/CI/CD resource indicators, secret-management indicators (never
-values), exposure indicators (intelligence, never vulnerabilities) and the
-derived intelligence (observations, evidence, changes and run records).
-
-Security boundary: intelligence & discovery only. These entities store metadata,
-masked/derived values and secret fingerprints — never cloud credentials, access
-keys, secret keys, session tokens, OAuth secrets, private keys, secret values or
-database credentials.
+System-of-record entities for the cloud & SaaS attack-surface intelligence capability.
 """
 
 from __future__ import annotations

@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Target Intelligence (Sprint 026).
-
-The Target Intelligence layer turns HunterX from a *tool runner* into a
-*target intelligence system*: every target is represented as a continuously
-evolving attack-surface graph backed by immutable observations, explicit
-coverage, explicit uncertainty, hypotheses to validate, and an explainable
-next-action engine that selects the smallest justified tool set.
-
-Pure domain models and engines — no I/O, no tool execution. The application
-layer (`hunterx.application.target_intelligence`) and the engine facade
-(`hunterx.engines.target_intelligence`) wire these to the TIDB and the Sprint
-025 selector.
-"""
+"""Adaptive Target Intelligence."""
 
 from __future__ import annotations
 

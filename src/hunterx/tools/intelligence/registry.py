@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool intelligence registry.
-
-The central, thread-safe store of everything the platform knows about tools:
-metadata, knowledge profiles, capabilities, compatibility, runtime state,
-health and performance. Engines read from this registry; the facade composes
-them.
-"""
+"""Tool intelligence registry."""
 
 from __future__ import annotations
 
@@ -230,7 +224,7 @@ class ToolIntelligenceRegistry:
         with self._lock:
             return self._performance.get(tool_id)
 
-    # -- Sprint 023: evidence & proof mappings -----------------------------
+    # -- evidence & proof mappings -----------------------------
 
     def register_evidence_mapping(self, mapping: ToolEvidenceMapping) -> None:
         """Register an evidence mapping for a tool (append or replace)."""
@@ -296,7 +290,7 @@ class ToolIntelligenceRegistry:
         with self._lock:
             return self._confidence_ceilings.get(tool_id)
 
-    # -- Sprint 023: reliability & availability ----------------------------
+    # -- reliability & availability ----------------------------
 
     def set_reliability(self, stats: ToolReliabilityStats) -> None:
         """Store reliability stats for a tool."""

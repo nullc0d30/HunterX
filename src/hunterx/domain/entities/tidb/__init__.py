@@ -3,14 +3,7 @@
 
 """Target Intelligence Database (TIDB) domain entities.
 
-Pure-domain entities for the permanent system-of-record. They are plain,
-storage-agnostic dataclasses extending :class:`TidbEntity` and grouped by
-domain area: core program/scope, network topology, web application surface,
-API surface, findings, security material, knowledge base, execution records,
-reporting, audit/history and users/access.
-
-These entities are deliberately free of I/O and SQL — repositories
-(``hunterx.infrastructure.db``) map them to storage.
+Pure-domain entities for the permanent system-of-record.
 """
 
 from __future__ import annotations

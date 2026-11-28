@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden fixture tests for the certified toolchain (Sprint 034.5).
+"""Golden fixture tests for the certified toolchain.
 
-Every tool family is exercised against an authoritative fixture file so the
-adapter/parser/normalizer contract is validated without any binary. Each row
-asserts that the fixture parses into a non-empty canonical record set.
+Every tool family is exercised against an authoritative fixture file so the adapter/parser/normalizer contract is
+validated without any binary.
 """
 
 from __future__ import annotations
@@ -31,7 +30,7 @@ from tests.tools.test_adapters import (
 
 GOLDEN = Path(__file__).parent
 
-#: tool → (adapter, fixture, parameter overrides)
+# : tool to (adapter, fixture, parameter overrides)
 _GOLDEN_ROWS = [
     ("massdns", MassdnsAdapter, "dns/massdns.jsonl", {}),
     ("shuffledns", ShufflednsAdapter, "dns/shuffledns.jsonl", {"wordlist": "/tmp/subs.txt"}),

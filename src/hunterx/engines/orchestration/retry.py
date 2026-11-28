@@ -3,10 +3,8 @@
 
 """Failure classification and retry policy.
 
-Classifies a failed tool execution into a canonical :class:`FailureClass` and
-decides whether the mission may retry it. Only the retryable classes
-(transient, rate-limit, timeout, network, tool-crash, parser-failure) are ever
-retried; scope, safety, authorization and permanent failures are never retried.
+Classifies a failed tool execution into a canonical :class:`FailureClass` and decides whether the mission may retry
+it.
 """
 
 from __future__ import annotations

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Representative tool adapters for the Tool Intelligence Layer.
-
-These are reference adapters showing how an integrated tool participates in the
-Sprint 023 flow: an adapter runs, produces structured records, the declared
-parser turns them into records and the declared normalizer turns them into
-canonical observations. They are in-process (no binary required) so the layer
-can be exercised end-to-end without external tools.
-"""
+"""Representative tool adapters for the Tool Intelligence Layer."""
 
 from __future__ import annotations
 

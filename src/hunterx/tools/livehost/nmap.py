@@ -3,18 +3,7 @@
 
 """Nmap tool adapter.
 
-Integrates ``nmap`` — the de-facto network discovery and port scanner — into
-the Tool Integration SDK. The adapter builds the CLI command from the execution
-context (target, ports, protocol, service detection, TLS metadata), parses the
-XML output (``-oX -``) into canonical discovery observations and publishes them
-on the execution output.
-
-XML contract (verified against Nmap ``-oX`` output):
-    ``<host>`` carries ``<status state=...>``, ``<address addrtype=...>``,
-    ``<hostnames>``, ``<ports>`` (each ``<port>`` with ``<state>`` and optional
-    ``<service>``/``<cpe>``) and an optional ``<hostscript>`` block whose
-    ``ssl-cert`` script yields the certificate metadata used for
-    :class:`TlsFinding` records.
+Integrates ``nmap``, the de-facto network discovery and port scanner, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

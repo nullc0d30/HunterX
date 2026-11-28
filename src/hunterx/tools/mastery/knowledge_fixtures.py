@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool knowledge fixtures (Sprint 031).
-
-Every integrated tool must have a structured knowledge contract — WHAT it
-does, WHEN to use it, WHAT it requires, WHAT its output means, WHAT its output
-does NOT prove, WHAT evidence/observations/findings it can contribute and WHAT
-follow-up actions are appropriate.
-
-This registry synthesizes that contract for every arsenal tool from the
-authoritative mastery profiles, relationship graph and dataset registry. It
-never executes a tool and never claims more than the profile supports.
-"""
+"""Tool knowledge fixtures."""
 
 from __future__ import annotations
 
@@ -27,7 +17,7 @@ from hunterx.domain.tool_mastery import (
 from hunterx.tools.mastery.registry import ToolMasteryRegistry
 from hunterx.tools.mastery.relationships import ToolRelationshipGraph
 
-#: Canonical capability → observation kind mapping (Section 22/13).
+# : Canonical capability to observation kind mapping (Section 22/13).
 _CAPABILITY_OBSERVATION_KIND: dict[str, str] = {
     "subdomain-discovery": "domain",
     "subdomain-enumeration": "domain",
@@ -135,7 +125,7 @@ _CAPABILITY_OBSERVATION_KIND: dict[str, str] = {
     "session-management": "header",
 }
 
-#: Canonical capability → evidence type mapping (Section 15).
+# : Canonical capability to evidence type mapping (Section 15).
 _CAPABILITY_EVIDENCE_TYPE: dict[str, str] = {
     "subdomain-discovery": "dns-observation",
     "subdomain-enumeration": "dns-observation",

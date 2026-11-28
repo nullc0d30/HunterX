@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs Burp Suite — Comparison
+title: HunterX vs Burp Suite - Comparison
 description: >-
   Objective comparison between HunterX (open-source, reasoning-driven) and
   Burp Suite Professional (commercial intercepting proxy). Architecture,

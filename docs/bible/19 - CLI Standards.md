@@ -1,7 +1,5 @@
-# 19 — CLI Standards
+# 19, CLI Standards
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** `hunterx` command-line interface
 
 ---
@@ -20,20 +18,20 @@ Command hierarchy (groups):
 
 ```
 hunterx
-├── mission          # create, plan, start, approve, list, show, abort, status, archive
-├── workflow         # list, show, run, cancel, resume, checkpoint
-├── scan             # ad-hoc single scan (fast path, single target)
-├── report           # generate, list, show, export, evidence
-├── tool             # list, install, update, health, docs, run
-├── plugin           # list, install, remove, update, ban, scaffold, package, test
-├── knowledge        # list, show, sync, index, validate
-├── payload          # sync, index, search, stats
-├── config           # show, validate, get, set (scoped), doctor
-├── secret           # set, get (masked), list, rotate, unset
-├── api              # serve, token, status
-├── admin            # users, roles, audit, maintenance, telemetry
-├── completion       # generate shell completions
-├── doctor           # environment diagnostics
+├── mission # create, plan, start, approve, list, show, abort, status, archive
+├── workflow # list, show, run, cancel, resume, checkpoint
+├── scan # ad-hoc single scan (fast path, single target)
+├── report # generate, list, show, export, evidence
+├── tool # list, install, update, health, docs, run
+├── plugin # list, install, remove, update, ban, scaffold, package, test
+├── knowledge # list, show, sync, index, validate
+├── payload # sync, index, search, stats
+├── config # show, validate, get, set (scoped), doctor
+├── secret # set, get (masked), list, rotate, unset
+├── api # serve, token, status
+├── admin # users, roles, audit, maintenance, telemetry
+├── completion # generate shell completions
+├── doctor # environment diagnostics
 └── version / self-update
 ```
 
@@ -64,9 +62,9 @@ hunterx
 ## 4. Flags & Options Conventions
 
 - Long flags `--kebab-case`; short aliases only for common flags (`-o`, `-f`,
-  `-v`, `-q`, `-y`).
+ `-v`, `-q`, `-y`).
 - Boolean flags: positive form only (`--destructive`); negation via `--no-<x>`
-  where a default-true option exists.
+ where a default-true option exists.
 - Values: `--flag value` or `--flag=value` (both accepted).
 - Repeated flags accumulate into lists (`--tag a --tag b`).
 - Enums validated with helpful error listing allowed values.
@@ -77,8 +75,8 @@ hunterx
 ## 5. Profiles
 
 - `--profile` selects a **profile preset** that layers over config:
-  `fast`, `thorough`, `stealth`, `quiet`, plus mission profiles
-  (`12 - Mission Profiles.md`).
+ `fast`, `thorough`, `stealth`, `quiet`, plus mission profiles
+ (`12 - Mission Profiles.md`).
 - Profiles are declared in config (`config/profiles/`) and validated.
 - `hunterx config show --profile fast` previews the effective settings.
 - Custom profiles: `hunterx config set` under `profiles.<name>` (scoped).
@@ -88,23 +86,23 @@ hunterx
 ## 6. Output Formatting
 
 - **Text (default):** human-oriented; tables with `rich`; progress bars for
-  long operations; collapsed by default with `--verbose` expansion.
+ long operations; collapsed by default with `--verbose` expansion.
 - **JSON:** stable envelope for every command:
 
-  ```json
-  {
-    "command": "mission list",
-    "ok": true,
-    "data": {...},
-    "warnings": [],
-    "meta": {"correlation_id": "...", "duration_ms": 12}
-  }
-  ```
+ ```json
+ {
+ "command": "mission list",
+ "ok": true,
+ "data": {...},
+ "warnings": [],
+ "meta": {"correlation_id": "...", "duration_ms": 12}
+ }
+ ```
 
 - **YAML / CSV:** for data commands (findings, tools, plugins).
 - Machine formats are **always** emitted, never rendered, never colored.
 - `--output json` is guaranteed stable within a minor version
-  (schema pinned in docs).
+ (schema pinned in docs).
 
 ---
 
@@ -112,11 +110,11 @@ hunterx
 
 - ANSI colors only on TTY; auto-disabled on pipes/CI (`NO_COLOR`, `--no-color`).
 - Color semantics fixed:
-  - Critical/high findings: red
-  - Medium: yellow
-  - Low/info: blue
-  - Success: green
-  - Errors: red bold
+ - Critical/high findings: red
+ - Medium: yellow
+ - Low/info: blue
+ - Success: green
+ - Errors: red bold
 - Color is decoration; never conveys the only meaning (also text markers).
 
 ---
@@ -155,11 +153,11 @@ per `17` §9.
 ## 9. Help & Discoverability
 
 - `hunterx --help` lists groups; `hunterx <group> --help` lists actions;
-  `hunterx <group> <action> --help` shows full usage with examples.
+ `hunterx <group> <action> --help` shows full usage with examples.
 - `hunterx` with no args prints a concise overview + tip to run `--help`.
 - Help text is sourced from docstrings (single source; no duplication).
 - `hunterx doctor` validates environment (tools, providers, DB, config) and
-  prints a pass/fail table.
+ prints a pass/fail table.
 
 ---
 
@@ -168,7 +166,7 @@ per `17` §9.
 - `hunterx completion <shell>` generates completions for bash/zsh/fish.
 - Installed via `hunterx completion install`.
 - Completions cover groups, actions, flags, and dynamic values
-  (mission ids, tool ids) where cheap to compute.
+ (mission ids, tool ids) where cheap to compute.
 
 ---
 
@@ -177,25 +175,25 @@ per `17` §9.
 - Interactive prompts (confirmations, selections) only when TTY.
 - Non-TTY: fail fast with a clear message suggesting flags (`--yes`, explicit args).
 - Confirmations required for: destructive tool runs, scope-expanding actions,
-  approval-level steps (see `12` §5).
+ approval-level steps (see `12` §5).
 
 ---
 
 ## 12. Safety & Determinism
 
 - CLI never prints secrets; `secret get` prints masked values unless
-  `--reveal` explicitly requested.
+ `--reveal` explicitly requested.
 - Piped output is deterministic (sorted where ordering matters, locale-independent).
 - Long-running commands print a job id and stream progress; interruptible.
 - `hunterx mission start` prints the mission id and the plan id for
-  reproducibility.
+ reproducibility.
 
 ---
 
 ## 13. CLI ↔ API Parity
 
 - The CLI calls the same **application services** as the API (composition
-  root shares use-cases). No CLI-only logic path diverges from API semantics.
+ root shares use-cases). No CLI-only logic path diverges from API semantics.
 - `hunterx api serve` runs the API from the same codebase/config.
 
 ---

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Module Reference — HunterX v6.0.0
+title: Module Reference - HunterX v6.0.0
 description: >-
   Complete reference for HunterX scan modules for vulnerability scanning,
   reconnaissance, OSINT, attack surface management, and security assessment.
@@ -54,6 +54,6 @@ hunterx module search graph
 
 ## Related
 
-- [CLI Reference](cli) — Full command reference
-- [Quickstart Guide](quickstart) — Run your first scan
-- [Security Skills Framework](/features/security-skills-framework/) — 41 security skills
+- [CLI Reference](cli) - Full command reference
+- [Quickstart Guide](quickstart) - Run your first scan
+- [Security Skills Framework](/features/security-skills-framework/) - 41 security skills

@@ -3,20 +3,7 @@
 
 """Adaptive rate control state machine.
 
-Phase 2. The controller is the "aggressive but bounded" heart of the attack
-engine. It transitions through :class:`AttackState` values purely from observed
-target-feedback signals and derives bounded execution controls:
-
-    * aggression level (how much payload depth each probe uses),
-    * pacing (delay between attack steps),
-    * concurrency limit (how many parallel attack steps),
-    * backoff (exponential, capped),
-    * strategic retry (bounded attempts, only for retryable signals).
-
-Healthy targets maintain/increase controlled aggression; defensive targets
-throttle, back off, then gradually recover. Every control is bounded — the
-controller can never drive uncontrolled flooding, infinite retries, runaway
-concurrency or recursive attack loops.
+The controller is the "aggressive but bounded" heart of the attack engine.
 """
 
 from __future__ import annotations
@@ -56,7 +43,7 @@ class AttackControlConfig:
         max_backoff_s: backoff ceiling.
         aggressive_after: healthy samples before escalating to AGGRESSIVE.
         recover_after: healthy samples before moving toward RECOVERING.
-        resume_after: healthy samples in RECOVERING before RESUMING → NORMAL.
+        resume_after: healthy samples in RECOVERING before RESUMING to NORMAL.
         block_after: consecutive hard-defensive samples before BLOCKED.
         unblock_after: healthy samples in BLOCKED before RESUMING.
         max_retries: bounded retry attempts per attack step.
@@ -123,7 +110,7 @@ class AdaptiveRateController:
         """Transition the state machine from an observed feedback signal.
 
         Returns the resulting state. Every transition is driven purely by the
-        observed target behavior — never by a fixed tool sequence.
+        observed target behavior, never by a fixed tool sequence.
         """
         signal = signal if isinstance(signal, FeedbackSignal) else FeedbackSignal(signal)
         self._last_signal = signal
@@ -184,10 +171,10 @@ class AdaptiveRateController:
         """Apply a state transition (idempotent, records history).
 
         Defensive streaks persist across transitions so that ``block_after``
-        consecutive hard-defensive signals escalate THROTTLED → BACKING_OFF →
+        consecutive hard-defensive signals escalate THROTTLED to BACKING_OFF to
         BLOCKED. The healthy streak resets on each transition so every recovery
-        phase (RECOVERING → RESUMING → NORMAL) requires its own sustained
-        healthy budget — that is what makes aggression restore *gradually*.
+        phase (RECOVERING to RESUMING to NORMAL) requires its own sustained
+        healthy budget, that is what makes aggression restore *gradually*.
         """
         if new_state is self._state:
             return
@@ -221,7 +208,7 @@ class AdaptiveRateController:
     def pacing_seconds(self) -> float:
         """Return the pacing (delay between attack steps) for the current state.
 
-        ``0`` means "no forced delay" — the aggressive tiers never invent
+        ``0`` means "no forced delay", the aggressive tiers never invent
         delays, and the throttled tiers always bound the delay.
         """
         state = self._state

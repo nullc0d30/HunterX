@@ -4,10 +4,6 @@
 """HunterX Tool Integration SDK.
 
 The single supported way to integrate external security tools with HunterX.
-Tools implement a :class:`~hunterx.tools.sdk.adapter.ToolAdapter` and are
-executed by :class:`~hunterx.tools.sdk.engine.ExecutionEngine`, which drives
-the full lifecycle: register, install, validate, verify, prepare, execute,
-monitor, collect, validate output, normalize, store, events and cleanup.
 """
 
 from __future__ import annotations

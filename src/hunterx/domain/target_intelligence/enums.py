@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Target Intelligence — canonical enums.
-
-Sprint 026. Pure, storage-agnostic value categories for the target
-intelligence layer: target lifecycle, mission phases, observation taxonomy,
-coverage states, capability dimensions, unknown categories, information gap
-categories, hypothesis taxonomy and lifecycle, action taxonomy and lifecycle,
-change kinds and intelligence score dimensions.
-
-The vocabulary keeps observed facts (observations), derived state (coverage),
-explicit uncertainty (unknowns/gaps), conjectures (hypotheses) and validated
-conclusions (proofs) strictly separated. Missing information is NEVER treated
-as negative information: ``NOT_ASSESSED``/``UNKNOWN`` coverage states exist for
-exactly that reason.
-"""
+"""Adaptive Target Intelligence, canonical enums."""
 
 from __future__ import annotations
 
@@ -51,7 +38,7 @@ class IntelligenceTargetKind(StrEnum):
     """Canonical kinds a top-level target may take.
 
     A target is never merely a hostname: it is the authorized objective of a
-    mission (an organization, a program, a domain tree, an account, ...).
+    mission (an organization, a program, a domain tree, an account,...).
     """
 
     ORGANIZATION = "organization"
@@ -139,7 +126,7 @@ class ObservationType(StrEnum):
 class CoverageCapability(StrEnum):
     """Canonical coverage dimensions the matrix is measured across.
 
-    Coverage is measured per (asset, capability) — never merely "number of
+    Coverage is measured per (asset, capability), never merely "number of
     tools executed". Each capability can also be re-scoped to a vulnerability
     class for vulnerability coverage.
     """
@@ -310,7 +297,7 @@ class InformationGapCategory(StrEnum):
 class HypothesisType(StrEnum):
     """Canonical hypothesis taxonomy.
 
-    Hypotheses are conjectures to validate — never conclusions. ``NOVEL_VARIANT``
+    Hypotheses are conjectures to validate, never conclusions. ``NOVEL_VARIANT``
     covers behavior that matches no known signature, so a finding never requires
     a CVE to exist first.
     """
@@ -341,7 +328,7 @@ class HypothesisType(StrEnum):
 class HypothesisStatus(StrEnum):
     """Lifecycle state of a hypothesis.
 
-    ``PROPOSED`` → ``SUPPORTED``/``CONTRADICTED`` → ``VALIDATED`` → ``PROVEN``,
+    ``PROPOSED`` to ``SUPPORTED``/``CONTRADICTED`` to ``VALIDATED`` to ``PROVEN``,
     with ``INCONCLUSIVE`` keeping the hypothesis open and ``DISMISSED``
     refuting it. A hypothesis is never "confirmed" by scanner output alone.
     """
@@ -358,8 +345,8 @@ class HypothesisStatus(StrEnum):
 class ActionType(StrEnum):
     """Canonical action taxonomy of the next-action engine.
 
-    The pipeline moves from discovery → enumeration → mapping → analysis →
-    hypothesis → validation → proof → reporting; the engine must be able to
+    The pipeline moves from discovery to enumeration to mapping to analysis to
+    hypothesis to validation to proof to reporting; the engine must be able to
     move backwards too (a new asset re-opens discovery).
     """
 

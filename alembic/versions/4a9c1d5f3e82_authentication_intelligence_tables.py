@@ -1,19 +1,5 @@
-"""authentication intelligence tables
-
-Revision ID: 4a9c1d5f3e82
-Revises: 371b8ca7642d
-Create Date: 2026-08-09 14:00:00.000000
-
-Extends the TIDB schema with the Wave 9 authentication, session & identity
-intelligence canonical inventory: authentication surfaces, endpoints, modeled
-flows, identity providers, OAuth/OIDC/SAML configurations, authentication
-schemes, cookie security metadata, token-storage indicators, CSRF mechanisms,
-CORS policies, MFA/WebAuthn mechanisms, role/scope/permission/tenant indicators,
-generic observations, evidence and historical-change records plus the run
-observability record.
-
-Security boundary: every table stores metadata and masked indicators only —
-never raw passwords, token values, session-cookie values or OTP/recovery codes.
+"""authentication intelligence tables Revision ID: 4a9c1d5f3e82 Revises: 371b8ca7642d Create Date: 2026-08-09
+14:00:00.000000.
 
 """
 from collections.abc import Sequence

@@ -3,9 +3,7 @@
 
 """ORM models for Autonomous Mission Orchestration TIDB entities.
 
-Sprint 032. Mirrors ``hunterx.domain.entities.tidb.mission_orchestration``
-one-to-one. Indexes cover the canonical query paths: mission scoping, runs,
-hypotheses, decisions, coverage and timeline lookups.
+Mirrors ``hunterx.domain.entities.tidb.mission_orchestration`` one-to-one.
 """
 
 from __future__ import annotations

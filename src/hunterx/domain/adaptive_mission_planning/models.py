@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning — pure data contracts.
-
-Sprint 027. Canonical immutable (mostly frozen) dataclasses describing the
-mission objective, constraints, action nodes, dynamic dependencies,
-conditional branches, plan versions, plan deltas, decision records, attack
-paths, evidence/proof gaps, checkpoints and tool selections. The engines in
-``hunterx.engines.adaptive_mission_planning`` drive these models; no tool is
-executed here.
-"""
+"""Adaptive Mission & Attack-Path Planning, pure data contracts."""
 
 from __future__ import annotations
 
@@ -80,7 +72,7 @@ class MissionConstraints:
         max_concurrency: maximum parallel actions.
         rate_limit_per_minute: per-target rate limit.
         risk_threshold: maximum acceptable action risk in ``[0, 1]``.
-        proof_policy: proof policy identifier (Sprint 021/022).
+        proof_policy: proof policy identifier (/022).
         credential_policy: credential policy identifier.
         network_policy: network egress policy identifier.
         data_retention_policy: data retention policy identifier.
@@ -192,7 +184,7 @@ class ConditionalBranch:
 class ActionNode:
     """A single planned action in the mission execution graph.
 
-    A node represents an *action* — not simply a tool invocation. It carries
+    A node represents an *action*, not simply a tool invocation. It carries
     the preconditions, expected observations, information gain, evidence and
     proof value, risk, cost and the candidate tool set. ``status`` is runtime
     mutable; all other fields are treated as immutable after scheduling.
@@ -287,7 +279,7 @@ class ActionNode:
         asset (target/endpoint), hypothesis, parameter/technology context and
         the tool that would actually run. Any of these changing (a new
         endpoint, parameter, technology, asset, hypothesis or tool) produces a
-        different identity — which is what legitimately permits the same tool
+        different identity, which is what legitimately permits the same tool
         to run again against new state.
         """
         parameter = str(self.provenance.get("parameter") or "")
@@ -348,7 +340,7 @@ class ActionProposal:
         proposal_id: stable proposal identifier.
         action: the proposed :class:`ActionNode`.
         score: ranking score.
-        factors: explainable factor breakdown (factor → score).
+        factors: explainable factor breakdown (factor to score).
         rationale: why this action and why now.
         alternatives: rejected alternative actions with reasons.
         ai_assisted: whether AI proposed or influenced the proposal.
@@ -455,7 +447,7 @@ class PlanDeltaChange:
 class PlanDelta:
     """The result of a replanning pass.
 
-    Replanning produces a delta — the full mission is never rebuilt
+    Replanning produces a delta, the full mission is never rebuilt
     unnecessarily.
 
     Attributes:

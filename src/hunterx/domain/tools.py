@@ -3,9 +3,7 @@
 
 """Tool descriptor.
 
-A tool is an adapter that produces normalized observations (findings,
-evidence, assets) by interrogating a target. The descriptor is the static
-contract that the tool registry and the tool executor rely on.
+A tool is an adapter that produces normalized observations (findings, evidence, assets) by interrogating a target.
 """
 
 from __future__ import annotations
@@ -23,7 +21,7 @@ class ToolDescriptor:
         description: one-line description.
         entrypoint: importable adapter class.
         targets: target kinds this tool can operate on.
-        capabilities: capability flags (recon, scan, detect, ...).
+        capabilities: capability flags (recon, scan, detect,...).
         parameters: JSON-schema style parameter specification.
         permissions: permission flags requested at runtime.
 

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Sprint 031 typed tool events and catalog entries."""
+"""Unit tests for the typed tool events and catalog entries."""
 
 from __future__ import annotations
 

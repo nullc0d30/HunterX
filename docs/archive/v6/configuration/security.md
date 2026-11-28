@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Security Configuration — HunterX v6.0.0
+title: Security Configuration - HunterX v6.0.0
 keywords: HunterX Security, Authentication, SSL Verification, API Keys
 description: >-
   Reference for HunterX security-related configuration. Learn how to configure

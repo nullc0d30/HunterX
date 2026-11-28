@@ -1,9 +1,7 @@
 {
   "capability": "cloud-and-saas-attack-surface-intelligence",
   "version": "1.0.0",
-  "sprint": 17,
-  "wave": 11,
-  "status": "ratified",
+  "status": "stable",
   "summary": "Persistent, evidence-backed cloud & SaaS attack-surface intelligence for authorized targets: cloud providers, accounts/subscriptions/projects/organizations/tenants, regions, resources, services, endpoints (control/data/identity/management plane), environments, identity & IAM indicators, SaaS platforms, SaaS applications, SaaS integrations, webhooks, third-party dependencies, storage/compute/container/Kubernetes/database/message/gateway/CDN/load-balancer/CI-CD resource indicators, secret-management indicators (references/fingerprints only), cloud exposure indicators (intelligence, never vulnerabilities) and historical change detection. Intelligence & discovery only; never authenticates to cloud accounts, never accesses cloud resources, never retrieves secrets and never exploits anything.",
   "inputs": {
     "targets": [
@@ -13,7 +11,7 @@
     "static_material": [
       "DNS records (CNAME targets, values, names)",
       "TLS certificate metadata (subject/issuer organization, SANs, wildcards)",
-      "HTTP response headers (Server, x-amz-*, x-ms-*, cf-*, Via, ...)",
+      "HTTP response headers (Server, x-amz-*, x-ms-*, cf-*, Via,...)",
       "HTML content",
       "JavaScript script content (SDK references, endpoints, config)",
       "OpenAPI/API scheme hints",
@@ -36,14 +34,14 @@
     "scope_policy": "authorized domains, CIDRs, IPs, excluded names/cidrs/ips, excluded URL patterns"
   },
   "outputs": {
-    "providers": "evidence-backed cloud provider inventory (AWS, Azure, GCP, Cloudflare, ...)",
+    "providers": "evidence-backed cloud provider inventory (AWS, Azure, GCP, Cloudflare,...)",
     "accounts": "account/subscription/project/organization/tenant indicators",
     "regions": "cloud region/location indicators",
-    "resources": "cloud resource indicators (bucket, instance, function, cluster, database, queue, ...)",
-    "services": "classified cloud service inventory (EC2, S3, Lambda, App Service, Cloud Run, ...)",
+    "resources": "cloud resource indicators (bucket, instance, function, cluster, database, queue,...)",
+    "services": "classified cloud service inventory (EC2, S3, Lambda, App Service, Cloud Run,...)",
     "endpoints": "cloud endpoints with control/data/identity/management plane + exposure classification",
     "environments": "production/staging/development/testing/QA/sandbox/preview/DR classifications",
-    "identities": "cloud identity / IAM indicators (service accounts, users, roles, federated identity, ...)",
+    "identities": "cloud identity / IAM indicators (service accounts, users, roles, federated identity,...)",
     "roles": "cloud IAM role indicators",
     "permissions": "documented cloud permission indicators",
     "integrations": "cloud/SaaS integration indicators",

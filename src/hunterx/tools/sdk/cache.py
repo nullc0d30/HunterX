@@ -4,8 +4,6 @@
 """Execution cache.
 
 Stores normalized execution results keyed by (tool, target, configuration).
-Caching is opt-in per execution context and honors the cache TTL configured at
-platform level. Cached results are returned only when still fresh and valid.
 """
 
 from __future__ import annotations
@@ -27,7 +25,7 @@ class ExecutionCache:
         key = cache.key_for(context)
         if (hit := cache.get(key)) is not None:
             return hit
-        result = ...  # run the tool
+        result =... # run the tool
         cache.set(key, result)
     """
 

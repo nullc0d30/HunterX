@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery tool adapters.
-
-SDK tool adapters for live host & service discovery: nmap (primary, XML
-contract covering host/port/service/version/TLS), naabu (fast TCP ports,
-JSONL), masscan (large-scale SYN/UDP, JSON) and an in-process TCP-connect
-probe (binary-free fallback). All external invocations flow through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam; adapters serialize
-canonical observations under the pipeline payload's ``observations`` key with a
-``type`` discriminator.
-"""
+"""Live Host & Service Discovery tool adapters."""
 
 from hunterx.tools.livehost.base import LiveToolAdapter
 from hunterx.tools.livehost.masscan import MasscanAdapter

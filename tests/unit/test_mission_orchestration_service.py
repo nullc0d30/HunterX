@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Autonomous Mission Orchestration engine + service.
-
-Covers the adaptive loop facade and the application service: create/start/
-finalize lifecycle, observation intake, hypothesis loop, decision selection,
-negative evidence, coverage, baselines, differential testing, branches,
-confidence, impact, cascades, checkpoints/resume, stop conditions and TIDB
-persistence.
-"""
+"""Unit tests for the Autonomous Mission Orchestration engine + service."""
 
 from __future__ import annotations
 
@@ -55,7 +48,7 @@ class TestEngineLifecycle:
         orchestrator.finalize(mission.mission_id)
         assert mission.outcome is not None
         # Finalize is truthful: with no genuine stop fired and the objectives
-        # still open, the mission is reported as BLOCKED — never as a silent
+        # still open, the mission is reported as BLOCKED, never as a silent
         # "objectives_complete" success.
         assert mission.outcome.stop_condition == "blocked"
         assert mission.outcome.objectives_complete is False

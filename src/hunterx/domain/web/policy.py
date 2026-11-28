@@ -3,10 +3,7 @@
 
 """Crawl execution policy.
 
-A :class:`CrawlPolicy` bounds a crawl: what may be requested, how deep, how
-fast and how much. Every mode ships a safe preset; the application layer never
-raises limits above a preset without an explicit caller override, keeping the
-capability respectful of the target's infrastructure.
+A :class:`CrawlPolicy` bounds a crawl: what may be requested, how deep, how fast and how much.
 """
 
 from __future__ import annotations

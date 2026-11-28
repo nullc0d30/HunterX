@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Support — HunterX v7
+title: Support - HunterX v7
 description: >-
   Support channels for the HunterX v7 security orchestration and intelligence
   platform: community forums, GitHub Discussions, documentation, and issue
@@ -16,15 +16,15 @@ This document describes the support channels available for HunterX.
 
 ## Documentation
 
-Comprehensive documentation is available in the repository and wiki:
+Complete documentation is available in the repository and wiki:
 
 - [README](https://github.com/nullc0d30/HunterX/blob/main/README.md) - Overview, installation, and quick start
-- [CONTRIBUTING.md](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md) — Guide for contributors
-- [SECURITY.md](https://github.com/nullc0d30/HunterX/blob/main/SECURITY.md) — Security vulnerability reporting
-- [Documentation Hub](./documentation.md) — v7 documentation index
-- [Support Guide](./faq.md) — FAQ and troubleshooting
-- [Architecture](./architecture/README.md) — Architecture enforcement
-- [Wiki](https://github.com/nullc0d30/HunterX/wiki) — Extended guides and references
+- [CONTRIBUTING.md](https://github.com/nullc0d30/HunterX/blob/main/CONTRIBUTING.md), Guide for contributors
+- [SECURITY.md](https://github.com/nullc0d30/HunterX/blob/main/SECURITY.md), Security vulnerability reporting
+- [Documentation Hub](./documentation.md), v7 documentation index
+- [Support Guide](./faq.md), FAQ and troubleshooting
+- [Architecture](./architecture/README.md), Architecture enforcement
+- [Wiki](https://github.com/nullc0d30/HunterX/wiki), Extended guides and references
 
 ---
 
@@ -70,7 +70,7 @@ Sponsorship helps fund:
 - Ongoing maintenance and development
 - Infrastructure and CI/CD costs
 - Security audits
-- Community events and sprints
+- Community events and milestones
 
 Sponsors may receive priority support, advisory access, and recognition in release notes.
 
@@ -78,11 +78,11 @@ Sponsors may receive priority support, advisory access, and recognition in relea
 
 ## Response Times
 
-| Channel         | Response Time | Responsibility |
+| Channel | Response Time | Responsibility |
 |-----------------|---------------|----------------|
-| Security        | Within 72 hours | Maintainers  |
-| Bug reports     | Within 1 week | Maintainers    |
-| Feature requests| Within 2 weeks | Maintainers   |
-| Discussions     | Community-driven | Community + Maintainers |
+| Security | Within 72 hours | Maintainers |
+| Bug reports | Within 1 week | Maintainers |
+| Feature requests| Within 2 weeks | Maintainers |
+| Discussions | Community-driven | Community + Maintainers |
 
 Response times are targets, not guarantees. Maintainers volunteer their time and respond as availability allows. The community is encouraged to help answer questions in Discussions.

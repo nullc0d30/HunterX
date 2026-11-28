@@ -3,11 +3,7 @@
 
 """Technology normalization.
 
-Deterministic normalization of the free-form names, assets and evidence that
-fingerprinting tools report. ``Apache``, ``apache`` and ``Apache httpd`` are
-normalized to a canonical lowercase token; the original observation is always
-preserved on the record alongside the normalized form. No fuzzy matching here —
-normalization is a pure function of string rules.
+Deterministic normalization of the free-form names, assets and evidence that fingerprinting tools report.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Packaging Validation.
+# HunterX - Packaging Validation.
 #
 # Builds the wheel + sdist, validates them with twine, verifies the CLI entry
 # point, and builds the Docker image (multi-platform compatible). Also verifies

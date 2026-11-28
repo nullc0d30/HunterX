@@ -3,9 +3,7 @@
 
 """Agent abstraction.
 
-An agent is a specialized worker that performs a bounded set of security
-operations. Agents declare their capabilities, run within an orchestrated
-lifecycle, and communicate exclusively through :class:`AgentMessage`.
+An agent is a specialized worker that performs a bounded set of security operations.
 """
 
 from __future__ import annotations

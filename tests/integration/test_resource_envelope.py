@@ -3,16 +3,8 @@
 
 """Resource-envelope integration tests.
 
-Regression tests representing the real incident: a ``full_security_assessment``
-must NEVER be allowed to consume the host until system memory reaches ~90%+.
-HunterX must remain safe and usable on a 4 GB / 2 CPU environment: the mission
-runs under a hard resource envelope derived from the environment, the process
-tree is accounted, concurrency adapts, and a runaway is terminated gracefully —
-never reported as success.
-
-These tests drive the real mission runner (planning + orchestration + the
-resource governor) with a deterministic fake execution engine and a fake
-resource sampler so the envelope behaviour is verified without external tools.
+Regression tests representing the real incident: a ``full_security_assessment`` must NEVER be allowed to consume the
+host until system memory reaches ~90%+.
 """
 
 from __future__ import annotations

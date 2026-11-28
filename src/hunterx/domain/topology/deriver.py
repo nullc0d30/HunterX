@@ -3,10 +3,7 @@
 
 """Relationship deriver.
 
-Deterministic rules that turn canonical TIDB entities into raw relationship
-observations. Every edge records its provenance source and evidence so the
-correlator can merge, explain and preserve contradictions. The deriver is pure:
-it consumes plain entity lists (already scoped) and produces observations.
+Deterministic rules that turn canonical TIDB entities into raw relationship observations.
 """
 
 from __future__ import annotations

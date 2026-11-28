@@ -3,9 +3,8 @@
 
 """Sensitive-data protection for cloud intelligence.
 
-Guarantees that cloud credentials, access keys, secret values, tokens and
-private keys never reach observations, evidence or persistence. References are
-recorded as fingerprints or masked values only.
+Guarantees that cloud credentials, access keys, secret values, tokens and private keys never reach observations,
+evidence or persistence.
 """
 
 from __future__ import annotations

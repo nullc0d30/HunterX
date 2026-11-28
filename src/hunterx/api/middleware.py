@@ -3,8 +3,8 @@
 
 """API error middleware.
 
-Maps :class:`~hunterx.domain.exceptions.HunterXError` and generic exceptions
-to structured :class:`~hunterx.api.schemas.ErrorResponse` bodies.
+Maps :class:`~hunterx.domain.exceptions.HunterXError` and generic exceptions to structured
+:class:`~hunterx.api.schemas.ErrorResponse` bodies.
 """
 
 from __future__ import annotations

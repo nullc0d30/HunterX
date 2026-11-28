@@ -13,37 +13,33 @@ description: >-
 permalink: /v7-tool-integration-sdk/
 ---
 
-# HunterX v7 Tool Integration SDK & Execution Framework — Architecture & Reference
-
-**Status:** Ratified (Sprint 004)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Tool Integration SDK & Execution Framework, Architecture & Reference
 
 ---
 
 ## 1. Purpose / Scope
 
-This document defines the **Tool Integration SDK & Execution Framework** —
+This document defines the **Tool Integration SDK & Execution Framework**,
 the one supported mechanism through which every external security tool
 (Nmap, Nuclei, Katana, SQLMap, and any future tool) integrates with HunterX.
 
 It has two mandates:
 
-1. **Integrate — the SDK contract.** Tools implement a
-   [`ToolAdapter`](#6-sdk-contract-the-tool-adapter) and are registered,
-   installed, verified and executed by the framework.
-2. **Execute — the lifecycle.** The
-   [`ExecutionEngine`](#8-execution-engine) drives a full, guarded lifecycle
-   for every tool run, producing structured, classified results.
+1. **Integrate, the SDK contract.** Tools implement a
+ [`ToolAdapter`](#6-sdk-contract-the-tool-adapter) and are registered,
+ installed, verified and executed by the framework.
+2. **Execute, the lifecycle.** The
+ [`ExecutionEngine`](#8-execution-engine) drives a full, guarded lifecycle
+ for every tool run, producing structured, classified results.
 
 Hard constraints:
 
 - **No direct Core access.** Tools interact only through the SDK. No adapter
-  may import or mutate HunterX Core internals.
-- **No tools shipped.** This sprint builds the SDK only. No external tool is
-  integrated.
+ may import or mutate HunterX Core internals.
+- **No tools shipped.** This layer builds the SDK only. No external tool is
+ integrated.
 - **Isolation.** Every execution is sandboxed, resource-bounded, timed,
-  retry-policy-driven and secret-safe.
+ retry-policy-driven and secret-safe.
 
 Scope: `src/hunterx/tools/sdk/` plus the execution domain models
 (`src/hunterx/domain/execution.py`) and the execution event types
@@ -59,16 +55,16 @@ and health decisions.
 ## 2. Design Goals
 
 1. **Adapter-first.** A tool is a `ToolAdapter`; the framework never
-   special-cases a vendor.
+ special-cases a vendor.
 2. **Guardrails not glue.** Sandbox, resource, timeout, retry, lock and
-   validation guardrails are applied uniformly to every execution.
+ validation guardrails are applied uniformly to every execution.
 3. **Classified failures.** Every failure is normalized into an
-   `ExecutionResult` with a `FailureKind` so retry/rollback policy is data,
-   not exception types.
+ `ExecutionResult` with a `FailureKind` so retry/rollback policy is data,
+ not exception types.
 4. **Full observability.** Sessions, monitors and an event bus stream the
-   lifecycle for audit, metrics and plugins.
+ lifecycle for audit, metrics and plugins.
 5. **Bible-compliant isolation.** Permission checks mirror the plugin sandbox
-   model; secrets never leak into telemetry.
+ model; secrets never leak into telemetry.
 
 ---
 
@@ -76,32 +72,32 @@ and health decisions.
 
 ```mermaid
 flowchart TD
-    SDK[src/hunterx/tools/sdk/]
+ SDK[src/hunterx/tools/sdk/]
 
-    SDK --> CTX[context.py<br/>ExecutionContextBuilder]
-    SDK --> OUT[output.py<br/>OutputCollector]
-    SDK --> RES[result.py<br/>result helpers]
-    SDK --> ADP[adapter.py<br/>ToolAdapter / LegacyToolBridge]
-    SDK --> ENG[engine.py<br/>ExecutionEngine]
-    SDK --> PIP[pipeline.py<br/>ExecutionPipeline]
-    SDK --> SAN[sandbox.py<br/>ExecutionSandbox]
-    SDK --> RSC[resources.py<br/>ResourceManager]
-    SDK --> TIM[timeout.py<br/>TimeoutManager]
-    SDK --> RET[retry.py<br/>RetryManager]
-    SDK --> LCK[locks.py<br/>ToolLockManager]
-    SDK --> CCH[cache.py<br/>ExecutionCache]
-    SDK --> QUE[queue.py<br/>ToolQueue]
-    SDK --> SCH[scheduler.py<br/>TaskScheduler]
-    SDK --> PAR[parallel.py<br/>ParallelExecutionManager]
-    SDK --> SES[session.py<br/>ExecutionSession]
-    SDK --> MON[monitor.py<br/>ExecutionMonitor]
-    SDK --> EVT[events.py<br/>ExecutionEventBus]
-    SDK --> DEP[dependencies.py<br/>DependencyResolver]
-    SDK --> INS[installer.py<br/>InstallationManager]
-    SDK --> VER[version.py<br/>VersionManager]
-    SDK --> HLT[health.py<br/>HealthChecker]
-    SDK --> CAP[capabilities.py<br/>ExecutionCapabilityRegistry]
-    SDK --> PLG[plugin.py<br/>ExecutionPluginManager]
+ SDK --> CTX[context.py<br/>ExecutionContextBuilder]
+ SDK --> OUT[output.py<br/>OutputCollector]
+ SDK --> RES[result.py<br/>result helpers]
+ SDK --> ADP[adapter.py<br/>ToolAdapter / LegacyToolBridge]
+ SDK --> ENG[engine.py<br/>ExecutionEngine]
+ SDK --> PIP[pipeline.py<br/>ExecutionPipeline]
+ SDK --> SAN[sandbox.py<br/>ExecutionSandbox]
+ SDK --> RSC[resources.py<br/>ResourceManager]
+ SDK --> TIM[timeout.py<br/>TimeoutManager]
+ SDK --> RET[retry.py<br/>RetryManager]
+ SDK --> LCK[locks.py<br/>ToolLockManager]
+ SDK --> CCH[cache.py<br/>ExecutionCache]
+ SDK --> QUE[queue.py<br/>ToolQueue]
+ SDK --> SCH[scheduler.py<br/>TaskScheduler]
+ SDK --> PAR[parallel.py<br/>ParallelExecutionManager]
+ SDK --> SES[session.py<br/>ExecutionSession]
+ SDK --> MON[monitor.py<br/>ExecutionMonitor]
+ SDK --> EVT[events.py<br/>ExecutionEventBus]
+ SDK --> DEP[dependencies.py<br/>DependencyResolver]
+ SDK --> INS[installer.py<br/>InstallationManager]
+ SDK --> VER[version.py<br/>VersionManager]
+ SDK --> HLT[health.py<br/>HealthChecker]
+ SDK --> CAP[capabilities.py<br/>ExecutionCapabilityRegistry]
+ SDK --> PLG[plugin.py<br/>ExecutionPluginManager]
 ```
 
 ---
@@ -130,10 +126,10 @@ Classification driving retry/rollback: `not-retryable`, `retryable`,
 Everything an execution needs, passed to the tool and the pipeline:
 
 - **Identity:** `execution_id` (auto ULID), `tool_id`, `mission_id`,
-  `correlation_id` (falls back to `execution_id`).
+ `correlation_id` (falls back to `execution_id`).
 - **Target:** `target`, `target_type`, `profile`, `configuration`.
 - **Controls:** `timeout_seconds`, `retry_policy`, `resource_limits`,
-  `permissions` (tuple of `PermissionFlag` values).
+ `permissions` (tuple of `PermissionFlag` values).
 - **Paths:** `working_directory`, `output_directory`, `temp_directory`.
 - **Misc:** `parameters`, `environment`, `created_at`.
 
@@ -143,7 +139,7 @@ default. `0` = unlimited.
 ### 4.4 RetryPolicy
 
 `max_attempts` (1 = no retry), `base_delay_s`, `max_delay_s`,
-`backoff_factor`, `retryable_kinds`, `jitter`. `retries() = max_attempts - 1`.
+`backoff_factor`, `retryable_kinds`, `jitter`. `retries = max_attempts - 1`.
 
 ### 4.5 ResourceLimits
 
@@ -163,7 +159,7 @@ Mutable collector output: `stdout`, `stderr`, `exit_code`, `files`, `json`,
 
 The outcome of one execution: `status`, `output`, `error`, `failure_kind`,
 `retry_count`, `duration_ms`, timestamps, `normalized`, `stored`,
-`events_published` and a `trace` of pipeline stages. `summarize()` returns a
+`events_published` and a `trace` of pipeline stages. `summarize` returns a
 JSON-safe summary.
 
 ---
@@ -172,27 +168,27 @@ JSON-safe summary.
 
 The `ExecutionPipeline` runs one execution through every stage. A failure at
 any stage becomes a structured `ExecutionResult` with a classified
-`FailureKind` — the pipeline never raises for execution failures.
+`FailureKind`, the pipeline never raises for execution failures.
 
 ```mermaid
 flowchart TD
-    A[register] --> B[install]
-    B --> C[validate]
-    C --> D[verify]
-    D --> E[prepare]
-    E --> F[execute]
-    F --> G[monitor]
-    G --> H[collect output]
-    H --> I[validate output]
-    I --> J[normalize]
-    J --> K[store results]
-    K --> L[generate events]
-    L --> M[cleanup]
-    F -. timeout .-> X1[timed-out]
-    H -. invalid .-> X2[output-invalid]
-    B -. missing .-> X3[missing-dependency]
-    D -. unhealthy .-> X4[retryable]
-    E -. no permission .-> X5[sandbox-violation]
+ A[register] --> B[install]
+ B --> C[validate]
+ C --> D[verify]
+ D --> E[prepare]
+ E --> F[execute]
+ F --> G[monitor]
+ G --> H[collect output]
+ H --> I[validate output]
+ I --> J[normalize]
+ J --> K[store results]
+ K --> L[generate events]
+ L --> M[cleanup]
+ F -. timeout.-> X1[timed-out]
+ H -. invalid.-> X2[output-invalid]
+ B -. missing.-> X3[missing-dependency]
+ D -. unhealthy.-> X4[retryable]
+ E -. no permission.-> X5[sandbox-violation]
 ```
 
 Guards applied per stage:
@@ -219,35 +215,35 @@ from hunterx.tools.sdk import OutputCollector, ToolAdapter
 from hunterx.domain.tools import ToolDescriptor
 
 class MyTool(ToolAdapter):
-    descriptor = ToolDescriptor(
-        name="my-tool", version="1.0.0", targets=("url",),
-        capabilities=("http-enumeration",), permissions=("network",),
-    )
+ descriptor = ToolDescriptor(
+ name="my-tool", version="1.0.0", targets=("url",),
+ capabilities=("http-enumeration",), permissions=("network",),
+ )
 
-    def prepare(self, context): ...            # optional
-    def run(self, context, collector: OutputCollector): ...   # required
-    def validate_output(self, context, output): ...  # default: exit code + content
-    def normalize(self, context, output): ...   # default: JSON findings -> ToolOutput
-    def cleanup(self, context): ...             # optional
+ def prepare(self, context):... # optional
+ def run(self, context, collector: OutputCollector):... # required
+ def validate_output(self, context, output):... # default: exit code + content
+ def normalize(self, context, output):... # default: JSON findings -> ToolOutput
+ def cleanup(self, context):... # optional
 ```
 
 - `run` writes text via `collector.attach_stdout`, structured data via
-  `collector.set_json`, and artifacts via `collector.attach_file`,
-  `attach_screenshot`, `attach_pcap`.
+ `collector.set_json`, and artifacts via `collector.attach_file`,
+ `attach_screenshot`, `attach_pcap`.
 - `prepare`/`cleanup` are optional no-op hooks.
 - Legacy `BaseTool` adapters are wrapped by `LegacyToolBridge` unchanged; the
-  engine bridges them automatically on registration.
+ engine bridges them automatically on registration.
 
 ### 6.1 Context, Output, Result helpers
 
-- `ExecutionContextBuilder(tool_id, target).with_timeout(...).build()` —
-  fluent, frozen-model-safe, auto-fills `execution_id`/`correlation_id`.
-- `OutputCollector` — accumulates output; `build()` auto-detects JSON from
-  stdout and tracks `duration_ms`.
-- `result` helpers — `new_result`, `start_execution`, `finish_success`,
-  `finish_failure`, `finish_timeout`, `finish_cancelled`, `mark_stored`,
-  `mark_normalized`, `mark_events`, `to_evidence` (bridges to
-  `ToolExecutionEvidence`).
+- `ExecutionContextBuilder(tool_id, target).with_timeout(...).build`,
+ fluent, frozen-model-safe, auto-fills `execution_id`/`correlation_id`.
+- `OutputCollector`, accumulates output; `build` auto-detects JSON from
+ stdout and tracks `duration_ms`.
+- `result` helpers, `new_result`, `start_execution`, `finish_success`,
+ `finish_failure`, `finish_timeout`, `finish_cancelled`, `mark_stored`,
+ `mark_normalized`, `mark_events`, `to_evidence` (bridges to
+ `ToolExecutionEvidence`).
 
 ---
 
@@ -256,17 +252,17 @@ class MyTool(ToolAdapter):
 `ExecutionSandbox` is the single place execution security policies are
 applied.
 
-- **Permissions** — `enforce_permission(context, flag)` requires the flag in
-  `context.permissions` and the platform policy; `grants(...)` returns a
-  boolean. The pipeline enforces the adapter's declared `permissions` before
-  every run.
-- **Filesystem** — `create_temp_directory` / `create_output_directory`
-  produce execution-scoped directories under the context's temp/output base.
-- **Environment** — `prepare_environment` injects secrets only when the
-  execution holds the `secrets` permission; `sanitized_environment` strips
-  them for telemetry.
-- **Secrets** — `mask_secrets` redacts secret values from a copy of the
-  output (the raw output is preserved for protected storage).
+- **Permissions**, `enforce_permission(context, flag)` requires the flag in
+ `context.permissions` and the platform policy; `grants(...)` returns a
+ boolean. The pipeline enforces the adapter's declared `permissions` before
+ every run.
+- **Filesystem**, `create_temp_directory` / `create_output_directory`
+ produce execution-scoped directories under the context's temp/output base.
+- **Environment**, `prepare_environment` injects secrets only when the
+ execution holds the `secrets` permission; `sanitized_environment` strips
+ them for telemetry.
+- **Secrets**, `mask_secrets` redacts secret values from a copy of the
+ output (the raw output is preserved for protected storage).
 
 ---
 
@@ -277,19 +273,18 @@ exposes the integration API:
 
 ```python
 engine = ExecutionEngine(intelligence=tip.registry,
-                         max_parallel_jobs=4, max_queue_size=100,
-                         cache_ttl_s=300)
+ max_parallel_jobs=4, max_queue_size=100,
+ cache_ttl_s=300)
 
-engine.register_adapter("nmap", "hunterx_tools.nmap:NmapAdapter")  # or instance
+engine.register_adapter("nmap", "hunterx_tools.nmap:NmapAdapter") # or instance
 engine.install("nmap", version="7.94")
 engine.health_check("nmap", requirement=">=7.80")
 
-context = (ExecutionContextBuilder(tool_id="nmap", target="10.0.0.5")
-           .with_timeout(120.0).build())
+context = (ExecutionContextBuilder(tool_id="nmap", target="10.0.0.5").with_timeout(120.0).build)
 
-outcome = engine.execute(context)      # PipelineResult(result, session, attempts)
-engine.submit(context); engine.drain()  # queue + scheduler
-engine.run_parallel([ctx_a, ctx_b])     # bounded concurrency
+outcome = engine.execute(context) # PipelineResult(result, session, attempts)
+engine.submit(context); engine.drain # queue + scheduler
+engine.run_parallel([ctx_a, ctx_b]) # bounded concurrency
 ```
 
 Attached components (all public attributes): `sandbox`, `resources`,
@@ -342,12 +337,12 @@ for observability.
 
 ## 11. Developer Integration Guide
 
-### Step 1 — Implement a ToolAdapter
+### Step 1, Implement a ToolAdapter
 
 Implement `run` and declare a `ToolDescriptor`. Write output to the
 `OutputCollector`.
 
-### Step 2 — Register
+### Step 2, Register
 
 ```python
 engine.register_adapter("nmap", "my_tools.nmap:NmapAdapter")
@@ -356,15 +351,15 @@ engine.register_adapter("nmap", "my_tools.nmap:NmapAdapter")
 Entry points are `module.path:ClassName`. Legacy `BaseTool` instances are
 accepted and bridged.
 
-### Step 3 — Install & Verify
+### Step 3, Install & Verify
 
 ```python
-engine.install_hook("nmap", install_callable)   # optional, or adapter.installer
+engine.install_hook("nmap", install_callable) # optional, or adapter.installer
 engine.install("nmap", version="7.94")
 engine.health_probe("nmap", lambda _: which("nmap") is not None)
 ```
 
-### Step 4 — Run
+### Step 4, Run
 
 Build a context and execute. The engine enforces dependencies, health,
 permissions, resources, timeout and retry automatically.
@@ -373,9 +368,9 @@ permissions, resources, timeout and retry automatically.
 
 - Never import HunterX Core internals; use only the SDK surface.
 - Write findings as JSON `{"findings": [...]}` records or via the normalizer
-  contract so results bridge to `ToolExecutionEvidence`.
-- Declare required permissions truthfully — the sandbox will deny execution
-  that lacks them.
+ contract so results bridge to `ToolExecutionEvidence`.
+- Declare required permissions truthfully, the sandbox will deny execution
+ that lacks them.
 
 ---
 

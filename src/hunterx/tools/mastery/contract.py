@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool contract builder (Sprint 034.5).
-
-Synthesizes the consolidated :class:`~hunterx.domain.tool_contract.ToolContract`
-for every registered arsenal tool from the authoritative master profile, the
-relationship graph and the knowledge fixtures. The contract never claims more
-than the profile supports: knowledge-only tools receive a complete contract
-with ``execution_profile`` marked ``unavailable`` rather than fabricated
-execution semantics.
-"""
+"""Tool contract builder."""
 
 from __future__ import annotations
 

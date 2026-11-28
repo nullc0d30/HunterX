@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-"""
-Juice Shop Benchmark Harness
-============================
+"""Juice Shop benchmark harness.
 
-Evaluates a HunterX mission's validated findings against the official
-OWASP Juice Shop challenge solution catalog (aggregated at challenge-CLASS level).
-
-Usage:
-    python juice_shop_benchmark.py --mission-id <id> [--json]
-
-Outputs benchmark report with detection/validated coverage per class.
+Compares a mission's validated findings against the OWASP Juice Shop challenge
+catalog, aggregated at challenge-class level.
 """
 
 from __future__ import annotations
@@ -21,7 +14,6 @@ sys.path.insert(0, "/opt/hunterx/venv/lib/python3.12/site-packages")
 
 from hunterx.config.loader import load_default_settings
 from hunterx.platform import build_platform
-
 
 # Juice Shop challenge classes mapped from HunterX vulnerability classes
 JUICE_SHOP_CHALLENGE_CLASSES = {
@@ -86,7 +78,7 @@ JUICE_SHOP_CHALLENGE_CLASSES = {
     },
     "template_injection": {
         "label": "Template Injection (SSTI)",
-        "hx_classes": {"ssti", "ssti"},
+        "hx_classes": {"ssti"},
         "official_ids": ["Challenge.SSTI"],
     },
     "xxe": {
@@ -179,6 +171,7 @@ def evaluate_mission(mission_id: str) -> dict:
 
 
 def main() -> int:
+    """Print or export the benchmark report for one mission."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Juice Shop benchmark evaluator")

@@ -1,7 +1,5 @@
-# 07 — Tool Knowledge Base Specification
+# 07, Tool Knowledge Base Specification
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Every integrated tool's `tools/<tool-id>/knowledge.yaml`
 **Schema:** `config/knowledge.schema.yaml`
 
@@ -9,7 +7,7 @@
 
 ## 1. Purpose
 
-Every integrated tool MUST have a structured **knowledge file** — a YAML
+Every integrated tool MUST have a structured **knowledge file**, a YAML
 document that is the single machine-readable source of truth about how to
 invoke, parse, reason about, and govern a tool. The knowledge file is read by
 the Planner, the AI Engine, the Workflow Engine, the Tool Executor, and the
@@ -31,22 +29,22 @@ scheduled by any mission.
 ## 3. Required Metadata (top level)
 
 ```yaml
-id: nuclei                    # MUST equal directory name
-name: Nuclei                  # Human-readable
+id: nuclei # MUST equal directory name
+name: Nuclei # Human-readable
 vendor: ProjectDiscovery
 homepage: https://github.com/projectdiscovery/nuclei
 license: MIT
-tool_type: scanner            # scanner|crawler|enumerator|analyzer|reporter|validator|multi
-adapter: nuclei               # adapter plugin id (see 06)
-adapter_version: "1.2.0"      # SemVer of our adapter
+tool_type: scanner # scanner|crawler|enumerator|analyzer|reporter|validator|multi
+adapter: nuclei # adapter plugin id (see 06)
+adapter_version: "1.2.0" # SemVer of our adapter
 tool_versions:
-  min: "3.0.0"
-  max: null                   # null = no upper bound
-  recommended: "3.2.0"
+ min: "3.0.0"
+ max: null # null = no upper bound
+ recommended: "3.2.0"
 installation:
-  method: binary              # binary|pip|docker|plugin|system
-  instructions: "https://github.com/projectdiscovery/nuclei#installation"
-  verify: "nuclei -version"
+ method: binary # binary|pip|docker|plugin|system
+ instructions: "https://github.com/projectdiscovery/nuclei#installation"
+ verify: "nuclei -version"
 tags: [web, vulnerability, dast]
 ```
 
@@ -56,14 +54,14 @@ tags: [web, vulnerability, dast]
 
 ```yaml
 capabilities:
-  - id: vulnerability-scan
-    description: Template-driven vulnerability scanning of web endpoints
-  - id: cve-detection
-    description: Detect CVEs from community templates
-  - id: http-crawl
-    description: Crawl web roots to discover endpoints (uncover/external)
-  - id: tech-fingerprint
-    description: Detect technologies via template probes
+ - id: vulnerability-scan
+ description: Template-driven vulnerability scanning of web endpoints
+ - id: cve-detection
+ description: Detect CVEs from community templates
+ - id: http-crawl
+ description: Crawl web roots to discover endpoints (uncover/external)
+ - id: tech-fingerprint
+ description: Detect technologies via template probes
 ```
 
 Each capability maps to one or more mission phases and is used by the Planner
@@ -79,29 +77,29 @@ build safe argv lists.
 
 ```yaml
 cli:
-  binary: nuclei
-  executable_env: PATH        # where to resolve the binary
-  invocation:
-    base: [-templates, <profile>]      # always-present safe defaults
-    target_flag: -u                    # flag accepting the target
-    target_position: flag              # flag|positional
-  profiles:                            # named run configurations
-    fast:
-      args: [-timeout, "10", -rate-limit, "50", -silent]
-      timeouts: { per_request_s: 10, total_s: 600 }
-      rate_limit: { rps: 50, max_concurrent: 10 }
-    thorough:
-      args: [-timeout, "30", -rate-limit, "200"]
-      timeouts: { per_request_s: 30, total_s: 3600 }
-      rate_limit: { rps: 200, max_concurrent: 50 }
-  output:
-    stdout_parser: nuclei-jsonl
-    stderr_parser: nuclei-jsonl
-    file_formats: [jsonl, html, md]
-    flag_output: -o
-  env:
-    allowlist: [NUCLEI_GITHUB_TOKEN]
-  destructive: false
+ binary: nuclei
+ executable_env: PATH # where to resolve the binary
+ invocation:
+ base: [-templates, <profile>] # always-present safe defaults
+ target_flag: -u # flag accepting the target
+ target_position: flag # flag|positional
+ profiles: # named run configurations
+ fast:
+ args: [-timeout, "10", -rate-limit, "50", -silent]
+ timeouts: { per_request_s: 10, total_s: 600 }
+ rate_limit: { rps: 50, max_concurrent: 10 }
+ thorough:
+ args: [-timeout, "30", -rate-limit, "200"]
+ timeouts: { per_request_s: 30, total_s: 3600 }
+ rate_limit: { rps: 200, max_concurrent: 50 }
+ output:
+ stdout_parser: nuclei-jsonl
+ stderr_parser: nuclei-jsonl
+ file_formats: [jsonl, html, md]
+ flag_output: -o
+ env:
+ allowlist: [NUCLEI_GITHUB_TOKEN]
+ destructive: false
 ```
 
 Rules:
@@ -116,12 +114,12 @@ Rules:
 
 ```yaml
 modes:
-  - id: single-target
-    inputs: [url, domain]
-    params: { templates: string, severity: "info|low|medium|high|critical" }
-  - id: bulk-list
-    inputs: [file:list]
-    params: { concurrency: int }
+ - id: single-target
+ inputs: [url, domain]
+ params: { templates: string, severity: "info|low|medium|high|critical" }
+ - id: bulk-list
+ inputs: [file:list]
+ params: { concurrency: int }
 ```
 
 Each mode declares accepted `inputs` (from canonical types) and its parameters.
@@ -133,15 +131,15 @@ The executor validates `mode` + `params` against this section before running.
 
 ```yaml
 inputs:
-  accepts:
-    - url
-    - domain
-    - endpoint
-  required: [url]
-  optional: [headers, cookies_from_session, auth_profile]
-  transforms:
-    - canonicalize-url
-  max_targets_per_invocation: 100
+ accepts:
+ - url
+ - domain
+ - endpoint
+ required: [url]
+ optional: [headers, cookies_from_session, auth_profile]
+ transforms:
+ - canonicalize-url
+ max_targets_per_invocation: 100
 ```
 
 ---
@@ -150,19 +148,19 @@ inputs:
 
 ```yaml
 output:
-  formats:
-    jsonl:
-      parser: nuclei-jsonl
-      fields:
-        - template-id
-        - matched-at
-        - severity
-        - info
-        - curl-command
-  normalizer: nuclei
-  event_types: [finding.created, technology.discovered, service.discovered]
-  evidence_capture: [raw_request, raw_response, matched_text]
-  dedup_key_spec: [matched-at, template-id, severity]
+ formats:
+ jsonl:
+ parser: nuclei-jsonl
+ fields:
+ - template-id
+ - matched-at
+ - severity
+ - info
+ - curl-command
+ normalizer: nuclei
+ event_types: [finding.created, technology.discovered, service.discovered]
+ evidence_capture: [raw_request, raw_response, matched_text]
+ dedup_key_spec: [matched-at, template-id, severity]
 ```
 
 The parser must map raw output to `ParsedItem`s; the normalizer maps to
@@ -175,14 +173,14 @@ the fields used to derive the canonical finding hash.
 
 ```yaml
 dependencies:
-  binaries: []                # required external binaries (beyond the tool)
-  network: { egress: [https], dns: true }
-  runtime: [docker]           # docker|python|java|go|none
-  data:                       # data the tool needs to function
-    - id: nuclei-templates
-      type: git-mirror
-      source: https://github.com/projectdiscovery/nuclei-templates
-      sync: on-install
+ binaries: [] # required external binaries (beyond the tool)
+ network: { egress: [https], dns: true }
+ runtime: [docker] # docker|python|java|go|none
+ data: # data the tool needs to function
+ - id: nuclei-templates
+ type: git-mirror
+ source: https://github.com/projectdiscovery/nuclei-templates
+ sync: on-install
 ```
 
 ---
@@ -191,15 +189,15 @@ dependencies:
 
 ```yaml
 errors:
-  mapping:
-    exit_1: { outcome: FAILED, retryable: true, message: "generic runtime error" }
-    exit_2: { outcome: FAILED, retryable: false, message: "invalid arguments" }
-    exit_130: { outcome: TIMEOUT, retryable: true, message: "interrupted" }
-  stderr_patterns:
-    - pattern: "no results found"
-      outcome: SUCCESS_EMPTY
-    - pattern: "unauthorized"
-      outcome: AUTH_FAILED
+ mapping:
+ exit_1: { outcome: FAILED, retryable: true, message: "generic runtime error" }
+ exit_2: { outcome: FAILED, retryable: false, message: "invalid arguments" }
+ exit_130: { outcome: TIMEOUT, retryable: true, message: "interrupted" }
+ stderr_patterns:
+ - pattern: "no results found"
+ outcome: SUCCESS_EMPTY
+ - pattern: "unauthorized"
+ outcome: AUTH_FAILED
 ```
 
 Every mapped code produces a `ToolResult.outcome`; unmapped exits default to
@@ -211,11 +209,11 @@ Every mapped code produces a `ToolResult.outcome`; unmapped exits default to
 
 ```yaml
 performance:
-  expected_duration: { per_target_s: 120, scale: linear }
-  memory: { typical_mb: 512, max_mb: 2048 }
-  rate_limit_guidance: { default_rps: 100, polite_rps: 20 }
-  concurrency: { supported: true, default: 10, max: 50 }
-  best_run_window: off-peak
+ expected_duration: { per_target_s: 120, scale: linear }
+ memory: { typical_mb: 512, max_mb: 2048 }
+ rate_limit_guidance: { default_rps: 100, polite_rps: 20 }
+ concurrency: { supported: true, default: 10, max: 50 }
+ best_run_window: off-peak
 ```
 
 These feed the Performance Engine and scheduler decisions
@@ -235,14 +233,14 @@ limits, and verbosity. Mission profiles select a tool profile by name.
 
 ```yaml
 examples:
-  - name: Quick vuln scan of a URL
-    mode: single-target
-    params: { templates: critical, severity: high }
-    args: [-u, "https://example.com", -severity, high]
-  - name: Bulk scan from list
-    mode: bulk-list
-    params: { concurrency: 20 }
-    args: [-l, "<list_file>", -rate-limit, "100"]
+ - name: Quick vuln scan of a URL
+ mode: single-target
+ params: { templates: critical, severity: high }
+ args: [-u, "https://example.com", -severity, high]
+ - name: Bulk scan from list
+ mode: bulk-list
+ params: { concurrency: 20 }
+ args: [-l, "<list_file>", -rate-limit, "100"]
 ```
 
 Examples are used for smoke tests and documentation generation.
@@ -253,15 +251,15 @@ Examples are used for smoke tests and documentation generation.
 
 ```yaml
 workflow:
-  phases: [detection, validation]
-  prerequisites:
-    - requires: [recon.domains-resolved, recon.services-open]
-  produces:
-    - finding
-    - technology
-  blocks: null
-  typical_sequence: after-port-scan
-  recommended: true
+ phases: [detection, validation]
+ prerequisites:
+ - requires: [recon.domains-resolved, recon.services-open]
+ produces:
+ - finding
+ - technology
+ blocks: null
+ typical_sequence: after-port-scan
+ recommended: true
 ```
 
 Tells the Workflow Engine where the tool fits, what it needs, and what it
@@ -273,14 +271,14 @@ produces. See `10 - Workflow Engine.md`.
 
 ```yaml
 mission_rules:
-  applicable: [bug-bounty, web-security, api-security, external-pentest, continuous]
-  not_applicable: [cloud-security, mobile-security]
-  per_mission_overrides:
-    api-security:
-      allowed_modes: [single-target]
-      approval: operator
-  approval_level: auto        # auto|operator|destructive-approval
-  auth_profiles: [none, header, cookie]
+ applicable: [bug-bounty, web-security, api-security, external-pentest, continuous]
+ not_applicable: [cloud-security, mobile-security]
+ per_mission_overrides:
+ api-security:
+ allowed_modes: [single-target]
+ approval: operator
+ approval_level: auto # auto|operator|destructive-approval
+ auth_profiles: [none, header, cookie]
 ```
 
 Defines which missions may use this tool and with what approval level.
@@ -291,22 +289,22 @@ Defines which missions may use this tool and with what approval level.
 
 ```yaml
 ai:
-  allowed: true
-  purposes:
-    - triage-findings
-    - select-templates
-    - draft-evidence-notes
-  disallowed:
-    - generate-payloads-from-scratch     # tool must be used
-    - auto-run-without-approval
-  grounding:
-    required_context: [scope, findings-summary, templates-meta]
-    context_limit_tokens: 8000
-  output_usage:
-    - feeding-planner
-    - report-drafting
-  risk:
-    hallucination_warning: "AI must not invent findings; findings require tool evidence"
+ allowed: true
+ purposes:
+ - triage-findings
+ - select-templates
+ - draft-evidence-notes
+ disallowed:
+ - generate-payloads-from-scratch # tool must be used
+ - auto-run-without-approval
+ grounding:
+ required_context: [scope, findings-summary, templates-meta]
+ context_limit_tokens: 8000
+ output_usage:
+ - feeding-planner
+ - report-drafting
+ risk:
+ hallucination_warning: "AI must not invent findings; findings require tool evidence"
 ```
 
 Enforced by `11 - AI Standards.md`. If `allowed: false`, the AI never reasons
@@ -318,9 +316,9 @@ about this tool's output.
 
 ```yaml
 best_practices:
-  - "Use -rate-limit to stay polite; never hammer targets"
-  - "Always pin template versions for reproducible scans"
-  - "Combine with validation adapter before reporting critical findings"
+ - "Use -rate-limit to stay polite; never hammer targets"
+ - "Always pin template versions for reproducible scans"
+ - "Combine with validation adapter before reporting critical findings"
 ```
 
 Displayed to operators via `hunterx tool docs <tool-id>` and used to seed

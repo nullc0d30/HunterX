@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Target Intelligence use-case services.
-
-``TargetIntelligenceService`` is the orchestrator: it bridges the pure target
-intelligence domain and the :class:`TargetIntelligenceEngine` to the TIDB
-system-of-record, wires the Sprint 025 mission-aware tool selector into the
-next-action engine, persists normalized intelligence entities (targets,
-assets, observations, evidence, history, changes, coverage, gaps, hypotheses,
-actions, decisions, negative results, conflicts, scores) and publishes
-``target-intelligence.*`` events.
-
-``TargetIntelligenceQueryService`` reads persisted intelligence records back
-from the TIDB and answers the canonical queries (target state, graph, coverage
-matrix, gaps, hypotheses, actions, history, scores, replay).
-"""
+"""Adaptive Target Intelligence use-case services."""
 
 from __future__ import annotations
 
@@ -75,7 +62,7 @@ from hunterx.domain.target_intelligence.models import (
 )
 from hunterx.engines.target_intelligence.engine import TargetIntelligenceEngine
 
-#: CoverageCapability → Sprint 023/025 tool capability id mapping. When no tool
+# : CoverageCapability to /025 tool capability id mapping. When no tool
 #: maps, the adapter falls back to ``http-enumeration``.
 _CAPABILITY_TO_TIP: dict[str, str] = {
     "asset_discovery": "host-discovery",
@@ -113,7 +100,7 @@ _CAPABILITY_TO_TIP: dict[str, str] = {
 
 
 class _MasteryToolSelectorAdapter:
-    """Sprint 025 wiring: adapts the mission-aware selector to the engine.
+    """Adapter that wires the mission-aware tool selector into the engine.
 
     The adapter never widens scope or authorization: it only forwards a
     capability requirement and reports the selected tool plus its rationale.
@@ -151,7 +138,7 @@ class _MasteryToolSelectorAdapter:
 
 
 class TargetIntelligenceService:
-    """Orchestrate the target intelligence layer against the TIDB + Sprint 025."""
+    """Orchestrate the target intelligence layer against the TIDB."""
 
     def __init__(
         self,
@@ -176,7 +163,7 @@ class TargetIntelligenceService:
         return self._engine
 
     def _wire_mastery(self, mastery: Any, *, mission_type: str) -> None:
-        """Wire the Sprint 025 mission-aware selector into the next-action engine."""
+        """Wire the mission-aware selector into the next-action engine."""
         selector = getattr(mastery, "selector", None)
         if selector is None:
             return

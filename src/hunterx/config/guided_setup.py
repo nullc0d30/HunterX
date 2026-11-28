@@ -3,27 +3,19 @@
 
 """Guided AI configuration.
 
-Run when the AI Hunt Director has no usable provider configuration:
-
-* interactive TTY → collect provider, model, endpoint and API key,
-  validate connectivity + a real model round-trip, then persist to the
-  resolved configuration file.
-* non-interactive → fail clearly with actionable instructions instead of
-  silently continuing in deterministic mode.
-
-Secrets are read via ``getpass`` and never echoed, logged or serialized. The
-persisted key lands only in the operator's private ``.env`` (mode ``0600``).
+Run when the AI Hunt Director has no usable provider configuration.
 """
 
 from __future__ import annotations
 
+import contextlib
 import os
 import stat
 import sys
 from pathlib import Path
 from typing import Any
 
-#: Provider registry: display name → (provider id, default base URL, needs key,
+# : Provider registry: display name to (provider id, default base URL, needs key
 #: needs base URL prompt, example model).
 PROVIDERS: dict[str, dict[str, Any]] = {
     "openrouter": {
@@ -126,7 +118,7 @@ def _is_interactive() -> bool:
 
 
 def _config_write_target() -> Path:
-    """Return the private .env path guided configuration should persist to."""
+    """Return the private.env path guided configuration should persist to."""
     data_dir = os.environ.get("HUNTERX_DATA_DIR", "").strip()
     if data_dir:
         candidate = Path(data_dir).expanduser() / ".env"
@@ -163,10 +155,8 @@ def _upsert_env(path: Path, values: dict[str, str]) -> None:
         if not replaced:
             lines.append(f"{key}={value}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    try:
+    with contextlib.suppress(OSError):  # pragma: no cover - chmod best-effort
         path.chmod(stat.S_IRUSR | stat.S_IWUSR)
-    except OSError:  # pragma: no cover - chmod best-effort
-        pass
 
 
 def build_client_from_values(provider: str, model: str, base_url: str, api_key: str, timeout: float = 120.0) -> Any:

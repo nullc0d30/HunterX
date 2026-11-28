@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery observation normalizer.
-
-Turns raw observations from tool adapters into canonical records: canonical
-(compressed) addresses, matching IP protocol versions, deduplicated method/
-SAN/cipher/evidence sets, clamped latencies and confidences, and consistent
-state/protocol/scheme spellings. Normalization is idempotent and pure — the
-same raw input always yields the same normalized output and evidence (banners,
-raw values) is never discarded.
-"""
+"""Live Host & Service Discovery observation normalizer."""
 
 from __future__ import annotations
 

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API observation correlation.
-
-Correlates raw API intelligence observations into a canonical inventory: API
-hosts are keyed by origin, endpoint operations by (method, normalized path),
-spec documents by source URL and auth observations by scheme. Duplicate
-records from different sources are merged; corroborated records boost
-confidence; conflicts are delegated to the conflict resolver.
-"""
+"""API observation correlation."""
 
 from __future__ import annotations
 

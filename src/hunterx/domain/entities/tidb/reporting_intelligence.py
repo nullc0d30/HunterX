@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Professional reporting TIDB entities.
-
-System-of-record entities for the Sprint 029 professional finding intelligence
-& reporting capability: report metadata, report versions, templates and
-template versions, claim records, QA results, evidence snapshots, report
-packages, remediation plans, retest plans and submission state.
-
-Security boundary: these tables store canonical, redacted report data only —
-never credentials, never exploit payloads, never out-of-scope request
-material. Report exports are immutable/versioned. The TIDB envelope provides
-``version`` (the report/template version) and ``created_at``.
-"""
+"""Professional reporting TIDB entities."""
 
 from __future__ import annotations
 

@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Evidence correlation (Sprint 023).
+"""Evidence correlation.
 
-Correlates canonical observations across tools, deduplicates observations
-that share a canonical identity, and preserves conflicting evidence instead of
-averaging it. Conflicting observations always remain available for validation
-or proof-strategy selection — they are never merged into a single value.
+Correlates canonical observations across tools, deduplicates observations that share a canonical identity, and
+preserves conflicting evidence instead of averaging it.
 """
 
 from __future__ import annotations
@@ -104,7 +102,7 @@ class EvidenceCorrelator:
 
         Conflict is defined as two or more tools reporting the same canonical
         key with different normalized values. The observations are preserved in
-        full — never averaged.
+        full, never averaged.
         """
         groups: dict[str, list[CanonicalObservation]] = {}
         for observation in self._observations:

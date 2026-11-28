@@ -1,5 +1,5 @@
 {
-  "description": "Sprint 034.5 finding certification golden scenarios. Each scenario drives the DISCOVER -> HYPOTHESIZE -> TEST -> VERIFY -> PROVE -> FINDING flow and asserts that a detection without reproducible evidence never becomes a fully validated finding.",
+  "description": "Finding certification golden scenarios. Each scenario drives the DISCOVER -> HYPOTHESIZE -> TEST -> VERIFY -> PROVE -> FINDING flow and asserts that a detection without reproducible evidence never becomes a fully validated finding.",
   "version": "1.0.0",
   "scenarios": [
     {

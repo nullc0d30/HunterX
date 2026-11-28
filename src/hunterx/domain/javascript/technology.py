@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript technology and dependency detection.
-
-Detects frameworks, libraries, bundlers and runtime tooling from script content,
-and extracts package dependencies from import/require statements and CDN
-references. Detection is signature-based (regex) and pure; version extraction is
-best-effort and never blocks a detection.
-
-Everything here is **intelligence**: a detection asserts that a technology is
-present in the bundle, not that a version is vulnerable.
-"""
+"""JavaScript technology and dependency detection."""
 
 from __future__ import annotations
 
@@ -88,7 +79,7 @@ _TECHNOLOGY_SIGNATURES: tuple[tuple[str, TechnologyEvidenceKind, str, str, float
     ("WebAssembly", TechnologyEvidenceKind.RUNTIME, "runtime", r"WebAssembly\.", 0.95),
 )
 
-#: ``(name, category, confidence)`` — CDN hosts that identify a dependency.
+# : ``(name, category, confidence)``, CDN hosts that identify a dependency.
 _CDN_HOSTS: tuple[tuple[str, str, float], ...] = (
     ("cdnjs.cloudflare.com", "cdn", 0.95),
     ("unpkg.com", "cdn", 0.95),
@@ -167,7 +158,7 @@ class JSDependencyDetector:
         dependencies: list[JSDependency] = []
         seen: set[str] = set()
 
-        # import ... from "pkg"  /  import "pkg"  /  require("pkg")
+        # import... from "pkg" / import "pkg" / require("pkg")
         keywords = [token for token in tokens if token.token_type is JSTokenType.KEYWORD and token.value in ("import", "require")]
         values = [token for token in tokens if token.is_value()]
         for kw in keywords:

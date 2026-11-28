@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
+# HunterX v7 - AI-Powered Security Orchestration & Intelligence Platform
 # One-Shot Production Installer
 #
 # Running `sudo ./install.sh` ONCE prepares the complete HunterX working
@@ -46,7 +46,7 @@
 # Tool Readiness Service through the CLI (`hunterx install`, `hunterx tools
 # check`, `hunterx tools install`). `install.sh` handles environment detection,
 # OS/runtime preparation, directories, configuration, the database, PATH
-# management and the final readiness verdict — the shell-only concerns.
+# management and the final readiness verdict - the shell-only concerns.
 #
 # Usage:
 #   sudo ./install.sh                                  # one-shot system install
@@ -482,7 +482,7 @@ install_executable() {
     # sys.path and crash with "No module named hunterx.cli").
     cat > "$main_bin" << WRAPEOF
 #!/usr/bin/env bash
-# HunterX launcher (managed by install.sh) — pins the persistent environment.
+# HunterX launcher (managed by install.sh) - pins the persistent environment.
 export HUNTERX_DATA_DIR='${DATA_DIR}'
 # Load install-local environment (AI provider, keys, config) so the installed
 # CLI resolves the configured provider regardless of the working directory.
@@ -719,7 +719,7 @@ initialize_database() {
     # 5. Run an actual persistence initialization check through the real
     #    application runtime (not a raw sqlite probe): the CLI builds the
     #    platform with the SQL persistence layer, which resolves the database
-    #    URL and runs metadata.create_all. Fails loudly — never in-memory.
+    #    URL and runs metadata.create_all. Fails loudly - never in-memory.
     info "Running persistence initialization check..."
     if ! HUNTERX_DATA_DIR="$DATA_DIR" HUNTERX_DATABASE_URL="$DB_URL" HUNTERX_DB_URL="$DB_URL" \
         run_hunterx version >/dev/null 2>&1; then
@@ -803,7 +803,7 @@ prepare_resources() {
 
     # Establish the base HunterX environment (in-process adapters, internal
     # knowledge, signatures, crawler/proof-replay resources). Delegated to the
-    # canonical readiness layer — never duplicated here.
+    # canonical readiness layer - never duplicated here.
     if ! run_hunterx install --profile minimal --state "$STATE_DIR"; then
         error "Base HunterX environment could not be established."
         error "HunterX status: NOT READY"

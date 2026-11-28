@@ -3,10 +3,7 @@
 
 """Execution engine.
 
-Composition root of the Tool Integration SDK. Assembles the sandbox, resource
-manager, timeout/retry managers, lock manager, cache, queue, scheduler,
-dependency resolver, installer, version manager, health checker, monitor and
-event bus into a single entry point for running tool executions.
+Composition root of the Tool Integration SDK.
 """
 
 from __future__ import annotations

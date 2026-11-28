@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for external AI configuration (AISettings / .env / masking)."""
+"""Tests for external AI configuration (AISettings /.env / masking)."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ _AI_ENV_KEYS = (
 
 
 def _unset_ai_env(monkeypatch: pytest.MonkeyPatch, tmp_path: object | None = None) -> None:
-    """Clear AI configuration from BOTH the environment and .env discovery.
+    """Clear AI configuration from BOTH the environment and.env discovery.
 
     Discovery intentionally searches the working directory (and install
     locations), so tests must opt out explicitly to stay hermetic and to

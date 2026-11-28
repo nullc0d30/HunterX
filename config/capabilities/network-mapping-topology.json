@@ -1,8 +1,7 @@
 {
   "capability": "network-mapping-and-attack-surface-topology",
   "version": "1.0.0",
-  "sprint": 10,
-  "status": "ratified",
+  "status": "stable",
   "summary": "Transforms individual asset observations into a unified, queryable, historical attack-surface topology derived from the canonical TIDB. No second database, cache or event system.",
   "inputs": {
     "tridb_entities": [

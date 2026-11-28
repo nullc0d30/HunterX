@@ -1,10 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Parser security (Sprint 034.4 §10, §11).
+"""Parser security (10,).
 
-External tool output is hostile input. Parsers must treat it as data: no code
-execution, no deserialization of unsafe objects, bounded failure behavior.
+External tool output is hostile input.
 """
 
 from __future__ import annotations

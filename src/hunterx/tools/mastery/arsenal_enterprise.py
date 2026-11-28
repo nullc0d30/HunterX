@@ -174,7 +174,7 @@ SNMP_TOOLS: tuple[ToolSpec, ...] = (
 )
 
 
-#: Cloud security tools (Sprint 017 integration).
+# : Cloud security tools (integration).
 CLOUD_TOOLS: tuple[ToolSpec, ...] = (
     ToolSpec(
         tool_id="prowler",
@@ -197,7 +197,7 @@ CLOUD_TOOLS: tuple[ToolSpec, ...] = (
         alternatives=("scoutsuite",),
         successors=("validation",),
         safety_class="passive",
-        operational_knowledge=("Feeds Sprint 017 Cloud Intelligence as an evidence provider.",),
+        operational_knowledge=("Feeds the Cloud Intelligence capability as an evidence provider.",),
         execution_type="pip",
         package_manager="pip",
         container_available=True,
@@ -224,7 +224,7 @@ CLOUD_TOOLS: tuple[ToolSpec, ...] = (
         alternatives=("prowler",),
         successors=("validation",),
         safety_class="passive",
-        operational_knowledge=("Feeds Sprint 017 Cloud Intelligence topology and correlation.",),
+        operational_knowledge=("Feeds the Cloud Intelligence topology and correlation.",),
         execution_type="pip",
         package_manager="pip",
         container_available=True,
@@ -243,7 +243,7 @@ CONTAINER_TOOLS: tuple[ToolSpec, ...] = (
         license="Apache-2.0",
         category="container",
         subcategory="image",
-        description="Comprehensive scanner for container images, filesystems, repos and more.",
+        description="Scanner for container images, filesystems and repositories.",
         capabilities=("container-analysis", "image-analysis", "sbom", "dependency-analysis"),
         version="0.54.0",
         language="go",

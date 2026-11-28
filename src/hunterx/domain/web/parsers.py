@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Deterministic, dependency-free content parsing for the web crawler.
-
-Extracts links, forms, script sources, parameters, robots.txt rules, sitemap
-URLs, WebSocket/GraphQL/API endpoints and authentication indicators from HTML,
-plain text and header maps. Every function is a pure transform: given content
-and a base URL it returns canonical observations, never performing I/O.
-"""
+"""Deterministic, dependency-free content parsing for the web crawler."""
 
 from __future__ import annotations
 

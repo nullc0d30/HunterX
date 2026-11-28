@@ -3,11 +3,7 @@
 
 """Mission checkpoints.
 
-Persist mission checkpoints so a mission can pause, resume and recover from
-crashes. A checkpoint captures the mission state, the plan version, the
-completed/pending/failed steps and the recorded gate decisions. The snapshot is
-JSON-safe and can be restored to continue the mission without redoing completed
-destructive or expensive operations.
+Persist mission checkpoints so a mission can pause, resume and recover from crashes.
 """
 
 from __future__ import annotations

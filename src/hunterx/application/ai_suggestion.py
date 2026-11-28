@@ -1,21 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""AI action-suggestion producer for the mission decision loop.
-
-The AI is an **advisory** decision source: it proposes one of the already
-available candidate actions (a capability the deterministic planner can also
-rank) plus a short rationale. It never picks a tool, never executes anything,
-and never bypasses policy, scope, budgets, sandbox enforcement or stop
-conditions. The deterministic :class:`MissionDecisionEngine` remains the final
-authority — it recomputes the ranking and only marks the decision
-``ai_assisted`` when the AI suggestion coincides with the deterministically
-selected action.
-
-Every failure path (client unavailable, provider error, timeout, malformed or
-unparseable response, invalid or out-of-candidate suggestion) degrades to a
-"no suggestion" result so the mission continues deterministically.
-"""
+"""AI action-suggestion producer for the mission decision loop."""
 
 from __future__ import annotations
 
@@ -102,7 +88,7 @@ class AIActionSuggester:
             model when empty).
         provider: provider name for telemetry.
         min_interval_s: minimum wall-clock gap between AI calls (free-tier
-            request budget — trivial decisions do not need the model every
+            request budget, trivial decisions do not need the model every
             cycle).
         backoff_s: base cooldown applied after a 429.
         max_cooldown_s: ceiling for the 429 cooldown.
@@ -170,19 +156,7 @@ class AIActionSuggester:
         mission: Any,
         candidates: list[Any],
     ) -> AISuggestion:
-        """Return an advisory suggestion for ``mission`` given ``candidates``.
-
-        ``candidates`` is the list of ready candidate actions (each exposing
-        ``action_id``, ``capability``, ``description`` and ``tool_ids``). The
-        suggestion is validated against this set; anything else is rejected.
-
-        Free-tier policy: AI is only consulted when there is more than one
-        candidate (a single candidate is deterministic) and when the provider
-        is not in cooldown and the per-cycle request budget allows it. Any
-        failure/cooldown returns a ``fallback``/``deterministic`` suggestion so
-        the mission continues with the deterministic planner — an AI failure
-        never stops or falsely completes a mission.
-        """
+        """Return an advisory suggestion for ``mission`` given ``candidates``."""
         if self._ai is None:
             return AISuggestion(error="AI client unavailable", deterministic=True)
         if not candidates:

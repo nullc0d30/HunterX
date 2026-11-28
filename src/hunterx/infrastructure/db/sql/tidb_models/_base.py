@@ -4,10 +4,6 @@
 """Base for TIDB SQLAlchemy ORM models.
 
 Mirrors the ``TidbEntity`` envelope from ``hunterx.domain.entities.tidb``.
-All TIDB tables share the USS system-of-record columns: identity, assertion
-and state timestamps, optimistic-lock versioning, soft delete and free-form
-``meta``. Complex values are stored as JSON (``JSONB`` on PostgreSQL, ``JSON``
-on SQLite) so the schema is portable across the test and production stores.
 """
 
 from __future__ import annotations

@@ -3,11 +3,7 @@
 
 """Wildcard DNS detection.
 
-Wildcards answer for any non-existent name in a zone (``*.example.com`` ->
-``1.2.3.4``). Failing to detect them makes enumeration hallucinate fake assets;
-flagging real records as wildcards would hide genuine infrastructure. This
-module detects wildcards deterministically using non-deterministic probing and
-labels the affected records so they are never persisted as real assets.
+Wildcards answer for any non-existent name in a zone (``*.example.com`` -> ``1.2.3.4``).
 """
 
 from __future__ import annotations

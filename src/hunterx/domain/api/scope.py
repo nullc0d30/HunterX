@@ -3,14 +3,8 @@
 
 """Scope enforcement for API intelligence.
 
-Decides whether a hostname, domain, IP or URL may be analysed or persisted
-based on the mission's authorized roots, exclusions and excluded URL patterns.
-The enforcer is pure and deterministic: the same inputs always yield the same
-decision, with a human-readable reason for every denial.
-
-Discovered API intelligence is never used to silently expand scope: the
-enforcer authorizes the *asset* being analysed, not the API surface found on
-it. Spec fetching is restricted to the in-scope target origin.
+Decides whether a hostname, domain, IP or URL may be analysed or persisted based on the mission's authorized roots,
+exclusions and excluded URL patterns.
 """
 
 from __future__ import annotations

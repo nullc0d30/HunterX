@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests: orchestration through the assembled platform.
-
-Exercises the offensive orchestration capability end to end: platform build,
-mission create/plan/run, TIDB persistence of orchestration entities, knowledge
-graph updates and event emission.
-"""
+"""Integration tests: orchestration through the assembled platform."""
 
 from __future__ import annotations
 

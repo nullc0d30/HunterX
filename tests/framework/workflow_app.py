@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Deterministic stateful workflow fixture for the final multi-target acceptance.
-
-Serves a small multi-step workflow (``start -> advance -> finalize``) with
-server-side state transitions and token validation. The app is deliberately
-*not* vulnerable — its purpose is to prove the engine discovers, maps and
-executes real assessment tasks on workflow surfaces with honest outcomes and
-genuine exhaustion (a target is never exhausted because no finding exists).
-"""
+"""Deterministic stateful workflow fixture for the final multi-target acceptance."""
 
 from __future__ import annotations
 

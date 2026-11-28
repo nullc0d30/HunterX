@@ -55,11 +55,11 @@ def _json_bind_serializer(value: Any) -> str:
 
     This is the central persistence boundary for every ``JSON``/``JSONB``
     column: arbitrary Python objects that leaked into a payload (parser tokens,
-    dataclasses, datetimes, enums, paths, ...) are recursively converted to
+    dataclasses, datetimes, enums, paths,...) are recursively converted to
     JSON-native structures by :func:`to_json_safe` before ``json.dumps`` ever
     sees them. The database layer therefore never receives a non-serializable
-    object — a mission can no longer crash with
-    ``TypeError: Object of type ... is not JSON serializable`` at commit.
+    object, a mission can no longer crash with
+    ``TypeError: Object of type... is not JSON serializable`` at commit.
     """
     import json as _json
 
@@ -71,21 +71,7 @@ def _json_bind_serializer(value: Any) -> str:
 def create_engine_from_settings(settings: DatabaseSettings) -> Any:
     """Create a SQLAlchemy engine from typed settings.
 
-    SQLite ``:memory:`` databases use a static pool so every connection shares
-    the same in-process database. The default ``sqlite:///hunterx.db`` URL is
-    resolved to the application data directory (``<root>/data/hunterx.db``) and
-    the parent directory is created before the engine is built, so a missing
-    ``data/`` directory is never a runtime failure.
-
-    File-backed SQLite databases are opened with WAL journaling, a busy timeout
-    and ``check_same_thread=False`` so the autonomous mission (a single writer
-    process with many short sessions) never deadlocks on ``database is locked``
-    and readers never block the mission's persistence path.
-
-    Every engine installs the canonical JSON-safe bind serializer
-    (``_json_bind_serializer``), making it impossible for any JSON-backed
-    column — observations, evidence, audit snapshots, metadata — to receive a
-    non-JSON-native Python object.
+    SQLite ``:memory:`` databases use a static pool so every connection shares the same in-process database.
     """
     mod = _load_sqlalchemy()
     url = resolve_database_url(settings.url)
@@ -180,18 +166,8 @@ class SessionFactory:
     def create_all(self, *, retries: int = 25, retry_delay: float = 0.1) -> None:
         """Create tables for all registered models.
 
-        Retries a bounded number of times on SQLite ``OperationalError``
-        conditions raised when a concurrent process is racing to create the
-        same schema (``table ... already exists``, stale reflection via
-        ``database schema has changed``, or a held write lock via ``database
-        is locked``). SQLAlchemy's ``create_all`` uses ``checkfirst=True`` by
-        default, so it is idempotent: after the other process finishes, the
-        retried call sees the tables already present and quietly completes.
-
-        The default budget (25 attempts with linear backoff, ~32s worst case)
-        comfortably outlives a cold bootstrap of the full model registry
-        (~15s), so the loser of a concurrent first-run simply waits for the
-        winner instead of crashing.
+        Retries a bounded number of times on SQLite ``OperationalError`` conditions raised when a concurrent process
+        is racing to create the same schema (``table...
         """
         mod = _load_sqlalchemy()
         metadata = mod["Base"].metadata

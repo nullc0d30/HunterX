@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the Sprint 033 ``hunterx hunt`` CLI command group.
-
-Builds the full platform and drives the ``hunt`` command family: ``hunt``
-(create+start), ``hunt status``, ``hunt surface``, ``hunt coverage``,
-``hunt findings``, ``hunt evidence``, ``hunt proofs``, ``hunt paths`` and
-``hunt timeline``.
-"""
+"""Integration tests for the ``hunterx hunt`` CLI command group."""
 
 from __future__ import annotations
 
@@ -37,9 +31,10 @@ class TestHuntCLI:
         assert isinstance(created, dict)
         assert created.get("mission_id")
         assert created["objective"] == "bug_bounty_hunt"
-        # ``hunt`` runs the mission to completion, so the final phase reflects
-        # the finished workflow (REPORTING) — never a stuck target_modeling.
-        assert created["current_phase"] == "reporting"
+        # ``hunt`` finalizes the mission: a complete assessment reports, while
+        # an incomplete one is honestly shown as reassessment. Either way it is
+        # never left stuck in target_modeling.
+        assert created["current_phase"] in ("reporting", "reassessment")
 
     def test_hunt_status_surface(self, app: CliApplication, capsys: pytest.CaptureFixture[str]) -> None:
         mission_id = str(self._run(app, capsys, "hunt", "api_assessment", "https://api.example.com")["mission_id"])

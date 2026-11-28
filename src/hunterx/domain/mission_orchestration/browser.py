@@ -3,19 +3,7 @@
 
 """Browser automation capability detection.
 
-Browser automation is a *capability*, not an assumption. This module detects
-whether a real browser automation stack (Playwright package + a Chromium
-executable + a headless launch) is available in the current environment, so a
-mission can report ``browser_testing`` truthfully:
-
-* ``available``    — Playwright importable and a headless browser launch works.
-* ``unavailable``  — Playwright/Chromium is missing or cannot launch headlessly.
-* ``not_assessed`` — detection itself could not run (best-effort default).
-
-Detection is environment-only (no secrets, no network, no mission state). The
-mission may continue with non-browser HTTP capabilities regardless of the
-result; the outcome is recorded as a coverage cell so absence of browser
-testing is never converted into negative security evidence.
+Browser automation is a *capability*, not an assumption.
 """
 
 from __future__ import annotations
@@ -41,7 +29,7 @@ def detect_browser_capability() -> dict[str, Any]:
 
     Checks, in order: the Playwright package, a Chromium executable on PATH (or
     a Playwright-managed browser), and a real headless launch. A ``429``/WAF
-    style defensive response is not relevant here — detection only answers
+    style defensive response is not relevant here, detection only answers
     "can a headless browser run?".
 
     Returns:

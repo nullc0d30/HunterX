@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Documentation Deployment to GitHub Pages.
+# HunterX - Documentation Deployment to GitHub Pages.
 #
 # Builds the Jekyll documentation site in docs/ and deploys it to
 # https://nullc0d30.github.io/HunterX/ using the official GitHub Pages

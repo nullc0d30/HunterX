@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Benchmarks — HunterX Performance
+title: Benchmarks - HunterX Performance
 description: >-
   HunterX vulnerability scanner performance benchmarks for Linux penetration
   testing. Scan time, memory usage, request throughput, Docker image size, and

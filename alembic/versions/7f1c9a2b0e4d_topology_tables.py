@@ -1,8 +1,5 @@
-"""topology relationship, conflict, change, cluster and build tables
-
-Revision ID: 7f1c9a2b0e4d
-Revises: 53b3e0bb8ed2
-Create Date: 2026-08-08 06:30:00.000000
+"""topology relationship, conflict, change, cluster and build tables Revision ID: 7f1c9a2b0e4d Revises: 53b3e0bb8ed2
+Create Date: 2026-08-08 06:30:00.000000.
 
 """
 from collections.abc import Sequence

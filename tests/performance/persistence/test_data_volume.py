@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Data-volume tests (Sprint 034.3 §25).
-
-Generates a representative dataset (thousands of assets, endpoints,
-observations, findings) and measures insert, query, list, correlation and
-report-retrieval latency to identify pathological queries.
-"""
+"""Data-volume tests (25)."""
 
 from __future__ import annotations
 
@@ -93,15 +88,18 @@ def volume_dataset(volume_factory):
             for i in range(_ENDPOINTS)
         ]
     )
+    # Endpoints reference their parent URL by primary key, which the store
+    # generates, so read the saved rows back before building the children.
+    url_ids = [saved.id for saved in url_repo.list(limit=_ENDPOINTS, order_by="id", descending=False)]
     endpoint_repo.save_many(
         [
             Endpoint(
-                url_id=f"url-{i}",
+                url_id=url_id,
                 method="GET",
                 path=f"/api/{i}",
                 discovered_by="katana",
             )
-            for i in range(_ENDPOINTS)
+            for i, url_id in enumerate(url_ids)
         ]
     )
     finding_repo.save_many(
@@ -152,7 +150,7 @@ def test_correlation_query_is_fast(volume_factory, volume_dataset) -> None:
     t0 = time.perf_counter()
     findings = volume_factory.repository_for(FindingRecord).list_by("target_id", "tgt-2", limit=2000)
     assert len(findings) == 333
-    # Correlation: one finding → its evidence refs (single lookup each).
+    # Correlation: one finding to its evidence refs (single lookup each).
     evidence_repo = volume_factory.repository_for(IntelligenceEvidenceRecord)
     for finding in findings:
         evidence_repo.list_by("evidence_id", finding.evidence_refs[0] if finding.evidence_refs else "none", limit=1)

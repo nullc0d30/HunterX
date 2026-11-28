@@ -3,13 +3,8 @@
 
 """Base adapter for parameter discovery tools.
 
-Parameter discovery tools (arjun, paramspider, kiterunner) enumerate the
-parameters and endpoints an application accepts. External binaries run through
-the shared :class:`~hunterx.tools.recon.runner.BinaryRunner` seam and emit
-canonical parameter records under the pipeline ``parameters`` payload.
-
-Discovered parameters are observations that feed request crafting; they are
-never executed as payloads by this layer.
+Parameter discovery tools (arjun, paramspider, kiterunner) enumerate the parameters and endpoints an application
+accepts.
 """
 
 from __future__ import annotations

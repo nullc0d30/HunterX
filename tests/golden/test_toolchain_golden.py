@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden output tests for the full toolchain (Sprint 031).
+"""Golden output tests for the full toolchain.
 
-Each tool category has representative fixtures covering successful, empty,
-malformed and error output. Parsers must turn successful output into canonical
-records, treat empty output as an empty result (never an error), skip
-malformed input defensively and never treat tool errors as "target is safe".
+Each tool category has representative fixtures covering successful, empty, malformed and error output.
 """
 
 from __future__ import annotations

@@ -3,10 +3,7 @@
 
 """Proof replay adapter registry.
 
-Registers the deterministic safe proof-replay adapters on the Tool Integration
-SDK :class:`ExecutionEngine`. Every replay flows through the SDK lifecycle —
-proof code never invokes ``subprocess`` directly and never executes outside the
-already-gated parameters.
+Registers the deterministic safe proof-replay adapters on the Tool Integration SDK :class:`ExecutionEngine`.
 """
 
 from __future__ import annotations
@@ -27,7 +24,7 @@ def register_proof_replay_adapters(engine: ExecutionEngine) -> Mapping[str, Proo
         engine: the SDK execution engine.
 
     Returns:
-        The mapping of tool id → adapter registered.
+        The mapping of tool id to adapter registered.
 
     """
     adapters = proof_replay_adapters()

@@ -3,9 +3,7 @@
 
 """Tool selection domain models.
 
-The orchestration tool-selection vocabulary: capability needs, selection
-results and selections. These bridge the Tool Intelligence Platform's raw
-candidate ranking with the mission planner's step binding.
+The orchestration tool-selection vocabulary: capability needs, selection results and selections.
 """
 
 from __future__ import annotations

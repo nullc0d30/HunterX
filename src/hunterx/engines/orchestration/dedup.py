@@ -3,9 +3,8 @@
 
 """Execution deduplication.
 
-Prevents duplicate tool execution when the same target, tool, version, relevant
-input and configuration would be executed within the configured freshness
-window. Explicit forced refresh bypasses the cache.
+Prevents duplicate tool execution when the same target, tool, version, relevant input and configuration would be
+executed within the configured freshness window.
 """
 
 from __future__ import annotations

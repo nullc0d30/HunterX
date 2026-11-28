@@ -3,9 +3,7 @@
 
 """Cloud intelligence historical diffing.
 
-Deterministic comparison of a previous cloud observation snapshot against the
-current correlated set. Produces added/removed/changed :class:`CloudChange`
-records keyed by each subject's canonical deduplication key.
+Deterministic comparison of a previous cloud observation snapshot against the current correlated set.
 """
 
 from __future__ import annotations

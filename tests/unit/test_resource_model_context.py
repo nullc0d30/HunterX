@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-governance tests: bounded model reasoning context.
-
-The model-driven attacker must receive an efficient summarized state, never an
-ever-growing full mission history: observations, findings, adjacent paths and
-disproven fingerprints fed to the prompt are all bounded, so both the prompt
-size and the attacker's in-memory retention are bounded regardless of how long
-the autonomous loop runs.
-"""
+"""Resource-governance tests: bounded model reasoning context."""
 
 from __future__ import annotations
 

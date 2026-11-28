@@ -3,10 +3,8 @@
 
 """Authorization intelligence tool adapter registry.
 
-Builds and registers the authorization intelligence adapters (the in-process
-analyzer) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the
-single place that knows the authorization tool set, so callers (tests, the
-authorization service, the platform) never construct individual adapters.
+Builds and registers the authorization intelligence adapters (the in-process analyzer) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

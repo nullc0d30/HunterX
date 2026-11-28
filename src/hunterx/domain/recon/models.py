@@ -1,24 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reconnaissance domain models.
-
-Pure data contracts for the reconnaissance capability: the canonical discovery
-record every recon tool adapter produces, the target descriptor, the execution
-mode, and the batch that carries correlated records back to the application
-layer. No I/O and no execution here — adapters and services read and write
-these structures.
-
-Discovery records are deliberately tool-agnostic. Each :class:`DiscoveryRecord`
-is a single observation of one asset kind (domain, subdomain, IP address, CIDR,
-ASN, DNS record, certificate, WHOIS data, organisation, cloud provider or
-exposed asset) with the tool that observed it, the upstream source, a
-confidence score and an evidence ``details`` payload.
-
-The TIDB ``network`` entities (:mod:`hunterx.domain.entities.tidb.network`)
-are the persistence projection of these records; this module is the runtime
-surface the capability pipeline is built on.
-"""
+"""Reconnaissance domain models."""
 
 from __future__ import annotations
 
@@ -96,7 +79,7 @@ class DiscoveryRecord:
             ``passive``...) when known, otherwise empty.
         confidence: detection confidence in ``[0, 1]``.
         target_id: owning target record id when in-scope.
-        details: evidence payload (addresses, record type, SANs, ...).
+        details: evidence payload (addresses, record type, SANs,...).
         observed_at: UTC ISO-8601 observation timestamp.
         record_id: stable identifier for this observation.
 

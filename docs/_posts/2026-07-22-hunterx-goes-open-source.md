@@ -1,6 +1,6 @@
 ---
 layout: post
-title: HunterX Goes Open Source — Apache 2.0 Relicensing
+title: HunterX Goes Open Source - Apache 2.0 Relicensing
 description: >-
   HunterX is now fully open source under the Apache License 2.0. Learn about
   the licensing change, what it means for users and contributors, and the
@@ -12,7 +12,7 @@ categories: [releases, community]
 
 ## HunterX Goes Open Source
 
-Today I'm excited to announce that HunterX — the AI-assisted vulnerability scanner and Red Team framework — is now fully open source under the **Apache License 2.0**.
+Today I'm excited to announce that HunterX, the AI-assisted vulnerability scanner and Red Team framework, is now fully open source under the **Apache License 2.0**.
 
 ## Why Apache 2.0?
 

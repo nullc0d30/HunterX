@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Vulnerability Proof & PoC TIDB entities.
-
-System-of-record entities for the Wave 15 vulnerability proof & PoC capability:
-vulnerability proofs, proof contracts, proof plans and steps, proof executions,
-structured PoCs, replays, proof-linked evidence, proof policy decisions, impact
-assessments, confidence assessments, proof quality, finding lifecycle
-transitions and temporal proof history. Every proof fact that matters is
-persisted here — never only in memory, logs or reports.
-
-Security boundary: these tables store safe-proof metadata, canonical observations
-and redacted evidence only — never exploit payloads, never credentials, never
-unrestricted executable PoC scripts and never out-of-scope request material.
-"""
+"""Vulnerability Proof & PoC TIDB entities."""
 
 from __future__ import annotations
 

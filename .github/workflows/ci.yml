@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Quality Gate CI (mandatory merge blocker).
+# HunterX - Quality Gate CI (mandatory merge blocker).
 #
 # Runs the full engineering quality-gate suite through the `eng` platform:
 # ruff, mypy, pytest, coverage, architecture, deadcode, dependencies, docs,
@@ -76,7 +76,7 @@ jobs:
       - name: Enforce gates (fail workflow on block)
         if: steps.gates.outcome == 'failure'
         run: |
-          echo "::error::Mandatory quality gates failed — see the 'Quality Gates (blocking)' step output."
+          echo "::error::Mandatory quality gates failed - see the 'Quality Gates (blocking)' step output."
           exit 1
 
       - name: Comment gate summary on PR
@@ -91,7 +91,7 @@ jobs:
               body += `**Blocked:** ${report.blocked}\n`;
               body += `**Passed:** ${report.passed} / **Failed:** ${report.failed} / **Errors:** ${report.errors} / **Skipped:** ${report.skipped}\n\n`;
               for (const r of report.results) {
-                body += `- [${r.status.toUpperCase()}] **${r.name}** — ${r.detail}\n`;
+                body += `- [${r.status.toUpperCase()}] **${r.name}** - ${r.detail}\n`;
               }
             } catch {
               body += "Gate report not available for this run.";

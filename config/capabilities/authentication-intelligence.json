@@ -1,9 +1,7 @@
 {
   "capability": "authentication-session-and-identity-intelligence",
   "version": "1.0.0",
-  "sprint": 15,
-  "wave": 9,
-  "status": "ratified",
+  "status": "stable",
   "summary": "Persistent, evidence-backed identity & authentication intelligence for authorized targets: authentication surfaces and endpoints, modeled flows, identity providers, OAuth 2.x / OIDC / SAML configurations, JWT indicators, authentication schemes, cookie security metadata, token storage, CSRF and CORS protections, MFA/WebAuthn mechanisms, roles/scopes/permissions/tenants, public-vs-authenticated classification and historical change detection. Intelligence only; never authenticates, never validates discovered secrets.",
   "inputs": {
     "targets": [

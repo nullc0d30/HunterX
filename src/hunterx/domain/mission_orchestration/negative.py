@@ -3,12 +3,8 @@
 
 """Negative-evidence engine.
 
-Sprint 032. HunterX must remember what was tested and what was NOT found —
-with the exact tool, version, input, conditions and outcome. "Not found" is
-never "not vulnerable": a negative record is a bounded observation that keeps
-the mission from re-testing blindly while preserving the distinction between
-TESTED / NOT_VULNERABLE / NOT_REPRODUCIBLE / BLOCKED / INCONCLUSIVE /
-NOT_APPLICABLE / NOT_TESTED.
+HunterX must remember what was tested and what was NOT found, with the exact tool, version, input, conditions and
+outcome.
 """
 
 from __future__ import annotations
@@ -100,7 +96,7 @@ class NegativeEvidenceEngine:
     def known_absent(self, asset_key: str, capability: str, *, tool_id: str = "") -> bool:
         """Return ``True`` when a capability was tested negative on an asset.
 
-        This never claims "not vulnerable" — only that a specific (asset,
+        This never claims "not vulnerable", only that a specific (asset,
         capability, tool) combination was exercised with no evidence.
         """
         for record in self._records:

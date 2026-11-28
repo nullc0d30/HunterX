@@ -3,9 +3,8 @@
 
 """Confidence scoring for JavaScript intelligence.
 
-Adjusts the confidence of findings based on evidence strength, rule baseline
-confidence, evidence multiplicity and agreement across assets. The engine is
-pure and deterministic: identical inputs yield identical scores.
+Adjusts the confidence of findings based on evidence strength, rule baseline confidence, evidence multiplicity and
+agreement across assets.
 """
 
 from __future__ import annotations

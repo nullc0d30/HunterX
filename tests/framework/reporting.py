@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Test doubles for the professional reporting capability.
-
-Builds findings in an in-memory TIDB store and constructs a fully wired
-:class:`ProfessionalReportingService` for golden, acceptance, security and
-performance tests.
-"""
+"""Test doubles for the professional reporting capability."""
 
 from __future__ import annotations
 

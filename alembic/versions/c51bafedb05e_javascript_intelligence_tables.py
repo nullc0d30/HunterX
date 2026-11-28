@@ -1,8 +1,5 @@
-"""javascript intelligence tables
-
-Revision ID: c51bafedb05e
-Revises: 9c2a1b7d3f5e
-Create Date: 2026-08-09 00:00:00.000000
+"""javascript intelligence tables Revision ID: c51bafedb05e Revises: 9c2a1b7d3f5e Create Date: 2026-08-09
+00:00:00.000000.
 
 """
 from collections.abc import Sequence

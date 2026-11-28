@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript secret detection.
-
-Detects candidate secrets in script content without ever persisting a raw
-value: every finding stores a masked preview and a SHA-256 hash of the
-candidate, plus the reason the candidate was kept or rejected. False-positive
-control rejects placeholder text, obvious sample values and values shorter than
-a minimum length.
-
-This module never logs, stores or renders raw candidate values — the masking
-contract is enforced here and in the models.
-"""
+"""JavaScript secret detection."""
 
 from __future__ import annotations
 
@@ -209,7 +199,7 @@ def _extract_candidate(source: str, match: RuleMatch) -> str | None:
             return generic.group(1)
         return None
     if match.rule_id == "js-secret-008":
-        # private key block — hash a fingerprint of the header line
+        # private key block, hash a fingerprint of the header line
         return match.value
     return match.value.strip()
 

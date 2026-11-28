@@ -3,16 +3,7 @@
 
 """Attack-surface enums.
 
-Phase 1 target-agnostic vocabulary for representing and scheduling arbitrary
-discovered attack surfaces. The values are generic capability-model categories,
-never a specific target's routes, objects or technologies: a business object
-discovered on a target is modelled dynamically (its type is a string, not an
-enum member), so a new target never requires touching this module.
-
-Layering (Target → Asset → Service → Application → Surface → Input/Object/State
-→ Workflow → Capability) mirrors the attack-surface graph the orchestration
-walks. Kinds are strings and therefore extensible through the
-:class:`SurfaceKindRegistry` without modifying core orchestration logic.
+target-agnostic vocabulary for representing and scheduling arbitrary discovered attack surfaces.
 """
 
 from __future__ import annotations

@@ -1,10 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration: external AI configuration → platform composition.
+"""Integration: external AI configuration to platform composition.
 
-Verifies the full path from ``.env``/environment through ``AISettings`` and
-the provider factory into the composed platform. No real API calls are made.
+Verifies the full path from ``.env``/environment through ``AISettings`` and the provider factory into the composed
+platform.
 """
 
 from __future__ import annotations

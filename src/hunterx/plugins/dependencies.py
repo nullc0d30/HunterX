@@ -3,8 +3,7 @@
 
 """Plugin dependency resolution.
 
-Computes a load order that satisfies plugin-to-plugin dependencies, and
-detects missing dependencies and cycles.
+Computes a load order that satisfies plugin-to-plugin dependencies, and detects missing dependencies and cycles.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Convenience re-exports of domain entities (``from hunterx.models import ...``)."""
+"""Convenience re-exports of domain entities (``from hunterx.models import...``)."""
 
 from __future__ import annotations
 

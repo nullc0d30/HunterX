@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Test (legacy entry-point, superseded by the CI Quality Gates).
+# HunterX - Test (legacy entry-point, superseded by the CI Quality Gates).
 #
 # Kept for the README badge and as a fast smoke check: installs the project and
 # runs the mandatory quality gates through the `eng` platform. The full CI

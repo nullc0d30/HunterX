@@ -1,7 +1,5 @@
-# 12 — Mission Profiles
+# 12, Mission Profiles
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** `config/profiles/<id>.yaml`, Mission Engine, Planner, Workflow, Reporting
 
 ---
@@ -20,37 +18,37 @@ The twelve supported profiles are enumerated in `01 - Vision.md` §6.
 ## 2. Profile Schema (common structure)
 
 ```yaml
-id: external-pentest          # stable identifier
+id: external-pentest # stable identifier
 version: 1
 name: External Penetration Test
 description: Perimeter-focused pentest of internet-facing assets.
 supported_targets: [domain, ip, cidr, url]
 phases:
-  - id: recon
-    name: Reconnaissance
-    steps: <workflow steps, see 10 - Workflow Engine>
+ - id: recon
+ name: Reconnaissance
+ steps: <workflow steps, see 10 - Workflow Engine>
 objectives:
-  - "Identify internet-facing attack surface"
-  - "Discover exploitable vulnerabilities with PoC"
+ - "Identify internet-facing attack surface"
+ - "Discover exploitable vulnerabilities with PoC"
 allowed_tools:
-  include: [subfinder, dnsx, nmap, nuclei, httpx, sqlmap, wpscan]
-  exclude: [hydra]              # e.g., no brute-force by default
+ include: [subfinder, dnsx, nmap, nuclei, httpx, sqlmap, wpscan]
+ exclude: [hydra] # e.g., no brute-force by default
 tool_profiles: { default: fast, stealth: quiet }
 expected_outputs:
-  findings: { min_severity: info }
-  assets: [domain, host, ip, port, service, url]
-  evidence: required
-  reports: [technical, executive, evidence-package]
-approval_level: operator        # auto|operator|destructive-approval
+ findings: { min_severity: info }
+ assets: [domain, host, ip, port, service, url]
+ evidence: required
+ reports: [technical, executive, evidence-package]
+approval_level: operator # auto|operator|destructive-approval
 risk_model:
-  formula: cvss-v3-base-v2      # risk model id
-  weights: { exploitability: 0.4, impact: 0.4, exposure: 0.2 }
-  escalation: { critical: alert, high: notify, low: silent }
+ formula: cvss-v3-base-v2 # risk model id
+ weights: { exploitability: 0.4, impact: 0.4, exposure: 0.2 }
+ escalation: { critical: alert, high: notify, low: silent }
 compliance_map: [owasp-top10, pci-dss]
 constraints:
-  max_scan_duration_h: 24
-  max_concurrency: 20
-  default_timeouts: { per_request_s: 30 }
+ max_scan_duration_h: 24
+ max_concurrency: 20
+ default_timeouts: { per_request_s: 30 }
 ```
 
 ---
@@ -78,12 +76,12 @@ constraints:
 
 - **Targets:** domain, url, api.
 - **Phases:** scope-enforce → recon (passive→active) → enumerate (subdomains,
-  endpoints, params) → detect (templates, manual checks) → validate (PoC,
-  false-positive filter) → triage (dedup, severity) → report.
+ endpoints, params) → detect (templates, manual checks) → validate (PoC,
+ false-positive filter) → triage (dedup, severity) → report.
 - **Objectives:** valid, reproducible, severity-ranked findings within the
-  bounty scope.
+ bounty scope.
 - **Tools:** subfinder, dnsx, httpx, nuclei, katana, ffuf, sqlmap, wpscan,
-  nikto, burp-community (optional).
+ nikto, burp-community (optional).
 - **Outputs:** findings (with PoC evidence), per-asset risk, technical report.
 - **Risk model:** CVSS base + bounty context (exposure to internet).
 
@@ -98,7 +96,7 @@ constraints:
 
 - **Targets:** api, url.
 - **Phases:** discover (specs, endpoints, params) → authn/authz review → fuzz
-  (params, methods) → validate → report.
+ (params, methods) → validate → report.
 - **Tools:** katana, ffuf, nuclei (api templates), custom fuzzers, mitm-adjacent.
 - **Outputs:** API inventory, auth findings, fuzz findings, SARIF.
 
@@ -106,7 +104,7 @@ constraints:
 
 - **Targets:** domain, ip, cidr, url.
 - **Phases:** recon → port/service scan → vulnerability scan → exploitation-PoC
-  → validation → reporting.
+ → validation → reporting.
 - **Tools:** subfinder, dnsx, nmap, httpx, nuclei, metasploit (PoC), sqlmap.
 - **Risk model:** full CVSS + business impact.
 
@@ -114,16 +112,16 @@ constraints:
 
 - **Targets:** ip, cidr, hostname.
 - **Phases:** discovery → enumeration (services, shares) → credential attacks →
-  lateral movement → escalation → persistence check → reporting.
+ lateral movement → escalation → persistence check → reporting.
 - **Tools:** nmap, crackmapexec, impacket, enum4linux, bloodhound, hydra (with
-  approval), responder.
+ approval), responder.
 - **Risk model:** prioritizes internal exposure and privilege paths.
 
 ### 4.6 `ad-assessment` (Active Directory)
 
 - **Targets:** ad-domain, hostname.
 - **Phases:** domain enumeration → trust mapping → attack-path discovery
-  (bloodhound) → escalation (kerberoast, asrep, relay) → validation → reporting.
+ (bloodhound) → escalation (kerberoast, asrep, relay) → validation → reporting.
 - **Tools:** bloodhound, impacket, crackmapexec, ldapsearch, certipy.
 - **Risk model:** privilege path severity + domain trust impact.
 
@@ -131,7 +129,7 @@ constraints:
 
 - **Targets:** cloud-account, arn.
 - **Phases:** inventory → IAM review → misconfiguration detection → exposure
-  validation → reporting.
+ validation → reporting.
 - **Tools:** scoutsuite, prowler, pacu, awscli/az/gcloud wrappers.
 - **Risk model:** cloud exposure + IAM blast radius.
 
@@ -139,7 +137,7 @@ constraints:
 
 - **Targets:** container (image ref).
 - **Phases:** image pull → vulnerability scan → registry scan → runtime
-  (optional) → validation → reporting.
+ (optional) → validation → reporting.
 - **Tools:** trivy, grype, docker scan, clair.
 - **Risk model:** image severity + runtime posture.
 
@@ -147,7 +145,7 @@ constraints:
 
 - **Targets:** cluster (kubeconfig), namespace.
 - **Phases:** cluster enumeration → RBAC review → admission review → pod/network
-  policy review → validation → reporting.
+ policy review → validation → reporting.
 - **Tools:** kube-hunter, kube-bench, popeye, kubeaudit.
 - **Risk model:** control-plane exposure + workload privilege.
 
@@ -155,7 +153,7 @@ constraints:
 
 - **Targets:** mobile-app (apk/ipa), repo.
 - **Phases:** static analysis → manifest/cert review → dynamic (emulator) →
-  traffic/storage review → validation → reporting.
+ traffic/storage review → validation → reporting.
 - **Tools:** apkleaks, mobsf, objection, frida (dynamic), adb.
 - **Risk model:** app data exposure + platform weaknesses.
 
@@ -163,7 +161,7 @@ constraints:
 
 - **Targets:** ip, cidr, hostname.
 - **Phases:** discovery → port scan → service fingerprint → vuln scan →
-  validation → reporting.
+ validation → reporting.
 - **Tools:** nmap, masscan, openvas (optional), hydra (approval).
 - **Risk model:** service exposure + reachability.
 
@@ -171,11 +169,11 @@ constraints:
 
 - **Targets:** any (recurring scope set).
 - **Phases:** schedule-driven delta scans → drift detection → regression
-  findings vs baseline → continuous report.
+ findings vs baseline → continuous report.
 - **Tools:** inherits per-scope-set toolchains (profile composition).
 - **Risk model:** trend-based; new/changed findings emphasized.
 - **Notes:** uses the Scheduler (`02` §5.17); checkpoints and caching are
-  heavily used; findings deduped against baseline.
+ heavily used; findings deduped against baseline.
 
 ---
 
@@ -228,7 +226,7 @@ completion:
 - Minimum set of report types generated (`21 - Reporting Standards.md`).
 - Mandatory evidence for findings above a severity threshold.
 - Asset inventory completeness thresholds (e.g., "port scan coverage of all
-  live hosts").
+ live hosts").
 
 Failure to meet the output contract → mission marked `completed-with-warnings`
 (or `failed` if a mandatory artifact is absent).
@@ -239,9 +237,9 @@ Failure to meet the output contract → mission marked `completed-with-warnings`
 
 - Ship as data in `config/profiles/`; schema-validated; versioned (SemVer).
 - Modifying a shipped profile → minor bump; breaking change → major + migration
-  note.
+ note.
 - New profiles are a Schema Change + Mission Profile review
-  (`24 - Quality Assurance.md`).
+ (`24 - Quality Assurance.md`).
 
 ---
 

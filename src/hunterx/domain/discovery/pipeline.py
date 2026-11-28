@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery pipeline plan (pure data structures).
-
-A :class:`StagePlan` describes which tools run at which :class:`DiscoveryStage`
-and how each tool's payload is turned into canonical assets and attack-surface
-observations. The plan is declarative and target-agnostic: the tool ids are
-injected from the tool registries by the application layer (this module never
-hardcodes a provider list), and the converters are referenced by name so the
-plan stays importable without the engine.
-"""
+"""Universal discovery pipeline plan (pure data structures)."""
 
 from __future__ import annotations
 

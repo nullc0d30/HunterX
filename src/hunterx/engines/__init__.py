@@ -3,10 +3,8 @@
 
 """Engine layer.
 
-Engines orchestrate the platform's core capabilities: mission execution,
-workflows, planning, correlation, reasoning and reporting. Engines depend on
-the domain, application and shared layers and receive their collaborators
-(ports) through constructors.
+Engines orchestrate the platform's core capabilities: mission execution, workflows, planning, correlation, reasoning
+and reporting.
 """
 
 from __future__ import annotations

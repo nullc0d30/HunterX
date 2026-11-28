@@ -3,20 +3,8 @@
 
 """Full toolchain application service.
 
-The single use-case facade the CLI and API call to interact with the complete
-authorized offensive-security toolchain. Every capability is a pure read or a
-guarded execution:
-
-- catalog: ``list_tools``, ``show_tool``, ``tool_capabilities``,
-  ``capabilities``, ``health``, ``versions``, ``requirements``, ``provenance``.
-- decision: ``recommend``, ``strategies``, ``chain``.
-- execution: ``execute``, ``execution_status``, ``execution_output``,
-  ``inspect_result``.
-- offline replay: ``parse``, ``normalize``.
-
-Executions are structured and scoped: targets are passed as typed arguments
-and results are stored with canonical output semantics. Tool failure is never
-reported as "target is safe".
+The single use-case facade the CLI and API call to interact with the complete authorized offensive-security
+toolchain.
 """
 
 from __future__ import annotations
@@ -73,7 +61,7 @@ class ToolchainService:
         self._executions: dict[str, dict[str, Any]] = {}
         self._max_stored = max(1, max_stored_executions)
 
-    # -- consolidated contracts (Sprint 034.5) ------------------------------
+    # -- consolidated contracts () ------------------------------
 
     def contract(self, tool_id: str) -> dict[str, Any]:
         """Return the consolidated machine-readable contract for ``tool_id``.
@@ -342,13 +330,26 @@ class ToolchainService:
         )
         return asdict(strategy)
 
-    def chain(self, objective: str, capabilities: list[str], *, mission_id: str = "", scope: str = "") -> dict[str, Any]:
-        """Plan a dependency-aware tool chain for ``objective``."""
+    def chain(
+        self,
+        objective: str,
+        capabilities: list[str],
+        *,
+        mission_id: str = "",
+        scope: str = "",
+        authorization_granted: bool = False,
+    ) -> dict[str, Any]:
+        """Plan a dependency-aware tool chain for ``objective``.
+
+        Intrusive capabilities (injection, exploitation) are only planned when
+        the caller confirms the mission holds authorization for them.
+        """
         chain = self._tip.plan_chain(
             objective,
             capabilities=tuple(capabilities),
             mission_id=mission_id,
             scope=scope,
+            authorization_granted=authorization_granted,
         )
         return {
             "chain_id": chain.chain_id,
@@ -370,7 +371,7 @@ class ToolchainService:
             "scope": chain.scope,
         }
 
-    # -- chained execution (Sprint 034.5) -----------------------------------
+    # -- chained execution () -----------------------------------
 
     def execute_chain(
         self,
@@ -385,6 +386,7 @@ class ToolchainService:
         timeout: float = 0.0,
         allow_fallback: bool = True,
         chain_id: str = "",
+        authorization_granted: bool = False,
     ) -> dict[str, Any]:
         """Plan and execute an end-to-end tool chain against ``target``.
 
@@ -401,6 +403,7 @@ class ToolchainService:
             mission_id=mission_id,
             scope=scope,
             chain_id=chain_id,
+            authorization_granted=authorization_granted,
         )
         executor = self._chain_executor()
         result = executor.execute(
@@ -1024,7 +1027,7 @@ def _serialize(value: Any) -> Any:
     if isinstance(value, set):
         return [_serialize(item) for item in sorted(value, key=str)]
     if is_dataclass(value):
-        return _serialize(asdict(value))  # type: ignore[arg-type]  # slots dataclass narrow
+        return _serialize(asdict(value))  # type: ignore[arg-type] # slots dataclass narrow
     if hasattr(value, "value"):
         return value.value
     return value

@@ -3,16 +3,7 @@
 
 """Target Memory & Campaign Intelligence TIDB entities.
 
-Sprint 030. System-of-record entities for the historical intelligence layer.
-The layer persists normalized historical records (never raw tool output) so
-first/last seen tracking, observation history, snapshots, diffs, campaigns,
-coverage gaps, hypothesis history, risk history, revalidation state,
-finding history, attack-path history and preserved contradictions stay
-queryable.
-
-Each entity mirrors the pure domain model in ``hunterx.domain.target_memory``;
-the application service maps between them. Envelope (id, timestamps,
-versioning, soft-delete) comes from :class:`TidbEntity`.
+System-of-record entities for the historical intelligence layer.
 """
 
 from __future__ import annotations
@@ -131,7 +122,7 @@ class TargetDiffRecord(TidbEntity):
 class MissionMemoryRecord(TidbEntity):
     """Historical context of a mission against a target.
 
-    References canonical entities by id — never duplicates them.
+    References canonical entities by id, never duplicates them.
     """
 
     mission_id: str = ""
@@ -194,7 +185,7 @@ class HypothesisMemoryRecord(TidbEntity):
 class ToolObservationRecord(TidbEntity):
     """Historical provenance of a meaningful tool result.
 
-    Retains the normalized result and references — never raw output.
+    Retains the normalized result and references, never raw output.
     """
 
     tool: str = ""

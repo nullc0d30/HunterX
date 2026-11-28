@@ -4,7 +4,7 @@
 
 Thank you for your interest in contributing to HunterX. This document outlines the process for contributing code, documentation, and other improvements.
 
-All contributions are welcome — whether fixing a typo, adding a skill, writing tests, or implementing a new provider.
+All contributions are welcome - whether fixing a typo, adding a skill, writing tests, or implementing a new provider.
 
 ---
 
@@ -80,7 +80,7 @@ No regressions are allowed. If your change fixes a bug, add a test that reproduc
 
 1. Ensure your branch is up to date with `main`.
 2. Open a pull request against the `main` branch.
-3. Use the pull request template — fill in all sections.
+3. Use the pull request template - fill in all sections.
 4. Link the issue your PR addresses (if applicable).
 5. Add a changelog entry in `CHANGELOG.md` under the appropriate section.
 6. Ensure all commits include a DCO sign-off (`Signed-off-by:`).
@@ -123,9 +123,9 @@ feat: add AWS S3 bucket enumeration skill
 
 Use descriptive branch names with a type prefix:
 
-- `feat/description` — new features
-- `fix/description` — bug fixes
-- `docs/description` — documentation changes
+- `feat/description` - new features
+- `fix/description` - bug fixes
+- `docs/description` - documentation changes
 
 Examples: `feat/s3-enumeration`, `fix/ollama-timeout`, `docs/api-reference`
 

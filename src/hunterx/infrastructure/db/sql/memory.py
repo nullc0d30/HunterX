@@ -3,9 +3,8 @@
 
 """In-memory TIDB CRUD repository.
 
-A dict-backed implementation of the TIDB repository port used for tests,
-prototyping and single-process ephemeral stores. It reproduces the soft-delete
-and pagination semantics of the SQL adapter without a database.
+A dict-backed implementation of the TIDB repository port used for tests, prototyping and single-process ephemeral
+stores.
 """
 
 from __future__ import annotations

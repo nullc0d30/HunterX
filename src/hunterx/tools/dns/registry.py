@@ -3,10 +3,8 @@
 
 """DNS tool adapter registry.
 
-Builds and registers the DNS tool adapters (dnsx binary + dnspython-based
-active resolver) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
-This is the single place that knows the DNS tool set, so callers (tests, the
-DNS service, the platform) never construct individual adapters.
+Builds and registers the DNS tool adapters (dnsx binary + dnspython-based active resolver) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

@@ -3,8 +3,7 @@
 
 """Performance tests for the Autonomous Mission Orchestration.
 
-Sprint 032 §51. Benchmarks 1/10/100 missions, 10k/100k observations and 1k
-tool executions; the planner/decision latency must remain bounded.
+51.
 """
 
 from __future__ import annotations

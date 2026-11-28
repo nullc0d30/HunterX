@@ -1,23 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 6 — universal capability-finding lifecycle acceptance.
-
-Validates the full Phase 6 contract end to end against generic loopback
-targets: Target -> Universal Discovery -> Attack-Surface Graph -> Capability
-Mapping -> Assessment Queue -> Aggressive Adaptive Execution -> Continuous
-Discovery -> Candidate -> Differential Verification -> Replay -> Reproduction
--> Impact Analysis -> PoC -> Validated Finding -> Report.
-
-    1. a full real discovery pipeline feeds the capability engine, whose
-       FINDING records seed candidates that run the complete lifecycle to a
-       reportable package (reproduction, impact, PoC, evidence-based severity,
-       class-specific remediation, all spec stages),
-    2. an honest negative: a safe surface produces no candidates and no
-       fabricated findings,
-    3. a real black-box regression against ``http://localhost:3010`` runs the
-       same contract (Juice Shop is only a regression target),
-    4. the core carries no target-specific references.
+"""Universal capability-finding lifecycle acceptance.
 """
 
 from __future__ import annotations
@@ -44,7 +28,7 @@ from tests.framework.phase4 import Phase4Harness
 #: Real regression target (loopback-only black-box).
 REAL_TARGET = "http://localhost:3010/"
 
-#: The full Phase 6 spec contract of lifecycle stages.
+# : The full spec contract of lifecycle stages.
 _SPEC_STAGES = (
     "Candidate",
     "Evidence",
@@ -77,7 +61,7 @@ def _service() -> VulnerabilityFindingService:
 
 
 def _run_contract(target: str) -> dict[str, Any]:
-    """Run the full Phase 6 contract over a generic loopback target."""
+    """Run the full contract over a generic loopback target."""
     from hunterx.application.adaptive_attack import AdaptiveAttackService
     from hunterx.application.attack_surface import AttackSurfaceService
 
@@ -114,7 +98,7 @@ def _run_contract(target: str) -> dict[str, Any]:
 
 
 def _validate_reportable(outcome: dict[str, Any]) -> None:
-    """Conformance checks for a reportable Phase 6 outcome."""
+    """Conformance checks for a reportable outcome."""
     stages = [entry["stage"] for entry in outcome["stages"]]
     for expected in _SPEC_STAGES:
         assert expected in stages, f"missing spec stage '{expected}'"
@@ -222,7 +206,7 @@ class TestPhase6BlackBox:
 
 
 class TestNoTargetCoupling:
-    """The Phase 6 core carries no target-specific references."""
+    """The core carries no target-specific references."""
 
     def test_application_pipeline_carries_no_target_references(self) -> None:
         import re

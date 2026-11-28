@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool AI integration.
-
-Interfaces that let the AI Engine ask intelligence questions about tools:
-which tool to use, why, what inputs are required, what outputs are produced,
-what comes next, whether a better tool exists, and whether tools should be
-combined. The interface is a pure adapter between the AI Engine and the TIP:
-it never calls an LLM itself — it shapes structured questions and answers the
-AI engine can consume.
-"""
+"""Tool AI integration."""
 
 from __future__ import annotations
 

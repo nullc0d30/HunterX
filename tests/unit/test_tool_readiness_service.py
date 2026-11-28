@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for tool readiness (capability coverage) and mission preflight.
-
-Covers all-capabilities-available, required capability missing, optional
-capability missing, alternative provider available, preflight provisioning
-and provisioning-failure blocking.
-"""
+"""Unit tests for tool readiness (capability coverage) and mission preflight."""
 
 from __future__ import annotations
 

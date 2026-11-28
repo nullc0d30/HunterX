@@ -3,10 +3,7 @@
 
 """Dataset registry.
 
-SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates, Semgrep rules,
-Gitleaks rules, Trivy DB, ExploitDB... These are datasets, not mere files.
-Each is versioned, sourced, licensed and safety-classified. Updates are
-versioned, validated, auditable and rollback-capable.
+SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates, Semgrep rules, Gitleaks rules, Trivy DB, ExploitDB...
 """
 
 from __future__ import annotations

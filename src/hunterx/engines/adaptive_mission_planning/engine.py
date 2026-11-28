@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning — engine facade.
-
-Sprint 027. The :class:`AdaptiveMissionPlanningEngine` is the runtime aggregate
-of the Adaptive Mission Planning layer: it creates missions, builds the initial
-explainable execution graph, ranks candidate actions through the decision
-engine, evaluates replanning signals, applies plan deltas, discovers and
-scores attack paths, selects tools, records failures and fallbacks, and
-persists checkpoints. It is injected with pure domain engines so it can be
-assembled from the platform composition root or from test doubles.
-"""
+"""Adaptive Mission & Attack-Path Planning, engine facade."""
 
 from __future__ import annotations
 
@@ -149,7 +140,7 @@ class AdaptiveMissionPlanningEngine:
         # The deterministic discovery chain is a pre-approved plan: every node
         # becomes immediately schedulable so the orchestrator's decision loop
         # can produce an actionable first decision right after mission
-        # creation (Sprint 033 execution lifecycle).
+        # creation (execution lifecycle).
         for action in mission.graph.actions.values():
             if action.status is ActionStatus.PROPOSED:
                 action.mark(ActionStatus.APPROVED)
@@ -350,7 +341,7 @@ class AdaptiveMissionPlanningEngine:
     ) -> list[AttackPath]:
         """Discover and score attack paths over the attack-surface graph.
 
-        Attack paths are intelligence only — they never trigger execution.
+        Attack paths are intelligence only, they never trigger execution.
         """
         mission = self.get_mission(mission_id)
         if surface is None:
@@ -561,7 +552,7 @@ def _with_target(constraints: MissionConstraints, target: str) -> MissionConstra
 
 
 def _coerce_objective(objective: MissionObjective | str) -> MissionObjective:
-    """Coerce a string objective name into a ratified :class:`MissionObjective`."""
+    """Coerce a string objective name into a :class:`MissionObjective`."""
     if isinstance(objective, MissionObjective):
         return objective
     try:

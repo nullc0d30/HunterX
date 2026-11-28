@@ -1,18 +1,4 @@
-"""proof strategy library and validator tables
-
-Revision ID: e1f2a3b4c5d6
-Revises: d4a5b6c7e8f0
-Create Date: 2026-08-10
-
-Extends the TIDB schema with the Sprint 022 vulnerability proof strategy
-library: proof strategies and their versions, strategy requirements, evidence
-rules, tool requirements, strategy candidates (novel), proof validation results
-and manual proof instructions.
-
-Security boundary: every table stores strategy contracts, canonical evidence
-rules and validation results only - never exploit payloads, never credentials,
-never unrestricted executable PoC scripts and never out-of-scope request
-material.
+"""proof strategy library and validator tables Revision ID: e1f2a3b4c5d6 Revises: d4a5b6c7e8f0 Create Date: 2026-08-10.
 """
 from collections.abc import Sequence
 

@@ -3,9 +3,8 @@
 
 """Packaging validation.
 
-Builds the wheel/sdist, validates them with ``twine check``, and verifies the
-CLI entry point and multi-platform (import) compatibility without executing the
-shipped toolchain.
+Builds the wheel/sdist, validates them with ``twine check``, and verifies the CLI entry point and multi-platform
+(import) compatibility without executing the shipped toolchain.
 """
 
 from __future__ import annotations

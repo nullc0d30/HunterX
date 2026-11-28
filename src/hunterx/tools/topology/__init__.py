@@ -3,10 +3,7 @@
 
 """Network mapping & attack-surface topology tool adapters.
 
-SDK tool adapters for route-mapping: traceroute (primary, plain-text contract
-covering hop-by-hop routes). All external invocations flow through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam; adapters serialize
-canonical route records under the pipeline payload's ``routes`` key.
+SDK tool adapters for route-mapping: traceroute (primary, plain-text contract covering hop-by-hop routes).
 """
 
 from hunterx.tools.topology.base import TopologyToolAdapter

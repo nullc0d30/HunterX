@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX v7 Core Foundation — Architecture & Module Reference
+title: HunterX v7 Core Foundation - Architecture & Module Reference
 description: >-
   Architecture and module reference for the HunterX v7 Core Foundation
   (src/hunterx). Clean Architecture, 23 core subsystems, Mermaid diagrams,
@@ -8,11 +8,7 @@ description: >-
 permalink: /v7-foundation/
 ---
 
-# HunterX v7 Core Foundation — Architecture & Module Reference
-
-**Status:** Ratified (Foundation Sprint 001)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Core Foundation, Architecture & Module Reference
 
 ---
 
@@ -34,14 +30,14 @@ Scope:
 - Diagram coverage: context, container, and layered component views.
 
 Out of scope: tool implementations, plugin packages, AI models, deployment
-topologies, and business workflows — those belong to later sprints and to the
+topologies, and business workflows, those belong to other subsystems and to the
 Bible docs (`02 - Architecture.md`, `05`, `06`, `07`, `25`).
 
 ---
 
 ## 2. Package Overview
 
-The foundation implements the ratified target layout from
+The foundation implements the final target layout from
 `docs/bible/03 - Folder Structure.md` §3. The package root (`src/hunterx/`)
 is a **side-effect-free** package: importing `hunterx` imports no submodules
 (`src/hunterx/__init__.py`), keeping import cost low and startup deterministic.
@@ -66,12 +62,12 @@ layer imports `fastapi`, `sqlalchemy`, `requests`, or any framework library.
 
 ```mermaid
 flowchart LR
-    O([Operator / Pentester]) -->|CLI, REST API, scheduled missions| H[HunterX v7 Platform]
-    H -->|run tool adapters| T[External Tools]
-    H -->|structured, masked prompts| AI[AI Providers]
-    H -->|enrichment lookups| D[External Data CVE/CWE/EPSS]
+ O([Operator / Pentester]) -->|CLI, REST API, scheduled missions| H[HunterX v7 Platform]
+ H -->|run tool adapters| T[External Tools]
+ H -->|structured, masked prompts| AI[AI Providers]
+ H -->|enrichment lookups| D[External Data CVE/CWE/EPSS]
 
-    style H fill:#bbf,stroke:#333
+ style H fill:#bbf,stroke:#333
 ```
 
 The operator drives the platform through the CLI, the REST API, or scheduled
@@ -86,21 +82,21 @@ interfaces; no subsystem depends on a concrete integration.
 
 ```mermaid
 flowchart TD
-    CLI[CLI<br/>hunterx.cli] --> APP[Application Layer<br/>use-cases]
-    API[REST API<br/>hunterx.api] --> APP
-    SCHED[Scheduler<br/>hunterx.scheduler] -->|enqueue| APP
+ CLI[CLI<br/>hunterx.cli] --> APP[Application Layer<br/>use-cases]
+ API[REST API<br/>hunterx.api] --> APP
+ SCHED[Scheduler<br/>hunterx.scheduler] -->|enqueue| APP
 
-    APP --> ENGINES[Engines<br/>hunterx.engines]
-    ENGINES --> PLATFORM[Platform subsystems<br/>agents / plugins / tools / knowledge / reporting]
+ APP --> ENGINES[Engines<br/>hunterx.engines]
+ ENGINES --> PLATFORM[Platform subsystems<br/>agents / plugins / tools / knowledge / reporting]
 
-    ENGINES -.ports.-> INFRA[Infrastructure adapters<br/>db / cache / queue / ai / sandbox / secrets / logging / telemetry]
-    INFRA --> SQL[(SQL TIDB)]
-    INFRA --> KV[(Cache)]
-    INFRA --> Q[(Queue)]
-    INFRA --> G[(Knowledge Graph)]
+ ENGINES -.ports.-> INFRA[Infrastructure adapters<br/>db / cache / queue / ai / sandbox / secrets / logging / telemetry]
+ INFRA --> SQL[(SQL TIDB)]
+ INFRA --> KV[(Cache)]
+ INFRA --> Q[(Queue)]
+ INFRA --> G[(Knowledge Graph)]
 
-    style ENGINES fill:#bfb,stroke:#333
-    style INFRA fill:#fbf,stroke:#333
+ style ENGINES fill:#bfb,stroke:#333
+ style INFRA fill:#fbf,stroke:#333
 ```
 
 Engines are facades over the platform subsystems. They depend on domain ports;
@@ -115,55 +111,55 @@ root). The agent and workflow engines additionally consume the
 
 ```mermaid
 flowchart TB
-    subgraph Delivery
-        CLI[CLI Application]
-        API[API Application]
-    end
-    subgraph Application
-        MS[MissionService]
-        FS[FindingService]
-        RS[ReportService]
-    end
-    subgraph Domain
-        ENT[Entities & Value Objects]
-        PORTS[Ports]
-        SVC[Domain Services]
-        EVT[Domain Events]
-        EXC[Exceptions]
-    end
-    subgraph Infrastructure
-        AD[Adapters]
-    end
-    subgraph Engines
-        E[CoreEngine + Engine Facades]
-    end
-    subgraph Subsystems
-        AG[Agents]
-        PL[Plugins]
-        TL[Tools]
-        KN[Knowledge]
-        RE[Reporting]
-    end
+ subgraph Delivery
+ CLI[CLI Application]
+ API[API Application]
+ end
+ subgraph Application
+ MS[MissionService]
+ FS[FindingService]
+ RS[ReportService]
+ end
+ subgraph Domain
+ ENT[Entities & Value Objects]
+ PORTS[Ports]
+ SVC[Domain Services]
+ EVT[Domain Events]
+ EXC[Exceptions]
+ end
+ subgraph Infrastructure
+ AD[Adapters]
+ end
+ subgraph Engines
+ E[CoreEngine + Engine Facades]
+ end
+ subgraph Subsystems
+ AG[Agents]
+ PL[Plugins]
+ TL[Tools]
+ KN[Knowledge]
+ RE[Reporting]
+ end
 
-    CLI --> MS
-    CLI --> FS
-    CLI --> RS
-    API --> MS
-    API --> FS
-    API --> RS
-    MS --> E
-    FS --> E
-    RS --> E
-    E --> AG
-    E --> PL
-    E --> TL
-    E --> KN
-    E --> RE
-    E -.implements ports.-> AD
-    SVC --> ENT
-    PORTS --> SVC
-    AD -.implements.-> PORTS
-    EVT --> PORTS
+ CLI --> MS
+ CLI --> FS
+ CLI --> RS
+ API --> MS
+ API --> FS
+ API --> RS
+ MS --> E
+ FS --> E
+ RS --> E
+ E --> AG
+ E --> PL
+ E --> TL
+ E --> KN
+ E --> RE
+ E -.implements ports.-> AD
+ SVC --> ENT
+ PORTS --> SVC
+ AD -.implements.-> PORTS
+ EVT --> PORTS
 ```
 
 **Rules enforced by design (see §8):**
@@ -175,26 +171,26 @@ flowchart TB
 
 ---
 
-## 6. Key Runtime Flow — Tool Execution
+## 6. Key Runtime Flow, Tool Execution
 
 ```mermaid
 sequenceDiagram
-    participant W as Workflow Engine
-    participant X as ToolExecutor
-    participant A as Tool Adapter
-    participant P as Parser Engine
-    participant N as Normalizer
-    participant S as Store (via ports)
-    W->>X: execute_workflow_action(tool, target, params)
-    X->>A: run(target, params, context)
-    A-->>X: ToolOutput
-    X->>P: parse(output)
-    P->>N: normalize(parsed)
-    N-->>W: canonical entities
-    W-->>S: persist + emit events
+ participant W as Workflow Engine
+ participant X as ToolExecutor
+ participant A as Tool Adapter
+ participant P as Parser Engine
+ participant N as Normalizer
+ participant S as Store (via ports)
+ W->>X: execute_workflow_action(tool, target, params)
+ X->>A: run(target, params, context)
+ A-->>X: ToolOutput
+ X->>P: parse(output)
+ P->>N: normalize(parsed)
+ N-->>W: canonical entities
+ W-->>S: persist + emit events
 ```
 
-Tool output is always wrapped in `ToolOutput`; tool failures never raise —
+Tool output is always wrapped in `ToolOutput`; tool failures never raise,
 errors are captured inside the output (`hunterx/tools/executor.py:53`).
 
 ---
@@ -203,7 +199,7 @@ errors are captured inside the output (`hunterx/tools/executor.py:53`).
 
 This section documents every top-level subsystem under `src/hunterx/`.
 
-### 7.1 `hunterx.domain` — Pure Domain Layer
+### 7.1 `hunterx.domain`, Pure Domain Layer
 
 The domain layer SHALL contain no framework or I/O imports.
 
@@ -214,7 +210,7 @@ The domain layer SHALL contain no framework or I/O imports.
 | `domain/ports/` | Repository, service, store, and messaging ports (see §7.1.1) |
 | `domain/services/` | `PlannerService`, `Plan`, `PlannedStep`, `CorrelatorService`, `CorrelationGroup`, `DeduplicatorService`, `RiskScorerService` |
 | `domain/services/validation.py` | `TidbValidator`, `EnvelopeTidbValidator`, `EntityTidbValidator` (TIDB validation) |
-| `domain/events/` | `DomainEvent` (full metadata envelope) + typed events (`MissionStartedEvent`, `MissionCompletedEvent`, `MissionFailedEvent`, `FindingCreatedEvent`, `ToolExecutedEvent`, `PluginLoadedEvent`), `EventCategory`/`EventSeverity`/`EventPriority`/`EventStatus` (enums), `EventSpec`/`EventRegistry`, 52-event catalog (`catalog.build_registry`), `AuditEventFactory` (7 audit kinds) — see `docs/v7-event-bus-observability.md` |
+| `domain/events/` | `DomainEvent` (full metadata envelope) + typed events (`MissionStartedEvent`, `MissionCompletedEvent`, `MissionFailedEvent`, `FindingCreatedEvent`, `ToolExecutedEvent`, `PluginLoadedEvent`), `EventCategory`/`EventSeverity`/`EventPriority`/`EventStatus` (enums), `EventSpec`/`EventRegistry`, 52-event catalog (`catalog.build_registry`), `AuditEventFactory` (7 audit kinds) - see `docs/v7-event-bus-observability.md` |
 | `domain/exceptions/` | `HunterXError` + `HunterXErrorCode`; category subtrees: config, domain, infrastructure, operation |
 | `domain/plugins.py` | `PluginDescriptor` |
 | `domain/tools.py` | `ToolDescriptor` |
@@ -228,54 +224,54 @@ and priority; `Scope.allows` gates target validity at the domain edge.
 All ports are abstract base classes in `hunterx/domain/ports/`:
 
 - **Repositories** (`repositories.py`): `Repository` (save/delete/get/list)
-  plus `MissionRepository`, `FindingRepository`, `TargetRepository`,
-  `ScanRepository`, `AssetRepository`, `ReportRepository` — each refines the
-  generic contract with domain-typed overrides (e.g.
-  `FindingRepository.exists_by_content_hash`).
-- **TIDB repositories** (`tidb_repositories.py`): `TidbRepository` — generic
-  CRUD + `stream` for any TIDB entity; `TidbRepositoryFactory` — see
-  `docs/v7-tidb.md`.
+ plus `MissionRepository`, `FindingRepository`, `TargetRepository`,
+ `ScanRepository`, `AssetRepository`, `ReportRepository`, each refines the
+ generic contract with domain-typed overrides (e.g.
+ `FindingRepository.exists_by_content_hash`).
+- **TIDB repositories** (`tidb_repositories.py`): `TidbRepository`, generic
+ CRUD + `stream` for any TIDB entity; `TidbRepositoryFactory`, see
+ `docs/v7-tidb.md`.
 - **Stores** (`stores.py`): `ObjectStorePort`, `EvidenceStore`,
-  `KnowledgeGraphPort`.
+ `KnowledgeGraphPort`.
 - **Services** (`services.py`): `AIPort`, `SandboxPort`, `SecretsPort`,
-  `TelemetryPort`, `PluginRegistryPort`, `ToolRegistryPort`.
+ `TelemetryPort`, `PluginRegistryPort`, `ToolRegistryPort`.
 - **Messaging** (`messaging.py`): `CachePort`, `QueuePort`, `EventBusPort`,
-  `Handler`.
+ `Handler`.
 - **Observability** (`observability.py`): `ObservabilityEventBusPort`,
-  `EventStorePort`, `DeadLetterQueuePort`, `MetricsPort`, `TracerPort`,
-  `HealthRegistryPort`, `HealthProbePort`, `TelemetryProviderPort` — see
-  `docs/v7-event-bus-observability.md`.
+ `EventStorePort`, `DeadLetterQueuePort`, `MetricsPort`, `TracerPort`,
+ `HealthRegistryPort`, `HealthProbePort`, `TelemetryProviderPort`, see
+ `docs/v7-event-bus-observability.md`.
 
-### 7.2 `hunterx.application` — Use-Case Layer
+### 7.2 `hunterx.application`, Use-Case Layer
 
 | Module | Contents |
 |---|---|
-| `application/missions.py` | `MissionService` — mission use-cases |
-| `application/findings.py` | `FindingService` — finding use-cases |
-| `application/reports.py` | `ReportService` — report use-cases |
-| `application/observability.py` | `ObservabilityService` — unified events/metrics/tracing/health/telemetry API |
+| `application/missions.py` | `MissionService` - mission use-cases |
+| `application/findings.py` | `FindingService` - finding use-cases |
+| `application/reports.py` | `ReportService` - report use-cases |
+| `application/observability.py` | `ObservabilityService` - unified events/metrics/tracing/health/telemetry API |
 | `application/dto.py` | `CreateMissionRequest`, `CreateFindingRequest`, `CreateReportRequest` |
 Application services SHALL depend only on domain ports; concrete adapters are
 injected through the container.
 
-### 7.3 `hunterx.engines` — Engine Facades
+### 7.3 `hunterx.engines`, Engine Facades
 
 | Module | Contents |
 |---|---|
-| `engines/core.py` | `CoreEngine` — composition root aggregating all engines and renderers |
-| `engines/mission.py` | `MissionEngine` — mission lifecycle orchestration |
-| `engines/workflow.py` | `WorkflowEngine`, `WorkflowDefinition`, `WorkflowStep`, `ExecutorPort` — DAG execution |
-| `engines/planner.py` | `DeterministicPlanner` — template planning |
-| `engines/reasoning.py` | `ReasoningEngine` — AI-assisted analysis (behind `AIPort`) |
-| `engines/correlation.py` | `TargetCorrelator` — finding correlation |
-| `engines/risk.py` | `DefaultRiskScorer` — risk scoring |
-| `engines/deduplicator.py` | `ContentDeduplicator` — content-hash dedup |
-| `engines/report.py` | `ReportEngine` — report assembly |
+| `engines/core.py` | `CoreEngine` - composition root aggregating all engines and renderers |
+| `engines/mission.py` | `MissionEngine` - mission lifecycle orchestration |
+| `engines/workflow.py` | `WorkflowEngine`, `WorkflowDefinition`, `WorkflowStep`, `ExecutorPort` - DAG execution |
+| `engines/planner.py` | `DeterministicPlanner` - template planning |
+| `engines/reasoning.py` | `ReasoningEngine` - AI-assisted analysis (behind `AIPort`) |
+| `engines/correlation.py` | `TargetCorrelator` - finding correlation |
+| `engines/risk.py` | `DefaultRiskScorer` - risk scoring |
+| `engines/deduplicator.py` | `ContentDeduplicator` - content-hash dedup |
+| `engines/report.py` | `ReportEngine` - report assembly |
 
 The workflow engine consumes `ExecutorPort` so steps can invoke tools through
 the `ToolExecutor` without depending on the tool subsystem directly.
 
-### 7.4 `hunterx.infrastructure` — Adapters
+### 7.4 `hunterx.infrastructure`, Adapters
 
 Adapters implement the domain ports. All are swappable at composition time.
 
@@ -296,7 +292,7 @@ Adapters implement the domain ports. All are swappable at composition time.
 | `infrastructure/db/sql/` | SQLAlchemy `Base`/models, `SessionFactory`, `Sql*Repository` for all six entities |
 | `infrastructure/db/sql/tidb_models/` | 87 TIDB ORM models (`TidbModelMixin` + 11 model modules); see `docs/v7-tidb.md` |
 | `infrastructure/db/sql/registry.py` | TIDB entity ↔ model registry |
-| `infrastructure/db/sql/mapping.py` | `RowMapper` — entity/row coercion |
+| `infrastructure/db/sql/mapping.py` | `RowMapper` - entity/row coercion |
 | `infrastructure/db/sql/crud.py` | `SqlCrudRepository`, `SqlTidbRepositoryFactory` (generic TIDB CRUD) |
 | `infrastructure/db/sql/memory.py` | `InMemoryCrudRepository`, `InMemoryTidbRepositoryFactory` |
 | `infrastructure/db/sql/versioning.py` | `VersioningListener`, `install_versioning` (audit/history trail) |
@@ -307,7 +303,7 @@ Adapters implement the domain ports. All are swappable at composition time.
 SQLAlchemy imports are lazy (`infrastructure/db/sql/factory.py`) so the
 foundation works without a database driver installed.
 
-### 7.5 `hunterx.agents` — Multi-Agent Platform
+### 7.5 `hunterx.agents`, Multi-Agent Platform
 
 | Module | Contents |
 |---|---|
@@ -323,17 +319,17 @@ foundation works without a database driver installed.
 | `agents/state.py` | `AgentState` (enum) |
 | `agents/capabilities.py` | `CapabilitySet` |
 
-Agents express goals; they never call AI providers directly — reasoning goes
+Agents express goals; they never call AI providers directly, reasoning goes
 through the `ReasoningEngine` and `AIPort` only.
 
-### 7.6 `hunterx.plugins` — Plugin System + SDK
+### 7.6 `hunterx.plugins`, Plugin System + SDK
 
 | Module | Contents |
 |---|---|
 | `plugins/manifest.py` | `PluginKind`, `PermissionFlag`, `PluginManifest` |
 | `plugins/registry.py` | `PluginRegistry` (`PluginRegistryPort`) |
 | `plugins/loader.py` | `PluginLoader` |
-| `plugins/manager.py` | `PluginManager` — lifecycle: dependency resolve → load → version check → permission grant → activate |
+| `plugins/manager.py` | `PluginManager` - lifecycle: dependency resolve → load → version check → permission grant → activate |
 | `plugins/lifecycle.py` | `LifecycleHooks` (plain mixin, no-op defaults) |
 | `plugins/permissions.py` | `PluginPermissions` |
 | `plugins/sandbox.py` | `SandboxPolicy` |
@@ -344,13 +340,13 @@ through the `ReasoningEngine` and `AIPort` only.
 Plugin code SHALL import only the public SDK (`hunterx.plugins.sdk`) and MUST
 NOT import private internals of the foundation.
 
-### 7.7 `hunterx.tools` — Tool Runtime
+### 7.7 `hunterx.tools`, Tool Runtime
 
 | Module | Contents |
 |---|---|
 | `tools/adapter.py` | `BaseTool`, `ToolContext`, `ToolOutput` |
 | `tools/categories.py` | `ScannerTool`, `CrawlerTool`, `EnumeratorTool`, `AnalyzerTool`, `ReporterTool` |
-| `tools/executor.py` | `ToolExecutor` — run tools by name, expose descriptors |
+| `tools/executor.py` | `ToolExecutor` - run tools by name, expose descriptors |
 | `tools/parser.py` | `ParserEngine` |
 | `tools/normalizer.py` | `NormalizerEngine` |
 | `tools/validation.py` | `ToolValidator` |
@@ -358,26 +354,26 @@ NOT import private internals of the foundation.
 | `tools/discovery.py` | `ToolDiscovery` |
 | `tools/sandbox.py` | `ToolSandboxPolicy` |
 
-### 7.8 `hunterx.knowledge` — Knowledge Base
+### 7.8 `hunterx.knowledge`, Knowledge Base
 
 | Module | Contents |
 |---|---|
 | `knowledge/registry.py` | `KnowledgeRecord`, `KnowledgeRegistry` |
 | `knowledge/loader.py` | `KnowledgeLoader` |
 | `knowledge/graph.py` | `KnowledgeGraph` |
-| `knowledge/engine.py` | `KnowledgeEngine` — facade answering lookup/explain/link questions |
+| `knowledge/engine.py` | `KnowledgeEngine` - facade answering lookup/explain/link questions |
 
-### 7.9 `hunterx.scheduler` — Scheduler
+### 7.9 `hunterx.scheduler`, Scheduler
 
 | Module | Contents |
 |---|---|
 | `scheduler/jobs.py` | `Job`, `JobStatus`, `Schedule` |
-| `scheduler/service.py` | `SchedulerService` — register schedules, fire jobs into the queue |
+| `scheduler/service.py` | `SchedulerService` - register schedules, fire jobs into the queue |
 
 The scheduler is independent from the agent scheduler: it handles
 mission-level operations; `AgentScheduler` handles recurring agent dispatches.
 
-### 7.10 `hunterx.reporting` — Reporting
+### 7.10 `hunterx.reporting`, Reporting
 
 | Module | Contents |
 |---|---|
@@ -385,24 +381,24 @@ mission-level operations; `AgentScheduler` handles recurring agent dispatches.
 | `reporting/renderers.py` | `Renderer` (ABC), `JsonRenderer`, `MarkdownRenderer` |
 | `reporting/evidence.py` | Evidence packaging |
 
-### 7.11 `hunterx.config` — Configuration
+### 7.11 `hunterx.config`, Configuration
 
 | Module | Contents |
 |---|---|
 | `config/settings.py` | pydantic settings: `Settings`, `DatabaseSettings`, `CacheSettings`, `QueueSettings`, `SecuritySettings`, `ApiSettings`, `AppConfig` |
 | `config/loader.py` | `load_default_settings`, `ConfigurationManager` |
 
-### 7.12 `hunterx.shared` — Cross-Cutting Helpers
+### 7.12 `hunterx.shared`, Cross-Cutting Helpers
 
 | Module | Contents |
 |---|---|
-| `shared/di.py` | `Container` — thread-safe service container with parent chains and singletons |
+| `shared/di.py` | `Container` - thread-safe service container with parent chains and singletons |
 | `shared/ids.py` | `generate_id`, `generate_content_id`, `is_ulid` |
 | `shared/masking.py` | `mask_secret`, `mask_value` |
 | `shared/result.py` | `Result`, `Success`, `Failure` |
 | `shared/time.py` | `utcnow`, `utcnow_iso` |
 
-### 7.13 `hunterx.security` — Security Services
+### 7.13 `hunterx.security`, Security Services
 
 | Module | Contents |
 |---|---|
@@ -413,7 +409,7 @@ mission-level operations; `AgentScheduler` handles recurring agent dispatches.
 actor's roles grants the required permission; `resolve_secret` requires the
 `secrets.read` permission and delegates to `SecretsPort`.
 
-### 7.14 `hunterx.managers` — Manager Facades
+### 7.14 `hunterx.managers`, Manager Facades
 
 | Module | Contents |
 |---|---|
@@ -425,23 +421,23 @@ Each facade wraps a port (`CachePort`, `QueuePort`, `EventBusPort`) or the
 `hunterx.telemetry`, `hunterx.observability`, `hunterx.models`,
 `hunterx.exceptions`, `hunterx.utils`.
 
-### 7.15 `hunterx.api` — REST API Framework
+### 7.15 `hunterx.api`, REST API Framework
 
 | Module | Contents |
 |---|---|
-| `api/app.py` | `create_app(settings, *, register_health, platform)` — FastAPI app factory (lazy import); builds and wires a `Platform` when omitted |
-| `api/router.py` | `ApiRouter`, `RouteSpec` — routing structure without FastAPI import |
+| `api/app.py` | `create_app(settings, *, register_health, platform)` - FastAPI app factory (lazy import); builds and wires a `Platform` when omitted |
+| `api/router.py` | `ApiRouter`, `RouteSpec` - routing structure without FastAPI import |
 | `api/middleware.py` | `register_exception_handlers`, `_status_for` |
 | `api/deps.py` | `AppContainer`, `get_container`, `configure_container` |
 | `api/schemas.py` | `APIModel`, `ErrorResponse` |
 
 FastAPI is an optional extra; importing `hunterx.api` does not require it.
 
-### 7.16 `hunterx.cli` — CLI Framework
+### 7.16 `hunterx.cli`, CLI Framework
 
 | Module | Contents |
 |---|---|
-| `cli/app.py` | `CliApplication`, `main` — command dispatcher, no third-party arg parsing |
+| `cli/app.py` | `CliApplication`, `main` - command dispatcher, no third-party arg parsing |
 | `cli/registry.py` | `Command`, `CommandRegistry` |
 | `cli/commands.py` | `register_default_commands` |
 | `cli/render.py` | `OutputRenderer` |
@@ -453,21 +449,21 @@ FastAPI is an optional extra; importing `hunterx.api` does not require it.
 Keywords follow RFC 2119.
 
 1. The **domain layer** (`hunterx.domain`) MUST NOT import any framework,
-   infrastructure, engine, API, or CLI module.
+ infrastructure, engine, API, or CLI module.
 2. The **application layer** MUST depend only on `hunterx.domain` and
-   `hunterx.shared`; it MUST NOT import `hunterx.infrastructure` directly.
+ `hunterx.shared`; it MUST NOT import `hunterx.infrastructure` directly.
 3. Subsystems MUST communicate through ports, the event bus, and the message
-   bus; no subsystem SHALL import another subsystem's internals.
+ bus; no subsystem SHALL import another subsystem's internals.
 4. AI providers MUST be reachable only through `AIPort`. Agents MUST NOT call
-   LLMs directly.
+ LLMs directly.
 5. Concrete adapters MUST be wired at composition time (via
-   `CoreEngine`, `Container`, or constructors); the foundation SHALL ship
-   in-memory adapters so it runs with zero external services.
+ `CoreEngine`, `Container`, or constructors); the foundation SHALL ship
+ in-memory adapters so it runs with zero external services.
 6. Every public contract SHALL have a docstring; the package SHALL lint clean
-   under the configured ruff gates and pass the test suite before a sprint is
-   marked done.
+ under the configured ruff gates and pass the test suite before work is
+ marked done.
 7. New modules MUST follow the dependency rules in
-   `docs/bible/03 - Folder Structure.md` §7.
+ `docs/bible/03 - Folder Structure.md` §7.
 
 ---
 
@@ -475,10 +471,10 @@ Keywords follow RFC 2119.
 
 The foundation is gated by:
 
-- `python -m ruff check src` — lint gate (0 errors).
-- `python -m compileall -q src` — import/compile smoke.
-- `python -m pytest -q` — unit/component/integration/golden/security/
-  acceptance/performance suites (72 tests at Sprint 001 close).
+- `python -m ruff check src`, lint gate (0 errors).
+- `python -m compileall -q src`, import/compile smoke.
+- `python -m pytest -q`, unit/component/integration/golden/security/
+ acceptance/performance suites (72 tests at close).
 
 Tests live under `tests/` (unit, component, integration, golden, security,
 acceptance, performance, framework) with in-memory fakes
@@ -488,8 +484,8 @@ acceptance, performance, framework) with in-memory fakes
 
 ## 10. References
 
-- `docs/bible/01 - Vision.md` — platform mission and Definition of Done
-- `docs/bible/02 - Architecture.md` — system architecture, C4 views, ADRs
-- `docs/bible/03 - Folder Structure.md` — layout, dependency rules (§7)
-- `docs/bible/16 - Documentation Standards.md` — this document's governing standard
-- `docs/bible/README.md` — Bible index and binding status
+- `docs/bible/01 - Vision.md`, platform mission and Definition of Done
+- `docs/bible/02 - Architecture.md`, system architecture, C4 views, ADRs
+- `docs/bible/03 - Folder Structure.md`, layout, dependency rules (§7)
+- `docs/bible/16 - Documentation Standards.md`, this document's governing standard
+- `docs/bible/README.md`, Bible index and binding status

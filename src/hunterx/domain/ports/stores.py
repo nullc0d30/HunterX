@@ -10,7 +10,7 @@ from typing import Any
 
 
 class ObjectStorePort(abc.ABC):
-    """Binary/object storage contract (filesystem, S3, MinIO, ...)."""
+    """Binary/object storage contract (filesystem, S3, MinIO,...)."""
 
     @abc.abstractmethod
     def put(self, key: str, content: bytes, *, mime_type: str | None = None) -> None:

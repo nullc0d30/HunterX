@@ -3,8 +3,8 @@
 
 """Shared doubles for Tool Readiness tests.
 
-Never installs real packages: the provisioner command runner is stubbed and
-fake executables are tiny script files written to a temp directory on PATH.
+Never installs real packages: the provisioner command runner is stubbed and fake executables are tiny script files
+written to a temp directory on PATH.
 """
 
 from __future__ import annotations
@@ -127,7 +127,7 @@ class StubRunner:
     """Command runner stub recording invocations and returning canned results.
 
     Args:
-        results: mapping of ``command[0]`` → ``(returncode, stdout, stderr)``.
+        results: mapping of ``command[0]`` to ``(returncode, stdout, stderr)``.
 
     """
 
@@ -164,6 +164,6 @@ def all_commands_available(name: str) -> str:
 
 def engine_has(engine: object, tool_id: str, *, installed: bool = False) -> None:
     """Register ``tool_id`` adapter (and install state) on the fake engine."""
-    engine._adapters[tool_id] = object()  # type: ignore[attr-defined]  # test double
+    engine._adapters[tool_id] = object()  # type: ignore[attr-defined] # test double
     if installed:
-        engine._installed[tool_id] = "1.0.0"  # type: ignore[attr-defined]  # test double
+        engine._installed[tool_id] = "1.0.0"  # type: ignore[attr-defined] # test double

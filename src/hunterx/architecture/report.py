@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture reports.
-
-Aggregates linter output into a structured report: violation counts by code and
-layer, module statistics, the layer dependency graph, known issues (waivers)
-and an architecture health score. Renderers produce JSON, Markdown and text.
-"""
+"""Architecture reports."""
 
 from __future__ import annotations
 

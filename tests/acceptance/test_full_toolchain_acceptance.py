@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Sprint 031 Full Toolchain Integration.
-
-End-to-end scenarios against the composed platform: the toolchain catalog,
-knowledge contracts, selection, chain planning, fallback strategies,
-cross-tool evidence correlation, contradiction preservation and target
-intelligence updates — without executing any external binary.
-"""
+"""Acceptance tests for the Full Toolchain Integration."""
 
 from __future__ import annotations
 
@@ -105,7 +99,7 @@ def test_tool_contradiction_is_preserved_not_averaged() -> None:
     assert detected
     assert detected[0].correlation_key == "svc:10.0.0.1:443"
     assert set(detected[0].tools) == {"nmap", "naabu"}
-    # Both values preserved — never averaged.
+    # Both values preserved, never averaged.
     values = {obs.normalized_value for obs in detected[0].observations}
     assert values == {"open", "closed"}
 

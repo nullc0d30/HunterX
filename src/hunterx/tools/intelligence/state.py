@@ -3,12 +3,7 @@
 
 """Tool state machine.
 
-Defines the lifecycle states of a tool and the legal transitions between them:
-
-    registered → installed → verified → available → running → completed | failed
-
-``deprecated`` and ``disabled`` are reachable modifier states. The machine
-rejects illegal transitions deterministically.
+Defines the lifecycle states of a tool and the legal transitions between them.
 """
 
 from __future__ import annotations
@@ -16,7 +11,7 @@ from __future__ import annotations
 from hunterx.domain.exceptions import ToolStateTransitionError
 from hunterx.domain.tool_intelligence import ToolState
 
-#: Legal transitions: source state → set of target states.
+# : Legal transitions: source state to set of target states.
 _TRANSITIONS: dict[ToolState, frozenset[ToolState]] = {
     ToolState.REGISTERED: frozenset(
         {ToolState.INSTALLED, ToolState.DEPRECATED, ToolState.DISABLED}
@@ -50,7 +45,7 @@ class ToolStateMachine:
     """Deterministic lifecycle state machine for tools."""
 
     def can_transition(self, source: ToolState, target: ToolState) -> bool:
-        """Return ``True`` when ``source → target`` is a legal transition."""
+        """Return ``True`` when ``source to target`` is a legal transition."""
         return target in _TRANSITIONS.get(source, frozenset())
 
     def transition(self, source: ToolState, target: ToolState, *, tool_id: str = "") -> ToolState:

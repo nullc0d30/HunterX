@@ -3,8 +3,8 @@
 
 """Tool sandbox policy.
 
-Restricts what a tool may do at runtime based on its declared permissions and
-the platform-wide policy, mirroring the plugin sandbox model.
+Restricts what a tool may do at runtime based on its declared permissions and the platform-wide policy, mirroring
+the plugin sandbox model.
 """
 
 from __future__ import annotations

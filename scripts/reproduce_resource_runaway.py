@@ -1,26 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
-# ruff: noqa: D102, D103, N801  # diagnostic tool: method/function docstrings are inline
-"""Reproduce and classify the real-runtime memory runaway.
-
-Runs a synthetic ``full_security_assessment`` mission whose tool outputs are
-LARGE (multi-MB JSON blobs), so the mission aggregate grows real resident
-memory — reproducing the incident class where HunterX consumed ~5.6 GiB on a
-7.6 GiB host. Records cross-sectional memory telemetry each cycle (process
-VmRSS/VmHWM/VmPeak, governor process-tree RSS at the same instant, Python heap,
-mission-aggregate item counts and serialized bytes, model context) and prints a
-classification summary.
-
-Usage:
-    python scripts/reproduce_resource_runaway.py --runaway        # caps disabled (the incident)
-    python scripts/reproduce_resource_runaway.py --bounded        # caps enabled  (the fix)
-    python scripts/reproduce_resource_runaway.py --analyze <file> # classify a recorded JSON-lines file
-
-The classification answers: is the governor measurement wrong (A), does it fail
-to transition (B), does memory jump before enforcement (C), is memory in
-mission/model/tool state (D), or is it temporary serialization allocation (E)?
-"""
+# ruff: noqa: D102, D103, N801 # diagnostic tool: method/function docstrings are inline
+"""Reproduce and classify the real-runtime memory runaway."""
 
 from __future__ import annotations
 
@@ -61,7 +43,7 @@ _DEFAULT_CANDIDATES: dict[str, tuple[str, ...]] = {
     "vulnerability_scanning": ("nuclei", "nikto"),
 }
 
-#: A large tool output blob (~2 MiB per observation) — the incident's dominant
+# : A large tool output blob (~2 MiB per observation), the incident's dominant
 #: in-memory consumer (tool output retained in observation content).
 _BLOB_SIZE = 2_000_000
 _BIG = {"blob": "x" * _BLOB_SIZE}

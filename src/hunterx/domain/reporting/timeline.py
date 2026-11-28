@@ -3,9 +3,7 @@
 
 """Finding timeline builder.
 
-Builds the finding timeline strictly from actual persisted events and
-timestamps — never from invented data. The application service feeds
-chronological event snapshots in and the builder orders them.
+Builds the finding timeline strictly from actual persisted events and timestamps, never from invented data.
 """
 
 from __future__ import annotations

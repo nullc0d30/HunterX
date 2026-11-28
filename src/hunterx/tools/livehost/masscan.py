@@ -3,17 +3,7 @@
 
 """Masscan tool adapter.
 
-Integrates ``masscan`` — the high-throughput SYN scanner — into the Tool
-Integration SDK. The adapter builds the CLI command from the execution context
-(target, ports, rate, protocol), parses the JSON output (``{"ip", "timestamp",
-"ports": [{"port", "proto", "status", "reason"}]}``) into canonical
-:class:`LiveHost` and :class:`PortFinding` observations and publishes them on
-the execution output.
-
-CLI contract (verified against Masscan docs):
-    ``masscan <target> -p <ports> --rate <n> --output-format json --output-file -``
-    emits one JSON object per host; each object lists the discovered ports.
-    SYN scanning requires root/raw-socket privileges.
+Integrates ``masscan``, the high-throughput SYN scanner, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

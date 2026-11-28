@@ -3,12 +3,8 @@
 
 """API intelligence confidence engine.
 
-Assigns a defensible, deterministic confidence score to every API observation
-and recomputes it when several sources corroborate the same endpoint or host.
-Confidence is a pure function of (tool reliability, evidence strength,
-documentation status, corroboration count and conflict discount) — the same
-inputs always yield the same score and the score is explainable through the
-factors that contributed to it.
+Assigns a defensible, deterministic confidence score to every API observation and recomputes it when several sources
+corroborate the same endpoint or host.
 """
 
 from __future__ import annotations

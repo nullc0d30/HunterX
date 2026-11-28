@@ -3,23 +3,7 @@
 
 """Authenticated session establishment service (active authentication).
 
-Complement to :mod:`hunterx.application.auth` (passive intelligence). This
-service performs *execution-time* authentication: given operator-supplied
-credentials and a login URL, it performs a generic form login — GET the login
-page, discover the username/password/CSRF fields from the HTML, POST the
-credentials, capture the session cookies and verify the authenticated state.
-
-Constraints:
-
-- Generic: field names are discovered from the form, never hardcoded per
-  application.
-- Loopback-guarded: login is only attempted against loopback targets, like the
-  probe executor.
-- Never raises: every failure is returned as an explicit ``AuthenticatedSession
-  (error=...)`` so callers record an honest negative instead of crashing.
-- In-memory only: credentials are consumed and discarded; the returned session
-  holds cookies/CSRF values on the instance and masks them in every serialized
-  form.
+Complement to :mod:`hunterx.application.auth` (passive intelligence).
 """
 
 from __future__ import annotations
@@ -74,7 +58,7 @@ class SessionService:
         """Establish a session by logging in with the given credentials.
 
         Returns:
-            :class:`AuthenticatedSession` — ``established`` when the login
+            :class:`AuthenticatedSession`, ``established`` when the login
             succeeded, otherwise an error-carrying session (never raises).
 
         """
@@ -124,7 +108,7 @@ class SessionService:
         # Browser cookie-jar semantics: every response in the login flow
         # contributes its cookies. The POST response's session id overrides the
         # pre-login id while companion cookies set on the login page itself
-        # (e.g. a security-level cookie) must survive — dropping them leaves an
+        # (e.g. a security-level cookie) must survive, dropping them leaves an
         # authenticated-looking session that still bounces off the protected
         # surface.
         cookies = dict(page.cookies)

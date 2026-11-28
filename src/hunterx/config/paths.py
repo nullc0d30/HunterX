@@ -3,22 +3,7 @@
 
 """HunterX application path resolution (single source of truth).
 
-Resolves where the application stores persistent data. The default SQLite
-database lives at ``<application root>/data/hunterx.db`` so persistence works
-regardless of the working directory (no fragile ``/home/<user>/...``,
-``/opt/hunterx/...`` or ``/tmp/...`` developer paths).
-
-Resolution order:
-
-1. ``HUNTERX_DATA_DIR`` — explicit override (installer and Docker set this).
-2. The application/project root, derived from the installed package location:
-   - a source checkout (``pyproject.toml`` + ``src/hunterx``);
-   - an install.sh-style root (a directory containing ``venv/`` and ``data/``).
-3. ``~/.local/share/hunterx`` as a portable user-level fallback.
-
-The default database URL sentinel (``sqlite:///hunterx.db``) is resolved to
-``<data dir>/hunterx.db`` at engine-creation time so an explicitly configured
-``HUNTERX_DATABASE_URL`` always wins.
+Resolves where the application stores persistent data.
 """
 
 from __future__ import annotations
@@ -38,7 +23,7 @@ def hunterx_root() -> Path:
 
     ``HUNTERX_ROOT`` (when set) is authoritative; otherwise the root is
     detected from the installed package location. Never a developer-specific
-    absolute path — always derived from the runtime environment.
+    absolute path, always derived from the runtime environment.
     """
     override = os.environ.get("HUNTERX_ROOT")
     if override:

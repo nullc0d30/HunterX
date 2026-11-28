@@ -1,10 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adversarial data-isolation tests (Sprint 034.3 §4).
+"""Adversarial data-isolation tests (4).
 
-Direct-id access, deleted-record visibility and cross-scope reference probing
-must never expose another tenant's/target's/mission's intelligence.
+Direct-id access, deleted-record visibility and cross-scope reference probing must never expose another
+tenant's/target's/mission's intelligence.
 """
 
 from __future__ import annotations
@@ -62,8 +62,9 @@ def test_direct_id_access_to_other_target_asset_is_not_possible(factory, populat
 
 
 def test_cross_scope_queries_return_nothing(factory, populated) -> None:
-    """Filtering a query by a target that owns no records yields an empty page —
-    never another target's records."""
+    """Filtering a query by a target that owns no records yields an empty page,
+    never another target's records.
+    """
     asset_repo = factory.repository_for(IntelligenceAssetRecord)
     assert asset_repo.list_by("target_id", "tgt-sec-a", limit=100) and len(
         asset_repo.list_by("target_id", "tgt-sec-a")

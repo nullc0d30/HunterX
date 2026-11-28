@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Correlation and deduplication for web crawl observations.
-
-Merges raw observations from multiple tools/sources into one canonical artifact
-per dedup key: the highest-confidence, latest observation wins while earlier
-sightings are preserved as corroboration counts. Deterministic and stateless.
-"""
+"""Correlation and deduplication for web crawl observations."""
 
 from __future__ import annotations
 

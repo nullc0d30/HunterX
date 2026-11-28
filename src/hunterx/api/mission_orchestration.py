@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration API routes.
-
-Exposes the mission orchestration application service: create/get/start/pause/
-resume/cancel missions and read state, timeline, decisions, hypotheses,
-findings, attack paths, coverage and tool executions. Also exposes the
-reasoning-loop operations (ingest result, hypotheses, decisions, negative
-evidence, baseline/differential testing, branches, confidence, impact,
-cascade, checkpoints and stop conditions). Handlers resolve services from the
-shared dependency container.
-"""
+"""Autonomous Mission Orchestration API routes."""
 
 from __future__ import annotations
 

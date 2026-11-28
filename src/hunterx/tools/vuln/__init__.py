@@ -3,12 +3,8 @@
 
 """Vulnerability tool adapters.
 
-SDK tool adapters for vulnerability knowledge providers (NVD CVE, CISA KEV,
-EPSS, MITRE CWE, vendor advisories, OSV/GHSA) and vulnerability scanners
-(nuclei). Provider adapters are in-process normalizers that serialize canonical
-knowledge under the pipeline payload's ``vulnerabilities`` key; scanner
-adapters invoke external binaries and emit canonical *candidate* observations
-under the ``candidates`` key, never validated findings.
+SDK tool adapters for vulnerability knowledge providers (NVD CVE, CISA KEV, EPSS, MITRE CWE, vendor advisories,
+OSV/GHSA) and vulnerability scanners (nuclei).
 """
 
 from hunterx.tools.vuln.base import VulnerabilityProviderAdapter

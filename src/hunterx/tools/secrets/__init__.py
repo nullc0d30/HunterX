@@ -3,9 +3,7 @@
 
 """Secret discovery tool integrations.
 
-SDK adapters and Tool Intelligence registrations for the secret discovery
-tools HunterX integrates (gitleaks). Every adapter runs through the Tool
-Integration SDK pipeline and emits canonical redacted secret records.
+SDK adapters and Tool Intelligence registrations for the secret discovery tools HunterX integrates (gitleaks).
 """
 
 from __future__ import annotations

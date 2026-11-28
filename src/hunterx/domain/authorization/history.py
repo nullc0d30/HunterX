@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authorization intelligence historical comparison.
-
-Compares the current authorization state against historical records to detect
-changes over time: added/removed roles, changed permissions and scopes, new or
-removed admin surfaces, changed ownership/tenant models, changed policy models,
-new frontend/backend enforcement and changed API authorization requirements.
-Every change is reported with the before/after values, timestamps and sources
-so it can be traced and correlated with security events.
-"""
+"""Authorization intelligence historical comparison."""
 
 from __future__ import annotations
 

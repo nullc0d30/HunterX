@@ -3,10 +3,8 @@
 
 """Tool result replay.
 
-Supports replaying a stored tool result through parser, normalizer and
-evidence mapping without re-running the external tool. Required for
-debugging, regression testing, parser/knowledge upgrades and historical
-analysis.
+Supports replaying a stored tool result through parser, normalizer and evidence mapping without re-running the
+external tool.
 """
 
 from __future__ import annotations
@@ -32,7 +30,7 @@ class StoredToolResult:
         tool_version: tool version at execution time.
         raw: the preserved raw artifact (string or JSON structure).
         structured_output: previously parsed structured output (optional).
-        metadata: parser metadata (target id, mission id, scope id, ...).
+        metadata: parser metadata (target id, mission id, scope id,...).
         provenance: provenance metadata.
 
     """

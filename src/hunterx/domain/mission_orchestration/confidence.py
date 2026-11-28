@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Confidence engine.
-
-Sprint 032. Confidence is a weighted aggregate over deterministic evidence
-components — detection evidence, behavioral evidence, independent verification,
-impact evidence, reproducibility, tool reliability, evidence quality,
-corroboration and historical target behavior. It is never an opaque AI
-probability, and it can never be inflated by a single scanner result.
-"""
+"""Confidence engine."""
 
 from __future__ import annotations
 

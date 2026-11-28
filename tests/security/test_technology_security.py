@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for technology fingerprinting.
-
-Verifies that fingerprint sources are always treated as untrusted: argv is
-built from typed parameters (no shell interpretation), malformed tool output is
-never executed, out-of-scope intelligence is never persisted, cache keys are
-target-scoped (no cross-target contamination) and scope is never silently
-expanded by discovered technology intelligence.
-"""
+"""Security tests for technology fingerprinting."""
 
 from __future__ import annotations
 

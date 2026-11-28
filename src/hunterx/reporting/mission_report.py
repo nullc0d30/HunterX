@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Lightweight human-readable mission report builder.
-
-``build_mission_text_report`` assembles the ``report.txt`` artifact of a
-``hunterx hunt`` run from the final mission overview (the established JSON
-contract) plus the recorded lifecycle events. Like the live renderer, it
-never fabricates facts: every line maps to real mission state, and entries
-whose data is absent are simply omitted.
-
-The builder is intentionally defensive — a reporting artifact must never
-crash a finished mission — so every lookup is best-effort and JSON-safe.
-"""
+"""Lightweight human-readable mission report builder."""
 
 from __future__ import annotations
 
@@ -173,7 +163,7 @@ def build_mission_text_report(
             lines.append(
                 f"  - [{_scalar(observation.get('observation_type'))}] "
                 f"{_scalar(observation.get('tool_id'))} on {_scalar(observation.get('asset_key'))}"
-                f"{(' — ' + content) if content else ''}"
+                f"{(' - ' + content) if content else ''}"
             )
     else:
         lines.append("  (no observations recorded)")
@@ -274,7 +264,7 @@ def build_mission_text_report(
                 f"  - {_scalar(cell.get('asset_key'))} | {_scalar(cell.get('capability'))} "
                 f"= {_scalar(cell.get('state')).upper()}"
                 f"{(' via ' + _scalar(cell.get('tool_id'))) if cell.get('tool_id') else ''}"
-                f"{(' — ' + _truncate(_scalar(cell.get('notes')), 120)) if cell.get('notes') else ''}"
+                f"{(' - ' + _truncate(_scalar(cell.get('notes')), 120)) if cell.get('notes') else ''}"
             )
     else:
         lines.append("  (no coverage cells recorded)")
@@ -488,7 +478,7 @@ def _percent(value: Any) -> str:
 def _list_text(value: Any) -> str:
     if not isinstance(value, (list, tuple)):
         return _scalar(value)
-    return ", ".join(str(item) for item in value) or "—"
+    return ", ".join(str(item) for item in value) or "-"
 
 
 def _truncate(text: str, limit: int) -> str:

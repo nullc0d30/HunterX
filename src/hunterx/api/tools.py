@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Full Toolchain API routes.
-
-Exposes the toolchain application service: tool catalog, knowledge contracts,
-capabilities, health, versions, requirements, provenance, recommendations,
-chains and guarded executions. Handlers resolve the
-:class:`~hunterx.application.toolchain.ToolchainService` from the shared
-dependency container.
-"""
+"""Full Toolchain API routes."""
 
 from __future__ import annotations
 

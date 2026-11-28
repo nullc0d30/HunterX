@@ -3,11 +3,7 @@
 
 """Metrics adapters.
 
-The :class:`InMemoryMetrics` collects counters, gauges and histograms with
-optional tag dimensions. It powers the platform metric reference (execution
-duration, tool runtime, queue size, mission duration, error/success/failure
-rates, retry counts, memory/CPU usage, database latency, cache hit ratio) and
-can render a Prometheus-compatible exposition format for scraping.
+The :class:`InMemoryMetrics` collects counters, gauges and histograms with optional tag dimensions.
 """
 
 from __future__ import annotations

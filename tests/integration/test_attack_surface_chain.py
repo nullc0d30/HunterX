@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Attack-surface completion — end-to-end targeted reasoning.
-
-Proves HunterX follows evidence: a crawler discovering URLs with query
-parameters drives targeted class hypotheses, targeted differential probes, and
-validated findings — instead of stopping after generic reconnaissance or
-running every class against every endpoint.
-"""
+"""Attack-surface completion, end-to-end targeted reasoning."""
 
 from __future__ import annotations
 

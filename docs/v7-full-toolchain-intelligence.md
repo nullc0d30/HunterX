@@ -2,8 +2,7 @@
 layout: default
 title: HunterX v7 Full Toolchain Integration & Professional Tool Intelligence
 description: >-
-  Architecture and reference for the HunterX v7 Full Toolchain Integration
-  (Sprint 031 / Wave 16): canonical toolchain vocabulary, knowledge contracts,
+  Architecture and reference for the HunterX v7 Full Toolchain Integration: canonical toolchain vocabulary, knowledge contracts,
   capability vocabulary, selection, chain planning, fallbacks, structured
   execution, parsers/normalizers, evidence extraction, cross-tool correlation,
   security, resource controls, versioning, interfaces and testing.
@@ -11,10 +10,6 @@ permalink: /v7-full-toolchain-intelligence/
 ---
 
 # HunterX v7 Full Toolchain Integration & Professional Tool Intelligence
-
-**Status:** Ratified (Sprint 031 / Wave 16)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
 
 ---
 
@@ -26,23 +21,23 @@ capture stdout". It is:
 
 ```
 UNDERSTAND TOOL
-    → UNDERSTAND CAPABILITIES
-    → UNDERSTAND REQUIREMENTS
-    → SELECT TOOL
-    → BUILD SAFE/SCOPED INVOCATION
-    → EXECUTE → MONITOR → CAPTURE OUTPUT
-    → PARSE → NORMALIZE → VALIDATE
-    → EXTRACT OBSERVATIONS → EXTRACT EVIDENCE
-    → CORRELATE → UPDATE TARGET MEMORY → UPDATE FINDINGS → UPDATE HYPOTHESES
-    → SELECT NEXT ACTION
+ → UNDERSTAND CAPABILITIES
+ → UNDERSTAND REQUIREMENTS
+ → SELECT TOOL
+ → BUILD SAFE/SCOPED INVOCATION
+ → EXECUTE → MONITOR → CAPTURE OUTPUT
+ → PARSE → NORMALIZE → VALIDATE
+ → EXTRACT OBSERVATIONS → EXTRACT EVIDENCE
+ → CORRELATE → UPDATE TARGET MEMORY → UPDATE FINDINGS → UPDATE HYPOTHESES
+ → SELECT NEXT ACTION
 ```
 
 The critical principle: **HunterX understands tool semantics.** Every tool
 integration defines *what the tool does, when to use it, when not to use it,
-what inputs it accepts, what outputs it produces, what the output means and —
-just as importantly — what the output does NOT prove.*
+what inputs it accepts, what outputs it produces, what the output means and,
+just as importantly, what the output does NOT prove.*
 
-Sprint 031 does **not** add new vulnerability classes, new reporting, new
+This layer does **not** add new vulnerability classes, new reporting, new
 target-memory features, reverse engineering, malware analysis, new AI providers
 or new attack techniques.
 
@@ -51,7 +46,7 @@ or new attack techniques.
 ## 2. Canonical Toolchain Vocabulary (Domain)
 
 The canonical domain model lives in `hunterx.domain.tool_intelligence` and
-`hunterx.domain.tool_mastery`. Sprint 031 adds the full professional
+`hunterx.domain.tool_mastery`. This layer adds the full professional
 vocabulary:
 
 | Concept | Role |
@@ -92,15 +87,15 @@ capability model:
 - `PORT_SCANNING` → canonical `port-scanning`
 - `HTTP_PROBING` → canonical `http-enumeration`
 - `TECHNOLOGY_DETECTION`, `CRAWLING`, `URL_DISCOVERY`, `CONTENT_DISCOVERY`,
-  `PARAMETER_DISCOVERY`, `VULNERABILITY_DETECTION`, `VULNERABILITY_VALIDATION`,
-  `POC_SUPPORT`, `CALLBACK_VERIFICATION`, `GRAPHQL_ANALYSIS`,
-  `SECRET_DISCOVERY`, `STATIC_ANALYSIS`, `PROXYING`, `EXPLOITATION`,
-  `EXPLOIT_INTELLIGENCE`, `PAYLOAD_GENERATION`, `WORDLIST_PROVIDER`, …
+ `PARAMETER_DISCOVERY`, `VULNERABILITY_DETECTION`, `VULNERABILITY_VALIDATION`,
+ `POC_SUPPORT`, `CALLBACK_VERIFICATION`, `GRAPHQL_ANALYSIS`,
+ `SECRET_DISCOVERY`, `STATIC_ANALYSIS`, `PROXYING`, `EXPLOITATION`,
+ `EXPLOIT_INTELLIGENCE`, `PAYLOAD_GENERATION`, `WORDLIST_PROVIDER`, …
 
 Because different layers historically used different vocabularies (the TIP
 taxonomy says `subdomain-discovery` while the arsenal said
-`subdomain-enumeration`), Sprint 031 introduces
-`CapabilityVocabulary` (`hunterx.tools.intelligence.vocabulary`) — a canonical
+`subdomain-enumeration`), introduces
+`CapabilityVocabulary` (`hunterx.tools.intelligence.vocabulary`), a canonical
 alias map. Selection, recommendation and chaining now canonicalize capability
 ids so the whole toolchain speaks **one** capability language.
 
@@ -130,11 +125,11 @@ from the authoritative arsenal profiles. A fixture covers:
 - follow-up actions (successors, validators, next tools)
 - examples, operational knowledge, false-positive/negative risks
 
-The three knowledge sources — **PayloadsAllTheThings**, **SecLists** and
-**FuzzDB** — are integrated as versioned, licensed knowledge contracts
+The three knowledge sources, **PayloadsAllTheThings**, **SecLists** and
+**FuzzDB**, are integrated as versioned, licensed knowledge contracts
 (`capability: payload-intelligence / wordlist-provider / attack-patterns`).
 They are **knowledge inputs to hypotheses, testing, PoC generation and
-validation — never blindly executed.**
+validation, never blindly executed.**
 
 ---
 
@@ -167,7 +162,7 @@ Every major capability has fallback tools, e.g.:
 ### Complementarity
 
 Different tools produce different evidence. HunterX knows when outputs should
-be merged, correlated, cross-validated, deduplicated or kept separate —
+be merged, correlated, cross-validated, deduplicated or kept separate,
 `Subfinder + Amass` never become duplicate subdomains (`EvidenceCorrelator`
 deduplicates by canonical key).
 
@@ -190,18 +185,18 @@ Chains are dynamic; steps declare routing conditions (`ON_SUCCESS`,
 
 ## 7. Structured Execution & Scope
 
-Commands are built from structured configuration — **never** by concatenating
+Commands are built from structured configuration, **never** by concatenating
 untrusted target input into a shell string. The SDK (`hunterx.tools.sdk`)
 provides:
 
-- `ExecutionContextBuilder` — typed arguments, validated paths
-- `ExecutionSandbox` — permission enforcement, per-execution temp/output dirs,
-  secret-safe environments, secret masking
-- `ResourceManager` — CPU/memory/disk/network/thread/timeout budgets
+- `ExecutionContextBuilder`, typed arguments, validated paths
+- `ExecutionSandbox`, permission enforcement, per-execution temp/output dirs,
+ secret-safe environments, secret masking
+- `ResourceManager`, CPU/memory/disk/network/thread/timeout budgets
 - `ToolQueue`, `ParallelExecutionManager`, `RetryManager`, `TimeoutManager`,
-  `ToolLockManager`, `ExecutionCache`
-- `ExecutionPipeline` — register → install → validate → verify → prepare →
-  execute → monitor → collect → validate → normalize → store → events → cleanup
+ `ToolLockManager`, `ExecutionCache`
+- `ExecutionPipeline`, register → install → validate → verify → prepare →
+ execute → monitor → collect → validate → normalize → store → events → cleanup
 
 Scope enforcement runs **before** every execution (`ToolEnforcementEngine`):
 the target must be authorized and in scope; domain suffix containment is
@@ -224,7 +219,7 @@ empty output is an empty result (never an error); tool errors are classified
 by `ToolOutputSemantics`.
 
 `ToolchainService.parse(tool, raw)` and `.normalize(tool, records)` support
-**offline replay** of saved tool output — essential for parser testing,
+**offline replay** of saved tool output, essential for parser testing,
 regression testing, golden datasets and reprocessing with new normalizers.
 
 ---
@@ -235,25 +230,25 @@ From tool results HunterX extracts direct, supporting, candidate, negative,
 execution, validation and metadata evidence. `EvidenceCorrelator`:
 
 - deduplicates observations sharing a canonical identity (keeps highest
-  confidence),
+ confidence),
 - groups them into `CorrelatedEvidenceChain`s (strongest evidence strength,
-  ceiling-respected aggregate confidence),
-- preserves **contradictions** (`ConflictingToolEvidence`) — tool A open vs
-  tool B closed is never silently resolved; both are retained for validation.
+ ceiling-respected aggregate confidence),
+- preserves **contradictions** (`ConflictingToolEvidence`), tool A open vs
+ tool B closed is never silently resolved; both are retained for validation.
 
 `ToolEvidenceConfidence` evaluates tool reliability, result completeness,
 output quality, version, validation state, corroboration and false-positive
 characteristics. Tool output is **candidate evidence** (or validated
-evidence) — never an automatic confirmed finding.
+evidence), never an automatic confirmed finding.
 
 ---
 
 ## 10. Security
 
-Sprint 031 tests the toolchain attack surface:
+The toolchain tests cover the attack surface:
 
 - command injection through target → rejected shell metacharacters
-  (`;&|\`$<>`)
+ (`;&|\`$<>`)
 - argument injection → typed structured values, never concatenated strings
 - path traversal → sandboxed per-execution directories
 - malicious tool output → treated as data, never executed
@@ -285,9 +280,9 @@ budgets.
 - `VersionManager` tracks installed versions and constraint satisfaction.
 - `HealthChecker` verifies installed + version requirement + probe verdict.
 - `ToolLifecycleManager` / `ToolStateMachine` manage
-  `registered → installed → verified → available → running → completed | failed`.
+ `registered → installed → verified → available → running → completed | failed`.
 - `ToolHealthMonitor`, `ToolPerformanceAnalyzer`, `ToolReliabilityTracker`
-  feed selection and availability.
+ feed selection and availability.
 - Parser/normalizer contracts are versioned (`ToolParser`, `ToolNormalizer`).
 
 ---
@@ -339,20 +334,20 @@ hunterx tools recommend <capability>
 
 ## 15. Testing
 
-- **Unit** — `test_toolchain_service.py`, `test_toolchain_events.py`,
-  `test_tool_knowledge_fixtures.py`, `test_tool_capability_vocabulary.py`,
-  `test_toolchain_cli.py`
-- **Component** — `test_toolchain_api.py`
-- **Golden** — `test_toolchain_golden.py` (successful/empty/partial/error/
-  malformed variants per tool category)
-- **Acceptance** — `test_full_toolchain_acceptance.py` (cross-tool correlation,
-  contradiction preservation, selection, chain planning, target intelligence)
-- **Security** — `test_toolchain_security.py`
-- **Performance** — `test_toolchain_performance.py` (parser/normalizer
-  throughput, selection throughput)
-- **Architecture** — `test_tool_layering.py` (tool modules never import higher
-  layers; reporting never executes tools)
-- **Engineering** — `test_regenerate_toolchain_manifest.py`
+- **Unit**, `test_toolchain_service.py`, `test_toolchain_events.py`,
+ `test_tool_knowledge_fixtures.py`, `test_tool_capability_vocabulary.py`,
+ `test_toolchain_cli.py`
+- **Component**, `test_toolchain_api.py`
+- **Golden**, `test_toolchain_golden.py` (successful/empty/partial/error/
+ malformed variants per tool category)
+- **Acceptance**, `test_full_toolchain_acceptance.py` (cross-tool correlation,
+ contradiction preservation, selection, chain planning, target intelligence)
+- **Security**, `test_toolchain_security.py`
+- **Performance**, `test_toolchain_performance.py` (parser/normalizer
+ throughput, selection throughput)
+- **Architecture**, `test_tool_layering.py` (tool modules never import higher
+ layers; reporting never executes tools)
+- **Engineering**, `test_regenerate_toolchain_manifest.py`
 
 ---
 
@@ -365,5 +360,5 @@ be extended in `CAPABILITY_ALIASES` when a new tool introduces a new
 capability id. Knowledge fixtures are synthesized automatically; golden
 outputs and cross-tool correlation tests are added per tool category.
 
-See `capabilities/full-toolchain-intelligence.json` for the ratified manifest
+See `capabilities/full-toolchain-intelligence.json` for the final manifest
 of every integrated tool and its capabilities.

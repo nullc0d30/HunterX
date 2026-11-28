@@ -3,19 +3,7 @@
 
 """Tool discovery.
 
-Reliable discovery of registered tools:
-
-1. Check whether the executable exists (``shutil.which`` across the PATH).
-2. Resolve its absolute path.
-3. Verify it is executable (``os.access`` on POSIX + spawn probe).
-4. Attempt version detection (``--version`` and friends), capturing stdout/stderr.
-5. Normalize the detected version.
-6. Classify readiness (``AVAILABLE`` / ``MISSING`` / ``BROKEN`` / ``OUTDATED`` /
-   ``UNSUPPORTED``).
-
-``tool does not exist`` (MISSING) is distinguished from ``tool exists but
-cannot execute`` (BROKEN). In-process adapters (which need no external binary)
-are classified from the execution engine's adapter/install state.
+Reliable discovery of registered tools.
 """
 
 from __future__ import annotations
@@ -336,7 +324,7 @@ class ToolDiscovery:
 
         Returns ``(binary, path, collisions)``. Collisions are every
         same-named executable elsewhere on the PATH or in a preferred HunterX
-        directory that competes with the resolved provider — including the
+        directory that competes with the resolved provider, including the
         preferred location itself when the resolved binary is NOT the one
         HunterX expects (executable shadowing). The version probe then
         validates which executable is the actual security-tool provider.
@@ -385,7 +373,7 @@ class ToolDiscovery:
     def _collision_report(self, candidate: str, resolved_path: str) -> tuple[dict[str, str], ...]:
         """Return every same-named executable competing with ``resolved_path``.
 
-        Each entry is ``{"path": ..., "preferred": "true"|"false"}`` where
+        Each entry is ``{"path":..., "preferred": "true"|"false"}`` where
         ``preferred`` marks a binary inside a preferred HunterX tool
         directory. A preferred-dir binary that differs from the resolved one
         is always reported so the operator sees exactly which executable would

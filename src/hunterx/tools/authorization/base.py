@@ -3,17 +3,7 @@
 
 """Base adapter for authorization intelligence tools.
 
-Every authorization intelligence adapter implements the SDK
-:class:`ToolAdapter` lifecycle and shares this base. Authorization analysis is
-an in-process, intelligence-only capability: the adapter receives already-
-acquired static material (HTTP snapshot, script content, API security schemes
-and operations, GraphQL metadata, WebSocket endpoints, policy documents, TIDB
-intelligence) through the execution parameters — never tests authorization,
-never substitutes identifiers, never accesses another user's/tenant's resources
-— runs the domain analyzer and serializes the canonical observations into the
-pipeline's JSON payload under the ``authorization`` key exactly as
-:func:`~hunterx.domain.authorization.models.observations_from_payload`
-expects.
+Every authorization intelligence adapter implements the SDK :class:`ToolAdapter` lifecycle and shares this base.
 """
 
 from __future__ import annotations

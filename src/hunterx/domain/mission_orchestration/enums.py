@@ -1,21 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration — canonical value vocabulary.
-
-Sprint 032. Enums consumed by the autonomous mission orchestration engine: the
-typed mission event vocabulary, hypothesis states, finding stages, behavior
-classifications, orchestration strategies, stop conditions, negative-evidence
-kinds and confidence components. These enums are the machine vocabulary of the
-machine-readable contract ``capabilities/autonomous-mission-orchestration.json``.
-
-The orchestration layer deliberately reuses the Sprint 027 planning vocabulary
-(``MissionObjective``, ``MissionMode``, ``MissionState``,
-``AdaptiveMission``) — those enums are NOT duplicated here. This module only
-adds concepts that live above the planner: observation-driven hypothesis
-states, evidence-first finding stages, baseline/differential testing,
-negative evidence, orchestration strategies and stop conditions.
-"""
+"""Autonomous Mission Orchestration, canonical value vocabulary."""
 
 from __future__ import annotations
 
@@ -25,23 +11,7 @@ from enum import StrEnum
 class HypothesisState(StrEnum):
     """Evidence-driven state of a mission hypothesis.
 
-    A hypothesis is never a conclusion: it transitions only when observations
-    move it. ``NOVEL_BEHAVIOR`` marks behavior that matches no known signature
-    and must be characterized before it can be validated or disproved.
-
-    ``DEFERRED`` and ``BLOCKED`` are explicit classifications for open
-    hypotheses that cannot be discharged under the current mission policy:
-
-    - ``DEFERRED``: the hypothesis is acknowledged but testing was deferred
-      (no runnable action, capability unavailable, budget priority, out of
-      scope) with a recorded reason.
-    - ``BLOCKED``: the hypothesis is actionable but its probe capability is
-      unavailable or the target is not probeable under the current scope.
-
-    A classified hypothesis is never "settled by evidence" — it is explicitly
-    marked as not-testable-now, and the recorded reason answers *why it remains
-    open*. An incomplete assessment that classifies hypotheses as deferred/
-    blocked is reported as partial/blocked, never as complete.
+    A hypothesis is never a conclusion: it transitions only when observations move it.
     """
 
     PROPOSED = "proposed"
@@ -94,7 +64,7 @@ class HypothesisState(StrEnum):
 class FindingStage(StrEnum):
     """Evidence-first progression of an orchestrated finding.
 
-    A scanner result is a ``CANDIDATE`` only — it never becomes reportable
+    A scanner result is a ``CANDIDATE`` only, it never becomes reportable
     without independent validation, proof and impact assessment.
     """
 
@@ -149,7 +119,7 @@ class StopCondition(StrEnum):
     Stop conditions are evaluated deterministically after every observation;
     none of them allow the orchestrator to exceed the mission's policy budget.
     ``BLOCKED`` is the honest terminal used when no actionable work remains
-    (or no tool is available) while the objectives are not complete — it is
+    (or no tool is available) while the objectives are not complete, it is
     never reported as success.
     """
 
@@ -187,7 +157,7 @@ class StopCondition(StrEnum):
 
     # -- operational limits ---------------------------------------------------
     # The mission runner's cycle ceiling was reached. This is NOT resource
-    # exhaustion — it is an operational ceiling that may be hit while budgets
+    # exhaustion, it is an operational ceiling that may be hit while budgets
     # remain. It must be reported distinctly so operators can distinguish
     # "we ran out of cycles" from "we ran out of budget".
     CYCLE_CEILING_REACHED = "cycle_ceiling_reached"
@@ -235,7 +205,7 @@ class MissionEventType(StrEnum):
 class ConfidenceComponent(StrEnum):
     """Components that compose an evidence-driven confidence score.
 
-    Confidence is a weighted aggregate over deterministic evidence components —
+    Confidence is a weighted aggregate over deterministic evidence components,
     never an opaque AI probability.
     """
 
@@ -292,8 +262,8 @@ class MissionRunStatus(StrEnum):
 class ReasoningTraceKind(StrEnum):
     """Kinds of structured reasoning-trace entries.
 
-    The trace is an auditable reasoning graph (observation → hypothesis →
-    decision → evidence → action → result), never arbitrary chain-of-thought.
+    The trace is an auditable reasoning graph (observation to hypothesis to
+    decision to evidence to action to result), never arbitrary chain-of-thought.
     """
 
     OBSERVATION = "observation"
@@ -308,7 +278,7 @@ class ReasoningTraceKind(StrEnum):
 class MissionPhase(StrEnum):
     """Canonical orchestration phases.
 
-    These mirror the Sprint 027 ``MissionState`` progression at orchestration
+    These mirror the ``MissionState`` progression at orchestration
     granularity; the orchestrator advances them as the mission adapts.
     """
 

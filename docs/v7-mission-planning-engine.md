@@ -6,54 +6,50 @@ description: >-
   Mission types and phases, profile inheritance, template variables,
   configuration resolution, the mission lifecycle state machine, the
   dependency-aware planner, the execution graph (DAG), checkpoint/restore with
-  partial rerun, the mission timeline and event bus milestones, and the
+  partial rerun, the mission timeline and event bus work, and the
   MissionPlanningAPI facade. Mermaid diagrams, data models and a developer
   integration guide.
 permalink: /v7-mission-planning-engine/
 ---
 
-# HunterX v7 Mission Planning Engine — Architecture & Reference
-
-**Status:** Ratified (Sprint 005)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Mission Planning Engine, Architecture & Reference
 
 ---
 
 ## 1. Purpose / Scope
 
-This document defines the **Mission Planning Engine** — the subsystem that
+This document defines the **Mission Planning Engine**, the subsystem that
 turns an operator's high-level request into an executable, dependency-aware
 mission plan.
 
 It has two mandates:
 
-1. **Plan — create the blueprint.** A `MissionRequest` (profile + targets +
-   variables + config) is validated against a ratified
-   [`MissionProfile`](#41-missionprofile) and expanded into an ordered set of
-   phases, per-target steps, duration estimates and a resolved configuration.
-2. **Govern — run the lifecycle.** The engine owns the ratified mission state
-   machine, checkpoints for safe resume, and a timeline of every lifecycle
-   event, publishing milestones to the event bus.
+1. **Plan, create the blueprint.** A `MissionRequest` (profile + targets +
+ variables + config) is validated against a final
+ [`MissionProfile`](#41-missionprofile) and expanded into an ordered set of
+ phases, per-target steps, duration estimates and a resolved configuration.
+2. **Govern, run the lifecycle.** The engine owns the final mission state
+ machine, checkpoints for safe resume, and a timeline of every lifecycle
+ event, publishing lifecycle events to the event bus.
 
 Hard constraints:
 
 - **Planning only.** No tool is executed; no tool adapter is invoked. The
-  output is a `MissionPlan` and an `ExecutionGraph` for an execution engine
-  (Sprint 004 SDK) to consume.
-- **Bible-compliant profiles.** Profiles mirror the ratified mission-profile
-  spec in `docs/bible/12 - Mission Profiles.md`.
+ output is a `MissionPlan` and an `ExecutionGraph` for an execution engine
+ to consume.
+- **Bible-compliant profiles.** Profiles mirror the final mission-profile
+ spec in `docs/bible/12 - Mission Profiles.md`.
 - **Pure transitions.** State transitions never mutate a plan; every
-  transition returns a new `MissionPlan`.
+ transition returns a new `MissionPlan`.
 - **Strict configuration.** Unresolved `{{ variable }}` placeholders raise so
-  plans never ship with holes.
+ plans never ship with holes.
 
 Scope: `src/hunterx/domain/mission_planning.py`,
 `src/hunterx/domain/exceptions/planning.py`,
 `src/hunterx/domain/ports/mission_planning.py` and
 `src/hunterx/engines/mission_planning/`.
 
-Out of scope: tool adapters and execution (Sprint 004),
+Out of scope: tool adapters and execution,
 workflow/reporting engines, AI reasoning, persistence adapters (only ports +
 in-memory test doubles ship), and scheduling of when missions actually run.
 
@@ -61,17 +57,17 @@ in-memory test doubles ship), and scheduling of when missions actually run.
 
 ## 2. Design Goals
 
-1. **Profile-first.** A mission is the instantiation of a ratified profile;
-   the planner never hard-codes a phase sequence.
+1. **Profile-first.** A mission is the instantiation of a final profile;
+ the planner never hard-codes a phase sequence.
 2. **Inheritance over duplication.** Profiles inherit from parents and
-   override per-phase; templates override phases and inject variables.
+ override per-phase; templates override phases and inject variables.
 3. **Explicit graph.** The planner emits a DAG (`ExecutionGraph`) with
-   parallelism, fallbacks, conditions and retry hints that an executor can
-   honor without re-deriving structure.
+ parallelism, fallbacks, conditions and retry hints that an executor can
+ honor without re-deriving structure.
 4. **Resumable.** Checkpoints capture full plan state and support partial
-   rerun from any step; nothing is lost on a paused or failed mission.
+ rerun from any step; nothing is lost on a paused or failed mission.
 5. **Auditable.** Every lifecycle event lands on a per-mission timeline and
-   milestones are published to the event bus.
+ lifecycle events are published to the event bus.
 
 ---
 
@@ -80,39 +76,39 @@ in-memory test doubles ship), and scheduling of when missions actually run.
 ```
 src/hunterx/
 ├── domain/
-│   ├── mission_planning.py          # mission domain models + DAG algorithms
-│   ├── exceptions/planning.py       # planning exception hierarchy (code MISSION)
-│   └── ports/mission_planning.py    # repository ports
+│ ├── mission_planning.py # mission domain models + DAG algorithms
+│ ├── exceptions/planning.py # planning exception hierarchy (code MISSION)
+│ └── ports/mission_planning.py # repository ports
 └── engines/
-    └── mission_planning/
-        ├── state.py                 # MissionStateMachine / MissionPlanTransition
-        ├── profiles.py              # MissionProfileEngine, profile inheritance
-        ├── config.py                # ConfigurationResolver
-        ├── planner.py               # MissionPlanner
-        ├── graph.py                 # ExecutionGraphBuilder
-        ├── checkpoints.py           # CheckpointManager
-        ├── timeline.py              # MissionTimeline + event constants
-        ├── engine.py                # MissionPlanningEngine (composition root)
-        └── api.py                   # MissionPlanningAPI (facade)
+ └── mission_planning/
+ ├── state.py # MissionStateMachine / MissionPlanTransition
+ ├── profiles.py # MissionProfileEngine, profile inheritance
+ ├── config.py # ConfigurationResolver
+ ├── planner.py # MissionPlanner
+ ├── graph.py # ExecutionGraphBuilder
+ ├── checkpoints.py # CheckpointManager
+ ├── timeline.py # MissionTimeline + event constants
+ ├── engine.py # MissionPlanningEngine (composition root)
+ └── api.py # MissionPlanningAPI (facade)
 ```
 
 ```mermaid
 flowchart TD
-    API[MissionPlanningAPI<br/>facade] --> ENG[MissionPlanningEngine<br/>orchestrator]
-    ENG --> PROF[MissionProfileEngine<br/>inheritance / templates]
-    ENG --> CFG[ConfigurationResolver<br/>merge + render]
-    ENG --> PL[MissionPlanner<br/>select / order / expand]
-    ENG --> GR[ExecutionGraphBuilder<br/>DAG]
-    ENG --> CK[CheckpointManager<br/>snapshot / restore / rerun]
-    ENG --> TL[MissionTimeline<br/>events]
-    ENG --> ST[MissionPlanTransition<br/>state machine]
-    ENG --> PORTS[Repository ports]
-    PORTS --> PROFILE_REPO[MissionProfileRepository]
-    PORTS --> TEMPLATE_REPO[MissionTemplateRepository]
-    PORTS --> PLAN_REPO[MissionPlanRepository]
-    PORTS --> CHECKPOINT_REPO[CheckpointRepository]
-    PORTS --> TIMELINE_REPO[MissionTimelineRepository]
-    ENG --> BUS[EventBusPort<br/>mission.started / .completed / ...]
+ API[MissionPlanningAPI<br/>facade] --> ENG[MissionPlanningEngine<br/>orchestrator]
+ ENG --> PROF[MissionProfileEngine<br/>inheritance / templates]
+ ENG --> CFG[ConfigurationResolver<br/>merge + render]
+ ENG --> PL[MissionPlanner<br/>select / order / expand]
+ ENG --> GR[ExecutionGraphBuilder<br/>DAG]
+ ENG --> CK[CheckpointManager<br/>snapshot / restore / rerun]
+ ENG --> TL[MissionTimeline<br/>events]
+ ENG --> ST[MissionPlanTransition<br/>state machine]
+ ENG --> PORTS[Repository ports]
+ PORTS --> PROFILE_REPO[MissionProfileRepository]
+ PORTS --> TEMPLATE_REPO[MissionTemplateRepository]
+ PORTS --> PLAN_REPO[MissionPlanRepository]
+ PORTS --> CHECKPOINT_REPO[CheckpointRepository]
+ PORTS --> TIMELINE_REPO[MissionTimelineRepository]
+ ENG --> BUS[EventBusPort<br/>mission.started /.completed /...]
 ```
 
 ---
@@ -142,12 +138,12 @@ The lifecycle states:
 
 ```
 created → queued → planning → ready → executing
-                                        ├→ paused ↔ executing
-                                        ├→ waiting ↔ executing
-                                        ├→ retrying ↔ executing
-                                        ├→ completed → archived
-                                        ├→ cancelled → archived
-                                        └→ failed → archived
+ ├→ paused ↔ executing
+ ├→ waiting ↔ executing
+ ├→ retrying ↔ executing
+ ├→ completed → archived
+ ├→ cancelled → archived
+ └→ failed → archived
 ```
 
 Properties: `is_active`, `is_terminal`.
@@ -163,7 +159,7 @@ Properties: `is_active`, `is_terminal`.
 
 ### 4.6 MissionProfile
 
-The ratified profile record. Fields: `profile_id`, `name`, `description`,
+The final profile record. Fields: `profile_id`, `name`, `description`,
 `version`, `mission_types`, `phases`, `objectives`, `allowed_tools`
 (`{"include": [...], "exclude": [...]}`), `expected_outputs`, `approval_level`,
 `risk_model`, `constraints`, `compliance_map`, `parent` (optional inheritance).
@@ -225,41 +221,41 @@ closure for recovery), `recovery_path(node_id)` and `total_duration_seconds`.
 adds fluent named operations (`queue`, `plan`, `start`, `pause`, `resume`,
 `wait`, `unwait`, `retry`, `resume_retry`, `complete`, `cancel`, `fail`,
 `archive`). `cancel`/`fail` are permitted from any active state; every terminal
-state admits only `archive`. `apply()` always returns a **new** plan and stamps
+state admits only `archive`. `apply` always returns a **new** plan and stamps
 `started_at` on entry to `executing` and `completed_at` on terminal states.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> created
-    created --> queued
-    queued --> planning
-    planning --> ready
-    ready --> executing
-    executing --> paused
-    paused --> executing
-    executing --> waiting
-    waiting --> executing
-    executing --> retrying
-    retrying --> executing
-    executing --> completed
-    completed --> archived
-    queued --> cancelled
-    planning --> cancelled
-    ready --> cancelled
-    executing --> cancelled
-    paused --> cancelled
-    waiting --> cancelled
-    retrying --> cancelled
-    queued --> failed
-    planning --> failed
-    ready --> failed
-    executing --> failed
-    paused --> failed
-    waiting --> failed
-    retrying --> failed
-    failed --> archived
-    cancelled --> archived
-    archived --> [*]
+ [*] --> created
+ created --> queued
+ queued --> planning
+ planning --> ready
+ ready --> executing
+ executing --> paused
+ paused --> executing
+ executing --> waiting
+ waiting --> executing
+ executing --> retrying
+ retrying --> executing
+ executing --> completed
+ completed --> archived
+ queued --> cancelled
+ planning --> cancelled
+ ready --> cancelled
+ executing --> cancelled
+ paused --> cancelled
+ waiting --> cancelled
+ retrying --> cancelled
+ queued --> failed
+ planning --> failed
+ ready --> failed
+ executing --> failed
+ paused --> failed
+ waiting --> failed
+ retrying --> failed
+ failed --> archived
+ cancelled --> archived
+ archived --> [*]
 ```
 
 ### Transition table (source → targets)
@@ -277,7 +273,7 @@ stateDiagram-v2
 | `completed` | `archived` |
 | `failed` | `archived` |
 | `cancelled` | `archived` |
-| `archived` | — |
+| `archived` | - |
 
 ---
 
@@ -287,26 +283,26 @@ The planner (`MissionPlanner.expand`) is the core algorithm:
 
 ```mermaid
 flowchart TD
-    R[MissionRequest + Profile + Template] --> V{validate}
-    V -- errors --> FAIL[MissionPlanValidationError]
-    V -- ok --> E[effective phases<br/>template.phases_override or profile.phases]
-    E --> S[select phases<br/>optional via config + dep closure]
-    S --> O[topological order<br/>honoring depends_on]
-    O --> C[resolve config<br/>phase < template < request.config < variables < env]
-    C --> B[build per-phase steps<br/>per-target, chained, durations]
-    B --> P[MissionPlan<br/>phases + steps + resolved config]
-    P --> G[ExecutionGraphBuilder<br/>DAG with parallelism/fallbacks/conditions]
+ R[MissionRequest + Profile + Template] --> V{validate}
+ V -- errors --> FAIL[MissionPlanValidationError]
+ V -- ok --> E[effective phases<br/>template.phases_override or profile.phases]
+ E --> S[select phases<br/>optional via config + dep closure]
+ S --> O[topological order<br/>honoring depends_on]
+ O --> C[resolve config<br/>phase < template < request.config < variables < env]
+ C --> B[build per-phase steps<br/>per-target, chained, durations]
+ B --> P[MissionPlan<br/>phases + steps + resolved config]
+ P --> G[ExecutionGraphBuilder<br/>DAG with parallelism/fallbacks/conditions]
 ```
 
 Phase selection rules (`_include_phase`):
 
 - Required phases always run.
 - Optional phases run by default and are skipped when named under
-  `config["phases"]["disabled"]`, excluded from
-  `config["phases"]["enabled"]`, or set to `false` in `config["phases"]`.
+ `config["phases"]["disabled"]`, excluded from
+ `config["phases"]["enabled"]`, or set to `false` in `config["phases"]`.
 - The dependency closure only pulls in dependencies that themselves pass the
-  inclusion check, so a disabled optional phase is not resurrected by a
-  dependent phase; that dependent simply drops the edge.
+ inclusion check, so a disabled optional phase is not resurrected by a
+ dependent phase; that dependent simply drops the edge.
 - A cyclic dependency between phases raises `MissionPlanValidationError`.
 
 Steps are expanded **per target**: phase `actions` are chained sequentially,
@@ -343,44 +339,44 @@ as `MissionProfileNotFoundError` when the chain is resolved.
 
 ```mermaid
 sequenceDiagram
-    participant O as Operator / API
-    participant E as MissionPlanningEngine
-    participant PE as ProfileEngine
-    participant CFG as ConfigurationResolver
-    participant PL as Planner
-    participant SM as StateMachine
-    participant TL as Timeline
-    participant BUS as EventBus
+ participant O as Operator / API
+ participant E as MissionPlanningEngine
+ participant PE as ProfileEngine
+ participant CFG as ConfigurationResolver
+ participant PL as Planner
+ participant SM as StateMachine
+ participant TL as Timeline
+ participant BUS as EventBus
 
-    O->>E: create_mission(request)
-    E->>PE: resolve_profile(profile_id)
-    E->>SM: queue(plan)
-    E->>TL: record(mission.created)
-    E-->>O: Success(plan, QUEUED)
+ O->>E: create_mission(request)
+ E->>PE: resolve_profile(profile_id)
+ E->>SM: queue(plan)
+ E->>TL: record(mission.created)
+ E-->>O: Success(plan, QUEUED)
 
-    O->>E: plan_mission(plan_id)
-    E->>SM: start_planning(plan)
-    E->>CFG: resolve(profile, request, template)
-    E->>PL: expand(plan, profile, template)
-    E->>TL: record(mission.planned)
-    E->>SM: mark_ready(plan)
-    E-->>O: Success(plan, READY)
+ O->>E: plan_mission(plan_id)
+ E->>SM: start_planning(plan)
+ E->>CFG: resolve(profile, request, template)
+ E->>PL: expand(plan, profile, template)
+ E->>TL: record(mission.planned)
+ E->>SM: mark_ready(plan)
+ E-->>O: Success(plan, READY)
 
-    O->>E: build_graph(plan_id)
-    E->>PL: (already expanded)
-    E->>GR: build(plan)
-    E->>TL: record(mission.graph.built)
-    E-->>O: Success(graph)
+ O->>E: build_graph(plan_id)
+ E->>PL: (already expanded)
+ E->>GR: build(plan)
+ E->>TL: record(mission.graph.built)
+ E-->>O: Success(graph)
 
-    O->>E: start_mission(plan_id)
-    E->>SM: start(plan)
-    E->>BUS: publish(mission.started)
-    E-->>O: Success(plan, EXECUTING)
+ O->>E: start_mission(plan_id)
+ E->>SM: start(plan)
+ E->>BUS: publish(mission.started)
+ E-->>O: Success(plan, EXECUTING)
 
-    O->>E: complete_mission(plan_id)
-    E->>SM: complete(plan)
-    E->>BUS: publish(mission.completed)
-    E-->>O: Success(plan, COMPLETED)
+ O->>E: complete_mission(plan_id)
+ E->>SM: Complete(plan)
+ E->>BUS: publish(mission.completed)
+ E-->>O: Success(plan, COMPLETED)
 ```
 
 ---
@@ -422,14 +418,14 @@ Every lifecycle change is recorded on a per-mission timeline
 | `EVENT_ARCHIVED` | `mission.archived` | archive |
 | `EVENT_GRAPH_BUILT` | `mission.graph.built` | build_graph |
 
-When an `EventBusPort` is wired, the engine publishes canonical milestones
+When an `EventBusPort` is wired, the engine publishes lifecycle events
 (`mission.started`, `mission.completed`, `mission.cancelled`,
 `mission.failed`) as `DomainEvent`s with payload
 `{"mission_id", "plan_id"}`.
 
 ---
 
-## 10. API Reference — MissionPlanningAPI
+## 10. API Reference, MissionPlanningAPI
 
 Facade over the engine, injecting in-memory repositories when none are given.
 
@@ -448,7 +444,7 @@ Facade over the engine, injecting in-memory repositories when none are given.
 `checkpoint_resume(checkpoint_id)`.
 
 **Queries:** `get_plan`, `status`, `list_plans`, `update_mission`,
-`history(mission_id)`, `list_entries()`.
+`history(mission_id)`, `list_entries`.
 
 Every operation returns `Result[MissionPlan | Checkpoint | ExecutionGraph,
 Exception]`; failures carry a `HunterXError`-derived exception with code
@@ -464,20 +460,20 @@ Exception]`; failures carry a `HunterXError`-derived exception with code
 from hunterx.engines import MissionPlanningAPI
 from hunterx.engines.mission_planning.api import MissionPlanningAPI as Detailed
 
-api = MissionPlanningAPI()            # in-memory repositories
-api.register_profile(external_pentest_profile())
+api = MissionPlanningAPI # in-memory repositories
+api.register_profile(external_pentest_profile)
 ```
 
 For production, pass real repository implementations and an event bus:
 
 ```python
 api = MissionPlanningAPI(
-    plans=sql_plan_repo,
-    profiles=sql_profile_repo,
-    templates=sql_template_repo,
-    checkpoints=sql_checkpoint_repo,
-    timeline=sql_timeline_repo,
-    event_bus=event_bus,
+ plans=sql_plan_repo,
+ profiles=sql_profile_repo,
+ templates=sql_template_repo,
+ checkpoints=sql_checkpoint_repo,
+ timeline=sql_timeline_repo,
+ event_bus=event_bus,
 )
 ```
 
@@ -487,19 +483,19 @@ api = MissionPlanningAPI(
 from hunterx.domain.mission_planning import MissionRequest, MissionType
 
 result = api.create_mission(
-    MissionRequest(
-        profile_id="external-pentest",
-        mission_type=MissionType.EXTERNAL_PENTEST,
-        name="Perimeter Scan",
-        targets=("example.com", "10.0.0.0/24"),
-        variables={"prefix": "acme"},
-        config={"scope": "{{ prefix }}.com", "tools": ["nmap", "nuclei"]},
-        priority="high",
-    )
+ MissionRequest(
+ profile_id="external-pentest",
+ mission_type=MissionType.EXTERNAL_PENTEST,
+ name="Perimeter Scan",
+ targets=("example.com", "10.0.0.0/24"),
+ variables={"prefix": "acme"},
+ config={"scope": "{{ prefix }}.com", "tools": ["nmap", "nuclei"]},
+ priority="high",
+ )
 )
-plan = result.value                     # status == QUEUED
-plan = api.plan_mission(plan.plan_id).value   # status == READY
-graph = api.build_graph(plan.plan_id).value   # ExecutionGraph DAG
+plan = result.value # status == QUEUED
+plan = api.plan_mission(plan.plan_id).value # status == READY
+graph = api.build_graph(plan.plan_id).value # ExecutionGraph DAG
 ```
 
 ### Checkpoint and partial rerun
@@ -538,5 +534,5 @@ state machine, profiles, config, planner, graph, checkpoints and the API in
 
 ## 13. Out of Scope
 
-Tool execution and adapters (Sprint 004 SDK), workflow engines, reporting,
+Tool execution and adapters, workflow engines, reporting,
 AI reasoning, real database adapters, and mission scheduling/dispatch.

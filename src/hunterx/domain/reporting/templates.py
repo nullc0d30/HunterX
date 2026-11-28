@@ -3,9 +3,8 @@
 
 """Report template engine.
 
-Data-driven report templates: the template defines its sections in data and
-the engine returns the ordered section list for a template kind. Report
-structure is never hardcoded into business logic.
+Data-driven report templates: the template defines its sections in data and the engine returns the ordered section
+list for a template kind.
 """
 
 from __future__ import annotations

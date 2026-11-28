@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""CLI tests for tool readiness commands.
-
-Exercises the real ``hunterx tools check`` / ``hunterx tools install`` /
-``hunterx install`` / ``hunterx hunt`` command paths with a stubbed readiness
-service and a deterministic execution engine. No real package is installed.
-"""
+"""CLI tests for tool readiness commands."""
 
 from __future__ import annotations
 
@@ -139,7 +134,16 @@ class FakeReadinessService:
     def mission_profile_tools(self, objective: str):
         return ()
 
-    def preflight(self, capabilities, *, mission_id="", auto_provision=True, profile_tools=()):  # noqa: ANN001
+    def preflight(  # noqa: ANN001
+        self,
+        capabilities,
+        *,
+        mission_id="",
+        auto_provision=True,
+        profile_tools=(),
+        ai_client=None,
+        ai_settings=None,
+    ):
         if self._blocked:
             return PreflightResult(
                 status=PreflightStatus.BLOCKED,

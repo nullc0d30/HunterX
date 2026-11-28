@@ -4,8 +4,6 @@
 """Search adapters.
 
 Provides a minimal in-memory full-text search index over normalized records.
-Production deployments can back this with a dedicated search service while
-keeping the same public surface.
 """
 
 from __future__ import annotations

@@ -3,10 +3,8 @@
 
 """JavaScript intelligence tool adapter registry.
 
-Builds and registers the JavaScript intelligence adapters (the in-process
-analyzer) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the
-single place that knows the JavaScript tool set, so callers (tests, the
-JavaScript service, the platform) never construct individual adapters.
+Builds and registers the JavaScript intelligence adapters (the in-process analyzer) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

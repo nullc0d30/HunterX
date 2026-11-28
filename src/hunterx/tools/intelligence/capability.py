@@ -3,10 +3,7 @@
 
 """Capability engine.
 
-Classifies, registers and searches capabilities. A capability is a discrete,
-nameable thing a tool can do (recon, dns, subdomain discovery, ...). The
-engine keeps a searchable catalog of capability definitions and knows which
-tools provide which capability.
+Classifies, registers and searches capabilities.
 """
 
 from __future__ import annotations
@@ -76,8 +73,8 @@ class CapabilityEngine:
     Usage::
 
         engine = CapabilityEngine(registry, taxonomy)
-        engine.sync_taxonomy()                      # seed canonical capabilities
-        engine.providers("subdomain-discovery")     # -> ["subfinder"]
+        engine.sync_taxonomy() # seed canonical capabilities
+        engine.providers("subdomain-discovery") # -> ["subfinder"]
     """
 
     def __init__(self, registry: ToolIntelligenceRegistry, taxonomy: ToolTaxonomy) -> None:

@@ -4,7 +4,6 @@
 """In-memory Tool Integration Factory repositories and fixtures.
 
 Test doubles implementing the factory repository ports without any database.
-Used by unit tests and embedded/development wiring.
 """
 
 from __future__ import annotations

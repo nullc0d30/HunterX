@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission dashboard & operator visibility.
-
-Sprint 033. Aggregates live mission state into operator-facing dashboard views:
-overview, attack surface, coverage, hypotheses, findings, evidence, proofs,
-attack paths, tools and timeline. The service composes the orchestration engine
-and the TIDB query service — it does not duplicate the mission domain. Views
-are read-only projections over the orchestrated mission aggregate and its
-persisted records.
-"""
+"""Mission dashboard & operator visibility."""
 
 from __future__ import annotations
 

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Vulnerability finding orchestration API routes.
-
-Exposes the Sprint 028 application services: create finding, get finding,
-list findings, assess evidence, get evidence gaps, get the validation plan,
-execute validation, generate a PoC, replay a PoC, assess impact, calculate
-confidence, get the confidence explanation, resolve conflicts, deduplicate,
-correlate root causes, classify unknown behavior, evaluate report readiness,
-finalize report-ready, reject findings and get the complete finding package.
-Handlers resolve services from the shared dependency container.
-"""
+"""Vulnerability finding orchestration API routes."""
 
 from __future__ import annotations
 

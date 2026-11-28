@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud & SaaS attack-surface intelligence domain.
-
-Pure-domain, I/O-free contracts and algorithms for the Wave 11 cloud & SaaS
-intelligence capability: canonical observation models, the evidence-based
-provider detection registry, classification, deterministic confidence scoring,
-scope enforcement, collection strategy, correlation, conflict resolution,
-historical diffing, validation, sensitive-data redaction and the in-process
-analyzer.
-"""
+"""Cloud & SaaS attack-surface intelligence domain."""
 
 from __future__ import annotations
 

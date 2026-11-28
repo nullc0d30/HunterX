@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sprint 033 §11 — Cloud/SaaS full-spectrum mission acceptance test.
-
-Validates provider detection, resource discovery, exposure classification,
-cloud relationships, SaaS discovery, webhook relationships, attack-surface
-correlation and finding persistence, reusing the Sprint 017 cloud intelligence
-capability. A provider misconfiguration and an insecure SaaS webhook are
-validated; a fake "compromised key" secret is rejected as a false positive.
-"""
+"""11, Cloud/SaaS full-spectrum mission acceptance test."""
 
 from __future__ import annotations
 
@@ -167,7 +160,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 5. fake secret rejected — "compromised key" is a decoy
+    # 5. fake secret rejected, "compromised key" is a decoy
     def _fake_secret(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.record_negative(
             mission_id,
@@ -220,7 +213,7 @@ class TestCloudSaaSMission:
         assert "cloud_exposure" in classes
         assert "webhook_weakness" in classes
 
-        # 2. fake secret rejected — no secret finding promoted
+        # 2. fake secret rejected, no secret finding promoted
         secrets = [f for f in mission.context.findings if f.get("vulnerability_class") == "secret_exposure"]
         assert not secrets
 
@@ -232,7 +225,7 @@ class TestCloudSaaSMission:
         ]
         assert "azure" in providers
 
-        # 4. cloud relationships (SaaS → webhook) mapped
+        # 4. cloud relationships (SaaS to webhook) mapped
         saas_observations = [o for o in mission.observations if o.observation_type == "cloud"]
         assert saas_observations
         assert any("acme-jira" in str(o.content) for o in saas_observations)

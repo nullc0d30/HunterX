@@ -1,25 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 13 deep coverage regression tests.
-
-A validated finding is an OUTPUT, never a stop: the mission must continue
-assessing the remaining high-value hypotheses and attack paths until the
-assessment is genuinely complete (all high-value hypotheses resolved/refuted,
-plan discharged, or budget exhausted). These tests prove, end-to-end against
-the loopback vulnerable fixture:
-
-    1. The first validated finding does not terminate the mission while
-       unresolved high-value hypotheses remain (policy gate + run loop).
-    2. The planner continues after a validated finding: unrelated hypotheses
-       remain schedulable and are probed (honest negative, never skipped).
-    3. Refuted hypotheses are never reprobed (one bound validation action,
-       one tested action).
-    4. The mission terminates honestly when work is exhausted.
-    5. A zero-finding mission also terminates honestly (no hang, and
-       FINDINGS_VALIDATED can never fire with zero findings).
-    6. Duplicate hypotheses are idempotent by statement (merged evidence,
-       one hypothesis).
+"""Deep coverage regression tests.
 """
 
 from __future__ import annotations

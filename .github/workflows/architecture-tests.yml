@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Architecture Tests.
+# HunterX - Architecture Tests.
 #
 # Enforces the Clean Architecture dependency matrix (`config/architecture.yaml`)
 # with `hunterx-arch lint` plus the architecture test suite. Architecture

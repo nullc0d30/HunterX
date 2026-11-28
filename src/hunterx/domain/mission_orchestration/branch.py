@@ -3,10 +3,7 @@
 
 """Mission branch manager.
 
-Sprint 032. When an observation opens multiple paths, the orchestrator forks
-branches. Each branch keeps its own hypothesis, state, evidence, actions, cost
-and outcome. The branch manager ranks open branches so the orchestrator pursues
-the best one first without abandoning the others.
+When an observation opens multiple paths, the orchestrator forks branches.
 """
 
 from __future__ import annotations

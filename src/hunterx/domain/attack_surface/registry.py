@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Surface-kind registry.
-
-The registry is the extensibility seam for the attack-surface model: adapters
-for a new target technology register their own surface kinds (with a layer and
-observation-type classification) *without* touching core orchestration logic.
-Core traversal and scheduling code only depends on ``SurfaceLayer`` and the
-kind strings — never on a closed set of kinds.
-"""
+"""Surface-kind registry."""
 
 from __future__ import annotations
 
@@ -29,7 +22,7 @@ class SurfaceKindSpec:
         observation_types: observation-type strings that classify to this kind.
         capability_hints: capability ids commonly applicable to this kind
             (validated against the live platform catalog by the capability
-            mapper — never authoritative on their own).
+            mapper, never authoritative on their own).
         description: human description.
 
     """
@@ -41,7 +34,7 @@ class SurfaceKindSpec:
     description: str = ""
 
 
-#: Built-in specs keyed by SurfaceKind. Registration happens once at import;
+# : Built-in specs keyed by SurfaceKind. Registration happens once at import
 #: adapters may register additional kinds at runtime.
 _BUILTIN_SPECS: dict[str, SurfaceKindSpec] = {
     SurfaceKind.TARGET.value: SurfaceKindSpec(
@@ -367,7 +360,7 @@ class SurfaceKindRegistry:
         """Classify an observation-type string into a surface kind.
 
         Observation types that name no known kind classify to ``UNKNOWN`` (an
-        honest "we saw a surface but cannot categorise it yet" — never an
+        honest "we saw a surface but cannot categorise it yet", never an
         assumption).
         """
         normalized = str(observation_type or "").strip().lower()

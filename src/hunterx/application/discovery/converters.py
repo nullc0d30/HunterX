@@ -1,17 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery — payload converters.
+"""Universal discovery, payload converters.
 
-Turn raw adapter payloads into canonical discovered assets and attack-surface
-observation payloads. One converter per payload family (recon, dns, livehost,
-tech, web, content, parameter, javascript, api, auth); each returns the assets
-the pipeline deduplicates and the observations fed to
-:meth:`AttackSurfaceService.on_observation` — never target-specific.
-
-Every converter is pure: it reads the execution payload (parsed via the domain
-model helpers) and returns plain structures. Execution, state tracking and
-surface intake live in :mod:`hunterx.application.discovery.service`.
+Turn raw adapter payloads into canonical discovered assets and attack-surface observation payloads.
 """
 
 from __future__ import annotations
@@ -55,7 +47,7 @@ class Observation:
     Attributes:
         observation_type: canonical observation type (classified to a surface
             kind by the registry: ``subdomain``, ``host``, ``port``, ``api``,
-            ``graphql``, ``javascript``, ``auth``, ``workflow``, ...).
+            ``graphql``, ``javascript``, ``auth``, ``workflow``,...).
         content: payload content consumed by the intake helpers (URLs,
             endpoints, parameters, technologies, objects, workflows...).
         asset_key: canonical asset identity (URL, host, ``host:port``...).

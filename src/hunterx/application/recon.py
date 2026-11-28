@@ -3,16 +3,7 @@
 
 """Reconnaissance use-case service.
 
-The recon orchestrator — the bridge between a mission and the Tool Integration
-SDK. Given a target and a posture, it selects the registered recon tools,
-builds one :class:`ExecutionContext` per tool, runs each through the
-:class:`ExecutionEngine` pipeline, collects the canonical discovery records,
-correlates them across tools, persists them to the TIDB and publishes
-``recon.*`` events.
-
-The service depends on ports only: the execution engine (tools layer) and the
-TIDB repository factory (domain port). Concrete SQL/in-memory stores are
-injected by the platform assembler.
+The recon orchestrator, the bridge between a mission and the Tool Integration SDK.
 """
 
 from __future__ import annotations
@@ -399,7 +390,7 @@ class _ReconPersister:
         """Resolve (or create) the parent domain id for ``name``.
 
         A parent domain only exists when ``name`` is a true subdomain (three or
-        more labels, e.g. ``www.example.com`` → ``example.com``). Apex names
+        more labels, e.g. ``www.example.com`` to ``example.com``). Apex names
         (two labels) map back onto themselves so an apex observed as a
         subdomain never fabricates a spurious parent like ``com``.
         """

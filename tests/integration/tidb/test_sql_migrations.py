@@ -1,10 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Migration validation (Sprint 034.3 §14, §15).
+"""Migration validation (14,).
 
-Fresh database → alembic upgrade head → schema inspection → data insertion →
-alembic downgrade base → alembic upgrade again → alembic check (no drift).
+Fresh database to alembic upgrade head to schema inspection to data insertion to alembic downgrade base to alembic
+upgrade again to alembic check (no drift).
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ def _alembic_config(db_path: Path) -> Config:
     cfg = Config(str(REPO_ROOT / "alembic.ini"))
     cfg.set_main_option("script_location", str(REPO_ROOT / "alembic"))
     cfg.set_main_option("sqlalchemy.url", f"sqlite:///{db_path}")
-    import hunterx.infrastructure.db.sql.tidb_models  # noqa: F401  (register models)
+    import hunterx.infrastructure.db.sql.tidb_models  # noqa: F401 (register models)
     return cfg
 
 
@@ -108,7 +108,7 @@ def test_all_migrations_are_forward_only_table_creation(db_file: Path) -> None:
     """Every migration revision must be a pure create-table/create-index step.
 
     There are no data-mutating migrations (no ALTER/DROP columns), so existing
-    data cannot be damaged by an upgrade (Sprint 034.3 §15).
+    data cannot be damaged by an upgrade (15).
     """
     import re
 

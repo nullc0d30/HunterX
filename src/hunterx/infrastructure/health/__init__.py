@@ -3,10 +3,7 @@
 
 """Health monitoring adapters.
 
-The :class:`HealthRegistry` runs a named set of component probes and reports a
-unified status map. Probes are small callables returning ``(status, detail)``
-where status is ``ok``, ``degraded`` or ``down``. The registry powers the
-platform health API and the unified health dashboard.
+The :class:`HealthRegistry` runs a named set of component probes and reports a unified status map.
 """
 
 from __future__ import annotations

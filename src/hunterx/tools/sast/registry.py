@@ -3,8 +3,7 @@
 
 """SAST tool adapter registry.
 
-Builds and registers the SAST adapters (semgrep) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
+Builds and registers the SAST adapters (semgrep) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

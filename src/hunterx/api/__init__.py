@@ -3,9 +3,8 @@
 
 """REST API framework.
 
-Provides a FastAPI application factory, a router registry for endpoint
-definition, base schemas and dependency helpers. Importing ``hunterx.api``
-never requires FastAPI; it is only needed to build the app.
+Provides a FastAPI application factory, a router registry for endpoint definition, base schemas and dependency
+helpers.
 """
 
 from __future__ import annotations

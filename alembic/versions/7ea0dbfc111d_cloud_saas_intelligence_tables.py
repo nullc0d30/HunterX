@@ -1,23 +1,5 @@
-"""cloud saas intelligence tables
-
-Revision ID: 7ea0dbfc111d
-Revises: b7e2f9a4c1d3
-Create Date: 2026-08-09 08:41:37.962095
-
-Extends the TIDB schema with the Wave 11 cloud & SaaS attack-surface
-intelligence canonical inventory: cloud providers, accounts/subscriptions/
-projects/organizations/tenants, regions, resources, services, endpoints (with
-control/data/identity/management plane classification), environments, identity
-& IAM indicators, SaaS platforms, SaaS applications, SaaS integrations,
-webhooks, third-party dependencies, storage/compute/container/Kubernetes/
-database/message/gateway/CDN/load-balancer/CI/CD resource indicators,
-secret-management indicators, exposure indicators (intelligence, never
-vulnerabilities), generic observations, evidence and historical-change records
-plus the run observability record.
-
-Security boundary: every table stores metadata and masked indicators only —
-never cloud credentials, access keys, secret values, session tokens, OAuth
-secrets or private keys.
+"""cloud saas intelligence tables Revision ID: 7ea0dbfc111d Revises: b7e2f9a4c1d3 Create Date: 2026-08-09
+08:41:37.962095.
 
 """
 from collections.abc import Sequence

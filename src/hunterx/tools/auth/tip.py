@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Authentication Intelligence.
-
-Registers the authentication analysis tool (in-process analyzer) into a
-:class:`ToolIntelligenceAPI` so the Planner and selection engines can recommend
-it by taxonomy capability (``authentication-intelligence``,
-``identity-intelligence``). The profile mirrors the tool descriptor used by the
-Tool Integration SDK adapter (same version pin) so intelligence and execution
-never disagree about a tool's contract.
-"""
+"""Tool Intelligence Platform registration for Authentication Intelligence."""
 
 from __future__ import annotations
 

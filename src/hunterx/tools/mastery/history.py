@@ -3,10 +3,8 @@
 
 """Target-specific tool history.
 
-Tracks what was run against a target/asset/mission, with which version and
-configuration, what happened, what was learned and what remains unknown.
-Results influence future tool decisions but remain evidence-based and
-explainable.
+Tracks what was run against a target/asset/mission, with which version and configuration, what happened, what was
+learned and what remains unknown.
 """
 
 from __future__ import annotations
@@ -22,7 +20,7 @@ class ToolHistory:
     """Per-target tool execution memory.
 
     Query helpers answer "has tool X run against target Y?", "what versions
-    were used?", "what was learned?" — the memory a professional operator
+    were used?", "what was learned?", the memory a professional operator
     keeps between engagements.
     """
 

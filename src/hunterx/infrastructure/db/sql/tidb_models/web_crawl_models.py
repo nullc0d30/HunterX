@@ -3,9 +3,7 @@
 
 """ORM models for TIDB web crawling entities.
 
-Mirrors ``hunterx.domain.entities.tidb.web_crawl`` one-to-one. The tables
-extend the baseline web-layer tables with the crawl-specific projections the
-web crawling & web attack-surface discovery capability persists.
+Mirrors ``hunterx.domain.entities.tidb.web_crawl`` one-to-one.
 """
 
 from __future__ import annotations

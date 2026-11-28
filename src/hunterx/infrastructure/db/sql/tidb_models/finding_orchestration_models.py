@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB vulnerability-finding-orchestration entities.
-
-System-of-record tables for the Sprint 028 autonomous vulnerability validation
-& proof orchestration capability: the canonical finding record, evidence
-requirements and gaps, validation attempts, PoC artifacts and replay records,
-impact and confidence assessments, evidence conflicts, deduplication decisions,
-root-cause records, unknown-behavior profiles, reproduction data,
-report-readiness checklists, state transitions and consolidated report
-packages.
-
-Security boundary: these tables store canonical findings, redacted evidence
-and lifecycle metadata only — never exploit payloads, never credentials,
-never out-of-scope request material.
-"""
+"""ORM models for TIDB vulnerability-finding-orchestration entities."""
 
 from __future__ import annotations
 

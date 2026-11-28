@@ -3,11 +3,7 @@
 
 """Distributed tracing adapters.
 
-The :class:`InMemoryTracer` implements the tracer port with an in-process span
-tree. Spans form a hierarchy through ``parent_span_id``; a thread-local current
-span allows context propagation across components running on the same thread,
-and mission/execution timelines can be reconstructed by filtering a trace by
-mission attributes.
+The :class:`InMemoryTracer` implements the tracer port with an in-process span tree.
 """
 
 from __future__ import annotations

@@ -3,10 +3,7 @@
 
 """ORM models for Adaptive Target Intelligence TIDB entities.
 
-Sprint 026. Mirrors ``hunterx.domain.entities.tidb.target_intelligence``
-one-to-one. Indexes cover the canonical query paths: target scoping, asset
-keys, capabilities, states and dedup keys — so thousands of assets and millions
-of observations stay queryable without full scans.
+Mirrors ``hunterx.domain.entities.tidb.target_intelligence`` one-to-one.
 """
 
 from __future__ import annotations

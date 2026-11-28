@@ -3,9 +3,7 @@
 
 """Knowledge-base Target Intelligence Database entities.
 
-Mirrored global reference data (CVE/CWE/CAPEC/EPSS/MITRE) and exploit
-references. These tables are read-mostly and synced by the knowledge mirror
-syncers; they must never be written by capability logic.
+Mirrored global reference data (CVE/CWE/CAPEC/EPSS/MITRE) and exploit references.
 """
 
 from __future__ import annotations
@@ -185,9 +183,9 @@ class ExploitReference(TidbEntity):
 
     Attributes:
         cve_id: referenced CVE.
-        source: source name (exploit-db, metasploit, github, ...).
+        source: source name (exploit-db, metasploit, github,...).
         url: exploit URL.
-        kind: poc|module|writeup|... .
+        kind: poc|module|writeup|....
         published: publication timestamp (ISO).
         verified: whether the exploit has been verified.
 

@@ -3,10 +3,7 @@
 
 """Reporting engine.
 
-Builds report documents from stored missions, findings and correlation
-groups, then hands them to renderers. The engine is format-agnostic: concrete
-renderers (JSON, Markdown, HTML, SARIF) implement
-:class:`~hunterx.reporting.renderers.Renderer`.
+Builds report documents from stored missions, findings and correlation groups, then hands them to renderers.
 """
 
 from __future__ import annotations

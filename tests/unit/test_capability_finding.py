@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Phase 6 capability-finding domain package."""
+"""Unit tests for the capability-finding domain package."""
 
 from __future__ import annotations
 
@@ -191,7 +191,7 @@ class TestClassMapping:
 
 
 class TestStageMapping:
-    """The Phase 6 stages map onto the canonical finding states."""
+    """The stages map onto the canonical finding states."""
 
     def test_stage_mapping(self) -> None:
         assert stage_for_state("candidate") == "Candidate"

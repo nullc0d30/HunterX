@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden scenario tests for professional reporting.
-
-Each golden finding is driven through the reporting pipeline: finding
-intelligence -> severity -> CWE/OWASP/CVSS classification -> impact -> root
-cause -> evidence bundle -> PoC -> timeline -> remediation -> QA -> report
-package -> export. Every exported representation preserves semantic integrity.
-"""
+"""Golden scenario tests for professional reporting."""
 
 from __future__ import annotations
 

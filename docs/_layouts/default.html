@@ -21,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>{% if page.url == '/' %}{{ site.title | escape }}{% elsif page.title %}{{ page.title | escape }} — HunterX{% else %}{{ site.title | escape }}{% endif %}</title>
+  <title>{% if page.url == '/' %}{{ site.title | escape }}{% elsif page.title %}{{ page.title | escape }} - HunterX{% else %}{{ site.title | escape }}{% endif %}</title>
   <meta name="description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
   <meta name="keywords" content="{% if page.keywords %}{{ page.keywords | escape }}, {% endif %}HunterX, HunterX v7, AI vulnerability scanner, AI-assisted vulnerability discovery, vulnerability validation, PoC generation, bug bounty, penetration testing, red team framework, offensive security platform, open source vulnerability scanner, web application security, API security, cloud security, security reconnaissance, security automation, security testing">
   <meta name="author" content="Ahmed Awad (NullC0d3)">
@@ -41,7 +41,7 @@
   <meta property="og:image" content="{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}">
   <meta property="og:image:width" content="1215">
   <meta property="og:image:height" content="1295">
-  <meta property="og:image:alt" content="HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
+  <meta property="og:image:alt" content="HunterX - AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
   <meta property="og:site_name" content="{{ site.title | escape }}">
   <meta property="og:locale" content="en_US">
   {% if page.layout == 'post' %}
@@ -62,7 +62,7 @@
   <meta name="twitter:title" content="{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}">
   <meta name="twitter:description" content="{% if page.description %}{{ page.description | escape }}{% else %}{{ site.description | escape }}{% endif %}">
   <meta name="twitter:image" content="{{ page.image | default: site.image | default: '/assets/images/logof.png' | absolute_url }}">
-  <meta name="twitter:image:alt" content="HunterX — AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
+  <meta name="twitter:image:alt" content="HunterX - AI-Assisted Vulnerability Discovery, Validation & Proof Engine Logo">
   {% if page.layout == 'post' %}
   <meta name="twitter:label1" content="Written by">
   <meta name="twitter:data1" content="Ahmed Awad (NullC0d3)">

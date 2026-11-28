@@ -3,9 +3,7 @@
 
 """CLI application.
 
-A minimal command dispatcher. Built on ``hunterx.cli.registry`` and
-``hunterx.cli.render``, with no third-party argument-parsing dependency so the
-foundation stays lean.
+A minimal command dispatcher.
 """
 
 from __future__ import annotations
@@ -83,7 +81,7 @@ class CliApplication:
         lines = [f"Usage: {self.program_name} <command> [args...]", ""]
         for name in self.registry.names():
             command = self.registry.get(name)
-            assert command is not None  # nosec B101  # guarded by registry contract
+            assert command is not None  # nosec B101 # guarded by registry contract
             lines.append(f"  {name:<24} {command.help_text}")
         lines.append("")
         lines.append("HunterX is an authorized cybersecurity testing and research platform.")

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: OpenSSF Readiness — HunterX v7
+title: OpenSSF Readiness - HunterX v7
 description: >-
   HunterX readiness assessment for Open Source Security Foundation (OpenSSF)
   best practices, including Scorecard, Best Practices Badge, SBOM, SLSA,
@@ -45,22 +45,22 @@ The [OpenSSF Best Practices Badge](https://www.bestpractices.dev/) is a voluntar
 
 | Category | Status | Notes |
 |----------|--------|-------|
-| Basics | ✅ Complete | Repo, license, documentation all present |
-| Change Control | ✅ Complete | Version control, release notes, changelog |
-| Reporting | ✅ Complete | Issue tracker, security policy |
-| Quality | ✅ Complete | CI/CD, testing, coding standards |
-| Security | ⚠️ Partial | Dependabot and fuzzing not yet configured |
+| Basics | Complete | Repo, license, documentation all present |
+| Change Control | Complete | Version control, release notes, changelog |
+| Reporting | Complete | Issue tracker, security policy |
+| Quality | Complete | CI/CD, testing, coding standards |
+| Security | Partial | Dependabot and fuzzing not yet configured |
 
 ### Supply Chain Security
 
 | Practice | Status | Notes |
 |----------|--------|-------|
-| SBOM (Software Bill of Materials) | ❌ Not generated | Recommended: `pip-audit` or `cyclonedx-bom` |
+| SBOM (Software Bill of Materials) | Not generated | Recommended: `pip-audit` or `cyclonedx-bom` |
 | SLSA Level | Level 0 | No provenance attestation yet |
-| Dependency Review | ❌ Not configured | Recommended: GitHub Dependency Review action |
-| CodeQL Analysis | ❌ Not configured | Recommended: `github/codeql-action` |
-| Secret Scanning | ✅ Enabled | GitHub pushes secret scanning by default |
-| Dependabot | ❌ Not configured | Recommended: enable Dependabot alerts and updates |
+| Dependency Review | Not configured | Recommended: GitHub Dependency Review action |
+| CodeQL Analysis | Not configured | Recommended: `github/codeql-action` |
+| Secret Scanning | Enabled | GitHub pushes secret scanning by default |
+| Dependabot | Not configured | Recommended: Enable Dependabot alerts and updates |
 
 ---
 
@@ -68,24 +68,24 @@ The [OpenSSF Best Practices Badge](https://www.bestpractices.dev/) is a voluntar
 
 ### Short-Term (Immediate)
 
-1. **Enable Dependabot** — Add `.github/dependabot.yml` for automated dependency updates
-2. **Configure CodeQL** — Add CodeQL analysis workflow to `.github/workflows/`
-3. **Run Scorecard** — Register the repository with the OpenSSF Scorecard
-4. **Generate SBOM** — Add SBOM generation to the release pipeline
+1. **Enable Dependabot**, Add `.github/dependabot.yml` for automated dependency updates
+2. **Configure CodeQL**, Add CodeQL analysis workflow to `.github/workflows/`
+3. **Run Scorecard**, Register the repository with the OpenSSF Scorecard
+4. **Generate SBOM**, Add SBOM generation to the release pipeline
 
 ### Medium-Term (Next Release)
 
-1. **Achieve OpenSSF Best Practices Badge** — Register and pass the Passing level
-2. **SLSA Level 1** — Add provenance attestation to builds
-3. **Branch Protection** — Enforce required reviews and status checks on `main`
-4. **Dependency Review** — Add the Dependency Review GitHub Action
+1. **Achieve OpenSSF Best Practices Badge**, Register and pass the Passing level
+2. **SLSA Level 1**, Add provenance attestation to builds
+3. **Branch Protection**, Enforce required reviews and status checks on `main`
+4. **Dependency Review**, Add the Dependency Review GitHub Action
 
 ### Long-Term
 
-1. **SLSA Level 2+** — Signed provenance with Sigstore/cosign
-2. **Fuzzing Integration** — Add OSS-Fuzz or CIFuzz
-3. **Supply Chain Levels for AI Artifacts (SLSA for ML)** — If AI models are distributed
-4. **CVE Disclosure Program** — Formalize CVE assignment process
+1. **SLSA Level 2+**, Signed provenance with Sigstore/cosign
+2. **Fuzzing Integration**, Add OSS-Fuzz or CIFuzz
+3. **Supply Chain Levels for AI Artifacts (SLSA for ML)**, If AI models are distributed
+4. **CVE Disclosure Program**, Formalize CVE assignment process
 
 ---
 
@@ -98,19 +98,19 @@ Create `.github/dependabot.yml`:
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+ - package-ecosystem: "pip"
+ directory: "/"
+ schedule:
+ interval: "weekly"
+ open-pull-requests-limit: 10
+ - package-ecosystem: "docker"
+ directory: "/"
+ schedule:
+ interval: "weekly"
+ - package-ecosystem: "github-actions"
+ directory: "/"
+ schedule:
+ interval: "weekly"
 ```
 
 ### CodeQL
@@ -120,29 +120,29 @@ Add to `.github/workflows/codeql.yml`:
 ```yaml
 name: "CodeQL"
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: '0 0 * * 1'
+ push:
+ branches: [main]
+ pull_request:
+ branches: [main]
+ schedule:
+ - cron: '0 0 * * 1'
 
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [python]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@v3
+ analyze:
+ name: Analyze
+ runs-on: ubuntu-latest
+ permissions:
+ security-events: write
+ strategy:
+ fail-fast: false
+ matrix:
+ language: [python]
+ steps:
+ - uses: actions/checkout@v4
+ - uses: github/codeql-action/init@v3
+ with:
+ languages: ${{ matrix.language }}
+ - uses: github/codeql-action/analyze@v3
 ```
 
 ### SBOM Generation
@@ -151,13 +151,13 @@ Add to release workflow:
 
 ```yaml
 - name: Generate SBOM
-  run: |
-    pip install cyclonedx-bom
-    cyclonedx-py --output sbom.json
+ run: |
+ pip install cyclonedx-bom
+ cyclonedx-py --output sbom.json
 - uses: actions/upload-artifact@v4
-  with:
-    name: sbom
-    path: sbom.json
+ with:
+ name: sbom
+ path: sbom.json
 ```
 
 ---

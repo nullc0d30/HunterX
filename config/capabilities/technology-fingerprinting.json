@@ -1,8 +1,7 @@
 {
   "capability": "technology-fingerprinting-and-stack-intelligence",
   "version": "1.0.0",
-  "sprint": 11,
-  "status": "ratified",
+  "status": "stable",
   "summary": "Determines, correlates, validates and historically tracks the technologies exposed by authorized assets: operating systems, web/application servers, frameworks, languages, CMS platforms, CDN/WAF infrastructure, proxies, load balancers, hosting providers, cloud indicators, security products and evidence-backed versions. Non-destructive and evidence-backed; intelligence is persisted to the TIDB and projected into the existing attack-surface topology.",
   "inputs": {
     "targets": [

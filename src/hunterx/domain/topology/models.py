@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology domain models.
-
-Pure data structures for the network-mapping capability: canonical nodes,
-raw relationship observations, correlated graph edges, conflicts, changes,
-clusters, analysis results and build batches. These are free of I/O; the
-application layer bridges them to/from TIDB system-of-record entities.
-"""
+"""Topology domain models."""
 
 from __future__ import annotations
 

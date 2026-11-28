@@ -1,6 +1,6 @@
 {
   "name": "api_security_golden",
-  "description": "Golden dataset for the Sprint 033 API security mission: GraphQL introspection and BOLA validated, a single-tool schema-exposure claim rejected, a hidden admin endpoint discovered via Kiterunner.",
+  "description": "Golden dataset for the API security mission: GraphQL introspection and BOLA validated, a single-tool schema-exposure claim rejected, a hidden admin endpoint discovered via Kiterunner.",
   "objective": "api_assessment",
   "target": "https://api.example.com",
   "assets": [

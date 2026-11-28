@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the authorization intelligence capability.
-
-Exercises the full wiring through the assembled platform: the authorization
-service and query service registered in the container, the
-authorization-analysis tool available on the execution engine and TIP, and an
-end-to-end analysis run with persisted authorization intelligence, topology
-integration and events.
-"""
+"""Integration tests for the authorization intelligence capability."""
 
 from __future__ import annotations
 

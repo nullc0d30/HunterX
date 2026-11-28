@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live discovery historical comparison.
-
-Compares current observations against historical records to detect changes over
-time: hosts coming online or going offline, ports opening or closing, service
-fingerprints and certificates rotating. Every change is reported with the
-before/after values, timestamps and sources so it can be traced and correlated
-with security events.
-"""
+"""Live discovery historical comparison."""
 
 from __future__ import annotations
 

@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission executor.
-
-The executor walks the mission dependency graph and runs each step through the
-Tool Integration SDK :class:`ExecutionEngine`, enforcing scope, safety and
-rate-limit gates before every task, selecting tools capability-first, retrying
-only retryable failures, falling back to capability-equivalent tools, and
-collecting canonical results.
-
-The executor never reasons directly over raw stdout: every result is produced
-from the engine's normalized output (``ExecutionOutput.json``) and projected
-into a canonical :class:`StepOutcome`.
-"""
+"""Mission executor."""
 
 from __future__ import annotations
 
@@ -22,12 +11,12 @@ from typing import Any
 from hunterx.domain.execution import ExecutionContext
 from hunterx.domain.orchestration.enums import FailureClass, MissionType, TaskState
 from hunterx.domain.orchestration.models import ExecutionPlan, MissionStep
+from hunterx.engines.orchestration.debugger import DebuggerAgent
 from hunterx.engines.orchestration.dedup import (
     ExecutionDeduplicator,
     ExecutionRecord,
     execution_hash,
 )
-from hunterx.engines.orchestration.debugger import DebuggerAgent
 from hunterx.engines.orchestration.fallback import FallbackDecision, FallbackEngine
 from hunterx.engines.orchestration.graph import MissionDependencyGraph
 from hunterx.engines.orchestration.ratelimit import RateLimiter, normalize_domain
@@ -153,7 +142,7 @@ class MissionExecutor:
 
         executor = MissionExecutor(engine=engine, tip=tip)
         result = executor.run(mission_id="m1", plan=plan, scope=scope)
-        result.all_completed  # True when every step succeeded
+        result.all_completed # True when every step succeeded
 
     The executor records scope and safety decisions, tool selections,
     deduplication and failures so the orchestration engine can persist them.

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "validator_version": "1.0.0",
-  "description": "Deterministic golden scenarios for the Vulnerability Proof Strategy Library & Proof Validator (Sprint 022). Evidence dominates model belief: scanner signatures are insufficient, contradictory evidence is never averaged into confidence and target-state changes invalidate replays.",
+  "description": "Deterministic golden scenarios for the Vulnerability Proof Strategy Library & Proof Validator (). Evidence dominates model belief: scanner signatures are insufficient, contradictory evidence is never averaged into confidence and target-state changes invalidate replays.",
   "scenarios": [
     {
       "id": "golden-sqli-confirmed",

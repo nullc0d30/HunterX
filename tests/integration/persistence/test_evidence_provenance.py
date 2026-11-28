@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Evidence provenance tests (Sprint 034.3 §6).
-
-Every evidence object must answer WHO/WHAT produced it, WHICH TOOL, WHICH
-EXECUTION, WHICH TARGET, WHICH MISSION, WHEN, and link back to its raw artifact,
-normalized observation, finding and proof. Provenance must survive
-persistence/retrieval.
-"""
+"""Evidence provenance tests (6)."""
 
 from __future__ import annotations
 
@@ -90,9 +84,10 @@ def test_full_provenance_survives_memory_roundtrip(memory_factory) -> None:
 
 
 def test_observation_to_evidence_to_finding_to_proof_chain(backend_factory) -> None:
-    """The evidence chain stays intact across persistence: observation →
-    evidence (links raw artifact) → finding (evidence_refs) → proof
-    (evidence_ids) → impact."""
+    """The evidence chain stays intact across persistence: observation to
+    evidence (links raw artifact) to finding (evidence_refs) to proof
+    (evidence_ids) to impact.
+    """
     obs_repo = backend_factory.repository_for(ObservationRecord)
     ev_repo = backend_factory.repository_for(IntelligenceEvidenceRecord)
     finding_repo = backend_factory.repository_for(FindingRecord)

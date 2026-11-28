@@ -3,12 +3,8 @@
 
 """Mission profile and template engine.
 
-Registers and resolves :class:`~hunterx.domain.mission_planning.MissionProfile`
-and :class:`~hunterx.domain.mission_planning.MissionTemplate` records.
-Profiles support inheritance: a profile declaring a ``parent`` inherits every
-field its parent does not override, and child phases override same-id parent
-phases. Template resolution binds a template to its profile so the
-configuration resolver can merge variables and overrides.
+Registers and resolves :class:`~hunterx.domain.mission_planning.MissionProfile` and
+:class:`~hunterx.domain.mission_planning.MissionTemplate` records.
 """
 
 from __future__ import annotations

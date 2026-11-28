@@ -1,7 +1,5 @@
-# 24 — Quality Assurance
+# 24, Quality Assurance
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Acceptance criteria, review checklists, architecture/security/performance reviews, change processes
 
 ---
@@ -9,7 +7,7 @@
 ## 1. Purpose
 
 QA is the enforcement mechanism for the entire Bible. It defines what "done"
-and "acceptable" mean, who reviews what, and how changes to ratified standards
+and "acceptable" mean, who reviews what, and how changes to final standards
 occur. QA is a **gate**, not a report.
 
 ---
@@ -161,8 +159,8 @@ Before any release (`23` §8):
 ## 10. Continuous Improvement
 
 - QA metrics tracked: test coverage, CI failure rate, security test count,
-  benchmark regressions, mean time to merge.
-- Retrospective after incidents; lessons ratified into standards.
+ benchmark regressions, mean time to merge.
+- Retrospective after incidents; lessons final into standards.
 - Bible amendments go through the ADR process and are versioned.
 
 ---

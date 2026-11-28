@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Build Verification.
+# HunterX - Build Verification.
 #
 # Verifies the project compiles cleanly on every supported Python version,
 # that the build backend produces a wheel + sdist, and that no generated

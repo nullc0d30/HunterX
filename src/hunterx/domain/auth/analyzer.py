@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Static/observable authentication intelligence detection engine.
-
-The analyzer turns an :class:`AuthInput` bundle — one HTTP response snapshot,
-associated script content, API security schemes, observed URLs and pre-existing
-TIDB intelligence — into a canonical set of authentication observations with
-deterministic evidence and confidence. It is pure: no I/O, no execution, no
-authentication attempts, no token validation. Sensitive values are masked
-before they ever reach an observation.
-
-Detectors: surfaces & endpoints, cookie security metadata, authentication
-schemes, OAuth 2.x, OIDC discovery, SAML indicators, JWT indicators, token
-storage, CSRF, CORS, MFA, WebAuthn, identity providers, roles/scopes/
-permissions, multi-tenancy, session state and access classification.
-"""
+"""Static/observable authentication intelligence detection engine."""
 
 from __future__ import annotations
 

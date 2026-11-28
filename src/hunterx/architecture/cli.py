@@ -3,20 +3,7 @@
 
 """Command-line interface for the architecture enforcement framework.
 
-Provides the ``hunterx-arch`` console script and ``python -m
-hunterx.architecture`` entry point.
-
-Commands:
-
-- ``lint`` — run all architecture checks; exit 1 on violations.
-- ``report`` — write a Markdown/JSON architecture report to a file.
-- ``graph`` — write a Mermaid dependency graph to a file (or stdout).
-- ``matrix`` — print the dependency matrix.
-- ``stability`` — compare the public API against the committed baseline, or
-  regenerate the baseline with ``--generate``.
-
-Developer experience is a first-class requirement: every violation message
-carries remediation guidance, and ``--verbose`` prints it.
+Provides the ``hunterx-arch`` console script and ``python -m hunterx.architecture`` entry point.
 """
 
 from __future__ import annotations

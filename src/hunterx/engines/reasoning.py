@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reasoning (AI) engine.
-
-Wraps the AI provider port and offers a small set of deterministic guardrails
-around model calls: prompt templates, structured summarization of findings,
-and a no-magic guarantee that AI results are always paired with their source
-evidence.
-"""
+"""Reasoning (AI) engine."""
 
 from __future__ import annotations
 

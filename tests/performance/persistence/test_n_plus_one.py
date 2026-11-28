@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""N+1 / query-efficiency tests (Sprint 034.3 §10).
-
-Instruments SQLAlchemy cursor execution to count statements issued by the
-repository methods and verifies that list(), list_by(), get(), stream() and
-save() do not exhibit N+1 access patterns.
-"""
+"""N+1 / query-efficiency tests (10)."""
 
 from __future__ import annotations
 
@@ -106,13 +101,14 @@ def test_count_is_single_query(counter, seeded, sql_factory) -> None:
 
 def test_save_many_uses_batched_writes(counter, sql_factory) -> None:
     """save_many flushes all rows in one transaction; the per-row existence
-    pre-check is a documented N+1 read pattern (Sprint 034.3 §10)."""
+    pre-check is a documented N+1 read pattern (10).
+    """
     repo = sql_factory.repository_for(IntelligenceTargetRecord)
     targets = [IntelligenceTargetRecord(target_id=f"tgt-{i}", value=f"h{i}.example.com") for i in range(50)]
     repo.save_many(targets)
     assert counter.total > 0
     assert repo.count() == 50
-    # Inserts are flushed in one statement per row in the same transaction —
+    # Inserts are flushed in one statement per row in the same transaction
     # never a per-row commit.
     assert counter.inserts == 50
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=HunterX — AI-Assisted Offensive Security Framework
+Description=HunterX - AI-Assisted Offensive Security Framework
 Documentation=https://nullc0d30.github.io/HunterX
 After=network.target
 Wants=network-online.target

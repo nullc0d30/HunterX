@@ -3,9 +3,7 @@
 
 """Agent orchestrator.
 
-Routes messages to the right agents and sequences multi-agent runs. The
-orchestrator is dependency-injection friendly: agents are supplied by a
-registry, and routing policy is pluggable.
+Routes messages to the right agents and sequences multi-agent runs.
 """
 
 from __future__ import annotations

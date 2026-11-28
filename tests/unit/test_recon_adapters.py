@@ -3,9 +3,7 @@
 
 """Tests for the six recon tool adapters.
 
-Every adapter is exercised with a fake binary runner fed golden output, so no
-external tool is required. Tests assert the generated command line and the
-canonical discovery records attached to the execution output.
+Every adapter is exercised with a fake binary runner fed golden output, so no external tool is required.
 """
 
 from __future__ import annotations

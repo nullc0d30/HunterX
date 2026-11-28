@@ -3,14 +3,7 @@
 
 """Model-agnostic reasoner for the autonomous attack loop.
 
-The reasoner is the *only* place the connected model is invoked. It builds a
-structured reasoning context (target, capability catalog, discovered surfaces,
-previous observations, contradictions, findings, adjacent paths), calls the
-configured :class:`AIPort`, parses the JSON hypothesis output and validates
-every field against the real catalog and scope. Model output that fails
-validation is rejected and recorded — never fabricated and never silently
-treated as exhaustion. Retries bounded by ``attempts``; a persistent failure is
-reported as ``MODEL_UNAVAILABLE``/``RESOURCE_LIMIT``, not completion.
+The reasoner is the *only* place the connected model is invoked.
 """
 
 from __future__ import annotations
@@ -22,10 +15,10 @@ from dataclasses import dataclass
 from typing import Any
 
 from hunterx.domain.model_attacker.enums import AIFailureCategory, ModelFailureReason
+from hunterx.domain.model_attacker.errors import classify_ai_error
 from hunterx.domain.model_attacker.models import ModelHypothesis
 from hunterx.domain.ports.services import AIPort
 from hunterx.domain.vulnerability_capability.registry import is_vulnerability_class
-from hunterx.infrastructure.ai.providers import classify_ai_error
 
 #: Recognised differential signal vocabulary (class-specific analysis results).
 _KNOWN_SIGNALS = {
@@ -113,7 +106,7 @@ class ModelReasoner:
         reason; the mission is never marked exhausted because the model failed.
         """
         if self._ai is None:
-            return ReasonResult(error="no model connected", failure_reason=ModelFailureReason.UNAVAILABLE, ai_failure_category=AIFailureCategory.UNAVAILABLE.value)
+            return ReasonResult(error="no model connected", failure_reason=ModelFailureReason.UNAVAILABLE, ai_failure_category=AIFailureCategory.UNKNOWN.value)
         prompt = build_prompt(context)
         self._last_prompt_bytes = len(prompt)
         last_error = ""
@@ -132,7 +125,7 @@ class ModelReasoner:
             self._last_response_bytes = len(str(response))
             hypotheses, rejected_or_error = _parse_hypotheses(response, context)
             if hypotheses is not None:
-                return ReasonResult(hypotheses=hypotheses, rejected=rejected_or_error, invoked=True, latency_ms=latency, raw=response, ai_failure_category=AIFailureCategory.NONE.value)
+                return ReasonResult(hypotheses=hypotheses, rejected=rejected_or_error, invoked=True, latency_ms=latency, raw=response, ai_failure_category="")
             last_error = rejected_or_error or "malformed model output"
             last_raw = response
             last_ai_category = AIFailureCategory.INVALID_RESPONSE.value

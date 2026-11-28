@@ -1,6 +1,6 @@
 ---
 layout: default
-title: REST API Reference — HunterX v6.0.0
+title: REST API Reference - HunterX v6.0.0
 description: >-
   Complete REST API reference for HunterX v6.0.0 vulnerability scanner. 40+
   endpoints covering scan management, AI providers, agents, skills, payloads,

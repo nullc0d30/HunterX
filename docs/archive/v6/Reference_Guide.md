@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Reference Guide — HunterX v6.0.0
+title: Reference Guide - HunterX v6.0.0
 description: >-
   Complete CLI and REST API reference for HunterX v6.0.0 vulnerability
   scanner. All commands, arguments, endpoints, and examples for the
@@ -24,13 +24,13 @@ permalink: /reference-guide/
   - [Reporting](#reporting)
   - [Plugins](#plugins)
   - [Subcommands](#subcommands)
-    - [`api` — Run as API Server](#api--run-as-api-server)
-    - [`payload` — Payload Intelligence Platform](#payload--payload-intelligence-platform)
-    - [`agents` — Agent Management](#agents--agent-management)
-    - [`workflow` — Workflow Management](#workflow--workflow-management)
-    - [`reasoning` — Reasoning Engine](#reasoning--reasoning-engine)
-    - [`skills` — Security Skills Framework](#skills--security-skills-framework)
-    - [`ai` — AI Provider Management](#ai--ai-provider-management)
+    - [`api` - Run as API Server](#api--run-as-api-server)
+    - [`payload` - Payload Intelligence Platform](#payload--payload-intelligence-platform)
+    - [`agents` - Agent Management](#agents--agent-management)
+    - [`workflow` - Workflow Management](#workflow--workflow-management)
+    - [`reasoning` - Reasoning Engine](#reasoning--reasoning-engine)
+    - [`skills` - Security Skills Framework](#skills--security-skills-framework)
+    - [`ai` - AI Provider Management](#ai--ai-provider-management)
   - [Examples](#examples)
 - [REST API Reference](#rest-api-reference)
   - [Health & System Info](#health--system-info)
@@ -59,8 +59,8 @@ hunterx [options] <command>
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-u, --url TEXT` | Target URL | — |
-| `-f, --targets-file FILE` | File containing multiple target URLs | — |
+| `-u, --url TEXT` | Target URL | - |
+| `-f, --targets-file FILE` | File containing multiple target URLs | - |
 | `-p, --payload-dir DIR` | Payload directory | `payloads` |
 | `-o, --output-dir DIR` | Output directory | `reports` |
 | `-c, --config FILE` | YAML config file | `hunterx.yaml` |
@@ -72,13 +72,13 @@ hunterx [options] <command>
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--profile {internal,bounty,gov}` | Operator profile | `bounty` |
-| `--preset {quick,full,stealth}` | Scan preset | — |
-| `--category TEXT` | Comma-separated categories | — |
+| `--preset {quick,full,stealth}` | Scan preset | - |
+| `--category TEXT` | Comma-separated categories | - |
 | `--stealth {low,medium,high}` | Stealth level | `medium` |
 | `--threads INT` | Thread count | `5` |
-| `--dry-run` | Logic only, no requests | — |
-| `--passive-only` | Stage 0 only | — |
-| `--insecure` | Disable SSL verification | — |
+| `--dry-run` | Logic only, no requests | - |
+| `--passive-only` | Stage 0 only | - |
+| `--insecure` | Disable SSL verification | - |
 
 ---
 
@@ -87,12 +87,12 @@ hunterx [options] <command>
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--auth {none,basic,bearer,cookie,form}` | Authentication type | `none` |
-| `--username TEXT` | Auth username | — |
-| `--password TEXT` | Auth password | — |
-| `--token TEXT` | Bearer token or session token | — |
-| `--cookie-file FILE` | JSON cookie file | — |
-| `--login-url TEXT` | Form login URL | — |
-| `--login-data TEXT` | Form login data as key=value pairs | — |
+| `--username TEXT` | Auth username | - |
+| `--password TEXT` | Auth password | - |
+| `--token TEXT` | Bearer token or session token | - |
+| `--cookie-file FILE` | JSON cookie file | - |
+| `--login-url TEXT` | Form login URL | - |
+| `--login-data TEXT` | Form login data as key=value pairs | - |
 
 ---
 
@@ -109,10 +109,10 @@ hunterx [options] <command>
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--ai` | Enable AI/LLM analysis | — |
+| `--ai` | Enable AI/LLM analysis | - |
 | `--ai-model TEXT` | Ollama model name | `llama3.2` |
 | `--ai-endpoint URL` | Ollama endpoint | `http://localhost:11434` |
-| `--no-cluster` | Disable finding clustering | — |
+| `--no-cluster` | Disable finding clustering | - |
 
 ---
 
@@ -120,13 +120,13 @@ hunterx [options] <command>
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--graph` | Generate knowledge graph | — |
+| `--graph` | Generate knowledge graph | - |
 | `--attack-graph` | Generate visual attack graph | `True` |
-| `--threat-model` | Generate threat model | — |
-| `--risk` | Run risk analysis | — |
-| `--purple` | Generate purple team detection rules | — |
+| `--threat-model` | Generate threat model | - |
+| `--risk` | Run risk analysis | - |
+| `--purple` | Generate purple team detection rules | - |
 | `--explain` | Generate AI explanations | `True` |
-| `--browser` | Enable browser intelligence (requires Playwright) | — |
+| `--browser` | Enable browser intelligence (requires Playwright) | - |
 | `--risk-profile {default,pentest,bug_bounty,compliance}` | Risk profile | `default` |
 | `--memory-db` | Use SQLite for adaptive memory | `True` |
 
@@ -139,7 +139,7 @@ hunterx [options] <command>
 | `--visual {cli,web,off}` | Visualization mode | `cli` |
 | `--evidence-level {low,medium,high}` | Evidence detail level | `medium` |
 | `--min-confidence FLOAT` | Minimum confidence threshold | `0.0` |
-| `--sarif` | Generate SARIF 2.1 report | — |
+| `--sarif` | Generate SARIF 2.1 report | - |
 
 ---
 
@@ -153,7 +153,7 @@ hunterx [options] <command>
 
 ## Subcommands
 
-### `api` — Run as API Server
+### `api` - Run as API Server
 
 | Flag | Description | Default |
 |------|-------------|---------|
@@ -162,7 +162,7 @@ hunterx [options] <command>
 
 ---
 
-### `payload` — Payload Intelligence Platform
+### `payload` - Payload Intelligence Platform
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -170,10 +170,10 @@ hunterx [options] <command>
 | `index` | `[--force] [--categories]` | Index payloads |
 | `search` | `[query] [--category] [--limit] [--json]` | Search payloads |
 | `info` | `<payload_id> [--target]` | Show payload details |
-| `stats` | — | Show index statistics |
+| `stats` | - | Show index statistics |
 | `graph build` | `[--max]` | Build knowledge graph |
 | `graph search` | `<query> [--type] [--json]` | Search knowledge graph |
-| `graph stats` | — | Graph statistics |
+| `graph stats` | - | Graph statistics |
 | `feedback` | `[--category] [--json]` | Show payload feedback |
 | `policy` | `[--level] [--json]` | Show policy recommendations |
 | `provenance` | `[query] [--json]` | Show payload provenance |
@@ -181,7 +181,7 @@ hunterx [options] <command>
 
 ---
 
-### `agents` — Agent Management
+### `agents` - Agent Management
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -192,7 +192,7 @@ hunterx [options] <command>
 
 ---
 
-### `workflow` — Workflow Management
+### `workflow` - Workflow Management
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -202,7 +202,7 @@ hunterx [options] <command>
 
 ---
 
-### `reasoning` — Reasoning Engine
+### `reasoning` - Reasoning Engine
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -211,7 +211,7 @@ hunterx [options] <command>
 
 ---
 
-### `skills` — Security Skills Framework
+### `skills` - Security Skills Framework
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -229,7 +229,7 @@ hunterx [options] <command>
 
 ---
 
-### `ai` — AI Provider Management
+### `ai` - AI Provider Management
 
 | Subcommand | Arguments | Description |
 |------------|-----------|-------------|
@@ -325,7 +325,7 @@ pip install fastapi uvicorn
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/health` | System health — returns version, copyright, and license info |
+| GET | `/health` | System health - returns version, copyright, and license info |
 | GET | `/info` | Full system metadata |
 
 ---

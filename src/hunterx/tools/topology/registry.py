@@ -3,9 +3,7 @@
 
 """Topology tool adapter registry.
 
-Builds and registers the topology route-mapping adapters on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the topology tool set; callers never construct individual adapters.
+Builds and registers the topology route-mapping adapters on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

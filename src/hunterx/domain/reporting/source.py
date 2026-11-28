@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Source reliability model.
-
-Classifies evidence sources (direct observation, validated replay, controlled
-callback, tool signature, historical archive, external intelligence, AI
-inference, analyst annotation) and maps each to an ordered reliability rank.
-Direct validated evidence always outranks AI inference.
-"""
+"""Source reliability model."""
 
 from __future__ import annotations
 

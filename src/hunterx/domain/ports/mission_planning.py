@@ -3,10 +3,7 @@
 
 """Mission planning repository ports.
 
-Persistence contracts for mission profiles, templates, plans, checkpoints and
-the mission timeline. Application and engine layers depend on these
-abstractions; in-memory (tests) and SQL (infrastructure) adapters implement
-them.
+Persistence contracts for mission profiles, templates, plans, checkpoints and the mission timeline.
 """
 
 from __future__ import annotations

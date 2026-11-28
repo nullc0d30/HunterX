@@ -3,8 +3,8 @@
 
 """Tool health monitor.
 
-Tracks availability, execution failures, crash frequency, average runtime,
-memory/CPU usage, timeouts and derives a reliability score for every tool.
+Tracks availability, execution failures, crash frequency, average runtime, memory/CPU usage, timeouts and derives a
+reliability score for every tool.
 """
 
 from __future__ import annotations

@@ -3,9 +3,7 @@
 
 """Tool validation.
 
-Validates tool parameters and runtime context before execution. Reuses the
-JSON-schema style ``parameters`` field of a tool descriptor to validate
-incoming parameter dictionaries.
+Validates tool parameters and runtime context before execution.
 """
 
 from __future__ import annotations

@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Offensive Tool Orchestration — Target Intelligence Database entities.
-
-System-of-record entities for the Wave 14 offensive tool orchestration
-capability: execution plans, phases and steps, tool selections, execution
-dependencies, execution checkpoints, policy decisions, replanning events,
-coverage metrics, mission quality scores, mission failures and per-step task
-history. Every orchestration fact that matters is persisted here — never only
-in memory.
-
-Security boundary: these tables store orchestration metadata, canonical
-targets, tool selections and redacted evidence references only — never exploit
-payloads, never credentials, never raw out-of-scope request material.
-"""
+"""Offensive Tool Orchestration, Target Intelligence Database entities."""
 
 from __future__ import annotations
 
@@ -283,7 +271,7 @@ class MissionCoverage(TidbEntity):
     Attributes:
         coverage_id: stable record identifier.
         mission_id / plan_id: scoping identifiers.
-        kind: coverage kind (``asset``, ``port``, ``technology``, ...).
+        kind: coverage kind (``asset``, ``port``, ``technology``,...).
         observed: number of attack-surface items observed.
         expected: number of items expected to be covered.
         covered: number of items covered.

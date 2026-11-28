@@ -3,17 +3,8 @@
 
 """Regression tests for the real 5+ GiB Python RSS runaway.
 
-The real incident: a ``full_security_assessment`` mission grew to ~5.6 GiB
-resident (74% of a 7.6 GiB host) with no child tools running. Instrumentation
-traced the failure to the attack-path analysis: a port-scan observation adds
-hundreds of ``context.services`` entries, a crawler adds hundreds of
-endpoints, and ``record_attack_paths`` builds a dense O(SERVICES × ENDPOINTS)
-bipartite graph that the attack-path BFS expands exponentially on EVERY
-observation — a transient ~1.7-4.8 GiB allocation per cycle whose freed memory
-ratchets the process RSS upward.
-
-These tests assert the analysis is bounded (no such transient allocation) and
-that the bounded-state layer trims the target-model maps that feed it.
+The real incident: a ``full_security_assessment`` mission grew to ~5.6 GiB resident (74% of a 7.6 GiB host) with no
+child tools running.
 """
 
 from __future__ import annotations

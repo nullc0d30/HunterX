@@ -2,8 +2,7 @@
   "capability": "full-toolchain-intelligence",
   "name": "Full Toolchain Integration & Professional Tool Intelligence",
   "version": "1.0.0",
-  "wave": 16,
-  "status": "ratified",
+  "status": "stable",
   "description": "HunterX understands the complete authorized offensive-security toolchain: WHAT each tool does, WHEN to use it, WHAT it requires, HOW to invoke it safely within scope, WHAT its output means and WHAT its output does NOT prove. Structured execution, versioned parsers/normalizers, evidence extraction, cross-tool correlation, fallback strategies and canonical capability vocabulary.",
   "tool_count": 92,
   "tools": {

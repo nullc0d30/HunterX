@@ -3,15 +3,7 @@
 
 """Amass tool adapter.
 
-Integrates OWASP ``amass`` (v4 interface: ``amass enum``) into the Tool
-Integration SDK. The adapter drives ``amass enum`` in passive or active mode,
-captures the JSONL event stream to a per-execution file and parses it into
-canonical discovery records (subdomains, IP addresses, CIDR ranges).
-
-CLI contract (verified against OWASP amass v4 docs):
-    ``amass enum -passive -d <domain> -json <file>`` writes JSONL events; the
-    event stream carries ``name``, ``domain``, ``addresses`` and an
-    ``event_type`` (``subdomain``, ``address``, ``cidr``).
+Integrates OWASP ``amass`` (v4 interface: ``amass enum``) into the Tool Integration SDK.
 """
 
 from __future__ import annotations

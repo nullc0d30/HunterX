@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Capability execution engine — component tests.
-
-The engine runs real, bounded, loopback differential probes against generic
-vulnerable/safe fixtures: findings are observed not assumed, blocked is
-blocked, failed is failed, and the mission's capability coverage carries
-exactly-one authoritative status per capability.
-"""
+"""Capability execution engine, component tests."""
 
 from __future__ import annotations
 
@@ -197,7 +191,7 @@ class TestHonestSemantics:
                 source="phase5-test",
             )
             engine.execute_ready()
-            # Host nodes carry no probeable input — any record is honest NA.
+            # Host nodes carry no probeable input, any record is honest NA.
             assert all(r.outcome is CapabilityExecutionStatus.NOT_APPLICABLE for r in engine.records)
 
 

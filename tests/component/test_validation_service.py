@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the vulnerability validation service.
-
-Exercises the full safe validation pipeline against in-memory stores and the
-Tool Integration SDK: hypothesis → plan → scope/safety gates → probe →
-normalize → evidence → verdict → persist → events → graph → report → diff.
-"""
+"""Component tests for the vulnerability validation service."""
 
 from __future__ import annotations
 

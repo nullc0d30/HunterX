@@ -1,27 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 15 — integration closure regression tests.
+"""Integration closure regression tests.
 
-Every test drives the REAL production mission path (platform +
-``MissionExecutionService.run`` + the finding-service bridge) against generic
-loopback fixtures. External binaries are substituted with the fake execution
-engine that feeds adapter-shaped outputs into the SAME mission pipeline — no
-endpoint or hypothesis is injected directly, and no test bypasses the mission
-path.
-
-Coverage (Phase 15 §19):
-A. finding-service bridge reaches report_ready.
-B. insufficient evidence does NOT reach report_ready.
-C. authenticated mission carries the session into probes/tools.
-D. failed 302-to-login authentication is rejected (test_authenticated_session).
-E. the first finding does not prematurely terminate the mission.
-F. JS-derived endpoint reaches the CLI hypothesis/probe path.
-G. HTTP access differential reaches the CLI finding lifecycle.
-H. negative controls remain negative.
-I. a zero-finding mission terminates honestly.
-J. report/results/events counts reconcile.
-K. the event stream has no secrets and exactly one terminal completion.
+Every test drives the REAL production mission path (platform + ``MissionExecutionService.run`` + the finding-service
+bridge) against generic loopback fixtures.
 """
 
 from __future__ import annotations
@@ -135,7 +118,8 @@ class TestFindingServiceBridge:
 
     def test_insufficient_evidence_never_reaches_report_ready(self, app: VulnerableApp) -> None:
         """A finding whose verification probe finds no meaningful differential
-        stays contradicted/supported — never validated or report_ready (B)."""
+        stays contradicted/supported, never validated or report_ready (B).
+        """
         stores, finding_service, planning, orchestration, runner = _build()
         endpoint = f"{app.base_url}/safe/protected"
         finding = finding_service.create_finding(

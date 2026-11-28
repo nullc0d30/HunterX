@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission replanning.
-
-The mission may replan when new assets, technologies, endpoints, cloud
-providers or vulnerability intelligence are discovered, when a validation
-result changes priority, or when a tool failure changes capability
-availability. Replanning NEVER expands scope automatically: newly discovered
-assets are classified and only in-scope assets continue automatically.
-"""
+"""Mission replanning."""
 
 from __future__ import annotations
 

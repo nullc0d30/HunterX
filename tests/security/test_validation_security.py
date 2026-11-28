@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the safe vulnerability discovery & validation engine.
-
-Verifies that the engine cannot be pushed out of scope, cannot execute
-forbidden/weaponized actions, never treats raw output as a verdict, never leaks
-evidence across targets/missions, redacts secrets, and resists parser/evidence/
-verdict poisoning and resource exhaustion.
-"""
+"""Security tests for the safe vulnerability discovery & validation engine."""
 
 from __future__ import annotations
 
@@ -83,7 +77,7 @@ class TestScopeSecurity:
             vulnerability_id="CVE-2024-1234", class_name=ValidationClass.KNOWN_VULNERABLE_SOFTWARE,
         )
         result = _run(service, hypothesis, [{"kind": "version", "value": "1.24.0"}])
-        # Asset resolution drifted out of scope → refused.
+        # Asset resolution drifted out of scope to refused.
         assert result.verdict.result == VerdictResult.SCOPE_BLOCKED
 
     def test_dns_rebinding_like_scope_change_stops(self) -> None:
@@ -155,7 +149,7 @@ class TestOutputAndEvidenceSecurity:
             scope_policy=SCOPE, safety_policy=SAFETY,
             tool_output=poisoned,
         )
-        # Conflicting evidence (match + mismatch) → inconclusive, never confirmed.
+        # Conflicting evidence (match + mismatch) to inconclusive, never confirmed.
         assert result.verdict.result != VerdictResult.CONFIRMED
 
     def test_evidence_poisoning_does_not_confirm(self) -> None:

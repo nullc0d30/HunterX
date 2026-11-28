@@ -4,9 +4,6 @@
 """Performance benchmarks for technology fingerprinting.
 
 Benchmarks are executed by the performance quality gate with pytest-benchmark.
-They cover the hot paths of the capability: signature detection, name
-normalization/resolution, version extraction, confidence scoring, correlation
-and validation throughput for large observation sets.
 """
 
 from __future__ import annotations

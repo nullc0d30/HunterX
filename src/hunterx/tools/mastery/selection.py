@@ -3,11 +3,7 @@
 
 """Mission-aware tool selection.
 
-Tool selection must change according to mission type. Each mission type has a
-different scope, safety ceiling, time budget, depth and proof requirement.
-This selector enriches TIP criteria with a mission profile and produces
-explainable selections: why a tool was chosen, what evidence it can produce,
-what risk/cost it carries and why alternatives were rejected.
+Tool selection must change according to mission type.
 """
 
 from __future__ import annotations
@@ -18,7 +14,7 @@ from hunterx.domain.tool_mastery import ToolSelectionDecision
 from hunterx.tools.intelligence.api import ToolIntelligenceAPI
 from hunterx.tools.intelligence.selector import ToolSelector
 
-#: Canonical mission types per the Sprint 025 contract.
+# : Canonical mission types per the contract.
 MISSION_TYPES = (
     "bug-bounty",
     "pentest",

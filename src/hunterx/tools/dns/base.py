@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for DNS intelligence tools.
-
-Every DNS tool adapter implements the SDK :class:`ToolAdapter` lifecycle and
-shares this base: it invokes the external binary through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam, parses the captured
-output into canonical :class:`DnsRecord` instances and serialises them into the
-pipeline's JSON payload under ``dns_records``. Adapters stay binary-free in
-unit tests: tests inject a fake runner and assert on the JSON payload.
-
-The runner is imported from ``hunterx.tools.recon.runner`` — the single guarded
-subprocess seam — so DNS adapters never touch ``subprocess`` directly.
-"""
+"""Base adapter for DNS intelligence tools."""
 
 from __future__ import annotations
 

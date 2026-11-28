@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical data-driven playbooks for the Sprint 025 arsenal.
-
-Every playbook declares an objective, the capabilities required to achieve it,
-preferred/fallback tools, preconditions, stop conditions and evidence/proof
-requirements. They never hardcode unrestricted attack commands — concrete tool
-selection is delegated to the mission-aware selector at runtime.
-"""
+"""Canonical data-driven playbooks for the arsenal."""
 
 from __future__ import annotations
 
@@ -20,7 +14,7 @@ from hunterx.tools.mastery.playbooks import (
     build_step,
 )
 
-#: The canonical set of playbooks defined by the Sprint 025 contract.
+# : The canonical set of playbooks defined by the contract.
 PLAYBOOKS: tuple[ToolPlaybook, ...] = (
     build_playbook(
         playbook_id="web-initial-recon",
@@ -241,7 +235,7 @@ PLAYBOOKS: tuple[ToolPlaybook, ...] = (
             ),
         ],
         stop_conditions=("no new endpoints or indicators",),
-        description="Leverage client-side code for attack surface expansion.",
+        description="Use client-side code to expand the attack surface.",
     ),
     build_playbook(
         playbook_id="secret-discovery",
@@ -509,7 +503,7 @@ PLAYBOOKS: tuple[ToolPlaybook, ...] = (
             ),
         ],
         stop_conditions=("all in-scope accounts audited",),
-        description="Feeds Sprint 017 Cloud Intelligence as evidence provider.",
+        description="Feeds the Cloud Intelligence capability as evidence provider.",
     ),
     build_playbook(
         playbook_id="container-assessment",

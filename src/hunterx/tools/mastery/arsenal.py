@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal Security Arsenal — machine-readable arsenal manifest.
-
-Serializes the complete arsenal (tools, capabilities, versions, adapters,
-parsers, normalizers, evidence mappings, proof mappings, datasets,
-relationships, playbooks, mission modes, security profiles) into the
-``capabilities/universal-security-arsenal.json`` manifest and reads it back.
-"""
+"""Universal Security Arsenal, machine-readable arsenal manifest."""
 
 from __future__ import annotations
 

@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration — Target Intelligence Database entities.
-
-Sprint 032. System-of-record entities for the autonomous mission orchestration
-layer: mission runs, phases, actions, decisions, hypotheses, branches,
-checkpoints, policies, objectives, coverage, timelines, observations, negative
-evidence, baselines, reasoning-trace entries, telemetry and impact analyses.
-Each entity mirrors the pure domain model in
-``hunterx.domain.mission_orchestration``; the application service maps between
-them. Envelope (id, timestamps, versioning, soft-delete) comes from
-:class:`TidbEntity`.
-"""
+"""Autonomous Mission Orchestration, Target Intelligence Database entities."""
 
 from __future__ import annotations
 
@@ -25,8 +15,8 @@ class MissionOrchestrationRecord(TidbEntity):
     """A persisted orchestrated mission aggregate.
 
     Attributes:
-        mission_id: stable mission identifier (also the Sprint 027 mission id).
-        objective: objective name (sprint vocabulary, e.g. ``full_security_assessment``).
+        mission_id: stable mission identifier (also the mission id).
+        objective: objective name (e.g. ``full_security_assessment``).
         mode: :class:`MissionMode` value.
         state: :class:`MissionState` value.
         strategy: orchestration :class:`StrategyKind` value.

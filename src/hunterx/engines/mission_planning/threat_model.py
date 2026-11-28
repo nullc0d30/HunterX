@@ -4,7 +4,9 @@
 """Threat model integration for mission planning."""
 
 from __future__ import annotations
+
 from typing import Any
+
 
 class ThreatModelParser:
     """Parses threat model files and integrates them into mission planning."""

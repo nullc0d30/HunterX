@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission planning domain models.
-
-Pure data contracts for the mission planning engine: mission types, phases,
-profiles, templates, requests, plans, checkpoints, execution graphs and the
-mission timeline. These models describe *how* an assessment is planned — no
-tool is executed here. The planning engine reads and writes these structures.
-
-The state machine, profile engine, configuration resolver, planner, graph
-builder and checkpoint manager (``hunterx.engines.mission_planning``) drive
-these models.
-"""
+"""Mission planning domain models."""
 
 from __future__ import annotations
 
@@ -29,7 +19,7 @@ from hunterx.shared.time import utcnow_iso
 class MissionType(Enum):
     """Supported mission (assessment) types.
 
-    Mirrors the ratified profile catalog in ``docs/bible/12``.
+    Mirrors the profile catalog in ``docs/bible/12``.
     """
 
     BUG_BOUNTY = "bug-bounty"
@@ -71,9 +61,9 @@ class MissionPhaseKind(Enum):
 class MissionPlanningStatus(Enum):
     """Lifecycle states of a planned mission.
 
-    Follows the ratified state machine: Created → Queued → Planning → Ready →
-    Executing → (Paused / Waiting / Retrying) → Completed / Cancelled / Failed
-    → Archived.
+    Follows the state machine: Created to Queued to Planning to Ready to
+    Executing to (Paused / Waiting / Retrying) to Completed / Cancelled / Failed
+    to Archived.
     """
 
     CREATED = "created"
@@ -763,7 +753,7 @@ class ExecutionGraph:
         duration: dict[str, int] = {}
         for node_id in self.topological_order():
             node = self.node(node_id)
-            assert node is not None  # nosec B101  # topological order yields existing nodes
+            assert node is not None  # nosec B101 # topological order yields existing nodes
             base = 0
             if node.depends_on:
                 base = max(duration.get(dep, 0) for dep in node.depends_on)

@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Wave 11 Cloud & SaaS Attack-Surface Intelligence.
-
-Each test maps to a sprint acceptance criterion: provider detection, account/
-subscription/project modeling, regions, resources, services, control/data-plane
-distinction, internet-facing resources, storage/compute/container/Kubernetes/
-serverless/database indicators, API gateways, CDNs, load balancers, IAM
-indicators, CI/CD, secret-management indicators (without retrieval), SaaS
-providers, SaaS integrations, webhooks, third-party dependencies, graph
-representation, historical change detection, deterministic differential
-analysis, exposure indicators as intelligence (not vulnerabilities), no
-exploitation, provenance on every record and deterministic confidence.
-"""
+"""Acceptance tests for the Cloud & SaaS Attack-Surface Intelligence."""
 
 from __future__ import annotations
 

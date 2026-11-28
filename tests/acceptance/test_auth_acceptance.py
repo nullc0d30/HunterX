@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the authentication intelligence capability.
-
-Each test maps to one acceptance criterion of Sprint 015: surfaces inventoried,
-flows represented, login/registration/recovery surfaces identified, OAuth/OIDC/
-SAML/JWT identified, sessions and cookie metadata captured, token storage
-identified, CSRF/CORS inventoried, MFA/WebAuthn identified, identity providers
-correlated, roles/scopes/tenants represented, public-vs-authenticated
-classified with evidence, historical changes detected and deterministic
-comparison supported.
-"""
+"""Acceptance tests for the authentication intelligence capability."""
 
 from __future__ import annotations
 

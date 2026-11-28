@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 14.1 finding-bridge regression tests.
-
-Proves the validated mission finding bridges into the finding orchestration
-service and completes the full lifecycle (verification evidence → reproduction
-→ PoC → replay → impact → confidence → REPORT_READY) for the
-``security_misconfiguration`` class that the real DVWA runs validate — the
-class vocabulary was completed so the already-registered capability
-(``security-misconfiguration``) can be verified by the finding service.
-
-Also proves: duplicate prevention (idempotent materialization per hypothesis),
-lifecycle ordering, REPORT_READY remaining checklist-gated, and that the CLI
-hunt path (platform-assembled ``MissionExecutionService``) carries the wired
-finding service.
-"""
+"""1 finding-bridge regression tests."""
 
 from __future__ import annotations
 
@@ -106,7 +93,7 @@ class TestSecurityMisconfigurationLifecycle:
         assert finding["vulnerability_class"] == "security_misconfiguration"
         finding_id = finding["finding_id"]
 
-        # Lifecycle ordering: verify → impact → poc → replay → confidence → finalize.
+        # Lifecycle ordering: verify to impact to poc to replay to confidence to finalize.
         verify = service.verify_with_probe(finding_id)
         assert verify["status"] == "validated", verify
         assert service.get_finding(finding_id)["status"] == "validated"

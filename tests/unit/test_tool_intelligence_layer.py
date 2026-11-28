@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the Sprint 023 Tool Intelligence Layer.
-
-Covers the selector, sequence planner, escalation engine, enforcement engine,
-evidence correlator, reliability tracker and target intelligence store — plus
-the registry extensions they depend on.
-"""
+"""Tests for the Tool Intelligence Layer."""
 
 from __future__ import annotations
 
@@ -114,7 +109,7 @@ class TestRegistryExtensions:
         tip.register_confidence_ceiling(ceiling)
         assert tip.registry.get_confidence_ceiling("nmap").detection_ceiling == 0.6
 
-    def test_remove_tool_cleans_sprint023_records(self) -> None:
+    def test_remove_tool_cleans_related_records(self) -> None:
         tip = _tip()
         tip.register_evidence_mapping(
             ToolEvidenceMapping(tool_id="nmap", observation_kind="port", evidence_type="x")
@@ -123,7 +118,7 @@ class TestRegistryExtensions:
         assert tip.registry.evidence_mappings_for("nmap") == ()
         assert tip.registry.get_confidence_ceiling("nmap") is None
 
-    def test_to_dict_contains_sprint023(self) -> None:
+    def test_to_dict_contains_layer_summary(self) -> None:
         tip = _tip()
         tip.register_evidence_mapping(
             ToolEvidenceMapping(tool_id="nmap", observation_kind="port", evidence_type="x")

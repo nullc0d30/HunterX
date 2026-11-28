@@ -3,10 +3,7 @@
 
 """Topology relationship validator.
 
-Structural and semantic checks applied to every raw observation before it
-enters correlation. The validator is deterministic and returns a list of
-human-readable errors; an observation with any error is dropped by the
-pipeline.
+Structural and semantic checks applied to every raw observation before it enters correlation.
 """
 
 from __future__ import annotations

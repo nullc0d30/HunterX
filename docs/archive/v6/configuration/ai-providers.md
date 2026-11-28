@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AI Providers — HunterX v6.0.0
+title: AI Providers - HunterX v6.0.0
 keywords: HunterX AI Providers, LLM, Ollama, OpenAI, AI Configuration
 description: >-
   Reference for HunterX AI provider configuration. Learn how to configure and use

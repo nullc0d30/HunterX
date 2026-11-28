@@ -1,33 +1,13 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""External binary runner for tool adapters.
-
-Wraps ``subprocess`` behind a small seam so adapters stay testable without any
-external tool installed: unit tests inject a fake runner that returns golden
-output. The runner captures stdout/stderr as text and propagates timeouts as
-:class:`ToolTimeoutError` so the SDK pipeline classifies them correctly.
-
-SECURITY MODEL (Sprint 034.4): the runner is the single guarded subprocess
-seam in the Tool Integration SDK.
-
-- ``argv`` is always passed structurally (no ``shell=True``); shell metacharacters
-  in arguments are inert data.
-- Captured stdout/stderr are capped at :attr:`max_output_bytes` so one hostile
-  tool cannot exhaust worker memory. When the cap is exceeded the execution is
-  failed (the process is terminated) rather than silently truncated.
-- On timeout or output overflow the entire spawned process is terminated
-  best-effort (the process tree where the platform supports it) so no tool
-  process outlives its mission step.
-- Startup failures (missing binary, permission) are surfaced as
-  :class:`ToolExecutionError` instead of an unclassified exception.
-"""
+"""External binary runner for tool adapters."""
 
 from __future__ import annotations
 
 import contextlib
 import os
-import subprocess  # nosec B404  # the runner is the single guarded subprocess seam
+import subprocess  # nosec B404 # the runner is the single guarded subprocess seam
 import threading
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -53,7 +33,7 @@ class CommandObservation:
     """The actual command line that was spawned, with execution context.
 
     Produced at the single guarded subprocess seam (:class:`BinaryRunner`) so
-    observers always see the argv that really ran — never a reconstruction.
+    observers always see the argv that really ran, never a reconstruction.
     When the execution was bound to a mission (see :func:`bind_active_execution`)
     the correlation fields are populated; ad-hoc executions leave them empty.
 
@@ -81,7 +61,7 @@ class CommandObservation:
 
 CommandObserver = Callable[[CommandObservation], None]
 
-#: Registered command observers (live CLI, audit, ...). Module-level because
+# : Registered command observers (live CLI, audit,...). Module-level because
 #: every tool adapter constructs its own :class:`BinaryRunner`; the registry is
 #: the single hook point that sees every spawned command.
 _command_observers: list[CommandObserver] = []
@@ -347,7 +327,7 @@ class BinaryRunner:
     def _spawn(self, argv: list[str], env: dict[str, str]) -> subprocess.Popen[bytes]:
         """Start the child in its own process group where supported."""
         try:
-            return subprocess.Popen(  # nosec B603  # trusted constructed argv
+            return subprocess.Popen(  # nosec B603 # trusted constructed argv
                 argv,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -437,7 +417,7 @@ def _terminate_process_tree(process: subprocess.Popen[bytes]) -> None:
         if os.name == "nt":
             _terminate_windows_tree(process)
         else:
-            os.killpg(os.getpgid(process.pid), 9)  # type: ignore[attr-defined]  # POSIX-only branch  # noqa: S606
+            os.killpg(os.getpgid(process.pid), 9)  # type: ignore[attr-defined] # POSIX-only branch # noqa: S606
     except (ProcessLookupError, OSError):
         _terminate_direct(process)
 
@@ -453,7 +433,7 @@ def _terminate_windows_tree(process: subprocess.Popen[bytes]) -> None:
     if process.poll() is not None:
         return
     try:
-        completed = subprocess.run(  # nosec B603, B607  # noqa: S603 - fixed command vector, no shell
+        completed = subprocess.run(  # nosec B603, B607 # noqa: S603 - fixed command vector, no shell
             ["taskkill", "/PID", str(process.pid), "/T", "/F"],
             capture_output=True,
             timeout=5.0,

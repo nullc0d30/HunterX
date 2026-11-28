@@ -3,10 +3,7 @@
 
 """Topology entity resolver.
 
-Maps raw entity values to canonical, de-duplicated :class:`TopologyEntity`
-nodes. The resolver keeps a per-run cache so identical references always yield
-the same node (deterministic correlation); the cache is never shared between
-runs to avoid stale state.
+Maps raw entity values to canonical, de-duplicated :class:`TopologyEntity` nodes.
 """
 
 from __future__ import annotations

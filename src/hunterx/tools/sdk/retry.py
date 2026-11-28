@@ -4,8 +4,6 @@
 """Retry manager.
 
 Decides whether a failed execution may be retried and computes backoff delays.
-Retries are only permitted for failure kinds declared retryable by the
-execution's retry policy, up to ``max_attempts`` total attempts.
 """
 
 from __future__ import annotations
@@ -21,7 +19,7 @@ class RetryManager:
     Usage::
 
         manager = RetryManager()
-        manager.eligible(policy, kind, attempt=1)   # True/False
+        manager.eligible(policy, kind, attempt=1) # True/False
         delay = manager.delay_for(policy, attempt=1)
     """
 
@@ -47,5 +45,5 @@ class RetryManager:
         delay = policy.base_delay_s * (policy.backoff_factor**attempt)
         delay = min(delay, policy.max_delay_s)
         if policy.jitter:
-            delay *= random.uniform(0.8, 1.2)  # nosec B311  # non-cryptographic jitter
+            delay *= random.uniform(0.8, 1.2)  # nosec B311 # non-cryptographic jitter
         return max(0.0, delay)

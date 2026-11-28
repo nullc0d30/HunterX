@@ -3,18 +3,8 @@
 
 """Nuclei tool adapter.
 
-Integrates ProjectDiscovery ``nuclei`` — a template-based vulnerability scanner
-— into the Tool Integration SDK as an active *scanner*. Nuclei is invoked
-through the shared :class:`~hunterx.tools.recon.runner.BinaryRunner` seam with
-JSONL output (``-jsonl -silent``) and the parsed output is projected into
-canonical *candidate* records.
-
-VALIDATION BOUNDARY: Nuclei output is an OBSERVATION / CANDIDATE. It is NOT
-automatically a validated finding. Every candidate record carries
-``requires_validation = True`` and a confidence contribution bounded by the
-tool's confidence ceiling, so the Proof and Validation subsystems retain
-authority over the final verdict. Candidates are attached as assets on the
-legacy surface, never as findings.
+Integrates ProjectDiscovery ``nuclei``, a template-based vulnerability scanner, into the Tool Integration SDK as an
+active *scanner*.
 """
 
 from __future__ import annotations

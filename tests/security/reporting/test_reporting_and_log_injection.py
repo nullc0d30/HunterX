@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reporting and logging injection (Sprint 034.4 §24, §25).
-
-Malicious target names, finding titles, evidence and tool output must not turn
-reports into XSS/HTML/template injections, and log fields must not permit CRLF/
-ANSI injection or secret leakage.
-"""
+"""Reporting and logging injection (24,)."""
 
 from __future__ import annotations
 

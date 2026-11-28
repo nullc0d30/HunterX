@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning — use-case services.
-
-``AdaptiveMissionPlanningService`` is the orchestrator: it bridges the pure
-adaptive mission planning domain and the :class:`AdaptiveMissionPlanningEngine`
-to the TIDB system-of-record, persists normalized planning entities (missions,
-action nodes, dependencies, branches, plan versions, plan deltas, decisions,
-attack paths, gaps, checkpoints, failures, tool fallbacks and tool
-selections) and publishes ``mission.*`` events.
-
-``AdaptiveMissionPlanningQueryService`` reads persisted planning records back
-from the TIDB and answers the canonical queries (mission status, current plan,
-plan history, candidate actions, attack paths, decision explanations,
-coverage, evidence gaps and proof gaps).
-"""
+"""Adaptive Mission & Attack-Path Planning, use-case services."""
 
 from __future__ import annotations
 
@@ -751,7 +738,7 @@ class AdaptiveMissionPlanningQueryService:
         repo = self._stores.repository_for(AdaptiveMissionRecord)
         for record in repo.list(limit=1000):
             if getattr(record, "mission_id", "") == mission_id:
-                return record  # type: ignore[no-any-return]  # repo is generic over entity type
+                return record  # type: ignore[no-any-return] # repo is generic over entity type
         return None
 
     def actions(self, mission_id: str) -> list[AdaptiveActionNodeRecord]:

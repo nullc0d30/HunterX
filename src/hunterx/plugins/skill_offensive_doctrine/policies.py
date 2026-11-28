@@ -1,3 +1,5 @@
+"""Doctrine kill list and critical rules."""
+
 from __future__ import annotations
 
 KILL_LIST = [
@@ -30,5 +32,6 @@ def only_question_violated(description: str) -> bool:
     return any(k in desc for k in ["could theoretically", "might allow"])
 
 def is_kill(description: str) -> bool:
+    """Return True when the input matches a kill-list entry."""
     desc = description.lower()
     return any(k in desc for k in KILL_LIST)

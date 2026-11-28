@@ -1,6 +1,6 @@
 {
   "name": "attack_surface_golden",
-  "description": "Golden dataset for the Sprint 033 external attack-surface mission: unified graph across domains, hosts, IPs, ports, services, cloud, storage, SaaS and CDN, with a cloud exposure validated and a webhook ambiguity retained as inconclusive.",
+  "description": "Golden dataset for the external attack-surface mission: unified graph across domains, hosts, IPs, ports, services, cloud, storage, SaaS and CDN, with a cloud exposure validated and a webhook ambiguity retained as inconclusive.",
   "objective": "external_attack_surface",
   "target": "corp.example.com",
   "assets": [
@@ -33,7 +33,7 @@
     {"action": "support_hypothesis", "statement": "Public S3 bucket corp-backup exposes sensitive data", "category": "misconfiguration", "priority": 0.85, "supporting": ["ev-bucket-listing", "ev-bucket-acl"], "verify": true},
     {"action": "finding", "finding_id": "F-G-AS-1", "vulnerability_class": "cloud_exposure", "asset_key": "storage:corp-backup", "severity": "high", "tool": "cloud-analysis", "stage": "proven", "confidence": 0.9, "evidence_refs": ["ev-bucket-listing", "ev-bucket-acl"]},
     {"action": "proof_coverage", "asset": "storage:corp-backup", "capability": "cloud_ownership_mapping", "tool": "cloud-analysis"},
-    {"action": "negative", "asset": "saas:corp-saas", "capability": "cloud_ownership_mapping", "kind": "inconclusive", "tool": "manual-probe", "outcome": "webhook signature not verifiable; ambiguous — retained not reported"},
+    {"action": "negative", "asset": "saas:corp-saas", "capability": "cloud_ownership_mapping", "kind": "inconclusive", "tool": "manual-probe", "outcome": "webhook signature not verifiable; ambiguous - retained not reported"},
     {"action": "cascade"}
   ],
   "expected_observations": [

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Security Skills SDK — Developer Guide — HunterX v6.0.0
+title: Security Skills SDK - Developer Guide - HunterX v6.0.0
 description: >-
   Security Skills SDK developer guide for HunterX v6.0.0 vulnerability
   scanner. Build custom security skills for penetration testing, bug bounty
@@ -9,7 +9,7 @@ description: >-
 permalink: /skill-sdk/
 ---
 
-## Security Skills SDK — Developer Guide
+## Security Skills SDK - Developer Guide
 
 > **HunterX v6.0.0**
 > Build custom security analysis skills for the HunterX platform.
@@ -32,7 +32,7 @@ permalink: /skill-sdk/
 
 ## Overview
 
-The HunterX Security Skills SDK enables developers to create custom security analysis modules that integrate seamlessly with the HunterX scanning engine. Skills are Python classes that inherit from `SecuritySkill` and implement a defined interface for discovery, validation, execution, and result reporting.
+The HunterX Security Skills SDK enables developers to create custom security analysis modules that integrate cleanly with the HunterX scanning engine. Skills are Python classes that inherit from `SecuritySkill` and implement a defined interface for discovery, validation, execution, and result reporting.
 
 ---
 

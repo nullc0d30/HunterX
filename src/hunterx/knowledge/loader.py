@@ -3,9 +3,7 @@
 
 """Knowledge loader.
 
-Loads knowledge records from bundled or external JSON/YAML catalogs into the
-registry. A catalog is a list of records with the fields defined by
-:class:`~hunterx.knowledge.registry.KnowledgeRecord`.
+Loads knowledge records from bundled or external JSON/YAML catalogs into the registry.
 """
 
 from __future__ import annotations

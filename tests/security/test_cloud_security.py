@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the cloud & SaaS intelligence boundary.
-
-Guarantees the intelligence-only boundary: no credential leakage, no secret
-persistence, no cloud token leakage, no cross-target/cross-mission
-contamination, no parser abuse, no graph explosion and no exploitation or
-credential use.
-"""
+"""Security tests for the cloud & SaaS intelligence boundary."""
 
 from __future__ import annotations
 

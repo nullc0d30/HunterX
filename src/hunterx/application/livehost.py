@@ -3,17 +3,7 @@
 
 """Live Host & Service Discovery use-case service.
 
-The live discovery orchestrator — the bridge between a mission and the live
-host tooling. Given a target and a posture, it builds a :class:`LiveStrategy`,
-selects the registered live discovery tools, runs each through the
-:class:`ExecutionEngine` pipeline, collects the raw observations, normalizes,
-validates, correlates them across tools, resolves conflicts, compares against
-historical state, persists everything to the TIDB and publishes ``host.*``
-events.
-
-The service depends on ports only: the execution engine (tools layer), the
-TIDB repository factory (domain port) and the event bus port. Concrete
-SQL/in-memory stores are injected by the platform assembler.
+The live discovery orchestrator, the bridge between a mission and the live host tooling.
 """
 
 from __future__ import annotations

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Checkpoint and resume for adaptive missions.
-
-A mission must be resumable: the checkpoint captures the mission state, plan
-version, completed/pending actions, observations, evidence, hypotheses, proof
-states and tool state. After restart the mission is reconstructed without
-losing intelligence.
-"""
+"""Checkpoint and resume for adaptive missions."""
 
 from __future__ import annotations
 

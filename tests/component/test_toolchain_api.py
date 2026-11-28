@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the ``/tools`` API (Sprint 031)."""
+"""Component tests for the ``/tools`` API."""
 
 from __future__ import annotations
 

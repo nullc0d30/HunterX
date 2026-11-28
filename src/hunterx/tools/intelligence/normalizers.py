@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Built-in parsers and canonical normalizers for the Tool Intelligence Layer.
-
-These reference implementations show how raw tool output becomes structured
-records (parsers) and then canonical observations (normalizers). Integrated
-tools ship their own parser/normalizer pair in their integration pack; these
-built-ins cover the common JSON/JSONL/text shapes and the core observation
-kinds (domain, url, ip, port, technology).
-"""
+"""Built-in parsers and canonical normalizers for the Tool Intelligence Layer."""
 
 from __future__ import annotations
 
@@ -23,7 +16,7 @@ def _parse_records(raw: Any, metadata: dict[str, Any]) -> list[dict[str, Any]]:
 
     Accepts a JSON string, a list of mappings, a single mapping, or newline
     separated JSON (JSONL). Returns an empty list when nothing parseable is
-    present — the caller decides whether empty output is an error.
+    present, the caller decides whether empty output is an error.
     """
     if raw is None:
         return []

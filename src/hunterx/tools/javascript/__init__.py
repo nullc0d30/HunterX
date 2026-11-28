@@ -3,11 +3,7 @@
 
 """JavaScript intelligence tool adapters.
 
-SDK tool adapters for the JavaScript Intelligence & Client-Side Attack-Surface
-Discovery capability. The in-process analyzer runs the domain detection rules
-over supplied script content (no binary, no subprocess) and serializes the
-per-asset analysis under the pipeline payload's ``javascript`` key with a
-``type`` discriminator.
+SDK tool adapters for the JavaScript Intelligence & Client-Side Attack-Surface Discovery capability.
 """
 
 from hunterx.tools.javascript.analyzer import JavaScriptAnalyzerAdapter

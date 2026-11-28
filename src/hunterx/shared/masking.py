@@ -3,10 +3,7 @@
 
 """Secret masking utilities.
 
-Used to guarantee that secrets and credentials never appear verbatim in logs,
-reports, or rendered output. The default mask keeps the first and last
-character visible and fills the middle with asterisks so operators can still
-tell which secret was referenced.
+Used to guarantee that secrets and credentials never appear verbatim in logs, reports, or rendered output.
 """
 
 from __future__ import annotations

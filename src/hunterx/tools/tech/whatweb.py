@@ -3,17 +3,7 @@
 
 """WhatWeb tool adapter.
 
-Integrates ``whatweb`` — a deep web technology fingerprinting scanner — into
-the Tool Integration SDK. The adapter builds the CLI command, parses the JSON
-log (``--log-json=-``) into canonical technology observations and publishes
-them on the execution output.
-
-CLI contract (verified against WhatWeb docs):
-    ``whatweb --no-errors --log-json=- --quiet <target>`` emits one JSON object
-    per target to stdout. Each object carries ``target``, ``http_status`` and
-    a ``plugins`` mapping whose keys are technology names and whose values are
-    dicts/lists of dicts with ``certainty`` (0-100), ``version``, ``string``
-    and ``module`` fields.
+Integrates ``whatweb``, a deep web technology fingerprinting scanner, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

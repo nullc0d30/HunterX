@@ -3,9 +3,7 @@
 
 """Mission planning use-case service.
 
-A thin application-layer wrapper over the mission planning engine and its
-repositories. It mirrors the conventions of :class:`MissionService`: every
-operation returns a :class:`Result` and persists through ports.
+A thin application-layer wrapper over the mission planning engine and its repositories.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Dependency Review.
+# HunterX - Dependency Review.
 #
 # Uses GitHub's dependency-review-action to flag dependency changes that are
 # vulnerable, have license conflicts, or exceed a security risk threshold.

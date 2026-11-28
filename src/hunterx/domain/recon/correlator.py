@@ -3,15 +3,7 @@
 
 """Reconnaissance correlator.
 
-Merges raw discovery records produced by several tools into one deduplicated,
-confidence-weighted set. Two records describe the same asset when they share a
-canonical :meth:`DiscoveryRecord.key`; the correlator keeps the strongest
-observation, folds corroborating evidence into its ``details`` and recomputes
-the confidence from the corroboration count.
-
-An optional scope filter drops out-of-scope hostname-like records (records for
-a different domain) while always retaining address-space and metadata records
-(IPs, CIDRs, ASNs, DNS, certificates, WHOIS) that descend from in-scope hosts.
+Merges raw discovery records produced by several tools into one deduplicated, confidence-weighted set.
 """
 
 from __future__ import annotations

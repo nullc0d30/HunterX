@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Database error recovery tests (Sprint 034.3 §20).
-
-Injects connection failures, constraint violations and transaction rollbacks
-and verifies error classification, safe rollback, mission-state preservation and
-the absence of evidence corruption.
-"""
+"""Database error recovery tests (20)."""
 
 from __future__ import annotations
 

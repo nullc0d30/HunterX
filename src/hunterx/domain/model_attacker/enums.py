@@ -12,7 +12,7 @@ class ModelHypothesisStatus(StrEnum):
     """Lifecycle of a model-generated attack hypothesis.
 
     A hypothesis is only ever actionable while it carries real scheduled work;
-    a validated hypothesis is a finding that feeds the next reasoning round —
+    a validated hypothesis is a finding that feeds the next reasoning round,
     never a loop-termination condition.
     """
 
@@ -35,7 +35,7 @@ class AttackerCompletion(StrEnum):
     surfaces, no pending tasks, no pending hypotheses, no model-generated
     paths and dynamic discovery exhausted. Resource ceilings (cycle counts,
     hypothesis caps, provider retry exhaustion) are never reported as
-    completion — they are ``RESOURCE_LIMIT``.
+    completion, they are ``RESOURCE_LIMIT``.
     """
 
     EXHAUSTED = "exhausted"

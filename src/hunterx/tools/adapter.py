@@ -3,9 +3,7 @@
 
 """Tool adapter SDK.
 
-Defines the contract every tool (scanner, crawler, enumerator, analyzer,
-reporter) implements. A tool receives a target and parameters and returns a
-normalized :class:`ToolOutput` containing findings, evidence and assets.
+Defines the contract every tool (scanner, crawler, enumerator, analyzer, reporter) implements.
 """
 
 from __future__ import annotations

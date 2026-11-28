@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Documentation — HunterX v6.0.0
+title: Documentation - HunterX v6.0.0
 keywords: HunterX Documentation, User Guide, Reference Manual
 description: >-
   The central hub for HunterX v6.0.0 technical documentation. Navigate to installation, quickstart, CLI, API, configuration, and more.

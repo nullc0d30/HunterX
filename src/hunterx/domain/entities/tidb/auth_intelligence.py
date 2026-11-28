@@ -3,19 +3,7 @@
 
 """Authentication, session & identity intelligence TIDB entities.
 
-System-of-record entities for the Wave 9 authentication intelligence
-capability (Sprint 015). They carry the canonical, evidence-backed identity &
-authentication inventory of an authorized target: authentication surfaces,
-authentication endpoints, modeled flows, identity providers, OAuth/OIDC/SAML
-configurations, authentication schemes, cookie security metadata, token storage
-indicators, CSRF/CORS configurations, MFA/WebAuthn mechanisms, role/scope/
-permission/tenant indicators and the derived intelligence (observations,
-evidence, changes and run records).
-
-Security boundary: intelligence only. These entities store metadata and
-masked/derived values — never raw passwords, session cookie values, access or
-refresh tokens, API secrets, OTP values, recovery codes or authorization
-header values.
+System-of-record entities for the authentication intelligence capability.
 """
 
 from __future__ import annotations
@@ -140,7 +128,7 @@ class AuthFlow(TidbEntity):
 
     Attributes:
         name: flow label (``login``, ``oauth-authorization-code``,
-            ``oidc-authorization-code``, ...).
+            ``oidc-authorization-code``,...).
         flow_kind: ``traditional-login``/``oauth2``/``oidc``/``saml``/
             ``password-reset``/``registration``/``logout``/``custom``.
         origin: canonical origin.
@@ -171,13 +159,13 @@ class IdentityProvider(TidbEntity):
     """A detected identity provider.
 
     Attributes:
-        name: canonical provider name (``Auth0``, ``Keycloak``, ``Okta``, ...).
+        name: canonical provider name (``Auth0``, ``Keycloak``, ``Okta``,...).
         provider_kind: canonical :class:`IdPKind` value.
         origin: canonical origin where the provider was observed.
         issuer: detected issuer identifier when available.
         discovery_url: OIDC discovery document URL when found.
         endpoints: provider endpoint table (``authorization``, ``token``,
-            ``jwks``, ``userinfo``, ``metadata``, ``acs``, ...).
+            ``jwks``, ``userinfo``, ``metadata``, ``acs``,...).
         indicators: evidence strings that triggered the detection.
         confidence: intelligence confidence in ``[0, 1]``.
 

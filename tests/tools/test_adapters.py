@@ -3,11 +3,7 @@
 
 """Adapter argv/parser contract tests for the certified toolchain.
 
-Every subprocess-backed adapter is exercised with a fake runner fed an
-authoritative fixture. Execution-dependent validation (real binaries) is
-explicitly out of scope here and marked with the ``tools`` marker in the
-integration suite; these tests certify the adapter contract (structured argv
-and canonical parsers) without any binary.
+Every subprocess-backed adapter is exercised with a fake runner fed an authoritative fixture.
 """
 
 from __future__ import annotations

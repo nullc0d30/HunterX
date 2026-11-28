@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for the HuntX mission execution lifecycle.
-
-Reproduces the failure where ``hunterx hunt`` created a mission but execution
-never started (``planning_state = discovery``, ``tool_executions = 0``,
-``decisions = 0``, ``observations = 0``). After the fix, mission creation is
-followed by an initial decision, a real tool-execution attempt, observation
-ingestion, target modeling and adaptive continuation.
-
-The external execution layer is replaced by a deterministic fake so the real
-orchestration path (planning → decision → execution → ingestion → replanning)
-is exercised without network access or external binaries.
-"""
+"""Regression tests for the HuntX mission execution lifecycle."""
 
 from __future__ import annotations
 
@@ -114,7 +103,7 @@ class TestMissionStartsExecution:
         # outcome record and a completed run with a finish timestamp. On a
         # non-loopback target the fake outputs leave actionable vulnerability
         # hypotheses unprobeable, so the honest terminal is BLOCKED (never a
-        # false coverage-complete) — the regression this suite guards.
+        # false coverage-complete), the regression this suite guards.
         assert mission.mission.state.value in ("completed", "blocked")
         assert mission.outcome is not None
         assert mission.runs, "a run record must exist"
@@ -188,7 +177,7 @@ class TestMissionStartsExecution:
         )
         mission = orchestration.create_mission(objective="full_security_assessment", target=_TARGET)
 
-        # A URL target registers a valid root asset at creation (Target → Asset)
+        # A URL target registers a valid root asset at creation (Target to Asset)
         # before any downstream observations are attached, but a mission that
         # has not started discovery is not complete.
         assert mission.context.assets, "a URL target must produce a root asset"
@@ -240,8 +229,8 @@ class TestCLIIntegration:
     def test_hunt_reaches_execution_layer(self, capsys: pytest.CaptureFixture[str]) -> None:
         platform = build_platform()
         fake = FakeExecutionEngine(outputs=dict(_FAKE_OUTPUTS))
-        platform.mission_execution_service._engine = fake  # noqa: SLF001  # swap the network layer only
-        platform.mission_execution_service._readiness = _PassingReadiness()  # noqa: SLF001  # preflight passes
+        platform.mission_execution_service._engine = fake  # noqa: SLF001 # swap the network layer only
+        platform.mission_execution_service._readiness = _PassingReadiness()  # noqa: SLF001 # preflight passes
 
         app = CliApplication()
         register_default_commands(app, platform)

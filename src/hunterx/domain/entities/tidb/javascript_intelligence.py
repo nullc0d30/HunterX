@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript intelligence TIDB entities.
-
-System-of-record entities for the JavaScript Intelligence & Client-Side
-Attack-Surface Discovery capability: the per-asset acquisition records, the
-correlated findings (endpoints, routes, authentication references, external
-domains, third-party services, storage, secrets, technology, dependencies,
-configuration, workers, WebAssembly, security APIs, dynamic imports), and the
-derived intelligence (conflicts, changes and run records). All JavaScript
-intelligence that matters is persisted here — never only in memory, logs or
-reports.
-"""
+"""JavaScript intelligence TIDB entities."""
 
 from __future__ import annotations
 
@@ -218,7 +208,7 @@ class JSIntelligenceStorage(TidbEntity):
 
 @dataclass(slots=True)
 class JSIntelligenceSecret(TidbEntity):
-    """A persisted secret indicator — never containing a raw value.
+    """A persisted secret indicator, never containing a raw value.
 
     Attributes:
         classification: secret classification.

@@ -1,11 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Finding-layer Target Intelligence Database entities.
-
-History, evidence, risk and reference entities that attach to the canonical
-``Finding``/``Evidence`` aggregates defined in ``hunterx.domain.entities``.
-"""
+"""Finding-layer Target Intelligence Database entities."""
 
 from __future__ import annotations
 
@@ -130,7 +126,7 @@ class Recommendation(TidbEntity):
     Attributes:
         finding_id: owning finding.
         text: recommendation text.
-        category: fix|workaround|hardening|process|... .
+        category: fix|workaround|hardening|process|....
         priority: priority within the finding.
 
     """
@@ -147,7 +143,7 @@ class Reference(TidbEntity):
 
     Attributes:
         finding_id: owning finding.
-        kind: cve|cwe|capec|url|article|advisory|... .
+        kind: cve|cwe|capec|url|article|advisory|....
         url: reference URL.
         title: reference title.
         source: reference source name.

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for the topology capability.
-
-Registers the integrated network-mapping tool (traceroute) into a
-:class:`ToolIntelligenceAPI` so the Planner and selection engines can recommend
-it by taxonomy capability (``route-mapping``, ``network-topology``). The
-profile mirrors the Tool Integration SDK adapter descriptor so intelligence and
-execution never disagree about a tool's contract.
-"""
+"""Tool Intelligence Platform registration for the topology capability."""
 
 from __future__ import annotations
 

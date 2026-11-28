@@ -3,10 +3,7 @@
 
 """Tool Integration Factory facade.
 
-The public entry point for generating, validating and managing Tool
-Integration Packs. Composes the generator engine, integration template store,
-validator, compatibility validator and pack repository, and exposes the
-standard pack layout and quality gates.
+The public entry point for generating, validating and managing Tool Integration Packs.
 """
 
 from __future__ import annotations

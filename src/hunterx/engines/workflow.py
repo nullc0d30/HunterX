@@ -4,8 +4,6 @@
 """Workflow engine.
 
 Workflows describe the ordered, branching sequence of actions a mission runs.
-This engine loads workflow definitions, validates their structure and walks
-them step by step, dispatching each action to the registered executor.
 """
 
 from __future__ import annotations
@@ -54,10 +52,10 @@ class WorkflowDefinition:
         known = {step.id for step in self.steps}
         if not self.steps:
             errors.append("workflow has no steps")
-        
+
         # Cycle detection
         adj = {step.id: set(step.depends_on) for step in self.steps}
-        
+
         def has_cycle(node: str, visited: set[str], rec_stack: set[str]) -> bool:
             visited.add(node)
             rec_stack.add(node)
@@ -74,10 +72,9 @@ class WorkflowDefinition:
 
         visited = set()
         for step in self.steps:
-            if step.id not in visited:
-                if has_cycle(step.id, visited, set()):
-                    errors.append("Workflow contains a dependency cycle.")
-                    break
+            if step.id not in visited and has_cycle(step.id, visited, set()):
+                errors.append("Workflow contains a dependency cycle.")
+                break
 
         for step in self.steps:
             if not step.action:

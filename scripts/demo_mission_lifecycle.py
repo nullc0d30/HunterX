@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
-# ruff: noqa: D100, D103, E501  # diagnostic demo: single-purpose script
+# ruff: noqa: D100, D103, E501 # diagnostic demo: single-purpose script
 """Behavioral demo: full_security_assessment against a real loopback target.
 
-Starts a real HTTP server on 127.0.0.1:3010 and runs a full assessment through
-the real orchestration + probe path. Demonstrates the corrected lifecycle:
-active testing is reached (differential probes run against the loopback target)
-and the terminal is honest (never a false coverage-complete while open
-actionable hypotheses remain).
+Starts a real HTTP server on 127.0.0.1:3010 and runs a full assessment through the real orchestration + probe path.
 """
 import http.server
 import json

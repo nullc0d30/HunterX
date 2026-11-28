@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Documentation Validation.
+# HunterX - Documentation Validation.
 #
 # Runs the docs quality gate (required files, sections, internal links,
 # markdown well-formedness) plus markdownlint over the documentation tree.

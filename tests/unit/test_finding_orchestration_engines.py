@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Sprint 028 confidence, impact, dedup and reporting engines."""
+"""Unit tests for the confidence, impact, dedup and reporting engines."""
 
 from __future__ import annotations
 

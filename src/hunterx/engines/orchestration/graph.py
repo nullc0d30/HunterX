@@ -3,10 +3,8 @@
 
 """Mission dependency graph.
 
-Represents the execution dependencies between the steps of an execution plan
-and supports sequential, parallel, conditional, fan-out and fan-in execution.
-The graph is derived from the plan's phase/step structure and can be traversed
-topologically to determine which steps are ready to run.
+Represents the execution dependencies between the steps of an execution plan and supports sequential, parallel,
+conditional, fan-out and fan-in execution.
 """
 
 from __future__ import annotations

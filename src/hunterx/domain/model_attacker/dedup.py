@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Stable hypothesis fingerprinting for duplicate prevention.
-
-Duplicates are recognised on the *actionable* fields: capability, surface,
-vector, strategy, authentication context, workflow context and parent. A
-changed vector or a changed authentication context is a potentially new
-hypothesis (legitimate escalation) — only the exact same actionable tuple is a
-duplicate.
-"""
+"""Stable hypothesis fingerprinting for duplicate prevention."""
 
 from __future__ import annotations
 

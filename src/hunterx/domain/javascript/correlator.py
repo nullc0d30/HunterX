@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Correlation of JavaScript intelligence findings across assets.
-
-Aggregates per-asset analyses into a run-level view: deduplicates by canonical
-key, merges evidence and provenance, re-scores confidence from multiplicity, and
-produces the correlated collections stored on a :class:`JavaScriptBatch`.
-"""
+"""Correlation of JavaScript intelligence findings across assets."""
 
 from __future__ import annotations
 

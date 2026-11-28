@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology intelligence TIDB entities.
-
-System-of-record entities for the Sprint 011 technology fingerprinting
-capability: the canonical technology catalogue (categories, families,
-definitions), the per-asset technology observations with their evidence and
-version specifications, and the derived intelligence (conflicts, changes and
-fingerprint run records). All technology intelligence that matters is persisted
-here — never only in memory, logs or reports.
-"""
+"""Technology intelligence TIDB entities."""
 
 from __future__ import annotations
 
@@ -159,7 +151,7 @@ class TechnologyEvidence(TidbEntity):
         observation_id: owning technology observation.
         asset: canonical asset identifier.
         canonical_name: canonical technology name.
-        evidence_type: kind of source (header, cookie, html, ...).
+        evidence_type: kind of source (header, cookie, html,...).
         value: the raw indicator observed.
         source: upstream source of the evidence.
         strength: relative strength (strong/moderate/weak).

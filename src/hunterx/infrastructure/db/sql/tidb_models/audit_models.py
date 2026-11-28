@@ -3,8 +3,8 @@
 
 """ORM models for TIDB audit and history entities.
 
-These tables are append-only: written by the persistence layer (via the
-versioning listener) and never edited by capability logic.
+These tables are append-only: written by the persistence layer (via the versioning listener) and never edited by
+capability logic.
 """
 
 from __future__ import annotations

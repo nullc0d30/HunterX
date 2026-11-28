@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Core generators: metadata, versioning, knowledge and installation.
-
-Emits the structured configuration of a Tool Integration Pack: tool metadata,
-the semantic version definition plus compatibility matrix and migration
-notes, the knowledge profile and capabilities, and the installation /
-dependency / health-check definitions.
-"""
+"""Core generators: metadata, versioning, knowledge and installation."""
 
 from __future__ import annotations
 

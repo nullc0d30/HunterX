@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Integration Tests.
+# HunterX - Integration Tests.
 #
 # Runs the integration and golden suites that exercise repositories, event bus,
 # observability and TiDB/alembic paths against in-memory and SQLite backends.

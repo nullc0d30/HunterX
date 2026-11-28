@@ -3,10 +3,8 @@
 
 """Report redaction engine.
 
-Redacts passwords, API keys, tokens, cookies, session identifiers, private
-keys, unnecessary PII and internal secrets while preserving reproduction
-utility. Evidence remains internally referenceable — only the report output is
-redacted.
+Redacts passwords, API keys, tokens, cookies, session identifiers, private keys, unnecessary PII and internal
+secrets while preserving reproduction utility.
 """
 
 from __future__ import annotations

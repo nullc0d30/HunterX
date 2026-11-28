@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Graph / TIDB consistency tests (Sprint 034.3 §23).
-
-The runtime knowledge graph is a derived/cached layer that is NOT persisted in
-the TIDB; derived graph facts ARE persisted relationally (topology
-relationships, attack-path records). This suite documents the actual
-architecture and verifies the synchronization contract.
-"""
+"""Graph / TIDB consistency tests (23)."""
 
 from __future__ import annotations
 

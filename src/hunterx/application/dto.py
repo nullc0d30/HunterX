@@ -3,8 +3,7 @@
 
 """Application-layer data transfer objects.
 
-DTOs are plain validated inputs for use-case services. They shield the domain
-model from API/CLI request shapes.
+DTOs are plain validated inputs for use-case services.
 """
 
 from __future__ import annotations

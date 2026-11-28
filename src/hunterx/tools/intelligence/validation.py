@@ -3,9 +3,7 @@
 
 """Tool validation framework.
 
-Validates configuration, installation, compatibility, dependencies and
-permissions for registered tools. Produces structured validation reports so
-broken tool registrations are detected early.
+Validates configuration, installation, compatibility, dependencies and permissions for registered tools.
 """
 
 from __future__ import annotations

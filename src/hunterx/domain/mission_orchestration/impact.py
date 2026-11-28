@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Impact analysis engine.
-
-Sprint 032. For validated findings the engine computes technical impact,
-affected assets, affected users, data exposure potential, privilege boundary,
-business impact indicators, exploitability, reproducibility and confidence.
-Impact analysis runs only on findings that reached the ``verified`` stage or
-beyond — a candidate never receives an impact analysis.
-"""
+"""Impact analysis engine."""
 
 from __future__ import annotations
 
@@ -22,7 +15,7 @@ from hunterx.shared.time import utcnow_iso
 class ImpactAnalysisEngine:
     """Compute impact analysis for validated findings."""
 
-    #: Vulnerability class → (technical impact, privilege boundary) hints.
+    # : Vulnerability class to (technical impact, privilege boundary) hints.
     _TECHNICAL_IMPACT: dict[str, tuple[str, str]] = {
         "rce": ("remote command execution under the application's privileges", "application → host"),
         "sql_injection": ("database read/write within the application's DB user", "application → database"),

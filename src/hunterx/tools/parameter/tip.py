@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for parameter discovery.
-
-Registers the parameter discovery tools (arjun, paramspider, kiterunner) into
-a :class:`ToolIntelligenceAPI` so the Planner and selection engines can
-recommend them by taxonomy capability (``parameter-discovery``,
-``get-parameter-discovery``, ``post-parameter-discovery``,
-``historical-parameter-discovery``).
-"""
+"""Tool Intelligence Platform registration for parameter discovery."""
 
 from __future__ import annotations
 

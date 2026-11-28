@@ -3,11 +3,8 @@
 
 """API intelligence collection strategy.
 
-Maps an execution mode (passive/active/hybrid) and a target onto the concrete
-set of API intelligence tools the capability should run. The strategy is a pure
-function of (mode, target, requested features) so the same inputs always yield
-the same plan, and it fails closed for passive postures: no new traffic is
-generated — only existing intelligence is consumed.
+Maps an execution mode (passive/active/hybrid) and a target onto the concrete set of API intelligence tools the
+capability should run.
 """
 
 from __future__ import annotations

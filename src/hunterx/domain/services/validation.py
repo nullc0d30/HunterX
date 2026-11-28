@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Validation contract for TIDB entities.
-
-The validator enforces the TIDB system-of-record invariants from the
-Development Bible (`09 - Database Design.md` §3, `08 - Unified Security
-Schema.md`): ULID identifiers, UTC ISO-8601 timestamps, positive versioning
-counters and bounded confidence scores. Storage adapters and application
-services validate entities before persisting them.
-"""
+"""Validation contract for TIDB entities."""
 
 from __future__ import annotations
 

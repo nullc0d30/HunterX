@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sprint 033 §19 — Red-Team Reconnaissance & Validation mission acceptance test.
-
-Demonstrates a multi-step attack path through the FINDING A creates knowledge →
-knowledge changes attack surface → attack path B becomes possible → B is tested
-→ B produces evidence loop:
-
-discovered asset (subdomain) → exposed service (port 8080) → application (admin
-panel) → credential/secret (hardcoded API key in JS) → authenticated API →
-authorization weakness (privileged endpoint reachable with user token) →
-validated impact.
-"""
+"""19, Red-Team Reconnaissance & Validation mission acceptance test."""
 
 from __future__ import annotations
 
@@ -32,7 +22,7 @@ def _scenario() -> MissionScenario:
         description="Red-team recon and validation across a multi-step attack path ending in an authorization weakness.",
     )
 
-    # 1. recon — asset discovery (FINDING A: the subdomain)
+    # 1. recon, asset discovery (FINDING A: the subdomain)
     scenario.add(
         ToolScenario(
             capability="subdomain_enumeration",
@@ -123,7 +113,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 5. authorization weakness — privileged endpoint reachable with the user token
+    # 5. authorization weakness, privileged endpoint reachable with the user token
     def _authz(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.orchestrator.add_hypothesis(
             mission_id,

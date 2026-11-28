@@ -3,9 +3,7 @@
 
 """JavaScript intelligence collection strategy.
 
-Maps an execution mode and target kind onto the concrete set of analyzers the
-capability should run. The strategy is a pure function of (mode, target,
-requested features) so the same inputs always yield the same collection plan.
+Maps an execution mode and target kind onto the concrete set of analyzers the capability should run.
 """
 
 from __future__ import annotations

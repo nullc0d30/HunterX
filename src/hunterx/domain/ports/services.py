@@ -13,7 +13,7 @@ from hunterx.domain.tools import ToolDescriptor
 
 
 class SecretsPort(abc.ABC):
-    """Secret resolution contract (env, vault, keyring, ...)."""
+    """Secret resolution contract (env, vault, keyring,...)."""
 
     @abc.abstractmethod
     def get(self, name: str) -> str:

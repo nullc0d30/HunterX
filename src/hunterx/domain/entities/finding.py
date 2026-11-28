@@ -3,16 +3,7 @@
 
 """Finding entity.
 
-A finding is a verified observation produced by a tool or engine. Findings are
-normalized, deduplicated, correlated and scored before they become part of the
-final report.
-
-Sprint 028 extends the canonical finding with the orchestration fields
-required by the autonomous vulnerability validation & proof lifecycle
-(``vulnerability_class``, ``confidence``, affected assets/endpoints/parameters,
-evidence/validation/proof/impact/reproduction references, scope and
-provenance). The lifecycle status is tracked in ``lifecycle_status`` while the
-legacy ``status`` free string is preserved for backward compatibility.
+A finding is a verified observation produced by a tool or engine.
 """
 
 from __future__ import annotations

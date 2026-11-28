@@ -3,7 +3,7 @@ layout: default
 title: HunterX v7 Target Memory & Campaign Intelligence
 description: >-
   Architecture and reference for the HunterX v7 Target Memory & Campaign
-  Intelligence capability (Sprint 030): the persistent, queryable historical
+  Intelligence capability: the persistent, queryable historical
   understanding of every authorized target. Covers the memory model, first/last
   seen tracking, observation history, snapshots, deterministic diffs, change
   significance, mission/hypothesis/tool memory, freshness, revalidation,
@@ -13,40 +13,36 @@ description: >-
 permalink: /v7-target-memory-and-campaign-intelligence/
 ---
 
-# HunterX v7 Target Memory & Campaign Intelligence — Architecture & Reference
-
-**Status:** Ratified (Sprint 030)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Target Memory & Campaign Intelligence, Architecture & Reference
 
 ---
 
 ## 1. Purpose / Scope
 
-Sprint 030 makes HunterX *remember*.
+Target memory lets HunterX remember what it has already seen.
 
 The objective is a persistent, queryable historical understanding of every
 authorized target:
 
 ```text
 CURRENT TARGET STATE
-      + HISTORICAL OBSERVATIONS
-      + PREVIOUS MISSIONS
-      + PREVIOUS FINDINGS
-      + PREVIOUS VALIDATION
-      + PREVIOUS PoCs
-      + CHANGES
-      + FAILED HYPOTHESES
-      + ATTACK PATH HISTORY
-      ↓
-  TARGET MEMORY
-      ↓
-  NEXT MISSION INTELLIGENCE
+ + HISTORICAL OBSERVATIONS
+ + PREVIOUS MISSIONS
+ + PREVIOUS FINDINGS
+ + PREVIOUS VALIDATION
+ + PREVIOUS PoCs
+ + CHANGES
+ + FAILED HYPOTHESES
+ + ATTACK PATH HISTORY
+ ↓
+ TARGET MEMORY
+ ↓
+ NEXT MISSION INTELLIGENCE
 ```
 
 HunterX must **not** repeatedly rediscover information that is already known
 and still valid. It must remember what it tested, what failed, what was
-validated, what changed, and what remains unknown — and use that memory to
+validated, what changed, and what remains unknown, and use that memory to
 plan the next authorized mission.
 
 ### In scope
@@ -61,7 +57,7 @@ contradiction detection, memory confidence, memory-aware planning integration,
 next-action recommendations, TIDB persistence, events, API, CLI, security,
 performance, golden datasets and end-to-end testing.
 
-### Out of scope (belongs outside Sprint 030)
+### Out of scope (belongs outside )
 
 New vulnerability classes, new offensive tools, new PoC types, new reporting
 formats, new AI providers, new reverse-engineering capabilities, new attack
@@ -69,7 +65,7 @@ techniques, unrelated architecture.
 
 ---
 
-## 2. Memory Model — DO NOT DUPLICATE ENTITIES
+## 2. Memory Model, DO NOT DUPLICATE ENTITIES
 
 Target Memory is **NOT** a replacement for Target Intelligence, TIDB, Finding,
 Evidence, Mission, Knowledge, Correlation or PoC systems. It is a **historical
@@ -95,7 +91,7 @@ endpoints, parameters, HTTP methods, technologies, frameworks, APIs, GraphQL
 endpoints, authentication surfaces, cloud resources, identities, secrets,
 findings, evidence, PoCs, attack paths, missions, tool observations,
 hypotheses, validation attempts, remediation state, historical changes and
-risk state are referenced — never re-created.
+risk state are referenced, never re-created.
 
 ---
 
@@ -151,13 +147,13 @@ snapshot_id · target_id · mission_id · created_at
 schema_version · observation_count · state_hash · state
 ```
 
-- **Reproducible** — the same stored observations + mission produce the same
-  snapshot.
-- **Deterministic hash** — `state_hash` is a SHA-256 over the recursively
-  key-sorted serialized state, so identical states always hash identically.
+- **Reproducible**, the same stored observations + mission produce the same
+ snapshot.
+- **Deterministic hash**, `state_hash` is a SHA-256 over the recursively
+ key-sorted serialized state, so identical states always hash identically.
 - When `mission_id` is given, the observation state reflects the observations
-  collected during that mission, so consecutive mission snapshots support
-  change detection.
+ collected during that mission, so consecutive mission snapshots support
+ change detection.
 
 ---
 
@@ -168,12 +164,12 @@ schema_version · observation_count · state_hash · state
 `added` · `removed` · `changed` · `unchanged` · `reappeared` · `disappeared` ·
 `reopened` · `remediated`
 
-- **Determinism** — the same snapshot pair always yields the same diff
-  (every comparison iterates sorted canonical keys).
+- **Determinism**, the same snapshot pair always yields the same diff
+ (every comparison iterates sorted canonical keys).
 - **Reappeared / disappeared** require an optional `baseline` snapshot: a key
-  present in the baseline, absent in A and present in B is `reappeared`.
-- **Finding lifecycle** — a finding whose `remediation_state` closes between
-  snapshots is `remediated`; one that reopens is `reopened`.
+ present in the baseline, absent in A and present in B is `reappeared`.
+- **Finding lifecycle**, a finding whose `remediation_state` closes between
+ snapshots is `remediated`; one that reopens is `reopened`.
 
 The engine answers: *"What changed since the last Nmap?"*, *"What changed
 since the last HTTPx run?"*, *"What new endpoints appeared?"*, *"What
@@ -216,7 +212,7 @@ entities: `scope`, `started_at`/`ended_at`, `tools_used`,
 HunterX must remember *what* it tested, *why* (the hypothesis), *which tool*
 was used, *what evidence* was observed, *why validation failed*, *when* and
 *under what conditions*. `HypothesisMemory` with `outcome=failed` retains all
-of these — preventing repeated useless testing.
+of these, preventing repeated useless testing.
 
 ---
 
@@ -234,7 +230,7 @@ Successful records retain the reusable pattern as historical intelligence:
 `ToolObservation` retains for every meaningful tool result: `tool`,
 `tool_version`, `execution_id`, `target`, `scope`, `timestamp`,
 `normalized_result`, `evidence_refs`, `derived_entities`, `confidence`,
-`provenance`. **Raw output is never stored** — only normalized results and
+`provenance`. **Raw output is never stored**, only normalized results and
 references.
 
 ---
@@ -258,7 +254,7 @@ known_state · unknown_state · stale_state · changed_state
 coverage_gaps · previous_failures · previous_successes · risk_priorities
 ```
 
-The planner receives **classified state and previous results** — never raw
+The planner receives **classified state and previous results**, never raw
 historical data.
 
 ---
@@ -311,10 +307,10 @@ is **append-only**: historical risk is never overwritten. Each entry records
 `risk_level`, `previous_risk_level`, `reason` and `driving_changes`.
 
 ```text
-Campaign 1  Risk: Medium
-Campaign 2  New exposed service      Risk: High
-Campaign 3  Critical vuln validated  Risk: Critical
-Campaign 4  Fix verified             Risk: High → Medium
+Campaign 1 Risk: Medium
+Campaign 2 New exposed service Risk: High
+Campaign 3 Critical vuln validated Risk: Critical
+Campaign 4 Fix verified Risk: High → Medium
 ```
 
 ---
@@ -334,7 +330,7 @@ Campaign 4  Fix verified             Risk: High → Medium
 or root cause returns:
 
 ```text
-SQLi fixed on /api/search  →  SQLi appears on /api/export
+SQLi fixed on /api/search → SQLi appears on /api/export
 same root-cause family · new affected location · potential regression
 ```
 
@@ -395,12 +391,12 @@ compromise.**
 
 ---
 
-## 25–26. Memory-Aware Planning & Next-Action Intelligence
+## 25-26. Memory-Aware Planning & Next-Action Intelligence
 
 `NextActionRecommender` returns structured advisory recommendations
 (`action`, `reason`, `priority`, `required_tool_capabilities`,
 `evidence_required`, `expected_outcome`, `historical_context`).
-Recommendations are **advisory only** — the mission planner decides execution;
+Recommendations are **advisory only**, the mission planner decides execution;
 memory never executes actions directly.
 
 ---
@@ -470,14 +466,14 @@ Mission, Knowledge, Correlation, PoC) are reused, never duplicated.
 Typed events (registered in `hunterx.domain.events.catalog`):
 
 ```text
-target.memory.updated          target.snapshot.created
-target.diff.created            target.change.detected
-target.observation.stale       target.revalidation.required
-campaign.created               campaign.updated
-campaign.completed             coverage.updated
-coverage.gap.detected          hypothesis.recorded
-hypothesis.failed              hypothesis.succeeded
-risk.changed                   finding.recurred
+target.memory.updated target.snapshot.created
+target.diff.created target.change.detected
+target.observation.stale target.revalidation.required
+campaign.created campaign.updated
+campaign.completed coverage.updated
+coverage.gap.detected hypothesis.recorded
+hypothesis.failed hypothesis.succeeded
+risk.changed finding.recurred
 ```
 
 New event categories `target` and `campaign` were added to
@@ -490,22 +486,22 @@ New event categories `target` and `campaign` were added to
 Mounted at `/targets` in `hunterx.api.target_memory`:
 
 ```text
-GET  /targets/{target_id}/memory
-GET  /targets/{target_id}/snapshots
-GET  /targets/snapshots/{snapshot_id}
-GET  /targets/snapshots/{snapshot_a}/compare/{snapshot_b}
-GET  /targets/{target_id}/changes
-GET  /targets/{target_id}/history
-GET  /targets/{target_id}/coverage
-GET  /targets/{target_id}/gaps
-GET  /targets/{target_id}/risk
-GET  /targets/{target_id}/revalidate
-GET  /targets/{target_id}/hypotheses
-GET  /targets/{target_id}/findings
-GET  /targets/{target_id}/attack-paths
-GET  /targets/campaigns
-GET  /targets/campaigns/{campaign_id}
-GET  /targets/campaigns/{campaign_id}/intelligence
+GET /targets/{target_id}/memory
+GET /targets/{target_id}/snapshots
+GET /targets/snapshots/{snapshot_id}
+GET /targets/snapshots/{snapshot_a}/compare/{snapshot_b}
+GET /targets/{target_id}/changes
+GET /targets/{target_id}/history
+GET /targets/{target_id}/coverage
+GET /targets/{target_id}/gaps
+GET /targets/{target_id}/risk
+GET /targets/{target_id}/revalidate
+GET /targets/{target_id}/hypotheses
+GET /targets/{target_id}/findings
+GET /targets/{target_id}/attack-paths
+GET /targets/campaigns
+GET /targets/campaigns/{campaign_id}
+GET /targets/campaigns/{campaign_id}/intelligence
 POST /targets/campaigns
 POST /targets/campaigns/{campaign_id}/complete
 ```
@@ -578,16 +574,16 @@ and cloud resource change.
 
 ## 38. End-to-End Test
 
-`tests/integration/test_target_memory_platform.py` runs the Sprint 030
+`tests/integration/test_target_memory_platform.py` runs the
 acceptance scenario through the composed platform:
 
-1. **MISSION 1** — recon, discover assets/endpoints/technologies, validate a
-   finding, record mission/hypothesis/tool memory, create snapshot.
-2. **MISSION 2** — load memory, detect changes, skip unnecessary rediscovery,
-   identify stale observations and coverage gaps, prioritize the changed
-   attack surface, update memory, create snapshot + diff.
-3. **CAMPAIGN INTELLIGENCE** — what changed, was discovered, was fixed,
-   remains vulnerable/untested, and what should happen next.
+1. **MISSION 1**, recon, discover assets/endpoints/technologies, validate a
+ finding, record mission/hypothesis/tool memory, create snapshot.
+2. **MISSION 2**, load memory, detect changes, skip unnecessary rediscovery,
+ identify stale observations and coverage gaps, prioritize the changed
+ attack surface, update memory, create snapshot + diff.
+3. **CAMPAIGN INTELLIGENCE**, what changed, was discovered, was fixed,
+ remains vulnerable/untested, and what should happen next.
 
 ---
 
@@ -601,7 +597,7 @@ Same historical state + same snapshot pair ⇒ same diff
 ## 40. Capability Manifest
 
 `capabilities/target-memory-campaign-intelligence.json` ratifies the
-capability (wave 15, sprint 30), its states, events, persistence entities,
+capability, its states, events, persistence entities,
 API and CLI surface.
 
 ---
@@ -611,11 +607,11 @@ API and CLI surface.
 Add a new memory record type by following the TIDB pattern:
 
 1. Add a `@dataclass` entity extending `TidbEntity` in
-   `hunterx.domain.entities.tidb.memory`.
+ `hunterx.domain.entities.tidb.memory`.
 2. Add a matching ORM model in
-   `hunterx.infrastructure.db.sql.tidb_models.memory_models`.
+ `hunterx.infrastructure.db.sql.tidb_models.memory_models`.
 3. Register both in their package `__init__.py` (name-convention driven
-   registry picks them up).
+ registry picks them up).
 4. Generate an Alembic migration (`python -m alembic revision --autogenerate`).
 5. Wire mapping helpers in `hunterx.application.target_memory`.
 

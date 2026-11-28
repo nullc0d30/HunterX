@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Rules generators: execution, mission and workflow rules.
-
-Emits the execution rules (permissions, sandbox, retry policy), the mission
-rules (which mission profiles a tool participates in) and the workflow rules
-(stages, parallelism, approvals, fallbacks) of a Tool Integration Pack.
-"""
+"""Rules generators: execution, mission and workflow rules."""
 
 from __future__ import annotations
 

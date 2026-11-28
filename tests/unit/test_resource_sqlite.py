@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Persistence tests: SQLite resource-safe configuration.
-
-The file-backed SQLite engine must be opened with WAL journaling, a busy
-timeout and concurrent-reader support so the autonomous mission (single writer,
-many short sessions) never deadlocks on ``database is locked``.
-"""
+"""Persistence tests: SQLite resource-safe configuration."""
 
 from __future__ import annotations
 

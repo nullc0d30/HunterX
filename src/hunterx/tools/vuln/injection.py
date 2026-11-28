@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Web injection vulnerability scanner adapters.
-
-Integrates the injection-testing toolset (dalfox, xssstrike, sqlmap, ghauri,
-commix, tplmap, sstimap, xxeinjector) and the OOB interaction client
-(interactsh) into the Tool Integration SDK. Each adapter invokes its external
-binary through the shared runner seam and emits canonical *candidate* records
-under the pipeline ``candidates`` payload.
-
-VALIDATION BOUNDARY: every injection scanner output is a CANDIDATE. It carries
-``requires_validation = True`` and a confidence contribution bounded below the
-proof ceiling. Candidates never become findings automatically — the Proof and
-Validation subsystems retain authority over the final verdict.
-"""
+"""Web injection vulnerability scanner adapters."""
 
 from __future__ import annotations
 
@@ -72,7 +60,7 @@ def _candidate(
 
 
 class DalfoxAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``dalfox`` — fast XSS parameter scanner."""
+    """SDK adapter for ``dalfox``, fast XSS parameter scanner."""
 
     descriptor = ToolDescriptor(
         name="dalfox",
@@ -128,7 +116,7 @@ class DalfoxAdapter(VulnerabilityScanAdapter):
 
 
 class XSStrikeAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``XSStrike`` — advanced XSS detection suite."""
+    """SDK adapter for ``XSStrike``, advanced XSS detection suite."""
 
     descriptor = ToolDescriptor(
         name="xssstrike",
@@ -175,7 +163,7 @@ class XSStrikeAdapter(VulnerabilityScanAdapter):
 
 
 class SQLmapAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``sqlmap`` — automated SQL injection tool."""
+    """SDK adapter for ``sqlmap``, automated SQL injection tool."""
 
     descriptor = ToolDescriptor(
         name="sqlmap",
@@ -224,7 +212,7 @@ class SQLmapAdapter(VulnerabilityScanAdapter):
 
 
 class GhauriAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``ghauri`` — cross-platform SQLi testing tool."""
+    """SDK adapter for ``ghauri``, cross-platform SQLi testing tool."""
 
     descriptor = ToolDescriptor(
         name="ghauri",
@@ -259,7 +247,7 @@ class GhauriAdapter(VulnerabilityScanAdapter):
 
 
 class CommixAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``commix`` — automated command injection tool."""
+    """SDK adapter for ``commix``, automated command injection tool."""
 
     descriptor = ToolDescriptor(
         name="commix",
@@ -292,7 +280,7 @@ class CommixAdapter(VulnerabilityScanAdapter):
 
 
 class TplmapAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``tplmap`` — server-side template injection tool."""
+    """SDK adapter for ``tplmap``, server-side template injection tool."""
 
     descriptor = ToolDescriptor(
         name="tplmap",
@@ -321,7 +309,7 @@ class TplmapAdapter(VulnerabilityScanAdapter):
 
 
 class SSTImapAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``sstimap`` — SSTI detection and exploitation framework."""
+    """SDK adapter for ``sstimap``, SSTI detection and exploitation framework."""
 
     descriptor = ToolDescriptor(
         name="sstimap",
@@ -350,7 +338,7 @@ class SSTImapAdapter(VulnerabilityScanAdapter):
 
 
 class XXEinjectorAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``XXEinjector`` — XXE injection toolkit."""
+    """SDK adapter for ``XXEinjector``, XXE injection toolkit."""
 
     descriptor = ToolDescriptor(
         name="xxeinjector",
@@ -399,7 +387,7 @@ class XXEinjectorAdapter(VulnerabilityScanAdapter):
 
 
 class InteractshAdapter(VulnerabilityScanAdapter):
-    """SDK adapter for ``interactsh`` — OAST (out-of-band) callback client.
+    """SDK adapter for ``interactsh``, OAST (out-of-band) callback client.
 
     The client generates a unique interaction domain and listens for out-of-band
     callbacks. The adapter captures the interaction domain as an observation.

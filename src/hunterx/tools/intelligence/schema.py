@@ -4,9 +4,6 @@
 """Tool metadata schema.
 
 The permanent schema for storing and exchanging tool metadata and knowledge.
-Provides bidirectional mapping between the domain dataclasses and plain
-JSON/YAML-safe mappings, plus a loader for Tool Knowledge Files
-(``docs/bible/07 - Tool Knowledge Base Specification.md``).
 """
 
 from __future__ import annotations

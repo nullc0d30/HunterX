@@ -1,23 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Objective-aware mission completion contract.
-
-The real-run regression: a ``full_security_assessment`` reached
-``stop_condition=coverage_target_achieved`` at 76.47% coverage while 67 of 69
-hypotheses were still open, active testing had not been performed, browser
-coverage was NOT_ASSESSED and no attack paths had been evaluated. Coverage
-measured what was *planned/tested*, not whether the target was assessed.
-
-This module defines the **completion contract**: the objective-specific gates a
-mission must satisfy before any coverage-derived condition may become terminal.
-Coverage remains an input, but it is no longer sufficient on its own.
-
-A classified-but-open hypothesis (``DEFERRED``/``BLOCKED`` with a recorded
-reason) is acceptable: the assessment is then reported as partial/blocked —
-never as complete. An *unclassified actionable* hypothesis always blocks
-completion.
-"""
+"""Objective-aware mission completion contract."""
 
 from __future__ import annotations
 
@@ -132,7 +116,7 @@ def _active_testing_gate(mission: Any) -> CompletionGate:
     Active testing is *applicable* when an evidence-backed vulnerability
     hypothesis exists or a probeable surface (endpoints/parameters) was
     discovered. When applicable, at least one targeted probe must have been
-    executed — otherwise the assessment is incomplete.
+    executed, otherwise the assessment is incomplete.
     """
     vuln_hypotheses = [
         hypothesis

@@ -1,5 +1,5 @@
 {
-  "description": "Sprint 029 professional finding intelligence & reporting golden scenarios. Each scenario carries the finding state, evidence, impact, confidence, proof and scope inputs and the expected reporting outcomes: severity, priority, quality grade, reportability verdict and classification mappings.",
+  "description": "Professional finding intelligence & reporting golden scenarios. Each scenario carries the finding state, evidence, impact, confidence, proof and scope inputs and the expected reporting outcomes: severity, priority, quality grade, reportability verdict and classification mappings.",
   "version": "1.0.0",
   "scenarios": [
     {

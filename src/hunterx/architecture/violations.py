@@ -3,9 +3,7 @@
 
 """Violation model shared across validators.
 
-Every check emits :class:`Violation` objects. A violation carries a stable
-code, a severity, the offending module/line, a human-readable message and
-concrete remediation guidance so developers know exactly how to fix it.
+Every check emits :class:`Violation` objects.
 """
 
 from __future__ import annotations

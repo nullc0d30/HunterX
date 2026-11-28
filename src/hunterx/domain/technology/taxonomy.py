@@ -4,15 +4,6 @@
 """Canonical technology taxonomy.
 
 The normalized, deterministic catalogue of technologies HunterX recognises.
-Every detected technology — whatever the tool calls it — is resolved against
-this catalogue so ``Apache``, ``apache``, ``Apache httpd`` and ``Apache HTTP
-Server`` collapse onto one canonical name while the original observation is
-always preserved.
-
-The catalogue is deliberately curated and deterministic: it covers the
-technologies exercised by the golden datasets and the signature database, and
-is extensible by appending entries. Entries are pure data; resolution logic
-lives in :mod:`hunterx.domain.technology.resolver`.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 {
   "name": "cloud_saas_golden",
-  "description": "Golden dataset for the Sprint 033 cloud/SaaS mission: Azure provider detection, public blob exposure validated, insecure webhook validated, and a fake secret decoy rejected.",
+  "description": "Golden dataset for the cloud/SaaS mission: Azure provider detection, public blob exposure validated, insecure webhook validated, and a fake secret decoy rejected.",
   "objective": "cloud_assessment",
   "target": "acme-org",
   "assets": [

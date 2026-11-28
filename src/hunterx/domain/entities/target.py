@@ -3,8 +3,8 @@
 
 """Target entity.
 
-A target is an authorized objective of a mission — a host, network range,
-domain, or URL that the mission is allowed to interrogate.
+A target is an authorized objective of a mission, a host, network range, domain, or URL that the mission is allowed
+to interrogate.
 """
 
 from __future__ import annotations

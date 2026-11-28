@@ -3,16 +3,7 @@
 
 """Professional finding intelligence & reporting canonical enums.
 
-Pure, storage-agnostic value categories for the Sprint 029 professional
-reporting capability. They keep the report lifecycle, reportability,
-quality, priority, claim, QA, export, remediation, retest, classification,
-source-reliability and security-testing vocabulary strictly separated so a
-report is never a text generator output: evidence decides the truth and the
-AI only explains it.
-
-The security model of this package is explicit: a report is never
-``READY_FOR_SUBMISSION`` while an unsupported claim, an unredacted secret or
-a QA failure is open; every material claim must trace back to evidence.
+Pure, storage-agnostic value categories for the professional reporting capability.
 """
 
 from __future__ import annotations
@@ -132,7 +123,7 @@ class ExportFormat(StrEnum):
 class RemediationState(StrEnum):
     """Lifecycle of remediation validation for a finding.
 
-    Mirrors the sprint contract: original finding, remediation applied,
+    Mirrors the reporting contract: original finding, remediation applied,
     retest, proof replay, finding state and closure.
     """
 

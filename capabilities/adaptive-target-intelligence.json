@@ -2,9 +2,8 @@
   "capability": "adaptive-target-intelligence",
   "name": "Adaptive Target Intelligence & Attack-Surface Graph",
   "version": "1.0.0",
-  "wave": 26,
-  "status": "ratified",
-  "description": "The Target Intelligence layer that evolves HunterX from a tool runner into an adaptive security reasoning system. Every target is represented as a continuously evolving attack-surface graph backed by immutable observations, explicit coverage, explicit uncertainty, hypotheses to validate, an explainable next-action engine that selects the smallest justified tool set, and full replayability from stored artifacts. It extends Sprint 017 topology, Sprint 021/022 proof & validation, Sprint 023 tool intelligence and Sprint 025 tool mastery without redesigning them.",
+  "status": "stable",
+  "description": "The Target Intelligence layer that evolves HunterX from a tool runner into an adaptive security reasoning system. Every target is represented as a continuously evolving attack-surface graph backed by immutable observations, explicit coverage, explicit uncertainty, hypotheses to validate, an explainable next-action engine that selects the smallest justified tool set, and full replayability from stored artifacts. It builds on the topology, proof and validation, tool intelligence and tool mastery layers without redesigning them.",
   "inputs": [
     "IntelligenceTarget (canonical target entity, never a bare hostname)",
     "scope / tenant / mission isolation context",
@@ -12,7 +11,7 @@
     "IntelligenceAsset graph nodes and topology relationships",
     "Evidence records (WHAT/WHERE/WHEN/HOW/SOURCE/WHY_TRUST/REPRODUCIBILITY)",
     "mission objective, safety ceiling and authorization status",
-    "available tools, tool capabilities, cost, risk and previous executions (Sprint 023/025)",
+    "available tools, tool capabilities, cost, risk and previous executions",
     "known-vulnerability and technology knowledge (CVE/CWE where available)"
   ],
   "outputs": [
@@ -114,7 +113,7 @@
     "weights are configurable via RankingWeights and recorded on IntelligenceDecision (target-intelligence/ranking/1.0.0)",
     "negative results are scoped: tested_capability + tool + scope + conditions + coverage, never global 'not vulnerable'",
     "conflicting tool results are preserved and escalated, never averaged",
-    "tool selection delegates to the Sprint 025 mission-aware selector; selection never widens scope or authorization",
+    "tool selection delegates to the mission-aware selector; selection never widens scope or authorization",
     "missing information is UNKNOWN/NOT_ASSESSED, never negative",
     "novel behavior enters hypotheses without requiring a CVE or signature",
     "every action carries stop conditions and a fallback",
@@ -128,7 +127,7 @@
     "no hardcoded universal tool sequence; the next-action engine ranks from intelligence state",
     "no black-box action selection; every decision carries rationale, alternatives and policy",
     "scores are never a single opaque number; each dimension is reported with its weight",
-    "proof integration follows Sprint 021/022: DISCOVER -> VALIDATE -> PROVE, avoiding redundant discovery"
+    "proof integration follows DISCOVER -> VALIDATE -> PROVE, avoiding redundant discovery"
   ],
   "persistence": {
     "store": "TIDB normalized entities (never a JSON dump of the whole graph)",

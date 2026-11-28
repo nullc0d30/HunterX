@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 3 — universal end-to-end assessment validation.
+"""Universal end-to-end assessment validation.
 
-Final validation phase. Proves the target-agnostic pipeline end to end:
-
-    1. generic pipeline operation over nine abstract target models (no
-       target-specific knowledge),
-    2. a real black-box regression against ``http://localhost:3010`` treated as
-       an arbitrary external target (discovered by HunterX, never preconfigured),
-    3. the generic pipeline metrics, capability-coverage matrix, adaptive
-       control behavior, finding quality, and the exhaustion completion gate.
-
-Juice Shop is only a regression target here — it never defines the engine.
+Final validation phase.
 """
 
 from __future__ import annotations
@@ -57,7 +48,7 @@ class TestGenericTargetValidation:
             metrics = harness.surface_metrics()
             tasks = harness.task_metrics()
             # Every target model produced discovered surfaces and scheduled
-            # assessment tasks — regardless of its technology/object model.
+            # assessment tasks, regardless of its technology/object model.
             assert metrics["attack_surfaces_discovered"] >= 3, shape.name
             assert tasks["tasks_generated"] > 0, shape.name
             # The capability matrix is built from the live catalog for every
@@ -138,7 +129,8 @@ class TestGenericTargetValidation:
 class TestRealBlackBoxRegression:
     """Run HunterX against the real loopback target as an arbitrary external
     target: discovery, mapping, attack, verification and exhaustion all derive
-    from what HunterX observes — nothing is preconfigured."""
+    from what HunterX observes, nothing is preconfigured.
+    """
 
     @pytest.mark.skipif(not _target_reachable(), reason="regression target not running at localhost:3010")
     def test_black_box_assessment_and_exhaustion(self) -> None:
@@ -174,7 +166,8 @@ class TestRealBlackBoxRegression:
     @pytest.mark.skipif(not _target_reachable(), reason="regression target not running at localhost:3010")
     def test_completion_gate_honesty_under_task_cap(self) -> None:
         """With a task cap, the completion gate must NOT report completion while
-        applicable work remains — and the queue dump must show it."""
+        applicable work remains, and the queue dump must show it.
+        """
         harness = Phase3Harness(target=REAL_TARGET, probe_timeout_s=3.0, max_tasks=40)
         harness.real_discovery(max_scripts=3, max_endpoints=60)
         harness.attack_queue()

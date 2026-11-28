@@ -3,16 +3,7 @@
 
 """Tool Mastery API.
 
-The Sprint 025 facade. Composes every mastery subsystem — master-profile
-registry, relationship graph, playbook engine, mission-aware selector,
-target history, coverage engine, dataset registry, version awareness,
-parser regression and result replay — behind a single
-:class:`~hunterx.domain.ports.tool_mastery.ToolMasteryPort` implementation.
-
-The facade seeds itself from the canonical Sprint 025 data: the universal
-arsenal (recon, web, analysis, enterprise, exploit tool specs), playbooks,
-relationships and datasets. When given no external TIP, it builds and seeds
-its own so selection is self-contained.
+The facade.
 """
 
 from __future__ import annotations
@@ -173,7 +164,7 @@ class ToolMasteryAPI(ToolMasteryPort):
         """Register master profiles into the TIP registry.
 
         Tools already registered in the TIP (e.g. the richer platform records
-        wired by the assembler) are left untouched — the mastery facade never
+        wired by the assembler) are left untouched, the mastery facade never
         clobbers existing TIP knowledge.
         """
         for profile in self.registry.list():
@@ -220,7 +211,7 @@ class ToolMasteryAPI(ToolMasteryPort):
         """Return tool ids classified at ``level``."""
         return self.registry.by_support_level(level)
 
-    # -- consolidated contracts (Sprint 034.5) ------------------------------
+    # -- consolidated contracts () ------------------------------
 
     def contract(self, tool_id: str) -> dict[str, Any] | None:
         """Return the consolidated machine-readable contract for ``tool_id``."""

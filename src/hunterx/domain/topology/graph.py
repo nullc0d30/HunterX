@@ -3,10 +3,7 @@
 
 """Topology graph.
 
-An in-memory adjacency index over correlated graph edges. It powers queries
-(neighbors, ancestors, descendants, shortest paths) and analysis without a
-dedicated graph database — the graph is always rebuilt from canonical TIDB
-relationships and never holds the source of truth.
+An in-memory adjacency index over correlated graph edges.
 """
 
 from __future__ import annotations
@@ -155,10 +152,10 @@ class TopologyGraph:
         rel_types: Iterable[str] | None = None,
         max_depth: int = 0,
     ) -> list[str]:
-        """Return the shortest node path ``source → target`` or ``[]``.
+        """Return the shortest node path ``source to target`` or ``[]``.
 
         BFS over undirected adjacency (edges are traversable in both
-        directions) so hierarchy paths like ``domain → hostname → ip`` work
+        directions) so hierarchy paths like ``domain to hostname to ip`` work
         regardless of edge orientation. Returns a list of node keys including
         both endpoints, or an empty list when unreachable.
         """

@@ -52,7 +52,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -101,7 +101,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -139,7 +139,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -182,7 +182,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -226,7 +226,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -270,7 +270,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -311,7 +311,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -352,7 +352,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "dns"
       }
     },
@@ -391,7 +391,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -436,7 +436,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "dns"
       }
     },
@@ -474,7 +474,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "dns"
       }
     },
@@ -510,7 +510,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "dns"
       }
     },
@@ -552,7 +552,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "dns"
       }
     },
@@ -600,7 +600,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -658,7 +658,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -704,7 +704,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -749,7 +749,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -787,7 +787,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -823,7 +823,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -860,7 +860,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "network"
       }
     },
@@ -909,7 +909,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -955,7 +955,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -998,7 +998,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -1045,7 +1045,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -1087,7 +1087,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -1130,7 +1130,7 @@
       "safety_class": "read-only",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "web"
       }
     },
@@ -1178,7 +1178,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1225,7 +1225,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1267,7 +1267,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1309,7 +1309,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1349,7 +1349,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1394,7 +1394,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1433,7 +1433,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "recon"
       }
     },
@@ -1477,7 +1477,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "crawl"
       }
     },
@@ -1525,7 +1525,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "content"
       }
     },
@@ -1572,7 +1572,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "content"
       }
     },
@@ -1621,7 +1621,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "content"
       }
     },
@@ -1667,7 +1667,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "content"
       }
     },
@@ -1714,7 +1714,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "parameter"
       }
     },
@@ -1758,7 +1758,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "parameter"
       }
     },
@@ -1801,7 +1801,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -1846,7 +1846,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -1891,7 +1891,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -1934,7 +1934,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -1974,7 +1974,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -2013,7 +2013,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "api"
       }
     },
@@ -2059,7 +2059,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "javascript"
       }
     },
@@ -2104,7 +2104,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "javascript"
       }
     },
@@ -2150,7 +2150,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "javascript"
       }
     },
@@ -2197,7 +2197,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "javascript"
       }
     },
@@ -2254,7 +2254,7 @@
       "safety_class": "low-impact-active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "vulnerability"
       }
     },
@@ -2301,7 +2301,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "vulnerability"
       }
     },
@@ -2345,7 +2345,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "vulnerability"
       }
     },
@@ -2391,7 +2391,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2433,7 +2433,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2478,7 +2478,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2523,7 +2523,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2563,7 +2563,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2605,7 +2605,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2648,7 +2648,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2689,7 +2689,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "injection"
       }
     },
@@ -2736,7 +2736,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "oob"
       }
     },
@@ -2784,7 +2784,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "secrets"
       }
     },
@@ -2829,7 +2829,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "secrets"
       }
     },
@@ -2874,7 +2874,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "secrets"
       }
     },
@@ -2920,7 +2920,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "sast"
       }
     },
@@ -2964,7 +2964,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "sast"
       }
     },
@@ -3012,7 +3012,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "proxy"
       }
     },
@@ -3058,7 +3058,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "proxy"
       }
     },
@@ -3110,7 +3110,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "proof"
       }
     },
@@ -3162,7 +3162,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "enterprise"
       }
     },
@@ -3209,7 +3209,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "enterprise"
       }
     },
@@ -3257,7 +3257,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "enterprise"
       }
     },
@@ -3298,7 +3298,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "enterprise"
       }
     },
@@ -3338,7 +3338,7 @@
       "safety_class": "active",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "enterprise"
       }
     },
@@ -3379,7 +3379,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "snmp"
       }
     },
@@ -3427,7 +3427,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "cloud"
       }
     },
@@ -3472,7 +3472,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "cloud"
       }
     },
@@ -3521,7 +3521,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "container"
       }
     },
@@ -3568,7 +3568,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "container"
       }
     },
@@ -3615,7 +3615,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "container"
       }
     },
@@ -3654,7 +3654,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "container"
       }
     },
@@ -3695,7 +3695,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "composition"
       }
     },
@@ -3744,7 +3744,7 @@
       "safety_class": "high-impact",
       "destructive": true,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "exploit"
       }
     },
@@ -3789,7 +3789,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "exploit"
       }
     },
@@ -3829,7 +3829,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "exploit"
       }
     },
@@ -3869,7 +3869,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "payload"
       }
     },
@@ -3906,7 +3906,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "payload"
       }
     },
@@ -3942,7 +3942,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "payload"
       }
     },
@@ -3985,7 +3985,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "knowledge"
       }
     },
@@ -4026,7 +4026,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "knowledge"
       }
     },
@@ -4069,7 +4069,7 @@
       "safety_class": "passive",
       "destructive": false,
       "provenance": {
-        "source": "sprint-025",
+        "source": "hunterx-tool-registry",
         "category": "knowledge"
       }
     }
@@ -6025,7 +6025,7 @@
         "no new endpoints or indicators"
       ],
       "version": "1.0.0",
-      "description": "Leverage client-side code for attack surface expansion."
+      "description": "Use client-side code to expand the attack surface."
     },
     {
       "playbook_id": "secret-discovery",
@@ -6612,7 +6612,7 @@
         "all in-scope accounts audited"
       ],
       "version": "1.0.0",
-      "description": "Feeds Sprint 017 Cloud Intelligence as evidence provider."
+      "description": "Feeds the Cloud Intelligence capability as evidence provider."
     },
     {
       "playbook_id": "container-assessment",

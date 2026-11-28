@@ -8,7 +8,7 @@
 # re-exports and duck-typed contracts referenced by name (not imported) from
 # outside the package. This file whitelists exactly those symbols by defining
 # them (vulture marks every name defined here as "used"). Adding a name here
-# WITHOUT justification is a code smell — prefer removing dead code.
+# WITHOUT justification is a code smell - prefer removing dead code.
 #
 # See docs/v7-quality-gates.md ("Dead Code Detection") for the policy.
 

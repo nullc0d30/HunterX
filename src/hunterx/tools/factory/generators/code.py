@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Code generators: adapter, error handling, logging and telemetry.
-
-Emits the Python skeletons of a Tool Integration Pack — the SDK tool adapter,
-typed errors, module logging and runtime telemetry — all rendered from
-integration templates.
-"""
+"""Code generators: adapter, error handling, logging and telemetry."""
 
 from __future__ import annotations
 

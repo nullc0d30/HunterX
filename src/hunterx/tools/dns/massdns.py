@@ -3,16 +3,8 @@
 
 """MassDNS tool adapter.
 
-Integrates ``massdns`` — a high-performance DNS stub resolver for bulk
-subdomain resolution — into the Tool Integration SDK. The adapter writes the
-target domain list to a per-execution scratch file, invokes the binary through
-the shared :class:`~hunterx.tools.recon.runner.BinaryRunner` seam with JSON
-output (``-o J``) and parses the answers into canonical :class:`DnsRecord`
-instances.
-
-Bulk resolver tools read a domain list; a single target domain is expanded
-into a one-entry list. Resolution output is a candidate observation, never a
-validated finding.
+Integrates ``massdns``, a high-performance DNS stub resolver for bulk subdomain resolution, into the Tool
+Integration SDK.
 """
 
 from __future__ import annotations

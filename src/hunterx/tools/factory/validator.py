@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Integration Pack validator.
-
-Validates generated packs for naming, required files, metadata completeness,
-parser/normalizer availability, documentation completeness, test
-availability, mission compatibility, schema compatibility and the quality
-gates. A pack with any error-level issue is rejected.
-"""
+"""Tool Integration Pack validator."""
 
 from __future__ import annotations
 

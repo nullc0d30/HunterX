@@ -3,9 +3,7 @@
 
 """Focused regression tests for the HunterX CLI startup banner.
 
-The banner is presentation-only branding emitted through the CLI startup/help
-path. It must render the exact required lines verbatim and interpolate the
-canonical package version (never a second hardcoded version source).
+The banner is presentation-only branding emitted through the CLI startup/help path.
 """
 
 from __future__ import annotations

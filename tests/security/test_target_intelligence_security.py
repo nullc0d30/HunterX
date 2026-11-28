@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the Adaptive Target Intelligence layer.
-
-Verifies tenant/mission/scope isolation, immutability of observations,
-prompt-injection resistance (no shell metacharacters in payloads), oversized
-artifact guarding, and the invariant that AI output never overrides policy.
-"""
+"""Security tests for the Adaptive Target Intelligence layer."""
 
 from __future__ import annotations
 
@@ -175,7 +170,7 @@ class TestNegativeKnowledgeSemantics:
         )
         state = engine.snapshot(target)
         assert state.negative_results[0].result == "no_evidence"
-        # The coverage cell is TESTED, not NOT_APPLICABLE — it never becomes "safe".
+        # The coverage cell is TESTED, not NOT_APPLICABLE, it never becomes "safe".
         from hunterx.domain.target_intelligence.enums import CoverageState
 
         assert state.coverage.state("url:https://example.com/", CoverageCapability.XSS) is CoverageState.TESTED

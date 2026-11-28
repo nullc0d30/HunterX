@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission coverage engine.
-
-Sprint 032. Tracks assets covered, ports covered, services covered,
-technologies covered, endpoints covered, parameters covered, vulnerability
-classes tested, findings validated, unknown areas and untested attack paths.
-Coverage is measured per (asset, capability) cell — never "number of tools
-executed".
-
-The engine mirrors the Sprint 026 :class:`CoverageEngine` contract at the
-orchestration aggregate level so coverage is reported per mission.
-"""
+"""Mission coverage engine."""
 
 from __future__ import annotations
 

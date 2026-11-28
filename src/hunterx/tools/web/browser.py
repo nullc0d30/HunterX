@@ -1,26 +1,11 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""In-process browser-testing adapter (Playwright + Chromium).
-
-A first-class browser capability for modern web applications: the adapter
-launches a real headless browser against the target, exercises the page like a
-client (scripts execute, XHR/fetch fire, storage is populated) and collects
-client-side security evidence no HTTP-only tool can see:
-
-* console errors / stack traces (information disclosure),
-* failed network requests,
-* DOM-discovered links/routes/forms/endpoints (attack-surface expansion),
-* localStorage / sessionStorage / cookies (sensitive-data exposure),
-* security-relevant DOM facts (iframes, inline handlers, mixed content).
-
-The adapter is scope-safe by construction: it only ever loads the URL the
-execution context authorizes. Discovered third-party URLs are REPORTED, never
-visited.
-"""
+"""In-process browser-testing adapter (Playwright + Chromium)."""
 
 from __future__ import annotations
 
+import contextlib
 import json
 from typing import Any
 from urllib.parse import urlsplit
@@ -60,7 +45,6 @@ class BrowserTestingAdapter(ToolAdapter):
         timeout_ms = int(self._param(context, "timeout", 20) * 1000)
         console_errors: list[str] = []
         request_failures: list[dict[str, str]] = []
-        responses: list[dict[str, Any]] = []
 
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
@@ -81,11 +65,9 @@ class BrowserTestingAdapter(ToolAdapter):
                     ),
                 )
                 response = page.goto(target, timeout=timeout_ms, wait_until="domcontentloaded")
-                try:
-                    # Give SPA frameworks a bounded window to boot and fire XHRs.
+                # Give SPA frameworks a bounded window to boot and fire XHRs.
+                with contextlib.suppress(Exception):  # networkidle is best-effort
                     page.wait_for_load_state("networkidle", timeout=min(timeout_ms, 8000))
-                except Exception:  # noqa: BLE001 - networkidle is best-effort
-                    pass
                 status = response.status if response is not None else 0
                 headers = {k.lower(): v for k, v in (response.headers.items() if response is not None else {})}
                 body_text = ""
@@ -174,6 +156,7 @@ class BrowserTestingAdapter(ToolAdapter):
         collector.set_json(payload)
 
     def validate_output(self, context: ExecutionContext, output):  # noqa: ANN001
+        """Validate that a browser run produced a structured result."""
         errors: list[str] = []
         if output.exit_code != 0:
             errors.append(f"exit code {output.exit_code}")
@@ -182,6 +165,7 @@ class BrowserTestingAdapter(ToolAdapter):
         return (not errors, errors)
 
     def normalize(self, context: ExecutionContext, output):  # noqa: ANN001
+        """Normalize browser output into discovered assets and observations."""
         from hunterx.tools.adapter import ToolOutput
 
         normalized = ToolOutput()

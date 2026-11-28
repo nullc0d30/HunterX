@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Scope enforcement for Live Host & Service Discovery.
-
-Decides whether a host, address, CIDR, name or port may be scanned, collected
-or persisted based on the mission's authorized targets, excluded networks,
-excluded names and excluded ports. The enforcer is pure and deterministic: the
-same inputs always yield the same decision, with a human-readable reason for
-every denial.
-"""
+"""Scope enforcement for Live Host & Service Discovery."""
 
 from __future__ import annotations
 

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Engine-level tool execution integration tests.
-
-Adapters run through the real :class:`ExecutionEngine` pipeline with a fake
-runner, so execution classification, output formats, artifacts and retries are
-certified end-to-end without any binary.
-"""
+"""Engine-level tool execution integration tests."""
 
 from __future__ import annotations
 
@@ -50,7 +45,7 @@ class TestPipelineExecution:
         import pytest
 
         engine = _engine('{"host": "a.example.com"}\n')
-        # No adapter registered → the engine refuses to execute (fail-closed).
+        # No adapter registered to the engine refuses to execute (fail-closed).
         with pytest.raises(LookupError):
             engine.execute(make_context("nmap"))
 

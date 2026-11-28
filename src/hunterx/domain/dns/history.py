@@ -3,10 +3,8 @@
 
 """DNS historical comparison.
 
-Compares current observations against historical records to detect changes
-over time: records added, removed, or whose value changed. Every change is
-reported with the before/after values, timestamps and sources so it can be
-traced and correlated with security events.
+Compares current observations against historical records to detect changes over time: records added, removed, or
+whose value changed.
 """
 
 from __future__ import annotations

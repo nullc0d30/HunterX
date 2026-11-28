@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Vulnerability knowledge provider adapters.
-
-In-process adapters that normalize external vulnerability-knowledge payloads
-(NVD CVE JSON, CISA KEV catalog, EPSS score files, MITRE CWE data, vendor
-advisories, GHSA/OSV records, SBOM documents) into the canonical
-:class:`~hunterx.domain.vulnerability.models.Vulnerability` /
-:class:`~hunterx.domain.vulnerability.models.VulnerabilityKnowledgeBatch`
-contract. These adapters perform data normalization only — they never contact
-the provider at runtime, never fetch remote content and never execute anything.
-"""
+"""Vulnerability knowledge provider adapters."""
 
 from __future__ import annotations
 

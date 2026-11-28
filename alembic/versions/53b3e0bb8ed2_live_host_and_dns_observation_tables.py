@@ -1,8 +1,5 @@
-"""live host and dns observation tables
-
-Revision ID: 53b3e0bb8ed2
-Revises: 4302b30cb7c7
-Create Date: 2026-08-08 05:07:58.144343
+"""live host and dns observation tables Revision ID: 53b3e0bb8ed2 Revises: 4302b30cb7c7 Create Date: 2026-08-08
+05:07:58.144343.
 
 """
 from collections.abc import Sequence

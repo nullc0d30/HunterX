@@ -1,24 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Installation state persistence.
-
-The installer is resumable: interrupted installations (Ctrl+C, reboot, power
-loss) must be safely reconcilable by re-running the installer instead of
-starting from zero. This module persists enough state to do that:
-
-- the installation phase;
-- the tool currently being installed;
-- tools completed and failed so far (with timestamps and error reasons);
-- profile and platform facts;
-- an ``install_id`` so state from a previous run is never confused with the
-  current one.
-
-State is stored as JSON under a caller-supplied directory (the installer uses
-``<install-dir>/state/`` for system installs and the user state directory for
-``--user`` installs). Reads are tolerant of missing/corrupt files so a broken
-state file never blocks installation.
-"""
+"""Installation state persistence."""
 
 from __future__ import annotations
 
@@ -43,7 +26,7 @@ class ToolStateRecord:
         version: detected version when available.
         error: human error reason (failed tools).
         started_at / finished_at: ISO timestamps.
-        method: the install method used (``apt``, ``go``, ...) when available.
+        method: the install method used (``apt``, ``go``,...) when available.
 
     """
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Features & Architecture — HunterX v6.0.0
+title: Features & Architecture - HunterX v6.0.0
 keywords: Security Skills Framework, Reasoning Engine, Multi-Agent Platform, offensive security
 description: >-
   Complete feature breakdown of HunterX v6.0.0 open-source offensive security
@@ -52,7 +52,7 @@ flowchart TD
 | **Threat Modeling** | Attack surface analysis | Systematic identification and prioritization of potential threats |
 | **Payload Intelligence** | Exploit optimization | Context-aware payload generation and evasion techniques |
 | **AI Provider Layer** | LLM abstraction | Unified interface for integrating multiple language models |
-| **MITRE ATT&CK Mapping** | Framework alignment | Comprehensive mapping of capabilities to ATT&CK tactics and techniques |
+| **MITRE ATT&CK Mapping** | Framework alignment | complete mapping of capabilities to ATT&CK tactics and techniques |
 
 ## Related Resources
 

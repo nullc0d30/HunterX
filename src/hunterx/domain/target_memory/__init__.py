@@ -1,29 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence (Sprint 030).
+"""Target Memory & Campaign Intelligence.
 
-The historical intelligence layer of HunterX. It turns raw tool output and
-discovery records into a persistent, queryable historical understanding of
-every authorized target:
-
-* memory observations with first/last seen tracking and classified state,
-* reproducible target snapshots and deterministic snapshot diffs,
-* change significance classification,
-* observation freshness and prioritized revalidation planning,
-* mission memory, failed/successful hypothesis memory and tool provenance,
-* target risk history, finding history and recurrence detection,
-* coverage memory and coverage-gap detection,
-* attack-path history and preserved contradictions,
-* campaigns with campaign intelligence, and
-* advisory next-action recommendations for the mission planner.
-
-This layer NEVER duplicates or replaces Target Intelligence, TIDB, Finding,
-Evidence, Mission, Knowledge or Correlation systems: it references canonical
-entities by id and adds the historical dimension on top.
-
-Pure domain models and engines — no I/O, no tool execution. The application
-layer (`hunterx.application.target_memory`) wires them to the TIDB.
+The historical intelligence layer of HunterX.
 """
 
 from __future__ import annotations

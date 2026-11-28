@@ -3,14 +3,7 @@
 
 """Platform composition root.
 
-The Platform is the runtime aggregate of HunterX v7. It owns the dependency
-container and holds typed references to every facade, engine, application
-service and infrastructure adapter the platform is composed of. It is the
-single place where concrete implementations are wired together (Clean
-Architecture's composition root); domain, application and engine layers
-never construct their collaborators directly.
-
-Build one with :func:`hunterx.platform.assembler.build_platform`.
+The Platform is the runtime aggregate of HunterX v7.
 """
 
 from __future__ import annotations
@@ -133,7 +126,7 @@ class Platform:
         cloud_service: cloud & SaaS attack-surface intelligence use-case service.
         cloud_query_service: cloud intelligence query use-case service.
         vulnerability_knowledge_service: vulnerability knowledge refresh use-case service.
-        vulnerability_correlation_service: technology→vulnerability correlation use-case service.
+        vulnerability_correlation_service: technology to vulnerability correlation use-case service.
         vulnerability_query_service: vulnerability intelligence query use-case service.
         vulnerability_validation_service: safe vulnerability discovery & validation use-case service.
         vulnerability_proof_service: vulnerability proof & PoC validation use-case service.
@@ -235,7 +228,7 @@ class Platform:
 
     def resolve(self, key: type[T]) -> T:
         """Resolve a service from the platform's container."""
-        return self.container.resolve(key)  # type: ignore[no-any-return]  # container resolves by key type
+        return self.container.resolve(key)  # type: ignore[no-any-return] # container resolves by key type
 
     def has(self, key: type[T]) -> bool:
         """Return ``True`` when ``key`` is resolvable in the container."""

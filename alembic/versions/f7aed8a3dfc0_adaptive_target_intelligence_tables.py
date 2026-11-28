@@ -1,12 +1,6 @@
-"""adaptive target intelligence tables
-
-Sprint 026. Creates the normalized Target Intelligence entities: targets,
-assets, observations, evidence, history, changes, coverage, gaps, hypotheses,
-actions, decisions, negative results, conflicts and scores.
-
-Revision ID: f7aed8a3dfc0
-Revises: e1f2a3b4c5d6
-Create Date: 2026-08-10 08:00:00.000000
+"""adaptive target intelligence tables Creates the normalized Target Intelligence entities: targets, assets,
+observations, evidence, history, changes, coverage, gaps, hypotheses, actions, decisions, negative results,
+conflicts and scores.
 
 """
 from collections.abc import Sequence

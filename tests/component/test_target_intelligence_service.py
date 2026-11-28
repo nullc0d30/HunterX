@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the TargetIntelligenceService application layer.
-
-Exercises the service against the in-memory TIDB repository factory: target
-registration, observation ingestion, cycle persistence, TIDB persistence of
-all normalized entities, and the query service read-back.
-"""
+"""Component tests for the TargetIntelligenceService application layer."""
 
 from __future__ import annotations
 

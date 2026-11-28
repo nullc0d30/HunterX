@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the TargetIntelligenceEngine facade.
-
-Covers the adaptive loop: target registration, observation ingestion,
-asset materialization, coverage priming, conflict & change detection,
-hypothesis generation, scoring and next-action ranking — all from pure
-intelligence state (no tool execution).
-"""
+"""Tests for the TargetIntelligenceEngine facade."""
 
 from __future__ import annotations
 

@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Memory vs SQL platform switching tests (Sprint 034.3 §16).
+"""Memory vs SQL platform switching tests (16).
 
-The platform composes the same repository ports for both backends. Application
-behavior must remain consistent regardless of which backend is selected, and no
-application code may depend directly on a concrete SQL repository.
+The platform composes the same repository ports for both backends.
 """
 
 from __future__ import annotations
@@ -47,7 +45,7 @@ def test_both_backends_share_the_same_ports(memory_platform, sql_platform) -> No
     assert memory_platform.tidb is not None
     assert sql_platform.tidb is not None
 
-    # Default settings → in-memory TIDB factory; SQL URL → SQL factory.
+    # Default settings to in-memory TIDB factory; SQL URL to SQL factory.
     assert isinstance(memory_platform.tidb, InMemoryTidbRepositoryFactory)
     assert isinstance(sql_platform.tidb, SqlTidbRepositoryFactory)
 
@@ -102,8 +100,9 @@ def test_target_intelligence_is_consistent_across_backends(memory_platform, sql_
 
 
 def test_default_settings_remain_in_memory(sql_platform) -> None:
-    """A default build (no explicit URL) must stay in-memory — the documented
-    zero-dependency mode — while a non-default URL activates SQL."""
+    """A default build (no explicit URL) must stay in-memory, the documented
+    zero-dependency mode, while a non-default URL activates SQL.
+    """
     default_platform = build_platform(Settings())
     try:
         assert isinstance(default_platform.tidb, InMemoryTidbRepositoryFactory)

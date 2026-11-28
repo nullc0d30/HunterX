@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Intelligence Replay.
-
-Sprint 026. The entire intelligence pipeline must be replayable from stored
-artifacts: artifact → parser → observation → correlation → hypothesis → action
-recommendation — without rerunning external tools. This module defines the
-replay contract and an in-memory replay runner that drives the pipeline stages
-from stored observations.
-"""
+"""Target Intelligence Replay."""
 
 from __future__ import annotations
 

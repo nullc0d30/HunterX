@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud intelligence correlation.
-
-Groups raw observations into canonical records by their deduplication key,
-merges corroborating evidence, resolves conflicts deterministically and drops
-out-of-scope or low-confidence observations. Pure; no I/O.
-"""
+"""Cloud intelligence correlation."""
 
 from __future__ import annotations
 

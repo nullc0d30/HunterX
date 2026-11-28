@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery — domain layer tests.
-
-Pure data-contract coverage: stage/state/layer enums, canonical assets with
-provenance, canonicalization + deduplication, and the declarative stage plan
-(provider tool ids are injected from the registries by the application layer —
-the domain never hardcodes a provider list).
-"""
+"""Universal discovery, domain layer tests."""
 
 from __future__ import annotations
 

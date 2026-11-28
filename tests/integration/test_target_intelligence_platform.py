@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests: Target Intelligence wired into the platform and TIDB.
-
-Builds the full platform, verifies the TargetIntelligenceService is wired with
-the Sprint 025 selector, runs a complete intelligence cycle against the
-in-memory TIDB, and verifies the SQL persistence path for the new entities.
-"""
+"""Integration tests: Target Intelligence wired into the platform and TIDB."""
 
 from __future__ import annotations
 
@@ -37,7 +32,7 @@ class TestTargetIntelligencePlatform:
         platform = build_platform()
         assert platform.target_intelligence_service is not None
         assert platform.target_intelligence_query_service is not None
-        # The Sprint 025 mission-aware selector is wired into the next-action engine.
+        # The mission-aware selector is wired into the next-action engine.
         assert platform.target_intelligence_service.engine.next_action.tool_selector is not None
         assert platform.core.target_intelligence is not None
 

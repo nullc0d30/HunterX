@@ -3,9 +3,7 @@
 
 """Plugin versioning.
 
-Checks a plugin manifest against the platform version and against the plugin
-entry point's declared requirements. Uses a minimal, dependency-free version
-comparison so the plugin manager works everywhere.
+Checks a plugin manifest against the platform version and against the plugin entry point's declared requirements.
 """
 
 from __future__ import annotations

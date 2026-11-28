@@ -3,10 +3,8 @@
 
 """Class-specific remediation guidance.
 
-Remediation is never generic: every vulnerability class has its own concrete
-mitigation steps, and the guide adapts to the candidate's evidence (e.g. an
-error-signal injection finding adds error-suppression steps, a reflected
-signal adds output-encoding steps).
+Remediation is never generic: every vulnerability class has its own concrete mitigation steps, and the guide adapts
+to the candidate's evidence (e.g.
 """
 
 from __future__ import annotations

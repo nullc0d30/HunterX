@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the Sprint 025 Tool Mastery facade.
-
-Covers the :class:`ToolMasteryAPI` facade: seeding the universal arsenal,
-master-profile registry, relationship graph integrity, playbook catalog,
-mission-aware selection, target history, coverage, datasets, version
-awareness and the :class:`ToolMasteryPort` contract.
-"""
+"""Tests for the Tool Mastery facade."""
 
 from __future__ import annotations
 

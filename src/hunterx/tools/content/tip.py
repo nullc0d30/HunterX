@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Content Discovery.
-
-Registers the content discovery tools (ffuf) into a
-:class:`ToolIntelligenceAPI` with the full Sprint 023 contracts: typed input
-schema, output schema, invocation contract, safety profile, scope profile and
-resource requirements. The wordlist field is marked ``scope_linked``/data-only
-and the safety class is bounded to ``ACTIVE`` for parameter fuzzing.
-"""
+"""Tool Intelligence Platform registration for Content Discovery."""
 
 from __future__ import annotations
 
@@ -239,7 +232,7 @@ def _knowledge(metadata: ToolMetadata) -> ToolKnowledge:
         version_constraints=(">=2.0.0",),
         known_false_positives=("Default-error-page responses matching the matcher.",),
         known_false_negatives=("Filtered responses that are actually reachable.",),
-        provenance={"source": "sprint-024", "category": "content", "license": "MIT"},
+        provenance={"source": "hunterx-tool-registry", "category": "content", "license": "MIT"},
         knowledge_version="1.0.0",
     )
 

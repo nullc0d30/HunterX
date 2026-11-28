@@ -3,9 +3,7 @@
 
 """Time handling helpers.
 
-All timestamps crossing the platform boundary are UTC ISO-8601 strings or
-UTC-aware ``datetime`` objects. This module centralizes that contract so no
-layer can accidentally introduce naive/local time handling.
+All timestamps crossing the platform boundary are UTC ISO-8601 strings or UTC-aware ``datetime`` objects.
 """
 
 from __future__ import annotations

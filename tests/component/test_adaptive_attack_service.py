@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the adaptive attack application service.
-
-Proves the aggressive-but-bounded behavior end to end: target feedback drives
-the attack state machine, throttling reduces intensity, recovery restores it
-gradually, escalation is bounded, multi-vector selection schedules only
-applicable vectors, probe plans are bounded and reuse the platform payload
-generation, workflows are generic, and defensive responses never terminate the
-assessment.
-"""
+"""Component tests for the adaptive attack application service."""
 
 from __future__ import annotations
 
@@ -79,7 +71,7 @@ class TestFeedbackDrivesState:
         for _ in range(5):
             service.observe(status_code=429)
         assert service.attack_state() is AttackState.BLOCKED
-        # Blocking is blocking — the service never reports "exhausted".
+        # Blocking is blocking, the service never reports "exhausted".
         assert service.snapshot()["is_throttling"] is True
 
 

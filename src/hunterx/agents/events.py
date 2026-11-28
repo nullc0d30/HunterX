@@ -3,8 +3,8 @@
 
 """Agent event adapters.
 
-Converts agent messages into canonical domain events so the rest of the
-platform (event bus, telemetry, plugins) can observe agent activity uniformly.
+Converts agent messages into canonical domain events so the rest of the platform (event bus, telemetry, plugins) can
+observe agent activity uniformly.
 """
 
 from __future__ import annotations

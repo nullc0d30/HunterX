@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the technology fingerprinting capability.
-
-End-to-end scenario: run a fingerprinting mission through the assembled
-platform with fake tool runners/fetch, verify the correlated technology
-intelligence, evidence-backed versions, conflict preservation, TIDB
-persistence, historical comparison, topology integration and the
-``technology.*`` event stream.
-"""
+"""Acceptance tests for the technology fingerprinting capability."""
 
 from __future__ import annotations
 

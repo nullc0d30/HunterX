@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the safe vulnerability validation capability.
-
-Confirms the Wave 13 modules land in the expected layers and respect the
-dependency policy: the domain package stays pure (domain/shared only), the
-application service reaches tools/reporting only through approved surfaces, and
-no module depends on infrastructure.
-"""
+"""Architecture tests for the safe vulnerability validation capability."""
 
 from __future__ import annotations
 

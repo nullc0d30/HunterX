@@ -1,26 +1,13 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — typed configuration.
-
-The resource envelope of a mission is derived from the *effective* runtime
-environment (physical host, VM, WSL, container/cgroup) and bounded by an
-absolute safety ceiling. The absolute HunterX RAM ceiling is 3 GB by default;
-the effective mission budget is always derived from the environment and never
-assumes ``physical RAM == RAM available to HunterX``.
-
-The configuration schema (:class:`ResourceSettings`) lives in the existing
-HunterX configuration system (``hunterx.config.settings``) so every value is
-exposed through ``HUNTERX_RESOURCE_*`` env vars and the ``resource:`` YAML
-section. :class:`ResourceConfig` is the resolved, immutable view the governor
-consumes.
-"""
+"""Resource governance, typed configuration."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from hunterx.config.settings import ResourceSettings  # noqa: F401  # re-exported
+from hunterx.config.settings import ResourceSettings  # noqa: F401 # re-exported
 
 
 @dataclass(frozen=True, slots=True)

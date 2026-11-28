@@ -1,7 +1,5 @@
-# 18 — Logging Standards
+# 18, Logging Standards
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All components; JSON logging; metrics; tracing; telemetry; audit
 
 ---
@@ -26,18 +24,18 @@ Every log line is a JSON object with a canonical base schema:
 
 ```json
 {
-  "ts": "2026-08-05T12:34:56.789Z",
-  "level": "info",
-  "logger": "hunterx.engines.workflow",
-  "correlation_id": "01J...",
-  "span_id": "abc123",
-  "trace_id": "def456",
-  "actor": "operator@example.com",
-  "module": "workflow",
-  "message": "workflow.step_completed",
-  "context": {"step_id": "port-scan", "duration_ms": 1234},
-  "event_type": "workflow.step_completed",
-  "schema_version": "1.0"
+ "ts": "2026-08-05T12:34:56.789Z",
+ "level": "info",
+ "logger": "hunterx.engines.workflow",
+ "correlation_id": "01J...",
+ "span_id": "abc123",
+ "trace_id": "def456",
+ "actor": "operator@example.com",
+ "module": "workflow",
+ "message": "workflow.step_completed",
+ "context": {"step_id": "port-scan", "duration_ms": 1234},
+ "event_type": "workflow.step_completed",
+ "schema_version": "1.0"
 }
 ```
 
@@ -45,13 +43,13 @@ Rules:
 
 - `ts` UTC ISO-8601 with `Z` and milliseconds.
 - `level` in `debug|info|warning|error|critical`.
-- `message` is a short, stable, event-style token (dotted) — **not** prose.
-  Prose lives in `context` or in a dedicated renderer.
+- `message` is a short, stable, event-style token (dotted), **not** prose.
+ Prose lives in `context` or in a dedicated renderer.
 - `context` is a flat key/value map; nested structures discouraged (flatten or
-  reference an object id).
+ reference an object id).
 - `correlation_id` propagates across a whole operation (mission, request, job).
 - No secrets, tokens, cookies, credentials, or raw request bodies. Mask via
-  `shared/masking`; verified by security tests.
+ `shared/masking`; verified by security tests.
 
 ---
 
@@ -99,19 +97,19 @@ Rules:
 | `hx_http_request_duration_seconds` | histogram | API |
 
 - Metrics cardinality bounded (tags enumerated); no per-target-cardinality
-  explosion (e.g., no tag per URL).
+ explosion (e.g., no tag per URL).
 
 ---
 
 ## 5. Tracing
 
 - OpenTelemetry spans per: API request, mission, workflow run, step, tool run,
-  AI call, DB write.
+ AI call, DB write.
 - Span attributes: minimal and indexed (`step_id`, `tool`, `outcome`); full
-  context in logs to avoid high-cardinality span tags.
+ context in logs to avoid high-cardinality span tags.
 - Distributed propagation: `traceparent`/`baggage` across workers and queues.
 - Sampling: full sampling for missions/workflows; configurable rate for
-  hot request paths; errors always sampled.
+ hot request paths; errors always sampled.
 - Exporters: OTLP (default), Jaeger/OTel collector, or console in dev.
 
 ---
@@ -119,14 +117,14 @@ Rules:
 ## 6. Audit Logging
 
 - Separate append-only `audit` stream (event type `audit.*`) with **stronger
-  guarantees** than operational logs.
+ guarantees** than operational logs.
 - Mandatory audit events: authentication, authorization decisions, approval
-  grants, scope policy changes, secret access, data export, plugin lifecycle,
-  destructive tool execution, user/admin changes.
+ grants, scope policy changes, secret access, data export, plugin lifecycle,
+ destructive tool execution, user/admin changes.
 - Tamper-evidence: hash-chained or WORM-backed in enterprise mode
-  (`13` §10).
+ (`13` §10).
 - Never filtered or trimmed by standard log rotation; retention per policy
-  (`09` §8).
+ (`09` §8).
 
 ---
 
@@ -143,7 +141,7 @@ Rules:
 
 - **Masking module** applied at every boundary before emission.
 - Masking patterns: secrets, tokens, cookies, basic-auth, password fields,
-  AWS/cloud credentials, card/PII shapes.
+ AWS/cloud credentials, card/PII shapes.
 - `redact` field marks lines that contain masked content.
 - Security tests assert no secrets in logs (`15` §6).
 
@@ -158,7 +156,7 @@ Rules:
 - `critical`: service-level failure (worker down, DB unreachable, secret rotation failure).
 
 - Rate limiting for log volume: per-event-type flood control; drop-and-count
-  beyond threshold (log the drop).
+ beyond threshold (log the drop).
 - Logs in air-gapped mode: local sinks only; exporters optional.
 
 ---
@@ -167,19 +165,19 @@ Rules:
 
 ```yaml
 logging:
-  level: info
-  format: json            # json|text(dev)
-  sinks:
-    - stdout
-    - file: /var/log/hunterx/hunterx.log (rotation: 50MB x 10)
-  tracing:
-    enabled: true
-    exporter: otlp
-    sample_rate: 1.0
-  metrics:
-    exporter: prometheus
-  audit:
-    sink: append-only-file|postgres|worm
+ level: info
+ format: json # json|text(dev)
+ sinks:
+ - stdout
+ - file: /var/log/hunterx/hunterx.log (rotation: 50MB x 10)
+ tracing:
+ enabled: true
+ exporter: otlp
+ sample_rate: 1.0
+ metrics:
+ exporter: prometheus
+ audit:
+ sink: append-only-file|postgres|worm
 ```
 
 ---

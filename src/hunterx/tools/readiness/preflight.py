@@ -3,24 +3,7 @@
 
 """Mission preflight.
 
-The readiness gate between mission planning and execution:
-
-    Mission created
-         ↓
-    Required capabilities calculated (from the adaptive plan)
-         ↓
-    Tool readiness checked
-         ↓
-    Missing tools provisioned (when supported)
-         ↓
-    Tools verified
-         ↓
-    Mission execution unlocked (or explicitly blocked/degraded)
-
-Capabilities are classified ``required`` / ``recommended`` / ``optional``.
-A required capability with no available provider blocks the mission with an
-explicit, machine-readable reason. Recommended/optional gaps degrade the
-mission (reduced coverage) but never silently abort it.
+The readiness gate between mission planning and execution.
 """
 
 from __future__ import annotations
@@ -74,8 +57,8 @@ class MissionPreflight:
     """Compute mission preflight verdicts from capability requirements.
 
     Args:
-        capability_providers: planner capability → provider tool ids.
-        capability_levels: planner capability → importance level.
+        capability_providers: planner capability to provider tool ids.
+        capability_levels: planner capability to importance level.
 
     """
 
@@ -112,7 +95,7 @@ class MissionPreflight:
         while tools outside the profile stay globally-optional.
 
         Returns:
-            :class:`PreflightResult` — the mission may execute when
+            :class:`PreflightResult`, the mission may execute when
             ``result.may_execute`` is ``True``.
 
         """
@@ -228,10 +211,8 @@ class MissionPreflight:
         # Map AIProviderStatus to string for the result
         ai_provider = ai_provider_status.value
 
-        # If AI provider is unavailable and it's required for the mission,
-        # we may want to degrade rather than block (mission can run with
-        # deterministic fallback). This is a policy decision.
-        # For now, we report the status and let the mission runner decide.
+        # AI availability is reported here; the mission runner decides whether
+        # to degrade to the deterministic path or stop.
 
         if required_missing:
             return PreflightResult(

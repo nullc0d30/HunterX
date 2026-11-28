@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — environment-aware resource detection.
-
-Detects the *effective* resources available to HunterX rather than merely the
-physical host resources: bare-metal Linux, VM, WSL and container/cgroup
-environments are all recognized, and cgroup memory limits, cgroup memory usage,
-cgroup CPU quotas, CPU affinity/cpuset and host memory are read where available.
-
-The guiding invariant: ``physical RAM != RAM available to HunterX``. For
-containers the effective limit is the cgroup limit; for WSL/VM the effective
-limit is whatever the runtime exposes.
-"""
+"""Resource governance, environment-aware resource detection."""
 
 from __future__ import annotations
 

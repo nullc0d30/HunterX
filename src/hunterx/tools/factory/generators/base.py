@@ -3,10 +3,8 @@
 
 """Generator engine foundations.
 
-Defines the :class:`PackContext` handed to every generator and the
-:class:`PackGenerator` contract all generators implement. Generators produce
-:class:`GeneratedFile` artifacts for a :class:`ToolPackSpec`; the engine
-assembles them into a pack.
+Defines the :class:`PackContext` handed to every generator and the :class:`PackGenerator` contract all generators
+implement.
 """
 
 from __future__ import annotations

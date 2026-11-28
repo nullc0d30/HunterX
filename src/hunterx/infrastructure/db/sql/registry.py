@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Registry mapping TIDB domain entities to their ORM models.
-
-The TIDB models mirror the domain entities one-to-one, so the registry is
-derived from class names (``OrganizationModel`` ↔ ``Organization``). Every
-entity class in ``hunterx.domain.entities.tidb`` that is a dataclass has an
-ORM model; enums and ``TidbEntity`` itself are excluded.
-"""
+"""Registry mapping TIDB domain entities to their ORM models."""
 
 from __future__ import annotations
 

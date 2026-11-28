@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the Adaptive Mission & Attack-Path Planning subsystem.
-
-Exercises the full service flow with in-memory TIDB stores: create → plan →
-candidates → replan → attack paths → gaps → checkpoints, verifying events are
-published and persisted records round-trip.
-"""
+"""Component tests for the Adaptive Mission & Attack-Path Planning subsystem."""
 
 from __future__ import annotations
 

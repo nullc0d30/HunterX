@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool definition builder.
-
-Derives machine-readable :class:`~hunterx.tools.readiness.models.ToolDefinition`
-objects from the authoritative Tool Intelligence Platform (TIP) knowledge
-contract merged with the trusted static readiness manifest. There is no second
-tool registry: the TIP owns identity/capabilities/knowledge and the manifest
-only adds the discovery/provisioning facts (binary name, version probe,
-install methods, profiles).
-"""
+"""Tool definition builder."""
 
 from __future__ import annotations
 
@@ -134,7 +126,7 @@ class ToolDefinitionBuilder:
         )
 
     def capability_providers(self) -> dict[str, tuple[str, ...]]:
-        """Return the planner capability → provider tool ids mapping."""
+        """Return the planner capability to provider tool ids mapping."""
         return dict(CAPABILITY_PROVIDERS)
 
     def capability_levels(self) -> dict[str, Any]:

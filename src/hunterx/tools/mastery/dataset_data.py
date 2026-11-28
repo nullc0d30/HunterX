@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical security dataset provenance for the Sprint 025 arsenal.
+"""Canonical security dataset provenance for the arsenal.
 
-SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates, Semgrep rules,
-Gitleaks rules, Trivy DB, ExploitDB... These are datasets, not mere files.
-Each is versioned, sourced, licensed and safety-classified so updates are
-versioned, validated, auditable and rollback-capable.
+SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates, Semgrep rules, Gitleaks rules, Trivy DB, ExploitDB...
 """
 
 from __future__ import annotations

@@ -3,13 +3,8 @@
 
 """Assetfinder tool adapter.
 
-Integrates tomnomnom's ``assetfinder`` — a minimal passive subdomain/domain
-finder backed by certificate transparency and passive DNS sources — into the
-Tool Integration SDK.
-
-CLI contract (verified against the assetfinder README):
-    ``assetfinder [--subs-only] <domain>`` prints one hostname per line to
-    stdout. The ``-subs-only`` flag restricts results to subdomains.
+Integrates tomnomnom's ``assetfinder``, a minimal passive subdomain/domain finder backed by certificate transparency
+and passive DNS sources, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration — orchestration domain models.
-
-Sprint 032. Data contracts for the orchestration layer: mission scope, policy,
-budget, run, observation, decision, hypothesis, branch, outcome, coverage
-snapshot, negative evidence, baseline observation, differential result, impact
-analysis, reasoning-trace entry and telemetry snapshot.
-
-The orchestration layer reuses the Sprint 027 planning aggregate
-(:class:`AdaptiveMission`) and its ``ActionNode`` graph as the executable
-mission; the models here carry the reasoning/evidence state that drives the
-adaptive loop.
-"""
+"""Autonomous Mission Orchestration, orchestration domain models."""
 
 from __future__ import annotations
 
@@ -280,7 +269,7 @@ class MissionObservation:
 class MissionHypothesis:
     """An orchestration-level hypothesis with evidence-driven state.
 
-    Wraps the Sprint 026/027 hypothesis concept with the full status lifecycle
+    Wraps the /027 hypothesis concept with the full status lifecycle
     (SUPPORTED / WEAKLY_SUPPORTED / REFUTED / INCONCLUSIVE / VALIDATED /
     DISPROVED / NOVEL_BEHAVIOR) and the classification of the observed behavior.
     """
@@ -651,8 +640,8 @@ class ImpactAnalysis:
 class ReasoningTraceEntry:
     """A single entry in the structured reasoning trace.
 
-    The trace is an auditable reasoning graph: observation → hypothesis →
-    decision → evidence → action → result. It never stores hidden
+    The trace is an auditable reasoning graph: observation to hypothesis to
+    decision to evidence to action to result. It never stores hidden
     chain-of-thought.
     """
 
@@ -813,8 +802,8 @@ class NovelBehaviorRecord:
     """A record of the novel-vulnerability discovery pipeline.
 
     When behavior does not match known knowledge, the mission advances it
-    through the experiment loop (UNKNOWN_BEHAVIOR → BEHAVIORAL_MODEL →
-    HYPOTHESIS → EXPERIMENT → OBSERVATION → NEW_HYPOTHESIS → MINIMAL_PROOF →
+    through the experiment loop (UNKNOWN_BEHAVIOR to BEHAVIORAL_MODEL to
+    HYPOTHESIS to EXPERIMENT to OBSERVATION to NEW_HYPOTHESIS to MINIMAL_PROOF to
     VALIDATED_BEHAVIOR) and classifies the result.
     """
 

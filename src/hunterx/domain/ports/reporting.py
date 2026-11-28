@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reporting ports.
-
-The report exporter port decouples the application layer from the concrete
-report renderers so dependency direction stays inward: the application service
-depends on this domain contract and the reporting layer provides the adapter.
-"""
+"""Reporting ports."""
 
 from __future__ import annotations
 

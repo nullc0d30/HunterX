@@ -3,12 +3,7 @@
 
 """Technology resolution.
 
-Resolves free-form raw technology names — whatever a tool calls them — onto the
-canonical taxonomy. ``Apache``, ``apache``, ``Apache httpd`` and
-``Apache/2.4.57`` all resolve to the ``Apache HTTP Server`` definition while the
-original observation is preserved on the record. Resolution is deterministic:
-the same raw name always resolves to the same definition, and names with no
-catalogue entry resolve to an unknown-but-preserved canonical name.
+Resolves free-form raw technology names, whatever a tool calls them, onto the canonical taxonomy.
 """
 
 from __future__ import annotations

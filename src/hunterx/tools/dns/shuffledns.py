@@ -3,15 +3,8 @@
 
 """Shuffledns tool adapter.
 
-Integrates ProjectDiscovery's ``shuffledns`` — a wrapper around massdns for
-fast brute-forcing of DNS subdomains — into the Tool Integration SDK. The
-adapter writes the target domain list to a per-execution scratch file, invokes
-the binary through the shared runner seam and parses the JSONL output
-(``{"host", "ip", "type", "source"}``) into canonical :class:`DnsRecord`
-instances.
-
-``shuffledns -d <domain> -r <resolvers> -w <wordlist> -o J`` emits JSONL; the
-wordlist is treated strictly as data, never executed.
+Integrates ProjectDiscovery's ``shuffledns``, a wrapper around massdns for fast brute-forcing of DNS subdomains,
+into the Tool Integration SDK.
 """
 
 from __future__ import annotations

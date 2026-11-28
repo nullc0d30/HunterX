@@ -3,11 +3,7 @@
 
 """Mission planner.
 
-Expands a mission plan into an ordered, dependency-aware set of phases and
-steps. Handles required/optional phase selection, dependency closure and
-ordering, per-target step expansion, duration estimation, approval
-requirements and expected outputs. The planner never executes anything — it
-produces the plan the execution graph is later built from.
+Expands a mission plan into an ordered, dependency-aware set of phases and steps.
 """
 
 from __future__ import annotations

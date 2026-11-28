@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Technology Fingerprinting.
-
-Registers the fingerprinting tools (httpx, whatweb, signature) into a
-:class:`ToolIntelligenceAPI` so the Planner and selection engines can recommend
-them by taxonomy capability (``technology-fingerprinting``,
-``http-metadata``). The profiles mirror the tool descriptors used by the Tool
-Integration SDK adapters (same version pins) so intelligence and execution
-never disagree about a tool's contract.
-"""
+"""Tool Intelligence Platform registration for Technology Fingerprinting."""
 
 from __future__ import annotations
 

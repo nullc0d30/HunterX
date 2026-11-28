@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Red Team Framework — HunterX v7 Mission Orchestration
+title: Red Team Framework - HunterX v7 Mission Orchestration
 keywords: red team, red team framework, red team tools, red team automation, offensive security platform, red team operations, attack path planning, adversarial simulation, mission orchestration
 description: >-
   How HunterX v7 supports red team operations: mission orchestration,
@@ -17,11 +17,11 @@ its cloud footprint, and produce findings that decision-makers can act on.
 
 ## Mission orchestration for red teams
 
-HunterX v7 organizes work as **missions** — full-spectrum assessment campaigns
+HunterX v7 organizes work as **missions**, full-spectrum assessment campaigns
 that can be created, run, checkpointed, resumed and finalized:
 
 - `hunterx mission create/start/status/pause/resume/cancel/finalize`
-- `hunterx hunt ...` for full-spectrum missions
+- `hunterx hunt...` for full-spectrum missions
 - `hunterx mission plan/replan/paths/explain` for adaptive mission planning
 
 ## Attack-path planning
@@ -34,8 +34,8 @@ keep the mission moving toward validated findings.
 
 Red team engagements increasingly target cloud and SaaS attack surface.
 HunterX provides evidence-backed cloud/SaaS intelligence for authorized
-targets — provider detection, cloud resource intelligence, exposure and
-environment classification, and topology — across AWS, Azure, GCP, OCI,
+targets, provider detection, cloud resource intelligence, exposure and
+environment classification, and topology, across AWS, Azure, GCP, OCI,
 Cloudflare, DigitalOcean, Akamai, Fastly, Vercel, Netlify, Heroku, Render,
 Fly.io, Supabase, Firebase, Kubernetes and Docker. Cloud intelligence is
 passive and never accesses cloud resources.

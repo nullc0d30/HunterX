@@ -1,10 +1,10 @@
 """Tests for offensive doctrine plugin."""
 
-import pytest
 from hunterx.plugins.skill_offensive_doctrine.activator import activate, confirmation_message
-from hunterx.plugins.skill_offensive_doctrine.state_block import DoctrineState
 from hunterx.plugins.skill_offensive_doctrine.modes import resolve_mode
 from hunterx.plugins.skill_offensive_doctrine.policies import is_kill
+from hunterx.plugins.skill_offensive_doctrine.state_block import DoctrineState
+
 
 def test_activator():
     assert activate("HUNT MODE") is True

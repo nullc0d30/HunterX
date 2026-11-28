@@ -34,15 +34,7 @@ class PermissionFlag(Enum):
 class PluginManifest:
     """Declared metadata of a plugin package.
 
-    Attributes:
-        name: unique plugin name (package identifier).
-        version: semantic version.
-        description: one-line description.
-        kind: plugin kind.
-        entrypoint: import path to the plugin's main class.
-        dependencies: other plugin names required.
-        permissions: runtime permission flags requested.
-        requires_platform: minimum platform version constraint.
+    Attributes: name: unique plugin name (package identifier).
 
     """
 

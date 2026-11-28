@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared SDK test fixtures: a configurable fake adapter and context builders.
-
-The fake adapter models an SDK-integrated tool without integrating any real
-external tool: it writes deterministic stdout/JSON output and can be told to
-fail, time out or throw at runtime so pipeline failure paths are testable.
-"""
+"""Shared SDK test fixtures: a configurable fake adapter and context builders."""
 
 from __future__ import annotations
 

@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB vulnerability-validation entities.
-
-System-of-record tables for the Wave 13 safe vulnerability discovery &
-validation capability: vulnerability hypotheses, validation rules, validation
-plans and steps, validation executions, provenance-backed validation evidence,
-verdicts, per-target validation history, temporal differentials, tool-usage
-observability and gate policy decisions.
-
-Security boundary: these tables store safe-validation metadata, canonical
-observations and redacted evidence only — never exploit payloads, never
-credentials, never out-of-scope request material.
-"""
+"""ORM models for TIDB vulnerability-validation entities."""
 
 from __future__ import annotations
 

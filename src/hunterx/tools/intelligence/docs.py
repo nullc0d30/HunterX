@@ -3,9 +3,7 @@
 
 """Tool documentation generator.
 
-Generates Markdown documentation from tool knowledge and metadata. Used to
-produce per-tool reference pages without hand-writing docs, mirroring the
-knowledge file contract (``docs/bible/07``).
+Generates Markdown documentation from tool knowledge and metadata.
 """
 
 from __future__ import annotations
@@ -89,7 +87,7 @@ class ToolDocumentationGenerator:
             lines.append("")
             for mode in knowledge.modes:
                 posture = "safe" if mode.safe else "aggressive"
-                lines.append(f"- `{mode.id}` ({posture}) — {mode.description}")
+                lines.append(f"- `{mode.id}` ({posture}) - {mode.description}")
             lines.append("")
         if knowledge.installation_requirements:
             lines.append("**Installation requirements:**")
@@ -127,6 +125,6 @@ class ToolDocumentationGenerator:
             if definition is None:
                 lines.append(f"- `{capability_id}`")
             else:
-                lines.append(f"- `{capability_id}` — {definition.description}")
+                lines.append(f"- `{capability_id}` - {definition.description}")
         lines.append("")
         return lines

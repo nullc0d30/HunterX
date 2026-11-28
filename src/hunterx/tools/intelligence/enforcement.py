@@ -1,15 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool enforcement engine (Sprint 023).
+"""Tool enforcement engine.
 
 The enforcement engine is the gatekeeper that runs *before* a tool executes.
-It validates the invocation against the tool's typed input schema and
-invocation contract, enforces the safety ceiling against the mission
-authorization, verifies scope containment, applies rate-limit and resource
-budgets, and detects prompt-injection patterns in AI-derived input values.
-
-Invalid input MUST fail before execution — never inside the tool.
 """
 
 from __future__ import annotations
@@ -252,7 +246,7 @@ class ToolEnforcementEngine:
     ) -> dict[str, Any]:
         """Validate argument values against an invocation contract.
 
-        Arguments are typed structured values — never concatenated strings
+        Arguments are typed structured values, never concatenated strings
         built from AI-generated input. This gate rejects values that contain
         shell metacharacters in fields that forbid them.
         """

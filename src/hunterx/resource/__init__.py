@@ -3,13 +3,7 @@
 
 """Resource-aware execution and resource governor.
 
-The single authoritative resource-governance layer for HunterX missions. The
-governor manages the resource envelope of the entire mission process tree
-(HunterX process, child tools, grandchildren, external binaries, probes, model
-calls, queues, evidence) across an absolute RAM ceiling, a derived mission
-budget, CPU-aware bounded concurrency, admission control for tools/probes/model
-calls, bounded in-memory state and graceful degradation — so HunterX stays safe
-and usable on 4 GB / 2 CPU environments and never relies on the OOM killer.
+The single authoritative resource-governance layer for HunterX missions.
 """
 
 from __future__ import annotations

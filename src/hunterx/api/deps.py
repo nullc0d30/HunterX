@@ -3,8 +3,8 @@
 
 """API dependency helpers.
 
-Bridges the application layer and the web framework through the dependency
-container, so handlers receive services without constructing them directly.
+Bridges the application layer and the web framework through the dependency container, so handlers receive services
+without constructing them directly.
 """
 
 from __future__ import annotations

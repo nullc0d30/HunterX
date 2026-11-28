@@ -3,10 +3,8 @@
 
 """Tests for the secret discovery tool adapters.
 
-The gitleaks adapter is exercised with a fake binary runner fed golden JSON
-output so no external tool or network is required. Tests assert the generated
-command line, the redacted canonical secret records, and the invariant that raw
-secret values never escape the adapter into findings or assets.
+The gitleaks adapter is exercised with a fake binary runner fed golden JSON output so no external tool or network is
+required.
 """
 
 from __future__ import annotations

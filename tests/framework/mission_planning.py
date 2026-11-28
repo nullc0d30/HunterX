@@ -3,8 +3,7 @@
 
 """In-memory mission planning repositories.
 
-Test doubles implementing the mission planning repository ports without any
-database. Used by unit tests and by embedded/development wiring.
+Test doubles implementing the mission planning repository ports without any database.
 """
 
 from __future__ import annotations

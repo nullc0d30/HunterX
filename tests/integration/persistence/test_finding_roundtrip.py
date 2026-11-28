@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Finding persistence tests (Sprint 034.3 §7).
+"""Finding persistence tests (7).
 
-A complete validated finding must round-trip candidate → evidence →
-verification → proof → impact → report-ready → database → reload without
-information loss.
+A complete validated finding must round-trip candidate to evidence to verification to proof to impact to
+report-ready to database to reload without information loss.
 """
 
 from __future__ import annotations
@@ -93,7 +92,7 @@ def test_complete_finding_roundtrips_through_memory(memory_factory) -> None:
 
 
 def test_finding_status_lifecycle_persists(sql_factory) -> None:
-    """The candidate → validated → report_ready status transitions survive."""
+    """The candidate to validated to report_ready status transitions survive."""
     repo = sql_factory.repository_for(FindingRecord)
     finding = _complete_finding()
     repo.save(finding)

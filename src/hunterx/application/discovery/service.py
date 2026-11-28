@@ -3,29 +3,15 @@
 
 """Universal discovery application service.
 
-Drives the Phase 4 universal deep-discovery pipeline against any target:
-
-    ASSET → DNS → SUBDOMAIN → HOST → PORT → SERVICE → TECHNOLOGY → HTTP →
-    API → GRAPHQL → JAVASCRIPT → WORKFLOW → AUTH
-
-For every stage the service selects the providers registered on the execution
-engine, runs each through the SDK pipeline, parses the canonical payload,
-converts it into discovered assets + attack-surface observations, feeds the
-observations into :class:`AttackSurfaceService` (graph upsert + capability
-mapping + assessment-queue scheduling), and records an honest per-provider
-state (AVAILABLE / UNAVAILABLE / FAILED / PARTIAL / NOT_APPLICABLE /
-COMPLETED).
-
-A provider that is not registered or not healthy is reported ``UNAVAILABLE`` —
-never silently skipped, never a mission-terminating error. One failed tool
-never kills the mission: every other provider still runs and the run report
-carries the exact gaps.
+Drives the universal deep-discovery pipeline against any target.
 """
 
 from __future__ import annotations
 
+import ipaddress
 import time
 from typing import Any
+from urllib.parse import urlsplit
 
 from hunterx.application.attack_surface import AttackSurfaceService
 from hunterx.application.discovery.converters import CONVERTERS, ConversionResult, Observation
@@ -38,7 +24,7 @@ from hunterx.shared.time import utcnow_iso
 from hunterx.tools.sdk.context import ExecutionContextBuilder
 from hunterx.tools.sdk.engine import ExecutionEngine
 
-#: Payload family per tool registry group. Tool ids come from the registries;
+# : Payload family per tool registry group. Tool ids come from the registries
 #: the mapping below only links a registry family to its converter + payload key.
 _FAMILY_BY_TOOL: dict[str, str] = {
     # recon
@@ -120,7 +106,7 @@ def build_stage_plan() -> StagePlan:
     """Build the declarative stage plan from the tool registry mapping.
 
     The plan is target-agnostic: tool ids come from the platform registries
-    (via the family map above), and every stage's providers are optional —
+    (via the family map above), and every stage's providers are optional,
     the service honestly reports stages without a registered provider.
     """
     definitions: list[StageDefinition] = []
@@ -208,7 +194,7 @@ class UniversalDiscoveryService:
 
         Returns:
             A :class:`DiscoveryRun` with every stage result, the deduplicated
-            assets and the summary — the machine-readable Phase 4 evidence.
+            assets and the summary, the machine-readable evidence.
 
         """
         run = DiscoveryRun(mission_id=self.mission_id, target=target, mode=mode)
@@ -292,6 +278,15 @@ class UniversalDiscoveryService:
                 tool_id=provider.tool_id,
                 state=DiscoveryState.UNAVAILABLE,
                 error="tool is not installed or unhealthy",
+            )
+        if stage in (DiscoveryStage.DNS, DiscoveryStage.SUBDOMAIN, DiscoveryStage.HOST) and _is_ip_literal(
+            _target_host(target)
+        ):
+            return DiscoveryProviderResult(
+                provider_id=provider.tool_id,
+                tool_id=provider.tool_id,
+                state=DiscoveryState.NOT_APPLICABLE,
+                error="target host is an IP address; there is no name to resolve",
             )
         if provider.kind == "parameter" and mode == "passive":
             return DiscoveryProviderResult(
@@ -475,6 +470,25 @@ class UniversalDiscoveryService:
             "plan": [definition.stage.value for definition in self.plan.stages],
             "surface": self.surface.to_dict(),
         }
+
+
+def _target_host(target: str) -> str:
+    """Return the host component of a URL or bare host target."""
+    candidate = target.strip()
+    if "://" not in candidate:
+        candidate = f"//{candidate}"
+    return urlsplit(candidate).hostname or ""
+
+
+def _is_ip_literal(host: str) -> bool:
+    """Return True when ``host`` is an IP address rather than a DNS name."""
+    if not host:
+        return False
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return True
 
 
 def _aggregate_stage_state(providers: list[DiscoveryProviderResult], definition: StageDefinition) -> DiscoveryState:

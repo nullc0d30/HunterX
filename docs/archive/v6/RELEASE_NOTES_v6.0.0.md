@@ -1,4 +1,4 @@
-# Release Notes — HunterX v6.0.0
+# Release Notes - HunterX v6.0.0
 
 ## Highlights
 

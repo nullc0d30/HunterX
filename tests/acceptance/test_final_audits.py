@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Final audits: capability coverage, attack-surface trace, security, coupling.
-
-Proves every capability is demonstrated through the execution path (never
-merely a catalog entry), every discovered surface flows into the assessment
-system (nothing silently disappears), the production source carries no secrets
-and no target-specific coupling, and validated findings carry the full quality
-package.
-"""
+"""Final audits: capability coverage, attack-surface trace, security, coupling."""
 
 from __future__ import annotations
 
@@ -30,7 +23,7 @@ from tests.framework.vulnerable_app import VulnerableApp
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[2] / "src" / "hunterx"
 
-#: Execution-backed statuses — a capability in one of these must show real work.
+# : Execution-backed statuses, a capability in one of these must show real work.
 _EXECUTED_STATUSES = {"FINDING", "VERIFIED", "NO_FINDING", "FAILED"}
 
 
@@ -109,13 +102,13 @@ class TestCapabilityCoverageAudit:
             for capability in capabilities():
                 capability_id = capability.vulnerability_class
                 entry = coverage["capabilities"][capability_id]
-                # No capability may be silently absent: each has an explicit,
+                # No capability may be silently absent: each has an explicit
                 # explained state.
                 assert entry["status"], capability_id
 
 
 class TestAttackSurfaceTrace:
-    """Discovered surfaces flow into the assessment system — nothing disappears."""
+    """Discovered surfaces flow into the assessment system, nothing disappears."""
 
     def test_fed_surfaces_are_graph_mapped_queued_and_executed(self) -> None:
         with VulnerableApp() as app:
@@ -139,10 +132,10 @@ class TestAttackSurfaceTrace:
                     source="final-audit",
                 )
             graph = surface.graph
-            # Discovery → graph: every fed endpoint is a surface node.
+            # Discovery to graph: every fed endpoint is a surface node.
             endpoint_nodes = [node for node in graph.nodes() if node.name in fed]
             assert len(endpoint_nodes) == len(fed), "every fed endpoint must be a graph node"
-            # Discovery → graph → mapping → queue: every fed parameter is an
+            # Discovery to graph to mapping to queue: every fed parameter is an
             # INPUT node with at least one scheduled task.
             for endpoint, parameters in fed.items():
                 parent = next(node for node in endpoint_nodes if node.name == endpoint)
@@ -154,7 +147,7 @@ class TestAttackSurfaceTrace:
                     assert input_node is not None, f"parameter '{parameter}' on {endpoint} must be a graph node"
                     tasks = [task for task in surface.queue.tasks() if task.surface_key == input_node.key]
                     assert tasks, f"parameter '{parameter}' on {endpoint} must produce queued assessment tasks"
-            # Queue → execution: every queued task is executed (settled).
+            # Queue to execution: every queued task is executed (settled).
             engine = CapabilityExecutionEngine(
                 mission_id="final-audit",
                 target_key=target,

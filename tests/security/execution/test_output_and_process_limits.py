@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-exhaustion and process-lifecycle controls (Sprint 034.4 §7-§9).
-
-One hostile tool must not be able to exhaust the worker: oversized output is
-capped and the spawned process is terminated; runaway processes are killed on
-timeout; the runner surfaces startup failures as typed errors.
-"""
+"""Resource-exhaustion and process-lifecycle controls (7-)."""
 
 from __future__ import annotations
 

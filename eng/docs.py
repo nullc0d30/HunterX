@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Documentation validation.
-
-Checks the repository's documentation health: required root documents exist,
-internal markdown links resolve, required docs sections are present, and
-markdown files are well-formed (balanced fenced code blocks). Produces a
-JSON report under ``artifacts/docs-report.json``.
-"""
+"""Documentation validation."""
 
 from __future__ import annotations
 
@@ -35,7 +29,7 @@ _REQUIRED_SECTIONS: dict[str, tuple[str, ...]] = {
     "CONTRIBUTING.md": ("contribut", "development", "test"),
 }
 
-#: Engineering documentation mandated by the DevSecOps sprint. Each document
+#: Engineering documentation mandated by the DevSecOps process. Each document
 #: must exist and contain the anchor section named in the tuple.
 _ENGINEERING_DOCS: dict[str, tuple[str, ...]] = {
     "docs/v7-devsecops.md": ("quality gate", "security pipeline"),

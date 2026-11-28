@@ -8,7 +8,7 @@ HunterX takes the security of the tool and its users seriously. This document ou
 
 ## Scope
 
-This security policy covers the **HunterX tool itself** — its source code, dependencies, and official distribution channels.
+This security policy covers the **HunterX tool itself** - its source code, dependencies, and official distribution channels.
 
 Vulnerabilities in third-party AI providers, skills contributed by the community, or systems being tested should be reported to the respective maintainers or vendors.
 
@@ -28,12 +28,12 @@ We ask that you:
 
 ## Reporting Process
 
-1. **Report** — Submit a vulnerability report via [GitHub Private Vulnerability Reporting](https://github.com/nullc0d30/HunterX/security/advisories/new).
-2. **Acknowledgment** — The maintainers will acknowledge receipt within 72 hours.
-3. **Investigation** — The maintainers will investigate and determine severity, impact, and fix approach.
-4. **Fix** — A patch is developed and tested. For critical issues, a patch release is expedited.
-5. **Release** — The fix is released in a new version with a changelog entry.
-6. **Disclosure** — After the fix is released, the vulnerability is publicly disclosed with credit to the reporter.
+1. **Report** - Submit a vulnerability report via [GitHub Private Vulnerability Reporting](https://github.com/nullc0d30/HunterX/security/advisories/new).
+2. **Acknowledgment** - The maintainers will acknowledge receipt within 72 hours.
+3. **Investigation** - The maintainers will investigate and determine severity, impact, and fix approach.
+4. **Fix** - A patch is developed and tested. For critical issues, a patch release is expedited.
+5. **Release** - The fix is released in a new version with a changelog entry.
+6. **Disclosure** - After the fix is released, the vulnerability is publicly disclosed with credit to the reporter.
 
 ---
 
@@ -70,10 +70,10 @@ Contributors who report valid security vulnerabilities will be credited in the r
 
 HunterX includes multiple layers of safety guardrails:
 
-- **Policy Levels** — Five-level policy system controlling what actions skills and agents can perform: `default`, `prompt`, `auto`, `ask`, and `prohibited`.
-- **Destructive Blocklist** — Commands and operations classified as destructive are blocked by policy, preventing accidental or malicious system modification.
-- **WAF Detection** — Web application firewall pattern detection identifies and flags potentially malicious payloads before they reach AI providers or skills.
-- **Rate Limiting** — Configurable rate limiting on AI provider requests prevents abuse and excessive resource consumption.
-- **SSL Verification** — All outbound HTTPS connections validate SSL certificates by default. Verification can be disabled in development environments only.
+- **Policy Levels** - Five-level policy system controlling what actions skills and agents can perform: `default`, `prompt`, `auto`, `ask`, and `prohibited`.
+- **Destructive Blocklist** - Commands and operations classified as destructive are blocked by policy, preventing accidental or malicious system modification.
+- **WAF Detection** - Web application firewall pattern detection identifies and flags potentially malicious payloads before they reach AI providers or skills.
+- **Rate Limiting** - Configurable rate limiting on AI provider requests prevents abuse and excessive resource consumption.
+- **SSL Verification** - All outbound HTTPS connections validate SSL certificates by default. Verification can be disabled in development environments only.
 
 These features work together to provide defense-in-depth, ensuring that even if one layer is bypassed, others remain active.

@@ -4,8 +4,6 @@
 """Execution monitor.
 
 Streams execution progress to callbacks and records lifecycle checkpoints.
-The monitor is the pipeline's observer hook: every phase transition is
-reported to registered callbacks and appended to an in-memory timeline.
 """
 
 from __future__ import annotations

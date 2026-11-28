@@ -1,25 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 3 validation harness.
-
-Drives HunterX's real engine (attack-surface model + capability mapping +
-assessment queue + adaptive attack control + differential verification +
-completion gate) against a target and produces the full Phase 3 evidence:
-
-    * generic pipeline metrics (assets, services, routes, inputs, objects,
-      workflows, auth contexts, surfaces, capabilities, tasks, verification,
-      findings, blocked/failed, new surfaces during attack),
-    * a capability-coverage matrix sourced from the live catalog,
-    * an attack-surface exhaustion / completion-gate proof with a
-      machine-readable completion reason and a queue dump,
-    * adaptive control behavior (rate, concurrency, defensive signals,
-      backoff/recovery events).
-
-The harness never hardcodes a target: discovery observations come from the
-caller (fixture feeds or a real crawl), and every attack/verification step is a
-real loopback differential probe. A target that is not loopback is honestly
-marked blocked — never fabricated.
+"""Validation harness.
 """
 
 from __future__ import annotations
@@ -131,7 +113,7 @@ class Phase3Harness:
     def attack_queue(self) -> dict[str, Any]:
         """Execute the queued assessment tasks with real differential probes.
 
-        Drains the Phase 1 assessment queue through the Phase 2 adaptive engine:
+        Drains the assessment queue through the adaptive engine:
         each ready task builds a bounded probe plan, runs a real loopback
         differential probe, classifies the verdict, settles the task and feeds
         the adaptive controller. Honest outcomes: supported/contradicted/
@@ -200,7 +182,7 @@ class Phase3Harness:
             responses = self._probe_executor.execute(probe, target=evidence["endpoint"])
             self._feed_probe_responses(responses)
             # Adaptive feedback: every probe's defensive signals throttle the
-            # engine — a 429/403/5xx is target behavior, never a verdict.
+            # engine, a 429/403/5xx is target behavior, never a verdict.
             self.adaptive.observe(
                 status_code=_max_status(responses),
                 duration_ms=_total_ms(responses),
@@ -230,7 +212,7 @@ class Phase3Harness:
             self.verdicts.append(record)
             return record
         except PermissionError:
-            # Non-loopback target: the probe is honestly refused — blocking is
+            # Non-loopback target: the probe is honestly refused, blocking is
             # blocking, never a finding or a silent skip.
             record["outcome"] = AttackOutcome.BLOCKED.value
             record["notes"] = "probe refused: target is not a loopback target"
@@ -478,7 +460,7 @@ class Phase3Harness:
         For each capability: Applicable / Not Applicable / Executed / Verified
         / Blocked / Failed. ``Not Applicable`` is only ever concluded from
         discovered target characteristics (the capability was never mapped to a
-        discovered surface) — never asserted by assumption.
+        discovered surface), never asserted by assumption.
         """
         assignments = self.surface.graph.assignments()
         tasks = self.surface.queue.tasks()
@@ -564,7 +546,7 @@ class Phase3Harness:
         }
 
     def report(self) -> dict[str, Any]:
-        """Assemble the complete Phase 3 evidence report."""
+        """Assemble the complete evidence report."""
         return {
             "mission_id": self.mission_id,
             "target": self.target,

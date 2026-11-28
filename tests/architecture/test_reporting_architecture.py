@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the professional reporting capability.
-
-Enforces domain purity, application/ports separation, reporting adapter and
-exporter separation, template separation, evidence immutability, dependency
-direction, no direct tool execution from reporting and no AI bypass around QA.
-"""
+"""Architecture tests for the professional reporting capability."""
 
 from __future__ import annotations
 

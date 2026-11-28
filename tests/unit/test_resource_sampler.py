@@ -3,10 +3,7 @@
 
 """Resource-governance tests: process-tree sampling.
 
-The sampler must account for the ENTIRE HunterX process tree (parent +
-children + grandchildren) and never raise. The /proc walk is exercised through
-a fake filesystem; CPU-percent math and host-memory parsing are tested
-directly.
+The sampler must account for the ENTIRE HunterX process tree (parent + children + grandchildren) and never raise.
 """
 
 from __future__ import annotations

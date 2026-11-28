@@ -1,41 +1,16 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security Test Matrix — the mission completion contract.
-
-For ``full_security_assessment`` the matrix is the authoritative record of
-which security-testing domains are applicable to the target and whether each
-has been genuinely assessed. It replaces queue-exhaustion as the completion
-signal:
-
-* Every domain carries :class:`MatrixState`; only these are terminal:
-
-  - ``TESTED_NEGATIVE``              (actively tested, no vulnerability found)
-  - ``TESTED_POSITIVE_VALIDATED``    (vulnerability validated with evidence)
-  - ``NOT_APPLICABLE_WITH_EVIDENCE`` (deterministic evidence shows the domain
-    cannot apply, e.g. no GraphQL endpoint exists)
-  - ``BLOCKED_WITH_REASON``          (explicitly impossible now, with reason)
-
-* ``NOT_ASSESSED``, ``IN_PROGRESS`` and ``DEFERRED`` are NEVER terminal: the
-  mission cannot claim completion while an applicable domain sits in one of
-  them.
-
-* Hypotheses do NOT drive the matrix — the matrix drives the assessment. A
-  domain requires testing even when no hypothesis currently exists.
-
-The matrix is updated deterministically from real capability executions
-(evidence-backed bookkeeping); the AI Hunt Director reads it every cycle and
-selects the next domain to test.
-"""
+"""Security Test Matrix, the mission completion contract."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class MatrixState(str, Enum):
+class MatrixState(StrEnum):
     """Lifecycle state of one security-testing domain."""
 
     NOT_ASSESSED = "not_assessed"
@@ -93,6 +68,7 @@ class MatrixDomain:
     blocked_reason: str = ""
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-safe mapping of this domain."""
         return {
             "domain": self.domain,
             "label": self.label,
@@ -113,7 +89,7 @@ class MatrixDomain:
 
 
 def _web_domains() -> list[MatrixDomain]:
-    """The canonical web-application security-testing domain set.
+    """Return the canonical web-application security-testing domain set.
 
     This is the *completion contract*, not an execution plan: the AI decides
     which capability/test satisfies each domain and in which order.
@@ -212,7 +188,7 @@ class SecurityTestMatrix:
 
         Returns the ids of domains whose applicability changed. Conditional
         domains whose markers were never observed after the attack surface has
-        been enumerated become ``NOT_APPLICABLE_WITH_EVIDENCE`` — the evidence
+        been enumerated become ``NOT_APPLICABLE_WITH_EVIDENCE``, the evidence
         being the enumerated surface itself.
         """
         changed: list[str] = []
@@ -310,7 +286,7 @@ class SecurityTestMatrix:
         return updated
 
     def mark_blocked(self, domain_id: str, reason: str) -> bool:
-        """Explicitly block a domain (browser unavailable, tool missing, ...)."""
+        """Explicitly block a domain (browser unavailable, tool missing,...)."""
         domain = self.domains.get(domain_id)
         if domain is None:
             return False
@@ -335,9 +311,11 @@ class SecurityTestMatrix:
     # -- queries -------------------------------------------------------------
 
     def domain(self, domain_id: str) -> MatrixDomain | None:
+        """Return a domain by id, or ``None`` when it is unknown."""
         return self.domains.get(domain_id)
 
     def applicable_domains(self) -> list[MatrixDomain]:
+        """Return the domains that apply to the target."""
         return [d for d in self.domains.values() if d.applicability == "applicable"]
 
     def incomplete_domains(self) -> list[MatrixDomain]:
@@ -360,10 +338,12 @@ class SecurityTestMatrix:
         return not self.incomplete_domains()
 
     def capabilities_for_domain(self, domain_id: str) -> tuple[str, ...]:
+        """Return the capabilities mapped to a domain."""
         domain = self.domains.get(domain_id)
         return domain.capabilities if domain else ()
 
     def domains_for_capability(self, capability: str) -> list[str]:
+        """Return the domains a capability contributes to."""
         return [
             d.domain
             for d in self.domains.values()
@@ -373,6 +353,7 @@ class SecurityTestMatrix:
     # -- metrics -------------------------------------------------------------
 
     def coverage_by_category(self) -> dict[str, dict[str, float]]:
+        """Compute coverage metrics for every domain category."""
         """Truthful, separated coverage per category (never aggregated away)."""
         report: dict[str, dict[str, float]] = {}
         for category in (CATEGORY_RECONNAISSANCE, CATEGORY_ATTACK_SURFACE, CATEGORY_ACTIVE_TESTING, CATEGORY_VALIDATION, CATEGORY_ANALYSIS):
@@ -395,6 +376,7 @@ class SecurityTestMatrix:
         return report
 
     def summary(self) -> dict[str, Any]:
+        """Return an aggregate summary of the matrix."""
         applicable = self.applicable_domains()
         incomplete = self.incomplete_domains()
         return {
@@ -408,6 +390,7 @@ class SecurityTestMatrix:
         }
 
     def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-safe mapping of the whole matrix."""
         payload = self.summary()
         payload["domains"] = [d.to_dict() for d in self.domains.values()]
         return payload

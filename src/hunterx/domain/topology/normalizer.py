@@ -3,9 +3,8 @@
 
 """Topology entity normalizer.
 
-Collapses equivalent spellings of entity names into a single canonical form so
-correlation never treats ``WWW.Example.COM.`` and ``www.example.com`` as
-different assets. Deterministic and stateless.
+Collapses equivalent spellings of entity names into a single canonical form so correlation never treats
+``WWW.Example.COM.`` and ``www.example.com`` as different assets.
 """
 
 from __future__ import annotations

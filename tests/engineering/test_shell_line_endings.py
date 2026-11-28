@@ -3,10 +3,8 @@
 
 """Regression guard: shell scripts must use Unix LF line endings.
 
-CRLF shebangs (``#!/usr/bin/env bash\r``) break execution on Linux/WSL with
-``/usr/bin/env: 'bash\r': No such file or directory``. ``.gitattributes``
-enforces ``*.sh text eol=lf``; this test fails fast if a tracked ``*.sh`` file
-ever contains a carriage return, preventing the regression from re-entering.
+CRLF shebangs (``#!/usr/bin/env bash ``) break execution on Linux/WSL with ``/usr/bin/env: 'bash ': No such file or
+directory``.
 """
 
 from __future__ import annotations

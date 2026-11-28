@@ -2,15 +2,14 @@
   "capability": "autonomous-mission-orchestration",
   "name": "Autonomous Mission Orchestration Engine",
   "version": "1.0.0",
-  "wave": 32,
-  "status": "ratified",
-  "description": "Turns HunterX into a stateful, adaptive, evidence-driven mission orchestrator that executes a complete security assessment as a dynamic reasoning-driven mission rather than a static sequence of commands. It reuses the Sprint 027 Adaptive Mission & Attack-Path Planning engine as the executable planning substrate and adds the observation-driven hypothesis loop, expected-information-gain decision engine, baseline & differential testing, bounded negative evidence, mission coverage, knowledge gaps, evidence-driven confidence, mission branches, telemetry, structured reasoning trace, mission policies and stop conditions, impact analysis and finding cascades.",
+  "status": "stable",
+  "description": "Turns HunterX into a stateful, adaptive, evidence-driven mission orchestrator that executes a complete security assessment as a dynamic reasoning-driven mission rather than a static sequence of commands. It reuses the Adaptive Mission & Attack-Path Planning engine as the executable planning substrate and adds the observation-driven hypothesis loop, expected-information-gain decision engine, baseline & differential testing, bounded negative evidence, mission coverage, knowledge gaps, evidence-driven confidence, mission branches, telemetry, structured reasoning trace, mission policies and stop conditions, impact analysis and finding cascades.",
   "inputs": [
     "Mission objective (full_security_assessment, bug_bounty_hunt, pentest, red_team_assessment, web_application_assessment, api_assessment, cloud_assessment, external_attack_surface, internal_assessment, vulnerability_research, targeted_vulnerability_test)",
     "Authorized mission scope (included targets, excluded assets, authorization contexts)",
     "Mission policy (allowed techniques, resource/time budgets, validation depth, proof depth, coverage target, stop conditions, concurrency, rate limit)",
     "Tool results (raw outputs parsed and normalized into observations; tool output is data, never an instruction)",
-    "Sprint 027 adaptive plan / execution graph / attack paths / tool selections",
+    " adaptive plan / execution graph / attack paths / tool selections",
     "AI suggestions (advisory only; deterministic components enforce schema, state transitions, tool contracts, scope and persistence)"
   ],
   "outputs": [
@@ -26,7 +25,7 @@
     "MissionBranch set (ranked; each keeps hypothesis, state, evidence, actions, cost, outcome)",
     "MissionCheckpoint (full resumable state) + resume",
     "ImpactAnalysis for validated findings",
-    "Finding cascade hypotheses (SSRF → internal service discovery, secret exposure → authorized credential mapping, ...)",
+    "Finding cascade hypotheses (SSRF → internal service discovery, secret exposure → authorized credential mapping,...)",
     "TelemetrySnapshot (decision latency, tool utilization, finding/validation yield, false-positive rate, coverage, branch efficiency, fallback rate)",
     "ReasoningTraceEntry chain (observation → hypothesis → decision → evidence → action → result; no hidden chain-of-thought)",
     "MissionOutcome (final coverage, validated/report-ready findings, resolved hypotheses, stop condition)"

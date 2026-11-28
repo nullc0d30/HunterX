@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Offensive orchestration exception hierarchy.
-
-Failures raised by the orchestration engine: mission not found, invalid mission
-state, scope violations, safety violations, and tool-selection failures within
-a mission.
-"""
+"""Offensive orchestration exception hierarchy."""
 
 from __future__ import annotations
 
@@ -41,7 +36,7 @@ class ScopeViolationError(OffensiveOrchestrationError):
 
     Attributes:
         identifier: the out-of-scope identifier.
-        classification: scope classification (``out-of-scope``, ...).
+        classification: scope classification (``out-of-scope``,...).
 
     """
 

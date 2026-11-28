@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology fingerprinting canonical domain models.
-
-Pure data contracts for the technology intelligence capability: the canonical
-technology observation, version specification, evidence fragments, conflicts,
-historical changes, execution summaries, the collection strategy and the batch
-that carries everything back to the application layer. No I/O and no execution
-here.
-
-The TIDB ``technology`` entities
-(:mod:`hunterx.domain.entities.tidb.technology`) are the persistence projection
-of these models; this module is the runtime surface the fingerprinting pipeline
-is built on.
-"""
+"""Technology fingerprinting canonical domain models."""
 
 from __future__ import annotations
 
@@ -223,7 +211,7 @@ class TechnologyEvidence:
     """A single detection evidence fragment.
 
     Attributes:
-        evidence_type: the kind of source (header, cookie, html, ...).
+        evidence_type: the kind of source (header, cookie, html,...).
         value: the raw indicator value observed.
         source: upstream source of the evidence.
         strength: relative strength of the indicator.

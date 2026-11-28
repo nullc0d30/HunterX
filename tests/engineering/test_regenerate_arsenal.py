@@ -1,9 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regenerate the universal security arsenal manifest (Sprint 025).
+"""Regenerate the universal security arsenal manifest.
 
-Run:  python -m pytest -q tests/engineering/test_regenerate_arsenal.py
+Run: python -m pytest -q tests/engineering/test_regenerate_arsenal.py.
 """
 
 from __future__ import annotations

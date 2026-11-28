@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for the recon capability.
-
-Registers the six integrated recon tools (Subfinder, Amass, Assetfinder,
-Findomain, BBOT, theHarvester) into a :class:`ToolIntelligenceAPI` so the
-Planner and selection engines can recommend them by taxonomy capability
-(``subdomain-discovery``, ``host-discovery``, ``dns-records``,
-``certificate-lookup``, ``whois-lookup``). The profiles mirror the tool
-descriptors used by the Tool Integration SDK adapters (same version pins) so
-intelligence and execution never disagree about a tool's contract.
-"""
+"""Tool Intelligence Platform registration for the recon capability."""
 
 from __future__ import annotations
 

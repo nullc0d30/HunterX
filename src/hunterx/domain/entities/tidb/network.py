@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Network Target Intelligence Database entities.
-
-DNS, addressing and service-layer entities: domains, subdomains, hostnames,
-IP addresses, CIDR ranges, ASNs, DNS/WHOIS records, certificates, ports and
-services. These are the recon graph that future capability waves build upon.
-"""
+"""Network Target Intelligence Database entities."""
 
 from __future__ import annotations
 
@@ -196,7 +191,7 @@ class DNSRecord(TidbEntity):
     Attributes:
         name: record owner name.
         record_type: record type.
-        value: record data (target, text, ...).
+        value: record data (target, text,...).
         ttl: time-to-live in seconds.
         priority: MX/SRV priority (``None`` when not applicable).
         domain_id: owning domain when known.
@@ -757,7 +752,7 @@ class ServiceObservation(TidbEntity):
         extrainfo: extra service information.
         banner: raw service banner.
         fingerprint_method: how the fingerprint was derived.
-        evidence: evidence strings (CPEs, ...).
+        evidence: evidence strings (CPEs,...).
         tool_id: tool that produced the observation.
         source: upstream source.
         target_id: owning target when in-scope.

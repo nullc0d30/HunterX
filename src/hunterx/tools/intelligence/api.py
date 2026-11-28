@@ -3,10 +3,7 @@
 
 """Tool Intelligence API.
 
-The Tool Intelligence Platform (TIP) facade. Composes every TIP engine behind
-a single :class:`~hunterx.domain.ports.tool_intelligence.ToolIntelligencePort`
-implementation, giving every HunterX subsystem one entry point to query tool
-intelligence.
+The Tool Intelligence Platform (TIP) facade.
 """
 
 from __future__ import annotations
@@ -239,7 +236,7 @@ class ToolIntelligenceAPI(ToolIntelligencePort):
     ) -> list[ToolSelection]:
         """Return ranked, safety-aware :class:`ToolSelection` results.
 
-        This is the Sprint 023 selection surface. Tools whose safety class
+        This is the selection surface. Tools whose safety class
         exceeds ``authorization`` (or that require un-granted authorization)
         are excluded.
         """
@@ -258,6 +255,7 @@ class ToolIntelligenceAPI(ToolIntelligencePort):
         mission_id: str = "",
         scope: str = "",
         authorization: ToolSafetyClass = ToolSafetyClass.HIGH_IMPACT,
+        authorization_granted: bool = False,
         inputs: dict[str, Any] | None = None,
     ) -> ToolChain:
         """Plan a dependency-aware :class:`ToolChain` for ``objective``."""
@@ -268,6 +266,7 @@ class ToolIntelligenceAPI(ToolIntelligencePort):
             mission_id=mission_id,
             scope=scope,
             authorization=authorization,
+            authorization_granted=authorization_granted,
             inputs=inputs,
         )
 

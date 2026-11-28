@@ -3,10 +3,8 @@
 
 """Authentication surface classification.
 
-Deterministic classification of observed authentication material into canonical
-surface kinds, endpoint kinds and public-vs-authenticated access states. The
-classifier never infers state without evidence: every classification is a pure
-function of the observed indicators and is explainable through them.
+Deterministic classification of observed authentication material into canonical surface kinds, endpoint kinds and
+public-vs-authenticated access states.
 """
 
 from __future__ import annotations

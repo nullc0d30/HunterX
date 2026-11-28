@@ -3,9 +3,8 @@
 
 """Graph storage adapters.
 
-Provides an in-memory reference implementation of
-:class:`~hunterx.domain.ports.KnowledgeGraphPort` suitable for development and
-tests. A Neo4j adapter would implement the same port.
+Provides an in-memory reference implementation of :class:`~hunterx.domain.ports.KnowledgeGraphPort` suitable for
+development and tests.
 """
 
 from __future__ import annotations

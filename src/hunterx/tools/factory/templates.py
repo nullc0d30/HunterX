@@ -3,10 +3,7 @@
 
 """Integration templates for the Tool Integration Factory.
 
-The factory renders every generated pack from an integration template. A
-built-in "standard" template ships with the factory; operators may register
-overrides by ``template_id`` so packs stay identical in layout while allowing
-org-specific boilerplate.
+The factory renders every generated pack from an integration template.
 """
 
 from __future__ import annotations

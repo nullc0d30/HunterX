@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Roadmap — HunterX v6.0.0
+title: Roadmap - HunterX v6.0.0
 keywords: roadmap, CI/CD integrations, SIEM connectors, enterprise features
 description: >-
   HunterX open-source vulnerability scanner project roadmap for Linux. Upcoming
@@ -29,22 +29,22 @@ HunterX v6.0.0 is the current stable release. This roadmap outlines planned deve
 
 ## Medium-Term (v7.x)
 
-- **Native CI/CD integrations** — GitHub Actions, GitLab CI, Jenkins
-- **SIEM connectors** — Splunk, Elasticsearch, QRadar
-- **Ticketing integration** — Jira, ServiceNow
+- **Native CI/CD integrations** - GitHub Actions, GitLab CI, Jenkins
+- **SIEM connectors** - Splunk, Elasticsearch, QRadar
+- **Ticketing integration** - Jira, ServiceNow
 - **Collaborative multi-user scanning**
-- **Community Plugin Registry** — Hosted registry for user-contributed plugins with validation
-- **Advanced Reporting Templates** — Executive summaries, compliance reports (PCI-DSS, SOC2, HIPAA)
+- **Community Plugin Registry** - Hosted registry for user-contributed plugins with validation
+- **Advanced Reporting Templates** - Executive summaries, compliance reports (PCI-DSS, SOC2, HIPAA)
 
 ## Long-Term
 
 - **Public skill marketplace** with ratings and reviews
 - **Community detection rules**
 - **Interactive in-app tutorials**
-- **Enterprise features** — RBAC, audit logging, SSO/LDAP
-- **Package managers** — Homebrew, Chocolatey, Linux package managers (apt, dnf)
+- **Enterprise features** - RBAC, audit logging, SSO/LDAP
+- **Package managers** - Homebrew, Chocolatey, Linux package managers (apt, dnf)
 - **Dedicated documentation site** with versioned docs and interactive guides
-- **Research collaborations** — Academic and industry partnerships
+- **Research collaborations** - Academic and industry partnerships
 
 ---
 

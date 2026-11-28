@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal Security Tool Mastery — domain models.
-
-The mastery layer is the Sprint 025 contract that turns HunterX from "an
-orchestrator that can execute security tools" into "a professional security
-operator that deeply understands and correctly uses every integrated tool".
-
-Pure data models. No I/O, no execution. These are the structured contracts
-that every mastery subsystem (arsenal registry, relationship graph, playbook
-engine, mission selector, tool history, coverage engine, dataset registry,
-parser regression, result replay) reads and writes.
-"""
+"""Universal Security Tool Mastery, domain models."""
 
 from __future__ import annotations
 
@@ -103,7 +93,7 @@ class ToolMasterProfile:
         capability_ids: canonical capabilities the tool provides.
         supported_targets: target types the tool accepts.
         supported_protocols: protocols the tool speaks.
-        command_tree: conceptual command tree (``mode -> operation -> ...``).
+        command_tree: conceptual command tree (``mode -> operation ->...``).
         global_options: option names that apply to every invocation.
         input_formats: formats the tool consumes.
         output_formats: formats the tool emits.
@@ -258,7 +248,7 @@ class ToolPlaybook:
 class ToolDataset:
     """Provenance and metadata for a dataset integrated into HunterX.
 
-    Datasets (SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates, ...)
+    Datasets (SecLists, FuzzDB, PayloadsAllTheThings, Nuclei templates,...)
     are knowledge, not executable truth. Each is versioned and traced.
     """
 

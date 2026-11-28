@@ -3,12 +3,7 @@
 
 """Professional finding intelligence & reporting domain package.
 
-Pure, storage-agnostic engines for the Sprint 029 professional reporting
-capability. These engines turn validated findings, evidence, proof, impact,
-provenance, target intelligence and correlation into a professional security
-report package. They never manufacture facts: every statement produced traces
-back to observation, evidence, validation, proof, impact, tool result,
-target intelligence or explicit analyst reasoning.
+Pure, storage-agnostic engines for the professional reporting capability.
 """
 
 from __future__ import annotations

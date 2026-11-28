@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform registration for Live Host & Service Discovery.
-
-Registers the live discovery tools (nmap, naabu, masscan, tcp-connect) into a
-:class:`ToolIntelligenceAPI` so the Planner and selection engines can
-recommend them by taxonomy capability (``host-discovery``, ``port-scanning``,
-``service-fingerprint``). The profiles mirror the tool descriptors used by the
-Tool Integration SDK adapters (same version pins) so intelligence and
-execution never disagree about a tool's contract.
-"""
+"""Tool Intelligence Platform registration for Live Host & Service Discovery."""
 
 from __future__ import annotations
 

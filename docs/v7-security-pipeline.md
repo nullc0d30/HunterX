@@ -10,10 +10,6 @@ permalink: /v7-security-pipeline/
 
 # HunterX Security Pipeline
 
-**Status:** Ratified (Sprint 006.9)
-**Version:** 1.0.0
-**Owner:** HunterX Engineering Council
-
 ---
 
 ## 1. Purpose / Scope
@@ -27,8 +23,8 @@ output, and how the pipeline plugs into the security quality gate
 The pipeline is invoked with:
 
 ```bash
-python -m eng security            # human-readable summary
-python -m eng security --json     # machine-readable report
+python -m eng security # human-readable summary
+python -m eng security --json # machine-readable report
 ```
 
 The CI entry point is `security-tests.yml`; the aggregate result is also wired
@@ -53,13 +49,13 @@ into the blocking `ci.yml` job through the `security` quality gate.
 ```bash
 bandit -r src/hunterx -f txt -o artifacts/security/bandit.txt -q
 semgrep --config auto --json-output artifacts/security/semgrep.json src/
-gitleaks detect --source . --report-format json --report-path artifacts/security/gitleaks.json --no-banner
+gitleaks detect --source. --report-format json --report-path artifacts/security/gitleaks.json --no-banner
 pip-audit -r requirements.lock --disable-pip --format json -o artifacts/security/pip-audit.json
 safety check -r requirements.lock --json -o artifacts/security/safety.json
 trivy fs --scanners vuln,secret,misconfig --skip-dirs build,dist,reports,artifacts,payloads \
-  --format json --output artifacts/security/trivy-fs.json --exit-code 1 .
+ --format json --output artifacts/security/trivy-fs.json --exit-code 1.
 trivy image --scanners vuln,secret --severity HIGH,CRITICAL \
-  --format json --output artifacts/security/trivy-image.json --exit-code 1 nullc0d30/hunterx:latest
+ --format json --output artifacts/security/trivy-image.json --exit-code 1 nullc0d30/hunterx:latest
 ```
 
 ---
@@ -90,7 +86,7 @@ matches any of them, the scan is reported as **skipped** instead of failed:
 
 ```python
 skip_failures_containing=("image not found", "unable to", "not found",
-                          "failed to pull", "no such image")
+ "failed to pull", "no such image")
 ```
 
 ---
@@ -100,14 +96,14 @@ skip_failures_containing=("image not found", "unable to", "not found",
 `eng.security._count_findings` extracts a best-effort finding count per scanner
 output format:
 
-- **bandit** — parses `Total issues: N`.
-- **pip-audit** — parses the JSON array length (or `count`).
-- **safety** — counts non-summary output lines.
-- **trivy-fs / trivy-image** — `_count_trivy` sums `Vulnerabilities`,
-  `Secrets` and `Misconfigurations` entries from the JSON report, with a
-  line-based fallback for plain-text output.
-- **semgrep / gitleaks** — non-zero exit is treated as findings in the modes
-  used; the detail line carries the scanner's own message.
+- **bandit**, parses `Total issues: N`.
+- **pip-audit**, parses the JSON array length (or `count`).
+- **safety**, counts non-summary output lines.
+- **trivy-fs / trivy-image**, `_count_trivy` sums `Vulnerabilities`,
+ `Secrets` and `Misconfigurations` entries from the JSON report, with a
+ line-based fallback for plain-text output.
+- **semgrep / gitleaks**, non-zero exit is treated as findings in the modes
+ used; the detail line carries the scanner's own message.
 
 Every scan's raw combined output is persisted to `artifacts/security/<name>.txt`
 (or the scanner's own JSON output path) for auditability.
@@ -117,15 +113,15 @@ Every scan's raw combined output is persisted to `artifacts/security/<name>.txt`
 ## 5. Artifacts
 
 ```text
-artifacts/security-report.json    <- aggregate: scans, failed, blocked, summary
+artifacts/security-report.json <- aggregate: scans, failed, blocked, summary
 artifacts/security/
-  bandit.txt
-  semgrep.json
-  gitleaks.json
-  pip-audit.json
-  safety.json
-  trivy-fs.json
-  trivy-image.json
+ bandit.txt
+ semgrep.json
+ gitleaks.json
+ pip-audit.json
+ safety.json
+ trivy-fs.json
+ trivy-image.json
 ```
 
 The aggregate report is uploaded by CI and consumed by the security quality
@@ -137,11 +133,11 @@ gate via `eng.security.to_gate_result`, which maps a blocked report to a
 ## 6. CI Wiring
 
 - **`security-tests.yml`** runs `python -m eng security --json` on every PR and
-  push and uploads `artifacts/security/` and `artifacts/security-report.json`.
+ push and uploads `artifacts/security/` and `artifacts/security-report.json`.
 - **`ci.yml`** includes the `security` gate in the mandatory blocking suite, so
-  a scanner finding on the source or lock file blocks the merge.
+ a scanner finding on the source or lock file blocks the merge.
 - **`dependency-review.yml`** adds a second line of defense on pull requests,
-  reviewing changed dependencies for licenses and known vulnerabilities.
+ reviewing changed dependencies for licenses and known vulnerabilities.
 
 ---
 

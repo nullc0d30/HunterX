@@ -3,9 +3,8 @@
 
 """Configuration manager.
 
-Loads, validates and merges configuration from environment variables, default
-values and optional profile files (``hunterx.yaml``). The manager exposes
-typed settings to every layer.
+Loads, validates and merges configuration from environment variables, default values and optional profile files
+(``hunterx.yaml``).
 """
 
 from __future__ import annotations

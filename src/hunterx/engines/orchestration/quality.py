@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission quality score.
-
-Produces an explainable mission quality score based on scope completeness,
-asset discovery completeness, technology identification, attack-surface
-coverage, vulnerability intelligence coverage, validation coverage, evidence
-quality, tool reliability, execution completeness and known blind spots.
-"""
+"""Mission quality score."""
 
 from __future__ import annotations
 

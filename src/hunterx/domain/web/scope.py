@@ -3,11 +3,8 @@
 
 """Web crawling scope policy and enforcement.
 
-Mirrors the technology-fingerprinting scope posture: the policy is
-fail-closed — a crawl is only authorized against hosts that match a configured
-root. Exclusion rules (hosts, path patterns, extensions) always win. Scope is
-never expanded by discovered redirect targets or external infrastructure; those
-are recorded as observations but never fetched.
+Mirrors the technology-fingerprinting scope posture: the policy is fail-closed, a crawl is only authorized against
+hosts that match a configured root.
 """
 
 from __future__ import annotations

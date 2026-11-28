@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs Other Security Tools — Comparisons
+title: HunterX vs Other Security Tools - Comparisons
 keywords: HunterX vs Nuclei, HunterX vs OWASP ZAP, HunterX vs Burp Suite, HunterX vs OpenVAS, vulnerability scanner comparison, penetration testing tool comparison
 description: >-
   How HunterX v7 compares to popular security tools: Nuclei, OWASP ZAP, Burp
@@ -17,7 +17,7 @@ validates hypotheses with evidence, engineers and replays proofs/PoCs, and
 produces report-ready findings.
 
 The comparison pages below describe how HunterX relates to each tool. HunterX
-does not claim to replace these tools — where relevant it **integrates with**
+does not claim to replace these tools, where relevant it **integrates with**
 them (see the [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) for integration status).
 
 - [HunterX vs Nuclei]({{ '/comparisons/vs-nuclei/' | relative_url }})
@@ -27,7 +27,7 @@ them (see the [Tool Ecosystem]({{ '/tool-ecosystem/' | relative_url }}) for inte
 
 ## The core distinction
 
-Traditional scanners emit candidates: "Possible SQL Injection — Confidence 87%".
+Traditional scanners emit candidates: "Possible SQL Injection, Confidence 87%".
 HunterX is designed to carry the investigation further:
 
 ```
@@ -35,7 +35,7 @@ Vulnerability + Evidence + Reproducibility + Impact + PoC = Validated Finding
 ```
 
 HunterX integrates with, executes, parses and correlates the output of many
-scanners — including Nuclei and OWASP ZAP — rather than owning every security
+scanners, including Nuclei and OWASP ZAP, rather than owning every security
 capability itself.
 
 ## Related

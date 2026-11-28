@@ -3,16 +3,7 @@
 
 """Attack-surface graph.
 
-Phase 1 generic layered graph:
-
-    Target → Asset → Service → Application → Surface → Input/Object/State
-    → Workflow → Applicable Security Capability
-
-The graph is extensible by construction: node kinds are strings registered in
-the :class:`SurfaceKindRegistry`, layers come from :class:`SurfaceLayer`, and
-core traversal code never branches on a specific kind. Adding a new target
-technology therefore never requires changing this module or any orchestration
-logic — only registering kinds and observing surfaces.
+generic layered graph.
 """
 
 from __future__ import annotations
@@ -166,7 +157,7 @@ class SurfaceGraph:
         """Store a capability assignment (deduplicated by identity).
 
         The ``Capability × Surface × Context`` relationship is captured by the
-        surface→assignment index rather than a phantom graph edge, so the graph
+        surface to assignment index rather than a phantom graph edge, so the graph
         keeps only observed surfaces as nodes.
         """
         key = assignment.identity_key()
@@ -293,7 +284,7 @@ class SurfaceGraph:
 
 
 def link_chain(graph: SurfaceGraph, *layers: tuple[str, str, SurfaceLayer, str]) -> list[SurfaceNode]:
-    """Build a parent→child chain of surface nodes.
+    """Build a parent to child chain of surface nodes.
 
     Each entry is ``(kind, name, layer, parent_kind)``; the first entry's
     parent must already exist in the graph. Returns the created nodes.

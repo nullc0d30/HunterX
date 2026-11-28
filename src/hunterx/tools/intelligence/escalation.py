@@ -1,13 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Escalation engine (Sprint 023).
+"""Escalation engine.
 
-Adaptive execution: when a passive observation needs validation, the engine
-decides whether a more aggressive tool/level is permitted. Every escalation
-must justify itself with evidence, stay inside scope, respect the safety
-ceiling against authorization, and use a tool that actually provides the
-required capability. De-escalation is allowed when evidence weakens.
+Adaptive execution: when a passive observation needs validation, the engine decides whether a more aggressive
+tool/level is permitted.
 """
 
 from __future__ import annotations

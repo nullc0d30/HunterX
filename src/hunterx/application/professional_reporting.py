@@ -1,22 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Professional reporting application service.
-
-Sprint 029 use-case service: builds the canonical finding-intelligence
-aggregate from a validated finding, classifies it (CWE / OWASP / ATT&CK /
-CAPEC / CVE / CVSS), assesses severity, quality, priority and reportability,
-builds evidence bundles and timelines, produces remediation and retest plans,
-assembles a professional report document, verifies claims, runs QA, applies
-redaction, persists immutable report versions and exports the report into
-Markdown / HTML / JSON / SARIF / PDF / the structured package format. Every
-meaningful action is published as a typed ``report.*`` event.
-
-The service never fabricates facts: every report statement is derived from the
-finding, evidence, validation, proof, impact, tool provenance, target
-intelligence or explicit analyst reasoning. AI may only explain — it can never
-invent evidence, change proof state or override evidence conflicts.
-"""
+"""Professional reporting application service."""
 
 from __future__ import annotations
 

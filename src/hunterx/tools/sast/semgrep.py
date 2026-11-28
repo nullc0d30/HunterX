@@ -3,12 +3,7 @@
 
 """SAST / static-analysis tool adapters.
 
-Integrates ``semgrep`` — the lightweight static analysis engine — into the Tool
-Integration SDK. The adapter invokes the binary through the shared runner seam
-with JSON output and normalizes findings into canonical candidate records.
-
-SAST findings are candidates: they describe code patterns, not proven
-exploitation. Every record carries ``requires_validation = True``.
+Integrates ``semgrep``, the lightweight static analysis engine, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

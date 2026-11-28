@@ -3,20 +3,13 @@
 
 """In-process TCP-connect probe adapter.
 
-Performs host reachability and TCP port discovery with a plain TCP connect —
-the binary-free fallback that requires no external tool and no raw sockets.
-Unlike binary adapters this adapter has no CLI; ``run`` probes the target
-through an injectable connection callable with a per-port timeout, so unit
-tests never touch the network: ``TcpConnectAdapter(probe=fake_probe)``.
-
-A refused connection proves the host is reachable (a live service just does
-not listen on that port); timeouts are treated as inconclusive rather than as
-proof the host is offline.
+Performs host reachability and TCP port discovery with a plain TCP connect, the binary-free fallback that requires
+no external tool and no raw sockets.
 """
 
 from __future__ import annotations
 
-import socket  # nosec B105  # the adapter only performs plain TCP connects
+import socket  # nosec B105 # the adapter only performs plain TCP connects
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -148,7 +141,7 @@ def _default_probe(address: str, port: int, timeout: float) -> tuple[PortState, 
         return PortState.CLOSED, int(monotonic_ms() - start)
     except OSError:
         return PortState.CLOSED, int(monotonic_ms() - start)
-    except Exception:  # noqa: BLE001  # any other outcome is inconclusive
+    except Exception:  # noqa: BLE001 # any other outcome is inconclusive
         return PortState.UNKNOWN, int(monotonic_ms() - start)
 
 

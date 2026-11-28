@@ -3,13 +3,8 @@
 
 """Knowledge dataset adapters.
 
-Integrates the passive knowledge datasets — PayloadsAllTheThings, SecLists and
-FuzzDB — into the Tool Integration SDK as in-process reference providers.
-
-Datasets are knowledge, not executable truth: the adapter exposes a bounded
-description (name, version, path, entry count, category) for operator use and
-never auto-executes payloads or wordlist contents. Payload/wordlist material is
-consumed as data by the tools that request it under explicit authorization.
+Integrates the passive knowledge datasets, PayloadsAllTheThings, SecLists and FuzzDB, into the Tool Integration SDK
+as in-process reference providers.
 """
 
 from __future__ import annotations

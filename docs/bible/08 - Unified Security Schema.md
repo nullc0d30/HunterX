@@ -1,7 +1,5 @@
-# 08 — Unified Security Schema
+# 08, Unified Security Schema
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All entities stored in TIDB, Knowledge Graph, API models, report models, adapter events
 
 ---
@@ -18,11 +16,11 @@ and a migration path).
 Conventions:
 
 - **IDs:** content-addressed where meaningful (`sha256` over canonical content),
-  otherwise ULID. All IDs are opaque strings to callers.
+ otherwise ULID. All IDs are opaque strings to callers.
 - **Timestamps:** UTC ISO-8601 with `Z`.
 - **Enums:** closed sets; new values = minor bump; removals = breaking.
 - **Optionality:** nullable vs absent distinguished; `null` means "not
-  applicable/unknown", absent means "not provided".
+ applicable/unknown", absent means "not provided".
 
 ---
 
@@ -30,16 +28,16 @@ Conventions:
 
 ```
 Engagement ──< Mission ──< WorkflowRun ──< TaskRun
-                 │
-                 ├──< Target ──< Asset
-                 │                ├── Domain ──< Subdomain
-                 │                ├── Host ──< IP ──< Port ──< Service ──< Technology
-                 │                ├── URL ──< Endpoint ──< Parameter
-                 │                ├── Directory
-                 │                └── API
-                 ├──< Finding ──< Evidence ──< Screenshot / Payload
-                 ├──< RiskRating
-                 └──< Report ──< Timeline
+ │
+ ├──< Target ──< Asset
+ │ ├── Domain ──< Subdomain
+ │ ├── Host ──< IP ──< Port ──< Service ──< Technology
+ │ ├── URL ──< Endpoint ──< Parameter
+ │ ├── Directory
+ │ └── API
+ ├──< Finding ──< Evidence ──< Screenshot / Payload
+ ├──< RiskRating
+ └──< Report ──< Timeline
 Knowledge (global): CVE, CWE, CAPEC, MITRE, EPSS
 ```
 
@@ -113,7 +111,7 @@ Shared: `id`, `target_id`, `discovered_at`, `source_tool`, `evidence_refs`,
 `technologies:[Technology]`.
 
 #### `Technology`
-`name`, `category` (web-server, framework, cms, waf, language, ...), `version`,
+`name`, `category` (web-server, framework, cms, waf, language,...), `version`,
 `cpe`, `confidence`, `detected_by`.
 
 #### `URL`
@@ -312,7 +310,7 @@ Severity is a **starting point**; the final risk uses the mission risk model
 
 - Canonical finding `hash = sha256(canonical(dedup_key_spec fields))`.
 - `dedup_key_spec` per tool (see `07` §8); platform-level fallback:
-  `title + primary affected asset + category + severity`.
+ `title + primary affected asset + category + severity`.
 - Duplicates increment `occurrences`; originals keep first-seen provenance.
 - Merge policy: keep highest-confidence evidence set; never lose audit history.
 
@@ -322,7 +320,7 @@ Severity is a **starting point**; the final risk uses the mission risk model
 
 - JSON is the canonical interchange; pydantic models at delivery boundary.
 - Schema versions travel with every event, API model, and stored record
-  (`schema_version`).
+ (`schema_version`).
 - Unknown fields: tolerant on read (ignored), strict on write (rejected).
 - Enums serialized as strings; never integers.
 

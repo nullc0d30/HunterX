@@ -3,12 +3,8 @@
 
 """Technology conflict resolution.
 
-Deterministic resolution of conflicting technology observations (mostly
-conflicting versions of the same product on the same asset). Every observation
-is preserved on the conflict record; the canonical value is selected by a
-configured strategy — ``most-confident`` (default), ``most-sources`` or
-``most-recent`` — and the reason is recorded so downstream consumers can trace
-why one value won.
+Deterministic resolution of conflicting technology observations (mostly conflicting versions of the same product on
+the same asset).
 """
 
 from __future__ import annotations

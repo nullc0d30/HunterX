@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Attack probe planning and bounded escalation.
-
-Phase 2. Builds the per-surface attack probe plan as an explicit strategy
-ladder — baseline → probe → differential analysis → stronger applicable
-strategy → verification — while keeping payload volume and mutation depth
-bounded by an :class:`AggressionProfile`. Escalation is bounded: the ceiling is
-``MAXIMUM`` and the profile never hands an unbounded payload set to a tool.
-"""
+"""Attack probe planning and bounded escalation."""
 
 from __future__ import annotations
 
@@ -76,7 +69,7 @@ class AggressionProfile:
         }
 
 
-#: Bounded profiles per aggression tier. Every budget is a hard ceiling —
+# : Bounded profiles per aggression tier. Every budget is a hard ceiling
 #: "aggressive" raises coverage, never floods the target.
 _PROFILES: dict[AggressionLevel, AggressionProfile] = {
     AggressionLevel.LOW: AggressionProfile(

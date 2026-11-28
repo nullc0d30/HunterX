@@ -3,9 +3,7 @@
 
 """Application layer.
 
-Use-case services that orchestrate domain entities and repositories. These
-services are framework-agnostic: the API and CLI layers adapt them for their
-respective surfaces.
+Use-case services that orchestrate domain entities and repositories.
 """
 
 from __future__ import annotations

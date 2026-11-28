@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the cloud & SaaS intelligence domain layer.
-
-Exercises the canonical models (serialization round-trips, type discriminators,
-evidence), the evidence-based provider detection registry, classification,
-deterministic confidence scoring, scope enforcement, correlation with conflict
-preservation, historical diffing, validation and the collection strategy.
-"""
+"""Tests for the cloud & SaaS intelligence domain layer."""
 
 from __future__ import annotations
 

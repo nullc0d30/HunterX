@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence API routes.
-
-Exposes the application services for: target memory, snapshots, snapshot
-comparison, changes, observation history, campaigns, campaign intelligence,
-coverage, coverage gaps, hypothesis history, risk history, revalidation plans,
-finding history and attack-path history. Handlers resolve services from the
-shared dependency container.
-"""
+"""Target Memory & Campaign Intelligence API routes."""
 
 from __future__ import annotations
 

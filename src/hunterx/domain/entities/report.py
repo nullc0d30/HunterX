@@ -3,9 +3,7 @@
 
 """Report entity.
 
-A report is the final deliverable of a mission: a structured view over
-findings, evidence, targets and metrics. Reports are rendered into multiple
-formats by the reporting layer.
+A report is the final deliverable of a mission: a structured view over findings, evidence, targets and metrics.
 """
 
 from __future__ import annotations

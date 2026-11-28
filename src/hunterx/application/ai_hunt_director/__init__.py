@@ -3,9 +3,7 @@
 
 """AI Hunt Director abstraction.
 
-The AI Hunt Director is the primary decision-making authority for autonomous
-security assessment missions. It receives the mission context, observations,
-and available capabilities, and determines the next action to take.
+The AI Hunt Director is the primary decision-making authority for autonomous security assessment missions.
 """
 
 from __future__ import annotations

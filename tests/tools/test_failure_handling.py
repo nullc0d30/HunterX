@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool failure-handling certification (Sprint 034.5).
-
-Certifies the required failure modes: missing binary, wrong version, invalid
-arguments, timeout, crash, partial output, malformed output, empty output,
-rate limiting, network failure, permission failure and unexpected exit codes —
-plus classification, retry, fallback and partial-result preservation.
-"""
+"""Tool failure-handling certification."""
 
 from __future__ import annotations
 

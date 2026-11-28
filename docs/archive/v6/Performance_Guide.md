@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Performance Guide — HunterX v6.0.0
+title: Performance Guide - HunterX v6.0.0
 description: >-
   Performance characteristics, caching strategies, concurrency tuning, and
   benchmark estimates for the HunterX vulnerability scanner on Linux.
@@ -18,9 +18,9 @@ This document describes the performance architecture and expected performance ch
 
 HunterX is designed for concurrent, thread-safe operation:
 
-- **Thread-safe design** — All shared state is protected by locks or uses thread-safe data structures. Caches use LRU eviction with thread-safe access.
-- **Async operations** — Skill and agent execution uses `asyncio` for cooperative concurrency. I/O-bound operations (AI provider calls, file loading, HTTP requests) run without blocking the event loop.
-- **C3 (Command-Query Separation)** — The system clearly separates commands (writes) from queries (reads). This allows cache-friendly read patterns and predictable locking behavior.
+- **Thread-safe design** - All shared state is protected by locks or uses thread-safe data structures. Caches use LRU eviction with thread-safe access.
+- **Async operations** - Skill and agent execution uses `asyncio` for cooperative concurrency. I/O-bound operations (AI provider calls, file loading, HTTP requests) run without blocking the event loop.
+- **C3 (Command-Query Separation)** - The system clearly separates commands (writes) from queries (reads). This allows cache-friendly read patterns and predictable locking behavior.
 
 ---
 
@@ -43,9 +43,9 @@ All caches use:
 
 ## Concurrent Execution
 
-- **AgentScheduler** — Manages agent execution with a priority queue and dependency resolution. Agents with higher priority or no dependencies execute first. Dependent agents wait until their prerequisites complete.
-- **SkillExecutor** — Executes skills with configurable concurrency limits. Skills are dispatched to the thread pool for blocking operations or run as async tasks for non-blocking operations.
-- **Thread pool** — A configurable thread pool handles blocking HTTP requests and other synchronous I/O. Pool size is set via `HX_THREAD_POOL_SIZE` (default: 10).
+- **AgentScheduler** - Manages agent execution with a priority queue and dependency resolution. Agents with higher priority or no dependencies execute first. Dependent agents wait until their prerequisites complete.
+- **SkillExecutor** - Executes skills with configurable concurrency limits. Skills are dispatched to the thread pool for blocking operations or run as async tasks for non-blocking operations.
+- **Thread pool** - A configurable thread pool handles blocking HTTP requests and other synchronous I/O. Pool size is set via `HX_THREAD_POOL_SIZE` (default: 10).
 
 ---
 

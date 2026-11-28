@@ -3,17 +3,8 @@
 
 """Authenticated session model for active (execution-time) authentication.
 
-This is the *execution* counterpart of the passive authentication intelligence
-models in :mod:`hunterx.domain.auth.models`. It represents a real, established
-HTTP session (cookies, headers, CSRF token) that the mission uses to reach an
-application's authenticated attack surface.
-
-Security boundary: the session object is strictly in-memory and short-lived.
-Raw cookie values and CSRF tokens live only on the instance; every serialized
-form (:meth:`AuthenticatedSession.to_dict`, :meth:`cookie_header`) is masked or
-value-free. Sessions are never persisted to the mission store, and credentials
-never enter this model at all (they are consumed by the session service and
-discarded).
+This is the *execution* counterpart of the passive authentication intelligence models in
+:mod:`hunterx.domain.auth.models`.
 """
 
 from __future__ import annotations

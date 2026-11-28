@@ -3,22 +3,7 @@
 
 """Authentication intelligence use-case services.
 
-``AuthService`` is the orchestrator — the bridge between a mission and the
-authentication intelligence tooling. Given a target and an input bundle of
-already-acquired static material, it validates scope, builds an
-:class:`AuthStrategy`, runs the in-process analyzer through the
-:class:`ExecutionEngine`, folds in existing TIDB intelligence, classifies,
-validates, correlates, confidence-scores, diffs history, persists everything to
-the TIDB, updates the attack-surface topology and publishes ``auth.*`` events.
-
-``AuthQueryService`` reads persisted authentication intelligence back from the
-TIDB and answers the reporting queries (surfaces, endpoints, flows, identity
-providers, OAuth/OIDC/SAML, cookies, token storage, CSRF, CORS, MFA/WebAuthn,
-roles/scopes/permissions, tenants, changes and conflicts). Both services depend
-on ports only.
-
-Security boundary: intelligence only. No authentication, no credential or token
-storage, no validation of discovered secrets.
+``AuthService`` is the orchestrator, the bridge between a mission and the authentication intelligence tooling.
 """
 
 from __future__ import annotations

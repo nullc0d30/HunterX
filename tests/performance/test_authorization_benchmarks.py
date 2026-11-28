@@ -1,11 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance benchmarks for the authorization intelligence capability.
-
-Establishes deterministic baselines for the analytical core: analyzing an HTTP
-snapshot bundle, correlating 1k observations and running inventory queries.
-"""
+"""Performance benchmarks for the authorization intelligence capability."""
 
 from __future__ import annotations
 

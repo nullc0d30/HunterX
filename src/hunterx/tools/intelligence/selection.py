@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool selection engine.
-
-Ranks candidate tools against a set of selection criteria: mission profile,
-target type, available inputs, execution time, historical accuracy,
-reliability, installed status, performance, dependencies and user
-preferences. Produces scored, ordered results.
-"""
+"""Tool selection engine."""
 
 from __future__ import annotations
 
@@ -29,7 +23,7 @@ class ToolSelectionEngine:
     Scoring is additive and normalized to ``[0, 1]``. A tool with a missing
     required capability is excluded. ``require_installed`` excludes tools whose
     runtime state is not ``AVAILABLE``. When a :class:`CapabilityVocabulary`
-    is provided, capability matching is canonical — ``subdomain-discovery``
+    is provided, capability matching is canonical, ``subdomain-discovery``
     matches a tool that advertises ``subdomain-enumeration``.
     """
 

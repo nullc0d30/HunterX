@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission planner.
-
-Consumes target intelligence, scope, mission type, known technologies, known
-services, known endpoints, cloud intelligence and tool capabilities, and
-produces a canonical :class:`ExecutionPlan`. The planner applies the reusable
-mission phases (PHASE 0 … PHASE 12) with adaptive branching: only the phases
-and steps that are relevant to the observed attack surface are included. The
-planner never executes anything.
-"""
+"""Mission planner."""
 
 from __future__ import annotations
 
@@ -34,7 +26,7 @@ class IntelligenceSummary:
     Attributes:
         mission_type: the mission type (drives phase selection).
         technologies: known technology ids / product:version tokens.
-        services: known services (``http``, ``https``, ``dns``, ...).
+        services: known services (``http``, ``https``, ``dns``,...).
         endpoints: known endpoint kinds (``web``, ``api``, ``js``, ``cloud``).
         providers: known cloud providers.
         targets: known target identifiers.

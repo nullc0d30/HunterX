@@ -3,13 +3,8 @@
 
 """External JavaScript endpoint/secret extraction adapters.
 
-Integrates ``linkfinder``, ``secretfinder`` and ``xnlinkfinder`` — the
-JavaScript link/secret extraction tools — into the Tool Integration SDK. Each
-adapter invokes its external binary through the shared runner seam and
-normalizes CLI output into canonical endpoint/secret observations.
-
-Extracted strings are data: they are never executed, and secrets are projected
-as redacted candidate records for later validation.
+Integrates ``linkfinder``, ``secretfinder`` and ``xnlinkfinder``, the JavaScript link/secret extraction tools, into
+the Tool Integration SDK.
 """
 
 from __future__ import annotations

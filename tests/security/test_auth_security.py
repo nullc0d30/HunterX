@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the authentication intelligence capability.
-
-Guarantees the intelligence-only boundary: no credential/token leakage, no
-scope expansion, no cross-target or cross-mission contamination, resilient
-parsing of malformed metadata, no raw sensitive persistence and no validation
-of discovered secrets.
-"""
+"""Security tests for the authentication intelligence capability."""
 
 from __future__ import annotations
 

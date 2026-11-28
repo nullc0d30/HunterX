@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Docker Guide — HunterX v6.0.0
+title: Docker Guide - HunterX v6.0.0
 description: >-
   Production-grade Docker deployment guide for HunterX v6.0.0 vulnerability
   scanner. Multi-stage build, multi-architecture (amd64/arm64), non-root user,
@@ -162,14 +162,14 @@ services:
 | `HX_LOG_LEVEL` | `INFO` | Logging verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `HX_API_PORT` | `8443` | API server port |
 | `HX_API_HOST` | `0.0.0.0` | API server bind address |
-| `HX_AI_PROVIDER` | — | AI provider name (`openai`, `ollama`) |
-| `HX_AI_API_KEY` | — | API key for the AI provider |
-| `HX_AI_MODEL` | — | AI model name |
+| `HX_AI_PROVIDER` | - | AI provider name (`openai`, `ollama`) |
+| `HX_AI_API_KEY` | - | API key for the AI provider |
+| `HX_AI_MODEL` | - | AI model name |
 | `HX_THREADS` | `5` | Max concurrent threads |
 | `HX_TIMEOUT` | `30` | Request timeout in seconds |
 | `HX_MAX_RPS` | `10.0` | Max requests per second |
-| `OPENAI_API_KEY` | — | OpenAI API key |
-| `OLLAMA_HOST` | — | Ollama server URL |
+| `OPENAI_API_KEY` | - | OpenAI API key |
+| `OLLAMA_HOST` | - | Ollama server URL |
 | `CONFIG_PATH` | `hunterx.yaml` | Path to config file |
 | `REPORT_PATH` | `reports/` | Report output directory |
 

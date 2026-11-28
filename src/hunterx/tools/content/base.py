@@ -3,15 +3,8 @@
 
 """Base adapter for content / URL discovery tools.
 
-Every content discovery tool adapter (ffuf, and future fuzzers) implements the
-SDK :class:`ToolAdapter` lifecycle and shares this base. External binaries are
-invoked through the shared :class:`~hunterx.tools.recon.runner.BinaryRunner`
-seam and emit canonical content-discovery records into the pipeline JSON payload
-under the ``content`` key.
-
-The wordlist passed to any content tool is treated strictly as *data*, never as
-executable content. Wordlist selection is validated by the arsenal layer before
-the adapter runs.
+Every content discovery tool adapter (ffuf, and future fuzzers) implements the SDK :class:`ToolAdapter` lifecycle
+and shares this base.
 """
 
 from __future__ import annotations

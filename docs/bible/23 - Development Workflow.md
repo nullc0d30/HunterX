@@ -1,7 +1,5 @@
-# 23 — Development Workflow
+# 23, Development Workflow
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All contributors, maintainers, CI/CD, releases
 
 ---
@@ -14,7 +12,7 @@ release branches.)
 
 ```
 feature/xxx ──► PR ──► main ──► release/x.y.z ──► tag vX.Y.Z ──► publish
-hotfix/xxx  ──► PR (patch) ──► main (+ backport)
+hotfix/xxx ──► PR (patch) ──► main (+ backport)
 ```
 
 ---
@@ -67,7 +65,7 @@ Every PR MUST:
 - Reference an issue (or be a clearly-described task).
 - Include a description: what, why, risks, test plan.
 - Pass all CI gates (`15` §11).
-- Update affected documentation (`16` §10 — behavior change without doc change fails).
+- Update affected documentation (`16` §10, behavior change without doc change fails).
 - Include tests for new/changed behavior (bug fix → regression test).
 - Not exceed a reviewable size; large work split into sequential PRs.
 - Follow `04` code standards (lint, mypy, architecture gates).
@@ -80,24 +78,24 @@ PR title: `<type>(<scope>): <summary>` (mirrors commit).
 
 - At least **one approval** required (two for core/architecture/security changes).
 - Review focuses on: correctness, security, architecture compliance, testing,
-  performance, docs.
+ performance, docs.
 - Review checklist: see `24 - Quality Assurance.md` §5.
 - Reviewers may request changes; CI must be green before merge.
 - Reviewer = owner gate for: schema changes, architecture decisions,
-  security-sensitive changes (dedicated Security review).
+ security-sensitive changes (dedicated Security review).
 
 ---
 
 ## 6. CI/CD Pipeline
 
-GitHub Actions (or equivalent) — see `15` §11 for the test matrix:
+GitHub Actions (or equivalent), see `15` §11 for the test matrix:
 
 ```
 PR: lint → format → types → architecture → unit → golden → component →
-    security → (integration if services) → coverage gates → build check
+ security → (integration if services) → coverage gates → build check
 Merge to main: everything above + build packages + SBOM + image build
 Release: all + acceptance (sandboxed targets) + performance smoke +
-         publish (PyPI/container) + docs site
+ publish (PyPI/container) + docs site
 ```
 
 Quality gates fail → blocked merge/publish.
@@ -118,9 +116,9 @@ SemVer 2.0.0 (`MAJOR.MINOR.PATCH`), derived from Conventional Commits:
 Versioned artifacts:
 
 - Core package version (`pyproject.toml`).
-- **Schema version** (`08`) — independently versioned, changes tracked.
-- **SDK version** (plugin/adapter ABI) — independently versioned.
-- **Knowledge base** — versioned as a corpus.
+- **Schema version** (`08`), independently versioned, changes tracked.
+- **SDK version** (plugin/adapter ABI), independently versioned.
+- **Knowledge base**, versioned as a corpus.
 - REST API (`/api/vN`).
 - Report template versions (`21` §9).
 
@@ -157,7 +155,7 @@ updated + changelog entry.
 
 - Local dev: `.env.example` (no real secrets); secrets only via secret store.
 - Pre-commit hooks (`.pre-commit-config.yaml`): ruff, format, secret scan,
-  import-linter, trailing whitespace.
+ import-linter, trailing whitespace.
 - Never commit: generated artifacts, `*.pyc`, caches, local data, credentials.
 - `.gitignore` enforced; `git secrets` scan in CI.
 

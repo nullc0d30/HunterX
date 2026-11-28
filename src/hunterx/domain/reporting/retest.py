@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Retest plan engine.
-
-Every actionable finding gets a retest plan that states what must change,
-what endpoint/resource to test, what behavior should disappear, what proof
-should fail, what evidence to collect and the acceptance criteria for fix
-verification.
-"""
+"""Retest plan engine."""
 
 from __future__ import annotations
 

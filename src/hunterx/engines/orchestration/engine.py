@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Offensive Tool Orchestration engine (composition root).
-
-Wires the mission lifecycle, planner, executor, scope guard, safety enforcer,
-tool selector, retry/fallback/dedup/rate-limit engines, checkpoints, mission
-memory, replanning, coverage, quality and events into one entry point that can
-run a complete authorized security mission.
-
-The engine transforms a mission objective into: scope resolution → planning →
-capability-driven tool selection → adaptive execution → intelligence feedback
-→ replanning → coverage/quality evaluation → reporting.
-
-Persistence is provided through repository ports and a TIDB repository factory;
-the engine never talks to a database directly.
-"""
+"""Offensive Tool Orchestration engine (composition root)."""
 
 from __future__ import annotations
 
@@ -51,6 +38,7 @@ from hunterx.engines.orchestration.replan import (
     ReplanningEngine,
     ReplanRequest,
 )
+from hunterx.engines.orchestration.reviewer import BaseReviewer
 from hunterx.engines.orchestration.scope import MissionScopeGuard
 from hunterx.shared.ids import generate_id
 from hunterx.shared.result import Failure, Result, Success
@@ -117,7 +105,6 @@ class OffensiveOrchestrationEngine:
             InMemoryExecutionPlanRepository,
             InMemoryOffensiveMissionRepository,
         )
-        from hunterx.engines.orchestration.reviewer import BaseReviewer
 
         self._missions = missions or InMemoryOffensiveMissionRepository()
         self._plans = plans or InMemoryExecutionPlanRepository()
@@ -184,7 +171,7 @@ class OffensiveOrchestrationEngine:
         return Success(mission)
 
     def scope_mission(self, mission_id: str, *, scope: Any = None) -> Result[OffensiveMission, Exception]:
-        """Resolve the mission scope and move to SCOPING → PLANNING."""
+        """Resolve the mission scope and move to SCOPING to PLANNING."""
         mission = self._missions.get(mission_id)
         if mission is None:
             return Failure(OffensiveMissionNotFoundError(mission_id))
@@ -207,7 +194,7 @@ class OffensiveOrchestrationEngine:
         *,
         intelligence: IntelligenceSummary | None = None,
     ) -> Result[ExecutionPlan, Exception]:
-        """Plan a mission into an :class:`ExecutionPlan` (CREATED→SCOPING→PLANNING→READY)."""
+        """Plan a mission into an :class:`ExecutionPlan` (CREATED to SCOPING to PLANNING to READY)."""
         mission = self._missions.get(mission_id)
         if mission is None:
             return Failure(OffensiveMissionNotFoundError(mission_id))

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the JavaScript intelligence tool adapters.
-
-The analyzer is in-process and content-free: source text is supplied through the
-execution parameters (``content``/``url``), so every test stays hermetic. Tests
-assert the pipeline's ``javascript`` payload, the canonical tool output produced
-by ``normalize``, engine registration and TIP registration.
-"""
+"""Tests for the JavaScript intelligence tool adapters."""
 
 from __future__ import annotations
 

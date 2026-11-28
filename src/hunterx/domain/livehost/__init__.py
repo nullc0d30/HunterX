@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery domain package.
-
-Pure, framework-free contracts and logic for the live host & service discovery
-capability: host/port/service/TLS/HTTP observation models, normalization,
-validation, confidence scoring, scope enforcement, correlation/conflict
-handling, historical comparison and collection strategy.
-
-The package depends only on the shared primitives and the recon domain for the
-execution mode enum — no I/O, no tool calls and no persistence here.
-"""
+"""Live Host & Service Discovery domain package."""
 
 from hunterx.domain.livehost.confidence import LiveConfidenceEngine, LiveConfidencePolicy
 from hunterx.domain.livehost.conflicts import LiveConflictResolver

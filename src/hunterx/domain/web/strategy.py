@@ -3,10 +3,8 @@
 
 """Crawl strategy selection.
 
-A :class:`CrawlStrategy` is the pure decision of which tools run for a given
-mode and target kind, plus the :class:`CrawlPolicy` bounds. Like the
-technology-fingerprinting strategy it fails closed: passive modes run no tools,
-and unknown tool ids are never selected.
+A :class:`CrawlStrategy` is the pure decision of which tools run for a given mode and target kind, plus the
+:class:`CrawlPolicy` bounds.
 """
 
 from __future__ import annotations

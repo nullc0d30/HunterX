@@ -1,20 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence — pure domain models.
+"""Target Memory & Campaign Intelligence, pure domain models.
 
-Sprint 030. Canonical, storage-agnostic models for the historical
-intelligence layer. The layer is deliberately NOT a replacement for Target
-Intelligence, TIDB, Finding, Evidence, Mission, Knowledge, Correlation or PoC
-systems: it is a *historical intelligence layer that references canonical
-entities*.
-
-Every persistent observation exposes first/last seen tracking, the first/last
-mission and source, an observation count and a current state classification.
-Snapshots are reproducible from stored observations; diffs are deterministic
-(same snapshot pair ⇒ same diff). Historical evidence is preserved — memory is
-untrusted input guarded by confidence, corroboration, freshness and
-contradiction handling.
+Canonical, storage-agnostic models for the historical intelligence layer.
 """
 
 from __future__ import annotations

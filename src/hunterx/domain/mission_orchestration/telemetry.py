@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission telemetry engine.
-
-Sprint 032. Tracks decision latency, tool utilization, finding yield,
-validation yield, false-positive rate, coverage, evidence quality, branch
-efficiency, resource utilization, failed actions and fallback rate. Telemetry
-is a JSON-safe snapshot produced at checkpoint/finalize time.
-"""
+"""Mission telemetry engine."""
 
 from __future__ import annotations
 
@@ -193,7 +187,7 @@ class MissionTelemetry:
         Every ``ai_invoked`` trace entry records the provider round-trip
         (provider/model, latency, success/failure, HTTP status when available,
         fallback flag). Counters are aggregated across the mission and are
-        always derived from trace facts — never guessed.
+        always derived from trace facts, never guessed.
         """
         attempted = succeeded = failed = http_429 = timeouts = provider_errors = 0
         fallbacks = cooldown_events = deterministic_decisions = 0
@@ -260,7 +254,7 @@ def _completion_gate_failures(mission: Any) -> list[str]:
     """Return the mission completion-contract gates that are currently unmet.
 
     Best-effort (never raises): used by telemetry to expose why a mission is
-    still incomplete — an incomplete assessment must never look complete.
+    still incomplete, an incomplete assessment must never look complete.
     """
     try:
         from hunterx.domain.mission_orchestration.completion import contract_for_objective

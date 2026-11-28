@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the Sprint 031 full toolchain.
-
-Covers the attack surfaces in the sprint security checklist: command injection
-through the target, argument injection, path traversal, malicious tool output,
-malformed JSON/XML, oversized output, secret leakage, scope bypass, unsafe
-redirects and cross-target contamination.
-"""
+"""Security tests for the full toolchain."""
 
 from __future__ import annotations
 

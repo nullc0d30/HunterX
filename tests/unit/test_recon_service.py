@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the ReconService orchestrator.
-
-Exercises a full reconnaissance run: tool selection through the engine
-registry, execution through the SDK pipeline with fake runners, correlation
-across tools, TIDB persistence and the ``recon.*`` event stream.
-"""
+"""Tests for the ReconService orchestrator."""
 
 from __future__ import annotations
 

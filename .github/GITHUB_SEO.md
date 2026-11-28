@@ -1,11 +1,11 @@
-# HunterX — GitHub Discoverability
+# HunterX - GitHub Discoverability
 
 Guidance for the `nullc0d30/HunterX` GitHub repository metadata. Apply on the
 GitHub repository settings page (About panel).
 
 ## Repository description
 
-> HunterX v7 — AI-assisted vulnerability discovery, validation & proof engine.
+> HunterX v7 - AI-assisted vulnerability discovery, validation & proof engine.
 > Orchestrates open-source security tools to discover, validate, prove, and
 > report vulnerabilities. Apache 2.0.
 
@@ -74,5 +74,5 @@ security-testing
   PyPI belongs to an unrelated project. The canonical install paths are
   `pip install hunterxsec`, `install.sh`, or source install from this
   repository.
-- **Do not** add topics like `zero-day`, `exploitation`, or `malware` — they
+- **Do not** add topics like `zero-day`, `exploitation`, or `malware` - they
   are not supported by the product.

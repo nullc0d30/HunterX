@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Quickstart — HunterX v6.0.0
+title: Quickstart - HunterX v6.0.0
 keywords: HunterX Quickstart, Getting Started, First Scan
 description: >-
   Get started with HunterX v6.0.0 in minutes. Run your first scan and see results.

@@ -1,32 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authorization & access-control intelligence domain.
-
-Pure-domain contracts and deterministic analysis for the Wave 10
-authorization intelligence capability: canonical observation models, the
-static/observable detection engine, classification, confidence scoring,
-correlation, conflict resolution, historical diffing, scope enforcement and
-collection strategy. No I/O and no execution in this package.
-
-Responsibilities:
-- canonical evidence-backed models for subjects, roles, groups, permissions,
-  scopes, claims, policies, resources, actions, identifiers, ownership,
-  tenants, admin surfaces, function/object/field-level access control,
-  frontend/backend logic, API/GraphQL/WebSocket/service authorization,
-  decision indicators and mass-assignment fields.
-- deterministic analyzer, classifier, confidence engine, correlator, history
-  comparator, scope enforcer, strategy builder and validator.
-
-Dependencies:
-- ``hunterx.domain.recon.models`` for the execution posture.
-- ``hunterx.shared`` for identifiers, timestamps and secret masking.
-
-Extension points:
-- add a record type to :mod:`hunterx.domain.authorization.models` and mirror
-  it in the analyzer, correlator/history subject-type maps, the TIDB entity
-  module and the application service.
-"""
+"""Authorization & access-control intelligence domain."""
 
 from __future__ import annotations
 

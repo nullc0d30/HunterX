@@ -1,21 +1,4 @@
-"""vulnerability finding orchestration tables
-
-Revision ID: a1f0c2e4b6d8
-Revises: 1b3d5f7a9c2e
-Create Date: 2026-08-10
-
-Extends the TIDB schema with the Sprint 028 autonomous vulnerability
-validation & proof orchestration capability: the canonical finding record,
-evidence requirements and gaps, validation attempts, PoC artifacts and replay
-records, impact and confidence assessments, evidence conflicts, deduplication
-decisions, root-cause records, unknown-behavior profiles, reproduction data,
-report-readiness checklists, state transitions and consolidated report
-packages.
-
-Security boundary: every table stores canonical findings, redacted evidence
-and lifecycle metadata only - never exploit payloads, never credentials,
-never unrestricted executable PoC scripts and never out-of-scope request
-material.
+"""vulnerability finding orchestration tables Revision ID: a1f0c2e4b6d8 Revises: 1b3d5f7a9c2e Create Date: 2026-08-10.
 """
 from collections.abc import Sequence
 

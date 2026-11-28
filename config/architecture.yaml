@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX Architecture Enforcement Framework — Dependency Policy
+# HunterX Architecture Enforcement Framework - Dependency Policy
 # ==============================================================
 #
 # This file is the machine-readable dependency matrix. It is the single
@@ -34,14 +34,17 @@ layers:
     description: Cross-cutting helpers importable by every layer.
     owner: Architecture Council
   - name: domain
-    description: Pure domain: entities, value objects, ports, services, events, exceptions.
+    description: "Pure domain: entities, value objects, ports, services, events, exceptions."
     owner: Architecture Council
   - name: config
     description: Configuration loading and typed settings.
     owner: Platform Team
   - name: security
-    description: Cross-cutting security services: policies, permissions, secret resolution.
+    description: "Cross-cutting security services: policies, permissions, secret resolution."
     owner: Security Team
+  - name: resource
+    description: "Mission resource governance: memory/CPU budgets, backpressure, telemetry."
+    owner: Platform Team
   - name: infrastructure
     description: Adapters implementing domain ports (db, cache, queue, ai, sandbox, secrets).
     owner: Platform Team
@@ -58,7 +61,7 @@ layers:
     description: Mission scheduling and job definitions.
     owner: Platform Team
   - name: engines
-    description: Engine facades: mission, workflow, planner, reasoning, correlation, report.
+    description: "Engine facades: mission, workflow, planner, reasoning, correlation, report."
     owner: Engine Team
   - name: tools
     description: Tool runtime, Tool Integration Factory, Tool Intelligence and SDK.
@@ -76,7 +79,7 @@ layers:
     description: CLI framework and command registry.
     owner: CLI Team
   - name: platform
-    description: Composition root: assembles and wires every subsystem.
+    description: "Composition root: assembles and wires every subsystem."
     owner: Architecture Council
   - name: architecture
     description: The architecture enforcement framework itself (leaf layer).
@@ -94,20 +97,21 @@ layers:
 rules:
   shared: [shared]
   domain: [domain, shared]
-  config: [config, domain, shared]
+  config: [config, domain, shared, infrastructure]
+  resource: [resource, domain, shared, config]
   security: [security, domain, shared, infrastructure]
   infrastructure: [infrastructure, domain, shared, config]
-  application: [application, domain, shared, engines, tools]
+  application: [application, domain, shared, engines, tools, resource]
   knowledge: [knowledge, domain, shared]
   reporting: [reporting, domain, shared]
   scheduler: [scheduler, domain, shared]
-  engines: [engines, domain, shared, tools, reporting, infrastructure, application]
+  engines: [engines, domain, shared, tools, reporting, infrastructure, application, resource]
   tools: [tools, domain, shared, plugins]
   plugins: [plugins, domain, shared]
   agents: [agents, domain, shared]
   api: [api, domain, shared, config, platform, application, engines]
-  cli: [cli, domain, shared, config, platform, application, engines]
-  platform: [platform, domain, shared, config, security, infrastructure, application, knowledge, reporting, scheduler, engines, tools, plugins, agents, api, cli, facade]
+  cli: [cli, domain, shared, config, platform, application, engines, infrastructure, tools, reporting, resource]
+  platform: [platform, domain, shared, config, security, resource, infrastructure, application, knowledge, reporting, scheduler, engines, tools, plugins, agents, api, cli, facade]
   facade: [facade, domain, shared, infrastructure, managers, config, application]
   architecture: [architecture]
 
@@ -117,6 +121,18 @@ conditional_imports:
     reason: >
       The DI container raises domain exceptions for registration errors;
       exceptions are the one shared contract the foundation may reference.
+  - source: "hunterx.infrastructure.ai.provider_manager"
+    target: "hunterx.application.ai_suggestion"
+    reason: >
+      The provider manager parses the shared AISuggestion value object produced
+      by the application layer's AI assistant; it is a local import used only
+      when an AI suggestion payload is returned, not a structural dependency.
+  - source: "hunterx.plugins.skill_offensive_doctrine.patch_cli"
+    target: "hunterx.cli"
+    reason: >
+      The doctrine plugin is an opt-in plugin that extends the CLI command
+      registry; wrapping register_default_commands is the plugin's integration
+      point and is invoked from the plugin package, never from the CLI itself.
 
 forbidden_imports:
   - source: "hunterx."
@@ -139,8 +155,7 @@ waivers:
     reason: >
       The domain execution model references the SDK result types
       FindingResult/EvidenceResult. The result contracts should move into the
-      domain layer; tracked as architectural debt for a dedicated refactor
-      sprint.
+      domain layer; tracked as architectural debt for a dedicated refactor.
 
 known_cycles:
   - id: "ARCH-W-002"
@@ -152,8 +167,7 @@ known_cycles:
     modules: ["hunterx.cli", "hunterx.cli.app", "hunterx.cli.commands"]
     reason: >
       CLI package wiring cycle: __init__ re-exports app/main and commands
-      import the app. Resolve by moving main() into a leaf module in a later
-      sprint.
+      import the app. Resolve by moving main() into a leaf module.
 
 shared_contracts:
   - module: "hunterx.domain.ports"
@@ -185,8 +199,7 @@ tool_boundary:
 
 doc_requirements:
   required: [docstring]
-  recommended: [responsibilities, dependencies, extension points]
-  section_keywords:
-    responsibilities: ["responsibilities", "responsible for"]
-    dependencies: ["dependencies", "depends on"]
-    extension points: ["extension", "extend", "plugin", "adapter"]
+  # No boilerplate sections are required: package docstrings only need to say
+  # what the package is for.
+  recommended: []
+  section_keywords: {}

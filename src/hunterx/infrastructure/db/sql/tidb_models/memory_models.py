@@ -3,10 +3,7 @@
 
 """ORM models for Target Memory & Campaign Intelligence TIDB entities.
 
-Sprint 030. Mirrors ``hunterx.domain.entities.tidb.memory`` one-to-one.
-Indexes cover the canonical query paths: target scoping, campaign scoping,
-observation type/state, first/last seen and mission/campaign attribution — so
-large historical corpora stay queryable without full scans.
+Mirrors ``hunterx.domain.entities.tidb.memory`` one-to-one.
 """
 
 from __future__ import annotations

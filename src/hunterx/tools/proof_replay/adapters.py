@@ -4,14 +4,6 @@
 """Proof replay tool adapters.
 
 Deterministic, in-process safe replay adapters used by the proof replay engine.
-They only ever emit canonical observations derived from bounded inputs — they
-never fetch, execute or modify anything outside the parameters they receive.
-Every replay request has already passed the scope, safety and proof policy gates
-of the proof service.
-
-Replay is a proof demonstration, never a weaponization step: the adapter emits
-an observation plus a deterministic replay verdict from the expected vs observed
-behavior comparison, and never executes arbitrary payloads.
 """
 
 from __future__ import annotations

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud intelligence classification.
-
-Deterministic classification helpers for cloud subjects: service categories,
-endpoint plane classification (control/data/identity/management/developer),
-exposure classification, environment classification and SaaS integration types.
-Every classifier is a pure function of observable evidence; no randomness and no
-inference from branding alone.
-"""
+"""Cloud intelligence classification."""
 
 from __future__ import annotations
 
@@ -23,7 +16,7 @@ from hunterx.domain.cloud.models import (
 )
 
 #: Environment signals evaluated in deterministic priority order. A subject is
-#: classified by the strongest signal it matches; ``("production", ...)`` is
+# : classified by the strongest signal it matches; ``("production",...)`` is
 #: never derived from a single weak naming indicator.
 _ENVIRONMENT_SIGNALS: list[tuple[str, tuple[str, ...]]] = [
     ("production", ("production", "prod", "live", "prd")),

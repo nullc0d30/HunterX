@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery observation validator.
-
-Validates raw discovery output before it is trusted: canonical addresses, port
-ranges, protocol/state spellings, service fingerprints, TLS certificate
-metadata and HTTP service surfaces. Validation is pure and non-destructive —
-invalid observations are marked with a status, never discarded, so the
-capability keeps provenance for every result even when it cannot trust it.
-"""
+"""Live Host & Service Discovery observation validator."""
 
 from __future__ import annotations
 

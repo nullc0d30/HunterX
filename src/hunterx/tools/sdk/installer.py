@@ -3,10 +3,7 @@
 
 """Installation manager.
 
-Installs and uninstalls tool binaries through an adapter-provided installer
-hook. This module is intentionally thin: it does not ship or run any tool —
-actual installation is delegated to the tool adapter's ``installer`` callable
-so the SDK never embeds vendor-specific knowledge.
+Installs and uninstalls tool binaries through an adapter-provided installer hook.
 """
 
 from __future__ import annotations
@@ -49,7 +46,7 @@ class InstallationManager:
         installer = InstallationManager()
         installer.register("nmap", lambda tool, version: "7.94")
         installer.install("nmap")
-        installer.is_installed("nmap")   # True
+        installer.is_installed("nmap") # True
     """
 
     def __init__(self) -> None:

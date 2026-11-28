@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission-loop tests for the target-agnostic attack-surface orchestration.
-
-Proves the Phase 1 loop end to end against a synthetic target: discovery feeds
-the surface model, the model maps ``Capability × Surface × Context`` and
-schedules the assessment queue, attack observations expand the surface
-(Discover → Model → Expand → Map → Attack → Learn → Rediscover), and — once the
-assessment queue and verification are genuinely exhausted and discovery goes
-stale — the mission terminates with ``ATTACK_SURFACE_EXHAUSTED`` instead of a
-cycle/probe/finding count.
-"""
+"""Mission-loop tests for the target-agnostic attack-surface orchestration."""
 
 from __future__ import annotations
 
@@ -73,7 +64,7 @@ class _DrainingRunner(MissionExecutionService):
 
     White-box double: proves that when the assessment queue is genuinely
     drained and discovery goes stale, the exhaustion gate terminates the loop
-    with ``ATTACK_SURFACE_EXHAUSTED`` — rather than any cycle/probe count.
+    with ``ATTACK_SURFACE_EXHAUSTED``, rather than any cycle/probe count.
     """
 
     def _surface_feedback(self, mission_id: str, raw: dict[str, Any], capability: str, target: str) -> None:
@@ -124,7 +115,7 @@ class TestDiscoverModelExpandMap:
     def test_observations_model_and_expand_the_surface(self) -> None:
         runner, orchestration, mission_id = _runner(FakeExecutionEngine(outputs=dict(_OUTPUTS)))
         runner.run(mission_id, max_cycles=24, max_idle_cycles=6)
-        surface = runner._attack_surface  # noqa: SLF001  (component test)
+        surface = runner._attack_surface  # noqa: SLF001 (component test)
         assert surface is not None
         snapshot = surface.snapshot()
         # Discover + model + expand: endpoints and inputs are represented.

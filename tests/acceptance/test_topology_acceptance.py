@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the network-mapping & attack-surface topology capability.
-
-End-to-end scenario: seed canonical TIDB intelligence (as produced by Sprint
-007–009), run a full topology build, verify the derived attack-surface
-topology, query interfaces, history, views and the ``topology.*`` event stream
-through the assembled platform.
-"""
+"""Acceptance tests for the network-mapping & attack-surface topology capability."""
 
 from __future__ import annotations
 
@@ -33,7 +27,7 @@ from hunterx.platform.assembler import build_platform
 
 
 def _seed_tidb(platform) -> None:
-    """Seed canonical TIDB entities mirroring Sprint 007-009 output."""
+    """Seed canonical TIDB entities mirroring 009 output."""
     stores = platform.tidb
     domain = Domain(
         name="example.com",

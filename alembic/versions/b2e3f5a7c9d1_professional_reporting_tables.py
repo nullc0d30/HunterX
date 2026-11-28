@@ -1,18 +1,4 @@
-"""professional reporting intelligence tables
-
-Revision ID: b2e3f5a7c9d1
-Revises: a1f0c2e4b6d8
-Create Date: 2026-08-10
-
-Extends the TIDB schema with the Sprint 029 professional finding
-intelligence & reporting capability: report metadata, immutable report
-versions, data-driven report templates and template versions, claim records,
-QA results, evidence snapshots, report packages, remediation plans, retest
-plans and submission state.
-
-Security boundary: every table stores canonical, redacted report data only -
-never credentials, never exploit payloads, never out-of-scope request
-material. Report exports are immutable/versioned.
+"""professional reporting intelligence tables Revision ID: b2e3f5a7c9d1 Revises: a1f0c2e4b6d8 Create Date: 2026-08-10.
 """
 from collections.abc import Sequence
 

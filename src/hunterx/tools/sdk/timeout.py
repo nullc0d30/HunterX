@@ -3,9 +3,7 @@
 
 """Timeout manager.
 
-Tracks the deadline of an execution and detects deadline expiry. Timeouts are
-computed from the execution context (explicit timeout or resource-limit
-default) and enforced by the pipeline around the tool run.
+Tracks the deadline of an execution and detects deadline expiry.
 """
 
 from __future__ import annotations
@@ -23,7 +21,7 @@ class TimeoutManager:
         manager = TimeoutManager()
         manager.arm(context)
         ...
-        manager.check(context)   # raises ToolTimeoutError when expired
+        manager.check(context) # raises ToolTimeoutError when expired
         manager.remaining_s(context)
     """
 

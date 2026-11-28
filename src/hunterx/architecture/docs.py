@@ -3,10 +3,7 @@
 
 """Documentation validation.
 
-Every public module must carry a module docstring describing its purpose. The
-Bible's documentation standard additionally recommends Responsibilities,
-Dependencies and Extension points sections; missing recommended sections are
-reported as warnings so reports surface them without failing CI.
+Every public module must carry a module docstring describing its purpose.
 """
 
 from __future__ import annotations
@@ -68,18 +65,7 @@ def validate_documentation(
 ) -> list[Violation]:
     """Validate module docstrings for every module path.
 
-    Every module must carry a purpose docstring (error). The recommended
-    Responsibilities / Dependencies / Extension points sections are checked
-    for package ``__init__.py`` modules only, which are the public module
-    reference docs developers read first (warnings).
-
-    Args:
-        modules: dotted module name to file path mapping.
-        requirements: the doc validation rules from the policy.
-
-    Returns:
-        A list of violations (missing docstring = error, missing recommended
-        sections = warning).
+    Every module must carry a purpose docstring (error).
 
     """
     violations: list[Violation] = []

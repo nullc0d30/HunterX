@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Historical comparison for JavaScript intelligence.
-
-Compares a previous JavaScript state (an earlier correlated run for the same
-target) with the current correlated run and produces :class:`JSChange` records
-for added, removed and changed subjects. The comparison is keyed on canonical
-finding keys so reordering or cosmetic differences never produce noise.
-"""
+"""Historical comparison for JavaScript intelligence."""
 
 from __future__ import annotations
 
@@ -38,7 +32,7 @@ class JSHistorySnapshot:
         """Build a snapshot from a correlated batch-like object.
 
         ``batch`` may be a :class:`JavaScriptBatch` or any object exposing the
-        correlated list attributes (``endpoints``, ``routes``, ...).
+        correlated list attributes (``endpoints``, ``routes``,...).
         """
         target = target_key or getattr(getattr(batch, "target", None), "value", "")
         subjects: dict[str, dict[str, str]] = {}

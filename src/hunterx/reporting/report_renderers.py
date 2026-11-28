@@ -3,10 +3,8 @@
 
 """Professional report renderers.
 
-Renderers convert a :class:`~hunterx.domain.reporting.models.ReportDocument`
-into a concrete output format (Markdown, HTML, JSON, SARIF, PDF, structured
-package). The renderers stay format-focused and never fabricate facts: they
-only present the evidence-backed data of the report document.
+Renderers convert a :class:`~hunterx.domain.reporting.models.ReportDocument` into a concrete output format
+(Markdown, HTML, JSON, SARIF, PDF, structured package).
 """
 
 from __future__ import annotations

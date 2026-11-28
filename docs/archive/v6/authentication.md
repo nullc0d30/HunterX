@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Authentication Modes — HunterX
+title: Authentication Modes - HunterX
 description: >-
   HunterX authentication configuration for penetration testing and bug bounty
   hunting. Basic Auth, Bearer Token, Cookie Jar, Form Login, and JWT analysis.

@@ -12,51 +12,47 @@ description: >-
 permalink: /v7-platform-composition-root/
 ---
 
-# HunterX v7 Platform Composition Root — Architecture & Reference
-
-**Status:** Ratified (Sprint 006.6)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
+# HunterX v7 Platform Composition Root, Architecture & Reference
 
 ---
 
 ## 1. Purpose / Scope
 
-This document defines the **Platform Composition Root** — the single place
+This document defines the **Platform Composition Root**, the single place
 where every concrete implementation in HunterX v7 is selected and wired
 together at startup.
 
 It has two mandates:
 
 1. **Compose.** Build a fully wired `Platform` runtime aggregate: settings,
-   infrastructure adapters, persistence repositories, the four v7 facades,
-   the Core Engine, application services, and a dependency container that
-   resolves every port and service.
+ infrastructure adapters, persistence repositories, the four v7 facades,
+ the Core Engine, application services, and a dependency container that
+ resolves every port and service.
 2. **Expose.** Give the API, CLI, and tests one entry point
-   (`hunterx.platform.build_platform`) that returns the same wiring
-   everywhere, so handlers, commands, and tests never construct
-   collaborators directly.
+ (`hunterx.platform.build_platform`) that returns the same wiring
+ everywhere, so handlers, commands, and tests never construct
+ collaborators directly.
 
 Hard constraints:
 
 - **Single composition root.** Domain, application and engine layers MUST NOT
-  import infrastructure or construct their collaborators; all concrete
-  selection happens in `hunterx.platform.assembler`.
+ import infrastructure or construct their collaborators; all concrete
+ selection happens in `hunterx.platform.assembler`.
 - **Zero external services by default.** The platform SHALL assemble and run
-  with in-memory adapters and repositories — no database, cache, queue, or AI
-  provider required.
+ with in-memory adapters and repositories, no database, cache, queue, or AI
+ provider required.
 - **Ports are the contract.** Components depend on abstract ports; the
-  assembler binds each port to one concrete adapter.
+ assembler binds each port to one concrete adapter.
 - **Substitutable persistence.** Entity repositories use in-memory
-  implementations unless SQL is explicitly configured; mission-planning and
-  factory repositories remain in-memory (no SQL adapters exist for them).
+ implementations unless SQL is explicitly configured; mission-planning and
+ factory repositories remain in-memory (no SQL adapters exist for them).
 
 Scope: `src/hunterx/platform/`, `src/hunterx/infrastructure/memory/`, the
 `CoreEngine` v7-facade fields, `api/app.py`, `api/deps.py`,
 `cli/commands.py` and `tests/unit/test_platform.py`.
 
 Out of scope: real cache/queue/AI adapters (Redis, providers), REST routes
-for each service (later sprints), mission scheduling/dispatch, and database
+for each service (added later), mission scheduling/dispatch, and database
 schema design.
 
 ---
@@ -64,16 +60,16 @@ schema design.
 ## 2. Design Goals
 
 1. **One wiring path.** Every entry point (API, CLI, tests, scripts) builds
-   the platform the same way and shares the same container.
+ the platform the same way and shares the same container.
 2. **Explicit dependency graph.** The assembler registers every port and
-   service by concrete type, so `container.resolve(X)` is unambiguous.
+ service by concrete type, so `container.resolve(X)` is unambiguous.
 3. **Runnable out of the box.** Defaults are in-memory; the platform starts
-   with zero configuration and zero external services.
+ with zero configuration and zero external services.
 4. **Swappable persistence.** SQL entity repositories activate when a
-   non-default `database.url` is configured and SQLAlchemy is importable,
-   without touching any consumer code.
+ non-default `database.url` is configured and SQLAlchemy is importable,
+ without touching any consumer code.
 5. **Observable composition.** The CLI `platform` command reports the exact
-   backend, repository, facade and service classes actually wired.
+ backend, repository, facade and service classes actually wired.
 
 ---
 
@@ -82,33 +78,33 @@ schema design.
 ```
 src/hunterx/
 ├── platform/
-│   ├── __init__.py        # re-exports Platform, build_platform
-│   ├── platform.py        # Platform runtime aggregate (dataclass)
-│   └── assembler.py       # build_platform + private wiring helpers
+│ ├── __init__.py # re-exports Platform, build_platform
+│ ├── platform.py # Platform runtime aggregate (dataclass)
+│ └── assembler.py # build_platform + private wiring helpers
 └── infrastructure/
-    └── memory/
-        ├── __init__.py    # re-exports in-memory repositories
-        ├── repositories.py # core entity repositories + builder
-        ├── planning.py    # mission planning repositories + builder
-        └── factory.py     # tool factory repositories + builder
+ └── memory/
+ ├── __init__.py # re-exports in-memory repositories
+ ├── repositories.py # core entity repositories + builder
+ ├── planning.py # mission planning repositories + builder
+ └── factory.py # tool factory repositories + builder
 ```
 
 ```mermaid
 flowchart TD
-    ENTRY[API / CLI / tests / scripts] --> BUILD[build_platform]
-    BUILD --> ASM[assembler]
-    ASM --> SET[load Settings]
-    ASM --> ADAPT[build adapters]
-    ASM --> REPO[build repositories]
-    ASM --> TIP[ToolIntelligenceAPI]
-    ASM --> SDK[ExecutionEngine]
-    ASM --> FAC[ToolIntegrationFactory]
-    ASM --> MP[MissionPlanningAPI]
-    ASM --> ENG[CoreEngine + engines]
-    ASM --> SVC[application services]
-    ASM --> REG[register ports & services in Container]
-    BUILD --> PLAT[Platform aggregate]
-    PLAT --> CTX[container]
+ ENTRY[API / CLI / tests / scripts] --> BUILD[build_platform]
+ BUILD --> ASM[assembler]
+ ASM --> SET[load Settings]
+ ASM --> ADAPT[build adapters]
+ ASM --> REPO[build repositories]
+ ASM --> TIP[ToolIntelligenceAPI]
+ ASM --> SDK[ExecutionEngine]
+ ASM --> FAC[ToolIntegrationFactory]
+ ASM --> MP[MissionPlanningAPI]
+ ASM --> ENG[CoreEngine + engines]
+ ASM --> SVC[application services]
+ ASM --> REG[register ports & services in Container]
+ BUILD --> PLAT[Platform aggregate]
+ PLAT --> CTX[container]
 ```
 
 ---
@@ -152,12 +148,12 @@ Order of construction:
 
 ### 5.1 Settings & infrastructure
 
-- Defaults via `load_default_settings()` unless `settings` is passed.
+- Defaults via `load_default_settings` unless `settings` is passed.
 - Adapters selected from settings (`_build_adapters`):
-  - **cache:** `MemoryCache` when `cache.backend == "memory"`, else `NullCache`.
-  - **queue:** `MemoryQueue` when `queue.backend == "memory"`, else `NullQueue`.
-  - Fixed: `InMemoryEventBus`, `EnvironmentSecrets`, `NullAIClient`,
-    `MemoryTelemetry`, `InMemoryKnowledgeGraph`.
+ - **cache:** `MemoryCache` when `cache.backend == "memory"`, else `NullCache`.
+ - **queue:** `MemoryQueue` when `queue.backend == "memory"`, else `NullQueue`.
+ - Fixed: `InMemoryEventBus`, `EnvironmentSecrets`, `NullAIClient`,
+ `MemoryTelemetry`, `InMemoryKnowledgeGraph`.
 
 ### 5.2 Persistence (`_build_repositories`)
 
@@ -182,18 +178,18 @@ All 13 roles default to in-memory repositories
 
 **SQL switching:** when `settings.database.url` is set **and** differs from
 the default `sqlite:///hunterx.db` **and** SQLAlchemy is importable, the six
-entity roles swap to `Sql*Repository(session_factory)`; `create_all()` runs
+entity roles swap to `Sql*Repository(session_factory)`; `create_all` runs
 and `"session_factory"` is added to the repositories dict. Planning and
 factory repositories always stay in-memory.
 
 ### 5.3 v7 facades
 
-- `ToolIntelligenceAPI()` — TIP facade (no-arg).
-- `ExecutionEngine(intelligence=tip.registry)` — SDK engine backed by TIP's
-  registry.
+- `ToolIntelligenceAPI`, TIP facade (no-arg).
+- `ExecutionEngine(intelligence=tip.registry)`, SDK engine backed by TIP's
+ registry.
 - `ToolIntegrationFactory(pack_repository=..., template_repository=...)`.
 - `MissionPlanningAPI(plans=, profiles=, templates=, checkpoints=,
-  timeline=, event_bus=)`.
+ timeline=, event_bus=)`.
 
 ### 5.4 Core Engine
 
@@ -202,17 +198,17 @@ fields: `tip`, `execution_engine`, `tool_factory`, `mission_planning`.
 
 ```mermaid
 flowchart LR
-    core[CoreEngine] --> me[MissionEngine]
-    core --> we[WorkflowEngine]
-    core --> pl[DeterministicPlanner]
-    core --> co[TargetCorrelator]
-    core --> rs[DefaultRiskScorer]
-    core --> re[ReasoningEngine]
-    core --> rp[ReportEngine]
-    core --> tip[ToolIntelligenceAPI]
-    core --> sdk[ExecutionEngine]
-    core --> fac[ToolIntegrationFactory]
-    core --> mp[MissionPlanningAPI]
+ core[CoreEngine] --> me[MissionEngine]
+ core --> we[WorkflowEngine]
+ core --> pl[DeterministicPlanner]
+ core --> co[TargetCorrelator]
+ core --> rs[DefaultRiskScorer]
+ core --> re[ReasoningEngine]
+ core --> rp[ReportEngine]
+ core --> tip[ToolIntelligenceAPI]
+ core --> sdk[ExecutionEngine]
+ core --> fac[ToolIntegrationFactory]
+ core --> mp[MissionPlanningAPI]
 ```
 
 ### 5.5 Container registration (`_register_ports`)
@@ -220,15 +216,15 @@ flowchart LR
 Registered instances:
 
 - **Ports:** `EventBusPort`, `CachePort`, `QueuePort`, `SecretsPort`,
-  `AIPort`, `TelemetryPort`, `KnowledgeGraphPort`, `ToolIntelligencePort`,
-  `ToolIntelligenceRegistry`, and all 13 repository ports mapped by role.
+ `AIPort`, `TelemetryPort`, `KnowledgeGraphPort`, `ToolIntelligencePort`,
+ `ToolIntelligenceRegistry`, and all 13 repository ports mapped by role.
 - **Facades/engines:** `ToolIntegrationFactory`, `ExecutionEngine`,
-  `MissionPlanningAPI`, `ToolIntelligenceAPI`, `CoreEngine`, `MissionEngine`,
-  `WorkflowEngine`, `ReportEngine`.
+ `MissionPlanningAPI`, `ToolIntelligenceAPI`, `CoreEngine`, `MissionEngine`,
+ `WorkflowEngine`, `ReportEngine`.
 - **Managers:** `CacheManager`, `QueueManager`, `EventBus`,
-  `DependencyManager`.
+ `DependencyManager`.
 - **Services:** `MissionService`, `FindingService`, `ReportService`,
-  `ToolFactoryService`, `MissionPlanningService`.
+ `ToolFactoryService`, `MissionPlanningService`.
 
 ---
 
@@ -239,19 +235,19 @@ reference implementations of the repository ports. Each class implements one
 port and is used both by the platform (default persistence) and the test
 suite's framework doubles.
 
-- `repositories.py` — mission/finding/target/scan/asset/report repositories
-  plus `build_in_memory_repositories()`.
-- `planning.py` — profile/template/plan/checkpoint/timeline repositories plus
-  `build_in_memory_planning_repositories()`.
-- `factory.py` — pack-template/tool-pack repositories plus
-  `build_in_memory_factory_repositories()`.
+- `repositories.py`, mission/finding/target/scan/asset/report repositories
+ plus `build_in_memory_repositories`.
+- `planning.py`, profile/template/plan/checkpoint/timeline repositories plus
+ `build_in_memory_planning_repositories`.
+- `factory.py`, pack-template/tool-pack repositories plus
+ `build_in_memory_factory_repositories`.
 
 Behavior notes:
 
 - `InMemoryFindingRepository` tracks content hashes and dedupes on save
-  (`exists_by_content_hash`).
+ (`exists_by_content_hash`).
 - `InMemoryMissionTimelineRepository` preserves append order and returns the
-  most recent `limit` entries.
+ most recent `limit` entries.
 
 ---
 
@@ -263,8 +259,8 @@ Behavior notes:
 
 - When `platform` is omitted, one is built from settings.
 - `configure_container(platform.container)` points the shared
-  `AppContainer` (used by FastAPI handlers via `get_container`) at the
-  platform's container, so handlers and the rest of the runtime share wiring.
+ `AppContainer` (used by FastAPI handlers via `get_container`) at the
+ platform's container, so handlers and the rest of the runtime share wiring.
 - `register_exception_handlers(app)` maps domain errors to HTTP responses.
 
 ### 7.2 CLI (`cli/commands.py`)
@@ -272,23 +268,23 @@ Behavior notes:
 `register_default_commands(app, platform=None)` registers `version`, `help`,
 `config`, and `platform`. The `platform` command prints a JSON report:
 environment, cache/queue backends, repository class per role, facade classes
-and service classes — the observable composition of the running platform.
+and service classes, the observable composition of the running platform.
 
 ---
 
 ## 8. Architecture Rules
 
 1. `hunterx.platform` is the ONLY package allowed to import both domain and
-   infrastructure and bind them.
+ infrastructure and bind them.
 2. Components MUST receive collaborators through constructors or the
-   container; no service-locator lookups inside domain/application/engine
-   code.
+ container; no service-locator lookups inside domain/application/engine
+ code.
 3. The platform MUST assemble with zero configuration using in-memory
-   adapters; any external service is an opt-in.
+ adapters; any external service is an opt-in.
 4. Entity repositories MAY be SQL-backed when configured; planning/factory
-   repositories are in-memory-only until SQL adapters exist.
+ repositories are in-memory-only until SQL adapters exist.
 5. Every public contract SHALL have a docstring; the package SHALL lint clean
-   under the configured ruff gates and pass the test suite.
+ under the configured ruff gates and pass the test suite.
 
 ---
 
@@ -299,10 +295,10 @@ and service classes — the observable composition of the running platform.
 ```python
 from hunterx.platform import build_platform
 
-platform = build_platform()
+platform = build_platform
 core = platform.core
-tip = platform.tip                     # ToolIntelligenceAPI
-engine = platform.execution_engine     # ExecutionEngine
+tip = platform.tip # ToolIntelligenceAPI
+engine = platform.execution_engine # ExecutionEngine
 ```
 
 ### Configuring SQL persistence
@@ -319,7 +315,7 @@ assert "session_factory" in platform.repositories
 
 ```bash
 hunterx platform
-# {"environment": "production", "cache_backend": "memory", ...}
+# {"environment": "production", "cache_backend": "memory",...}
 ```
 
 ### Wiring the API
@@ -328,8 +324,8 @@ hunterx platform
 from hunterx.api.app import create_app
 from hunterx.platform import build_platform
 
-platform = build_platform()
-app = create_app(platform=platform)   # handlers resolve the platform's services
+platform = build_platform
+app = create_app(platform=platform) # handlers resolve the platform's services
 ```
 
 ### Testing
@@ -344,28 +340,28 @@ backend selection from settings, SQL switching, and API/CLI wiring.
 
 Gated by:
 
-- `python -m ruff check src` — lint gate (0 errors).
-- `python -m compileall -q src` — import/compile smoke.
-- `python -m pytest -q` — full suite (511 pre-existing + 21 platform tests =
-  532 at Sprint 006.6 close).
+- `python -m ruff check src`, lint gate (0 errors).
+- `python -m compileall -q src`, import/compile smoke.
+- `python -m pytest -q`, full suite (511 pre-existing + 21 platform tests =
+ 532 at close).
 
 ### Acceptance Checklist
 
-- [x] `build_platform()` returns a fully wired `Platform` with all four v7
-      facades, the Core Engine, application services, adapters and the
-      container.
+- [x] `build_platform` returns a fully wired `Platform` with all four v7
+ facades, the Core Engine, application services, adapters and the
+ container.
 - [x] Every repository port, service, facade, engine and manager resolves
-      from `platform.container`; unknown keys raise `RegistrationNotFoundError`.
-- [x] Default assembly uses in-memory cache/queue/event-bus/repositories —
-      no external services required.
+ from `platform.container`; unknown keys raise `RegistrationNotFoundError`.
+- [x] Default assembly uses in-memory cache/queue/event-bus/repositories,
+ no external services required.
 - [x] Configuring a non-default SQL URL switches the six entity repositories
-      and registers `session_factory`; planning/factory stay in-memory.
+ and registers `session_factory`; planning/factory stay in-memory.
 - [x] `create_app(platform=...)` shares the platform container with FastAPI
-      handlers via `configure_container`.
+ handlers via `configure_container`.
 - [x] `register_default_commands(app, platform=...)` exposes the `platform`
-      command reporting live composition.
+ command reporting live composition.
 - [x] `src/hunterx/infrastructure/memory/*` is the canonical in-memory
-      persistence used by the platform.
+ persistence used by the platform.
 - [x] Lint clean, compile clean, full test suite green.
 
 ---

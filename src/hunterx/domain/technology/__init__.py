@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology fingerprinting domain package.
-
-Pure, framework-free contracts and logic for the technology intelligence
-capability: technology observation models, the canonical taxonomy, name
-normalization and resolution, version intelligence, signature-based in-process
-detection, confidence scoring, scope enforcement, correlation/conflict
-handling, historical comparison and collection strategy.
-
-The package depends only on the shared primitives and the recon domain for the
-execution mode enum — no I/O, no tool calls and no persistence here.
-"""
+"""Technology fingerprinting domain package."""
 
 from hunterx.domain.technology.confidence import (
     TechnologyConfidenceEngine,

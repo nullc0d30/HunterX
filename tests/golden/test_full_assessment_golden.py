@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden replay tests for the Sprint 033 full-spectrum assessment datasets.
-
-Each dataset under ``tests/golden/full_assessment/`` defines a target, the
-assets, the scripted tool outputs, and the expected observations, correlations,
-hypotheses, findings, PoCs, attack paths and final mission state. The golden
-test replays the script through a fresh orchestrator and verifies the expected
-final state is reached deterministically.
-"""
+"""Golden replay tests for the full-spectrum assessment datasets."""
 
 from __future__ import annotations
 
@@ -77,7 +70,7 @@ class ReplayRunner:
         self.orchestrator.start(mission_id)
         for step in self.fixture["script"]:
             self._step(mission_id, step)
-        self.orchestrator.finalize(mission_id)
+        self.orchestrator.finalize(mission_id, stop_condition=StopCondition.OBJECTIVES_COMPLETE)
         return self.orchestrator.get(mission_id).to_dict()
 
     def _step(self, mission_id: str, step: dict[str, Any]) -> None:

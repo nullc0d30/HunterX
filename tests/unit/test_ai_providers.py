@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Multi-provider AI routing tests (mocked HTTP; no real API keys required).
-
-Covers provider/model selection, per-provider endpoints + authentication,
-response normalization, truthful error semantics, secret masking, and the
-no-silent-fallback guarantees. Every request is served by an injected fake
-HTTP client so the regression suite needs no credentials.
-"""
+"""Multi-provider AI routing tests (mocked HTTP; no real API keys required)."""
 
 from __future__ import annotations
 
@@ -44,9 +38,12 @@ class _FakeClient:
         self._responses = list(responses)
         self.requests: list[dict[str, object]] = []
 
-    def post(self, url: str, *, json: object, headers: dict[str, str]) -> _FakeResponse:
+    def post(self, url: str, *, json: object, headers: dict[str, str], timeout: float | None = None) -> _FakeResponse:
         self.requests.append({"url": url, "json": json, "headers": headers})
         return self._responses.pop(0) if self._responses else _FakeResponse({})
+
+    def get(self, url: str, *, timeout: float | None = None) -> _FakeResponse:
+        return _FakeResponse({"data": []})
 
 
 def _build(provider: str, *, model: str = "", key: str = "sk-test-key"):

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Executive summary engine.
-
-Aggregates finding counts, severity distribution, critical assets, major
-attack paths, root causes, risk concentration, remediation priorities and
-validated impact into an executive-level summary that avoids technical jargon
-where unnecessary.
-"""
+"""Executive summary engine."""
 
 from __future__ import annotations
 

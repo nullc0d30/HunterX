@@ -1,13 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Layer (Sprint 023).
+"""Tool Intelligence Layer.
 
-The layer composes the Sprint 023 engines — selection, planning, escalation,
-evidence correlation, enforcement, reliability and target intelligence — into
-one facade. Subsystems (mission orchestration, safe validation, proof strategy
-selection) use this facade to answer "which tool, in what order, with what
-enforcement, and what did we learn?".
+The layer composes the engines, selection, planning, escalation, evidence correlation, enforcement, reliability and
+target intelligence, into one facade.
 """
 
 from __future__ import annotations
@@ -43,7 +40,7 @@ from hunterx.tools.intelligence.target import TargetIntelligenceStore
 
 
 class ToolIntelligenceLayer:
-    """Facade over the Sprint 023 engines.
+    """Facade over the engines.
 
     Usage::
 
@@ -108,6 +105,7 @@ class ToolIntelligenceLayer:
         mission_id: str = "",
         scope: str = "",
         authorization: ToolSafetyClass = ToolSafetyClass.HIGH_IMPACT,
+        authorization_granted: bool = False,
         inputs: dict[str, Any] | None = None,
     ) -> ToolChain:
         """Plan a dependency-aware tool chain for ``objective``."""
@@ -118,6 +116,7 @@ class ToolIntelligenceLayer:
             mission_id=mission_id,
             scope=scope,
             authorization=authorization,
+            authorization_granted=authorization_granted,
             inputs=inputs,
         )
 

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the safe vulnerability discovery & validation capability.
-
-End-to-end scenario: through the assembled platform, create a hypothesis, plan
-its safe validation, run the full OBSERVE → HYPOTHESIZE → PLAN → SCOPE CHECK →
-SAFETY CHECK → SELECT TOOL → SAFE PROBE → NORMALIZE → COLLECT EVIDENCE → VERIFY
-→ PERSIST → GRAPH → REPORT → DIFF loop, and verify deterministic verdicts
-against the golden datasets, TIDB persistence, knowledge-graph integration,
-event emission, temporal differentials and reporting.
-"""
+"""Acceptance tests for the safe vulnerability discovery & validation capability."""
 
 from __future__ import annotations
 
@@ -142,7 +134,7 @@ class TestValidationAcceptance:
 
         previous = [HypothesisSnapshot.from_hypothesis(first)]
 
-        # Mission B: fixed version → differential FIXED.
+        # Mission B: fixed version to differential FIXED.
         second = service.create_hypothesis(
             mission_id="acceptance-diff-2",
             target_id="app.example.com",

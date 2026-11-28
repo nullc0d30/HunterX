@@ -3,20 +3,16 @@ layout: default
 title: HunterX v7 Authentication, Session & Identity Intelligence
 description: >-
   Architecture and reference for the HunterX v7 Authentication, Session &
-  Identity Intelligence capability (Sprint 015 / Wave 9): authentication
+  Identity Intelligence capability: authentication
   surfaces, endpoints, modeled flows, identity providers, OAuth/OIDC/SAML
   configurations, JWT indicators, authentication schemes, cookie security
   metadata, token storage, CSRF/CORS protections, MFA/WebAuthn mechanisms,
   roles/scopes/permissions/tenants, public-vs-authenticated classification and
-  historical change detection. Intelligence only — never authenticates.
+  historical change detection. Intelligence only - never authenticates.
 permalink: /v7-authentication-intelligence/
 ---
 
 # HunterX v7 Authentication, Session & Identity Intelligence
-
-**Status:** Ratified (Sprint 015 · Wave 9)
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
 
 ---
 
@@ -24,7 +20,7 @@ permalink: /v7-authentication-intelligence/
 
 The **Authentication, Session & Identity Intelligence** capability gives HunterX
 a persistent, evidence-backed understanding of the *authentication and identity
-attack surface* of an authorized target — without exploiting it. The capability
+attack surface* of an authorized target, without exploiting it. The capability
 discovers, classifies, models, correlates, normalizes, scores, persists,
 historizes and reports on:
 
@@ -32,7 +28,7 @@ historizes and reports on:
 - authentication endpoints (token, authorization, callback, userinfo, JWKS …)
 - modeled stateful authentication flows
 - identity providers (Auth0, Okta, Keycloak, Entra ID, Google, Cognito,
-  Firebase, Supabase, GitHub, GitLab, Ping, custom)
+ Firebase, Supabase, GitHub, GitLab, Ping, custom)
 - OAuth 2.x, OIDC and SAML configurations
 - JWT indicators
 - authentication schemes and headers
@@ -56,29 +52,29 @@ secrets, OTPs, recovery codes or authorization-header values.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  AuthService.run()  (application/auth.py)                                │
-│                                                                          │
-│  DISCOVER → CLASSIFY → MODEL → CORRELATE → NORMALIZE → SCORE             │
-│           → PERSIST → DIFF → HISTORIZE → MAP → REPORT                    │
-│                                                                          │
-│  scope admission → ExecutionEngine (auth-analysis adapter)               │
-│  → existing-intelligence fold-in (TIDB)                                  │
-│  → AuthClassifier → AuthValidator → AuthCorrelator → AuthConfidenceEngine│
-│  → AuthHistory → persist to TIDB → topology edges → auth.* events        │
+│ AuthService.run (application/auth.py) │
+│ │
+│ DISCOVER → CLASSIFY → MODEL → CORRELATE → NORMALIZE → SCORE │
+│ → PERSIST → DIFF → HISTORIZE → MAP → REPORT │
+│ │
+│ scope admission → ExecutionEngine (auth-analysis adapter) │
+│ → existing-intelligence fold-in (TIDB) │
+│ → AuthClassifier → AuthValidator → AuthCorrelator → AuthConfidenceEngine│
+│ → AuthHistory → persist to TIDB → topology edges → auth.* events │
 └─────────────────────────────────────────────────────────────────────────┘
-            ▲                                                        │
-   inputs:  │                                                        ▼
-   HTTP snapshot, JS content, API security schemes,             TIDB auth_* tables
-   OIDC/SAML documents, observed URLs, historical              + topology + events
+ ▲ │
+ inputs: │ ▼
+ HTTP snapshot, JS content, API security schemes, TIDB auth_* tables
+ OIDC/SAML documents, observed URLs, historical + topology + events
 ```
 
 The capability is composed of:
 
 | Layer | Modules |
 |---|---|
-| Domain | `src/hunterx/domain/auth/` — models, analyzer, classification, confidence, correlator, history, scope, strategy, validator |
-| Tool SDK | `src/hunterx/tools/auth/` — in-process `auth-analysis` adapter, registry, TIP profile |
-| Application | `src/hunterx/application/auth.py` — `AuthService`, `AuthQueryService` |
+| Domain | `src/hunterx/domain/auth/` - models, analyzer, classification, confidence, correlator, history, scope, strategy, validator |
+| Tool SDK | `src/hunterx/tools/auth/` - in-process `auth-analysis` adapter, registry, TIP profile |
+| Application | `src/hunterx/application/auth.py` - `AuthService`, `AuthQueryService` |
 | TIDB | `src/hunterx/domain/entities/tidb/auth_intelligence.py` + ORM mirror + Alembic migration |
 | Events | `auth.*` category in `domain/events/{enums,catalog,types}.py` |
 | Topology | `src/hunterx/domain/topology/enums.py` auth entity kinds |
@@ -98,11 +94,11 @@ and a deterministic confidence in `[0, 1]`.
 
 The models keep the two concerns strictly separate:
 
-- **Authentication** ("Who are you?") — surfaces, endpoints, flows, identity
-  providers, OAuth/OIDC/SAML configurations, schemes, sessions, MFA.
-- **Authorization** ("What are you allowed to access?") — roles, scopes,
-  permissions, claims, tenants. These are recorded as *indicators* only; no
-  authorization relationship is inferred without evidence.
+- **Authentication** ("Who are you?"), surfaces, endpoints, flows, identity
+ providers, OAuth/OIDC/SAML configurations, schemes, sessions, MFA.
+- **Authorization** ("What are you allowed to access?"), roles, scopes,
+ permissions, claims, tenants. These are recorded as *indicators* only; no
+ authorization relationship is inferred without evidence.
 
 ### 3.2 Anonymous vs Authenticated surface
 
@@ -125,15 +121,15 @@ Observable session states are modeled as `SessionState` values
 Flows are represented as stateful relationships over endpoints. The analyzer
 builds deterministic flow models from observed endpoints/metadata:
 
-- **Traditional login** — `anonymous → login → authentication → authenticated`.
-- **OAuth 2 authorization-code** — `client → authorization endpoint → identity
-  provider → callback → token endpoint → session`.
-- **OIDC authorization-code** — `client → authorization → identity provider →
-  callback → token → id-token → session`.
-- **SAML SSO** — `client → SSO request → identity provider → assertion (ACS) →
-  session`.
+- **Traditional login**, `anonymous → login → authentication → authenticated`.
+- **OAuth 2 authorization-code**, `client → authorization endpoint → identity
+ provider → callback → token endpoint → session`.
+- **OIDC authorization-code**, `client → authorization → identity provider →
+ callback → token → id-token → session`.
+- **SAML SSO**, `client → SSO request → identity provider → assertion (ACS) →
+ session`.
 
-The flows are *models of observed state* — HunterX never executes them.
+The flows are *models of observed state*, HunterX never executes them.
 
 ---
 
@@ -206,12 +202,12 @@ persisted.
 
 ## 11. CSRF & CORS
 
-- **CSRF** — synchronizer tokens, double-submit cookie/header pairs,
-  framework cookies (`csrftoken`, `XSRF-TOKEN`, `_token`), custom headers and
-  SameSite controls are recorded as `CSRFMechanism`. Bypass is never tested.
-- **CORS** — `Access-Control-Allow-*` headers, credentials, methods, headers,
-  exposed headers and preflight behavior are recorded as `CORSPolicy`.
-  Exploitation is never performed.
+- **CSRF**, synchronizer tokens, double-submit cookie/header pairs,
+ framework cookies (`csrftoken`, `XSRF-TOKEN`, `_token`), custom headers and
+ SameSite controls are recorded as `CSRFMechanism`. Bypass is never tested.
+- **CORS**, `Access-Control-Allow-*` headers, credentials, methods, headers,
+ exposed headers and preflight behavior are recorded as `CORSPolicy`.
+ Exploitation is never performed.
 
 ---
 
@@ -221,7 +217,7 @@ MFA mechanisms (TOTP, SMS/email OTP, push, WebAuthn/FIDO2/passkeys, recovery
 codes) are detected from HTML keywords, input fields and JavaScript API usage.
 WebAuthn indicators (`navigator.credentials`, `PublicKeyCredential`,
 registration vs authentication) are recorded as static metadata with a
-challenge *reference* only — never the challenge value. MFA bypass is never
+challenge *reference* only, never the challenge value. MFA bypass is never
 attempted.
 
 ---
@@ -232,7 +228,7 @@ Evidence-backed indicators are recorded from JavaScript configuration, OAuth
 scopes declared in OpenAPI security schemes, and static claims references:
 
 - `RoleObservation`, `ScopeObservation`, `PermissionObservation`,
-  `TenantObservation`.
+ `TenantObservation`.
 
 Tenant indicators cover IDs, headers (`X-Tenant-ID`…), claims, path/query
 parameters and API resources. No tenant isolation is tested.
@@ -265,11 +261,11 @@ Evidence types include `http-header`, `cookie`, `html`, `http-status`,
 
 Confidence is deterministic and explainable (`AuthConfidenceEngine`):
 
-- **Strong evidence** — direct HTTP observation (headers, status, cookies),
-  valid OIDC discovery document, valid OpenAPI security scheme, direct JS API
-  call, multiple independent observations.
-- **Weak evidence** — URL naming, HTML text, single heuristic, historical-only
-  data.
+- **Strong evidence**, direct HTTP observation (headers, status, cookies),
+ valid OIDC discovery document, valid OpenAPI security scheme, direct JS API
+ call, multiple independent observations.
+- **Weak evidence**, URL naming, HTML text, single heuristic, historical-only
+ data.
 
 The score combines the declared evidence-aware confidence with the strongest
 evidence factor and source reliability, with corroboration boosts and conflict
@@ -332,15 +328,15 @@ New topology entity kinds: `AUTH_SURFACE`, `AUTH_ENDPOINT`,
 ## 18. Security
 
 - **No credentials or tokens stored.** Cookie values, token values, OTPs,
-  recovery codes and authorization-header values are never persisted; retained
-  context snippets are masked (`shared.masking`).
+ recovery codes and authorization-header values are never persisted; retained
+ context snippets are masked (`shared.masking`).
 - **No scope expansion.** The enforcer authorizes the analysed asset; discovered
-  identity-provider endpoints are recorded as metadata and never requested.
+ identity-provider endpoints are recorded as metadata and never requested.
 - **No exploitation.** No credential attacks, MFA bypass, token replay, OAuth/
-  SAML abuse, JWT exploitation, CSRF/CORS exploitation, authorization bypass.
+ SAML abuse, JWT exploitation, CSRF/CORS exploitation, authorization bypass.
 - **Deterministic** detection, classification, confidence and diffing.
 - **Fail-closed scope** with `fail_open_empty_policy=True` (matching technology
-  fingerprinting).
+ fingerprinting).
 
 ---
 
@@ -351,7 +347,7 @@ New topology entity kinds: `AUTH_SURFACE`, `AUTH_ENDPOINT`,
 | Golden | `tests/golden/auth/*.json` | deterministic input fixtures |
 | Unit | `test_auth_domain.py`, `test_auth_analyzer.py`, `test_auth_service.py`, `test_auth_tip.py` | models, serialization, detection, pipeline, TIP |
 | Integration | `test_auth_platform.py` | platform wiring + end-to-end |
-| Acceptance | `test_auth_acceptance.py` | Sprint 015 acceptance criteria |
+| Acceptance | `test_auth_acceptance.py` | acceptance criteria |
 | Security | `test_auth_security.py` | leakage, scope, malformed input, contamination |
 | Performance | `test_auth_benchmarks.py` | analysis, correlation, query baselines |
 
@@ -360,15 +356,13 @@ New topology entity kinds: `AUTH_SURFACE`, `AUTH_ENDPOINT`,
 - `ruff check` clean; `mypy` (strict) clean on the capability modules.
 - `pytest tests/unit tests/integration tests/acceptance tests/security tests/performance tests/architecture`.
 - `alembic upgrade head` / `downgrade base` clean; new tables registered in the
-  TIDB metadata.
+ TIDB metadata.
 
 ## 20. References
 
-- `config/capabilities/authentication-intelligence.json` — machine-readable
-  capability contract.
-- `docs/v7-api-intelligence-implementation-plan.md` — the pipeline pattern this
-  sprint mirrors.
-- `docs/v7-tidb.md` — TIDB system of record.
-- `docs/v7-tool-integration-sdk.md` — Tool SDK adapter contract.
-- `docs/v7-platform-composition-root.md` — platform composition.
-- `docs/bible/08 - Unified Security Schema.md` — USS envelope.
+- `config/capabilities/authentication-intelligence.json`, machine-readable
+ capability contract.
+- `docs/v7-tidb.md`, TIDB system of record.
+- `docs/v7-tool-integration-sdk.md`, Tool SDK adapter contract.
+- `docs/v7-platform-composition-root.md`, platform composition.
+- `docs/bible/08 - Unified Security Schema.md`, USS envelope.

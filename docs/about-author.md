@@ -1,6 +1,6 @@
 ---
 layout: default
-title: About the Author — Ahmed Awad (NullC0d3)
+title: About the Author - Ahmed Awad (NullC0d3)
 description: >-
   About Ahmed Awad (NullC0d3), cybersecurity threat intelligence analyst,
   security researcher, and open-source developer. Creator of HunterX
@@ -12,7 +12,7 @@ permalink: /about-author/
 
 ## About the Author
 
-**Ahmed Awad** — known online as **NullC0d3** — is a Cybersecurity Threat Intelligence Analyst, security researcher, and open-source developer.
+**Ahmed Awad**, known online as **NullC0d3**, is a Cybersecurity Threat Intelligence Analyst, security researcher, and open-source developer.
 
 ## Background
 
@@ -28,9 +28,9 @@ Ahmed has been active in the security community since 2018, with experience span
 
 Ahmed is the creator of:
 
-- **HunterX** — AI-assisted vulnerability scanner and security assessment platform (this project)
-- **RabbitHole** — Security research tool
-- **AnubisX Framework** — Security testing framework
+- **HunterX**, AI-assisted vulnerability scanner and security assessment platform (this project)
+- **RabbitHole**, Security research tool
+- **AnubisX Framework**, Security testing framework
 
 ## Profiles
 

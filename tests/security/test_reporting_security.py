@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the professional reporting capability.
-
-Covers report/HTML/Markdown/SARIF injection, secret and PII leakage,
-cross-target evidence isolation, cross-mission report leakage, malicious
-evidence/tool output, AI-hallucinated claims, template injection, path
-traversal on export paths and report tampering.
-"""
+"""Security tests for the professional reporting capability."""
 
 from __future__ import annotations
 

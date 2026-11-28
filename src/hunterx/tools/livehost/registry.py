@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery tool adapter registry.
-
-Builds and registers the live discovery tool adapters (nmap binary, naabu
-binary, masscan binary and the in-process TCP-connect probe) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the live discovery tool set, so callers (tests, the live host
-service, the platform) never construct individual adapters.
-"""
+"""Live Host & Service Discovery tool adapter registry."""
 
 from __future__ import annotations
 

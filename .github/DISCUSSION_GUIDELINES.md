@@ -24,7 +24,7 @@ Welcome to the HunterX community! GitHub Discussions is a place for the communit
 
 ## Guidelines
 
-### Do ✅
+### Do yes
 
 - Be respectful and constructive
 - Search before posting to avoid duplicates
@@ -33,7 +33,7 @@ Welcome to the HunterX community! GitHub Discussions is a place for the communit
 - Help others when you can
 - Upvote helpful answers
 
-### Don't ❌
+### Don't no
 
 - Post security vulnerabilities (use [SECURITY.md](../SECURITY.md))
 - Spam or self-promote
@@ -47,11 +47,11 @@ Welcome to the HunterX community! GitHub Discussions is a place for the communit
 
 To get quality answers to your questions:
 
-1. **Be specific** — "I'm getting error X when running command Y on target Z"
-2. **Include context** — OS, Python version, HunterX version, flags used
-3. **Show what you tried** — Commands you ran, configs you used
-4. **Share logs** — Paste relevant error output (redact sensitive info)
-5. **Be patient** — Community members help voluntarily
+1. **Be specific** - "I'm getting error X when running command Y on target Z"
+2. **Include context** - OS, Python version, HunterX version, flags used
+3. **Show what you tried** - Commands you ran, configs you used
+4. **Share logs** - Paste relevant error output (redact sensitive info)
+5. **Be patient** - Community members help voluntarily
 
 ---
 

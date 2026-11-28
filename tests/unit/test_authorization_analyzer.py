@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the authorization intelligence analyzer.
-
-Exercises the deterministic detection engine over golden and synthetic input
-bundles: subjects, roles, groups, permissions, scopes, claims, policies,
-resources, actions, identifiers, ownership, tenants, admin surfaces,
-function/object/field-level access control, frontend/backend logic, API
-correlation, GraphQL/WebSocket/service authorization, decisions and
-mass-assignment indicators.
-"""
+"""Tests for the authorization intelligence analyzer."""
 
 from __future__ import annotations
 

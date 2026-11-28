@@ -3,16 +3,7 @@
 
 """Cloud & SaaS intelligence analyzer.
 
-The in-process, intelligence-only detection engine. It consumes a
-:class:`CloudInput` bundle of already-acquired static material (DNS records,
-TLS metadata, HTTP headers, technology observations, script content,
-documentation text, observed URLs and previously persisted TIDB hints) and
-produces a :class:`CloudAnalysis` of typed observations.
-
-Every detector is evidence-based and deterministic. Provider is never inferred
-from branding alone; every conclusion carries an evidence fragment and a
-confidence. Sensitive values are redacted or fingerprinted before they reach
-any observation.
+The in-process, intelligence-only detection engine.
 """
 
 from __future__ import annotations
@@ -1075,7 +1066,7 @@ class CloudAnalyzer:
 
         Intelligence only: a domain record that points at a provider hostname
         while documentation indicates the resource was decommissioned is
-        recorded as a ``dangling-resource`` exposure indicator — never as a
+        recorded as a ``dangling-resource`` exposure indicator, never as a
         takeover vulnerability.
         """
         decommission_markers = (
@@ -1196,7 +1187,7 @@ def _as_dict(value: Any) -> dict[str, Any]:
 
 
 def _host_of(value: Any) -> str:
-    """Extract a hostname from a URL or hostname string (robust to banners)."""
+    """Extract a hostname from a URL or hostname string (reliable to banners)."""
     from urllib.parse import urlsplit
 
     candidate = str(value or "").strip().lower()

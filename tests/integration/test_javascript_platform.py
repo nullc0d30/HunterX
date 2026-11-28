@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the JavaScript intelligence capability.
-
-Exercises the full wiring through the assembled platform: the JavaScript
-service and query service registered in the container, the JavaScript analyzer
-available on the execution engine and TIP, and an end-to-end JavaScript
-intelligence run over in-memory script content with persisted assets, endpoints
-and secrets.
-"""
+"""Integration tests for the JavaScript intelligence capability."""
 
 from __future__ import annotations
 

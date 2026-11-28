@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target intelligence (Sprint 023).
+"""Target intelligence.
 
-Records what HunterX has already done to a target and answers "what do we
-already know?" and "what should we NOT repeat?". Every execution writes a
-:class:`ToolExecutionRecord`; the store composes these into a
-:class:`TargetIntelligenceSnapshot` the planner and executor consult.
+Records what HunterX has already done to a target and answers "what do we already know?" and "what should we NOT
+repeat?".
 """
 
 from __future__ import annotations

@@ -1,13 +1,6 @@
-"""adaptive mission planning tables
-
-Sprint 027. Creates the normalized Adaptive Mission & Attack-Path Planning
-entities: missions, action nodes, dynamic dependencies, conditional branches,
-plan versions, plan deltas, decisions, attack paths, gaps, checkpoints,
-failures, tool fallbacks and tool selections.
-
-Revision ID: 1b3d5f7a9c2e
-Revises: f7aed8a3dfc0
-Create Date: 2026-08-10 12:00:00.000000
+"""adaptive mission planning tables Creates the normalized Adaptive Mission & Attack-Path Planning entities: missions,
+action nodes, dynamic dependencies, conditional branches, plan versions, plan deltas, decisions, attack paths, gaps,
+checkpoints, failures, tool fallbacks and tool selections.
 
 """
 from collections.abc import Sequence

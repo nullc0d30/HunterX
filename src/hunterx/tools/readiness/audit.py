@@ -4,22 +4,6 @@
 """Tool integration audit.
 
 Machine-checkable integration maturity for every claimed tool integration.
-
-A tool is NEVER considered fully integrated merely because its name appears in
-a registry. The audit measures, per tool, the actual presence of machine-
-actionable knowledge for every required dimension:
-
-    Identity, Capability, Discovery, Installation, Verification, Version,
-    Commands, Arguments, Invocation, Output, Parser, Platform, Safety
-
-and derives a maturity level:
-
-    KNOWN → DISCOVERABLE → INSTALLABLE → VERIFIED → INVOKABLE → PARSABLE →
-    FULLY_INTEGRATED
-
-``Tool Knowledge`` (what the tool is and how to operate it) is kept separate
-from ``Tool Runtime State`` (whether the exact tool is installed and healthy
-right now). A tool is an executable capability only when both are valid.
 """
 
 from __future__ import annotations
@@ -64,7 +48,7 @@ class ToolAudit:
 
     Attributes:
         tool_id: the audited tool.
-        dimensions: dimension → ``True`` when the knowledge is present.
+        dimensions: dimension to ``True`` when the knowledge is present.
         missing: dimensions absent from the knowledge.
         level: derived maturity level.
         runtime: ``True`` when an execution adapter is registered (runtime
@@ -131,7 +115,7 @@ class ToolIntegrationAuditor:
         tip: the Tool Intelligence API (canonical knowledge).
         definitions: readiness definition builder (discovery/installation facts).
         engine: optional Tool Integration SDK engine (runtime adapter state).
-        availability: optional mapping of tool_id → readiness available state.
+        availability: optional mapping of tool_id to readiness available state.
 
     """
 

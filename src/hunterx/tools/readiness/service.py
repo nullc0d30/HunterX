@@ -3,17 +3,7 @@
 
 """Tool Readiness application facade.
 
-The single use-case layer the CLI, API and mission preflight call to:
-
-- build machine-readable tool definitions (TIP knowledge + trusted manifest);
-- discover/verify installed tools (``check``);
-- compute per-capability coverage;
-- provision missing tools through trusted static methods (``install``);
-- resolve mission capability requirements and produce preflight verdicts.
-
-The service reuses the Tool Integration SDK engine: discovered tools are
-recorded on the engine so the SDK health checker and the mission execution
-pipeline agree on what is actually runnable.
+Single use-case layer behind the CLI, the API and mission preflight.
 """
 
 from __future__ import annotations
@@ -183,7 +173,7 @@ class ToolReadinessService:
         into invocation verification (``INVOCATION_VERIFIABLE``), the adapter's
         own argv is run against a local dead-end target with a short timeout;
         an argument-parsing failure (exit code 2 with a usage error) marks the
-        tool BROKEN. Network failures/timing out are NOT treated as broken —
+        tool BROKEN. Network failures/timing out are NOT treated as broken,
         only a CLI contract violation is.
         """
         if self._engine is None:
@@ -320,15 +310,7 @@ class ToolReadinessService:
     ) -> list[InstallOutcome]:
         """Provision missing tools and return the per-tool outcomes.
 
-        ``tool_ids`` takes precedence; when empty, ``profile`` selects the
-        profile's tools. An empty both defaults to the ``minimal`` profile
-        (base HunterX environment — no external installs).
-
-        ``observer`` (optional) receives :class:`InstallProgress` events
-        before and after each tool so a UI can render live ``[N/M] tool ✓``
-        lines. ``state`` (optional) is an :class:`InstallationState` that is
-        updated with per-tool results and persisted by the caller for resume
-        support.
+        ``tool_ids`` takes precedence; when empty, ``profile`` selects the profile's tools.
         """
         targets = self._resolve_targets(tool_ids, profile)
         total = len(targets)
@@ -434,20 +416,7 @@ class ToolReadinessService:
         ai_client: Any | None = None,
         ai_settings: Any | None = None,
     ) -> PreflightResult:
-        """Compute the mission preflight verdict for ``capabilities``.
-
-        A mission whose required capabilities have no available provider
-        returns a ``BLOCKED`` verdict (or, when ``auto_provision`` succeeds,
-        a ``PASS``/``DEGRADED`` verdict). Missing recommended/optional
-        capabilities produce a ``DEGRADED`` verdict — the mission may run
-        with reduced coverage. Tools listed in ``profile_tools`` (the selected
-        assessment profile) are provisioned when absent so the mission does
-        not silently rely on them.
-
-        When ``ai_client``/``ai_settings`` are supplied, the AI provider
-        health is evaluated and reported truthfully in the result
-        (``ai_provider`` ∈ available/unavailable/not_configured).
-        """
+        """Compute the mission preflight verdict for ``capabilities``."""
         return self._preflight.run(
             self,
             capabilities,
@@ -474,7 +443,7 @@ class ToolReadinessService:
         """
         if refresh_availability:
             report = self.check()
-            self._auditor._availability = {  # noqa: SLF001  # auditor is owned by the service
+            self._auditor._availability = {  # noqa: SLF001 # auditor is owned by the service
                 verdict.tool_id: verdict.status is ToolReadinessStatus.AVAILABLE
                 for verdict in report.tools
             }

@@ -3,12 +3,8 @@
 
 """DNS confidence engine.
 
-Assigns a defensible, deterministic confidence score to every DNS observation
-and recomputes it when several tools or resolvers corroborate the same record.
-Confidence is a pure function of (source reliability, validation status,
-corroboration count, freshness, resolver agreement and historical stability) —
-the same inputs always yield the same score and the score is explainable
-through the factors that contributed to it.
+Assigns a defensible, deterministic confidence score to every DNS observation and recomputes it when several tools
+or resolvers corroborate the same record.
 """
 
 from __future__ import annotations

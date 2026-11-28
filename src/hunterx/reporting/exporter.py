@@ -3,11 +3,8 @@
 
 """Report exporter adapter.
 
-The reporting-layer adapter that renders a
-:class:`~hunterx.domain.reporting.models.ReportDocument` into a concrete
-output format. The application layer depends only on the
-:class:`~hunterx.domain.ports.reporting.ReportExporterPort` contract; this
-adapter is wired in the composition root.
+The reporting-layer adapter that renders a :class:`~hunterx.domain.reporting.models.ReportDocument` into a concrete
+output format.
 """
 
 from __future__ import annotations

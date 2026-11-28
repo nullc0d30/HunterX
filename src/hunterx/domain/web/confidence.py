@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Confidence scoring for web crawl observations.
-
-Deterministic and explainable: an observation starts from a base confidence
-assigned by its artifact type and upstream source, then receives small boosts
-for corroborating evidence. Every score carries the rules that produced it so
-auditors can reproduce the decision.
-"""
+"""Confidence scoring for web crawl observations."""
 
 from __future__ import annotations
 

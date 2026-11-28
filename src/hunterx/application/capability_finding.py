@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal capability-finding pipeline (Phase 6).
-
-Bridges the capability-execution engine (Phase 5) into the existing HunterX
-validated-finding lifecycle: every differential-supported ``FINDING`` becomes
-a candidate that is promoted, deduplicated, re-verified, replayed in
-isolation, classified for reproduction, impact-assessed, turned into a PoC,
-severity-scored, remediated and — only when reproduction + impact + PoC +
-verification all pass — finalized as ``REPORT_READY``.
-
-The pipeline drives the canonical :class:`VulnerabilityFindingService`; it
-never fabricates findings, never marks a contradicted or non-reproducible
-candidate as valid, and never auto-assigns ``CRITICAL``.
-"""
+"""Universal capability-finding pipeline."""
 
 from __future__ import annotations
 

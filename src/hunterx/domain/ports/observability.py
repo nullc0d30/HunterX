@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Observability ports.
-
-The observability contracts every subsystem depends on: an enriched event bus
-(publish/subscribe with routing, filtering and priorities), an event store
-with dead-letter queue and replay, metrics, distributed tracing and health
-probes. Infrastructure adapters implement these ports; the domain never
-imports a concrete adapter.
-"""
+"""Observability ports."""
 
 from __future__ import annotations
 

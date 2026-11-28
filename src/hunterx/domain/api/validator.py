@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API observation validation.
-
-Validates raw API intelligence observations before they enter correlation:
-rejects empty/invalid records, filters low-confidence records below the
-strategy's minimum confidence and drops observations whose origin is out of
-scope. The validator is pure and deterministic.
-"""
+"""API observation validation."""
 
 from __future__ import annotations
 

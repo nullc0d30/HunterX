@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 7 — real Arjun invocation against a local vulnerable fixture.
-
-Proves the fixed adapter end-to-end: a valid command is built, Arjun runs
-against the local fixture, its JSON report is read back and converted into the
-existing parameter observation contract, and readiness reports the fixed
-invocation as healthy (not broken).
-
-Requires the real ``arjun`` binary on PATH (skipped otherwise).
+"""Real Arjun invocation against a local vulnerable fixture.
 """
 
 from __future__ import annotations

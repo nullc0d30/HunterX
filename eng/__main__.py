@@ -3,15 +3,7 @@
 
 """Unified CLI for the engineering platform.
 
-Invoked by GitHub Actions and developers:
-
-- ``python -m eng gates [--json] [--blocking]`` — run quality gates.
-- ``python -m eng security [--json]`` — run the security pipeline.
-- ``python -m eng sbom [--format cyclonedx|spdx]`` — generate an SBOM.
-- ``python -m eng compliance`` — license/attribution/hygiene checks.
-- ``python -m eng packaging [--json]`` — validate wheel/sdist.
-- ``python -m eng readiness [--json]`` — production-readiness assessment.
-- ``python -m eng check-release <version> [--json]`` — release validation.
+Invoked by GitHub Actions and developers.
 """
 
 from __future__ import annotations

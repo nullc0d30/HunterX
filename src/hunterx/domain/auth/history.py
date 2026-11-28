@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authentication intelligence historical comparison.
-
-Compares the current authentication state against historical records to detect
-changes over time: new login surfaces, removed identity providers, changed
-cookie security attributes, added/removed MFA mechanisms, new OAuth flows,
-changed authentication schemes and new token-storage locations. Every change is
-reported with the before/after values, timestamps and sources so it can be
-traced and correlated with security events.
-"""
+"""Authentication intelligence historical comparison."""
 
 from __future__ import annotations
 

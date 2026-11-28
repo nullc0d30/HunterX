@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Compatibility engine.
-
-Determines whether a tool can run in a given execution environment: operating
-system, architecture, Python version, Docker/containerized execution, native
-execution, cloud execution, and air-gapped operation.
-"""
+"""Compatibility engine."""
 
 from __future__ import annotations
 

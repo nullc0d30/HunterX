@@ -1,12 +1,12 @@
 ---
 layout: default
-title: AI Provider Guide — HunterX v6.0.0
+title: AI Provider Guide - HunterX v6.0.0
 keywords: HunterX AI Provider, LLM Integration, Artificial Intelligence
 description: >-
   The AI Provider Guide in HunterX v6.0.0 explains how to integrate various language models for enhanced reasoning capabilities.
 ---## AI Provider Abstraction Layer
 
-HunterX v6.0.0 introduces a fully modular, plugin-based AI provider abstraction layer under `core/ai/`. This layer decouples the application from any single AI provider, enabling seamless integration of multiple backends (OpenAI, Ollama, etc.) with caching, metrics, middleware, and conversation management built in.
+HunterX v6.0.0 introduces a fully modular, plugin-based AI provider abstraction layer under `core/ai/`. This layer decouples the application from any single AI provider, enabling clean integration of multiple backends (OpenAI, Ollama, etc.) with caching, metrics, middleware, and conversation management built in.
 
 ---
 
@@ -39,19 +39,19 @@ AIProvider (abstract)
 
 ## Module Reference
 
-### `manager.py` — AIManager
+### `manager.py` - AIManager
 
 Singleton facade providing the main interface for all AI operations. Delegates to the appropriate provider via `ProviderRegistry`.
 
 **Methods:** `chat`, `complete`, `embed`, `stream`, `list_models`, `get_metrics`, `get_cache_stats`, `clear_cache`.
 
-### `provider.py` — AIProvider
+### `provider.py` - AIProvider
 
 Abstract base class that all providers must implement.
 
 **Abstract methods (10):** `initialize`, `chat`, `complete`, `embed`, `stream`, `health`, `list_models`, `get_capabilities`, `to_dict`, `shutdown`.
 
-### `registry.py` — ProviderRegistry
+### `registry.py` - ProviderRegistry
 
 Singleton registry for provider instances.
 
@@ -59,62 +59,62 @@ Singleton registry for provider instances.
 
 Supports automatic discovery of provider classes.
 
-### `factory.py` — AIFactory
+### `factory.py` - AIFactory
 
 Factory for creating provider instances with fallback support.
 
 **Methods:** `create`, `create_with_fallback` (primary + fallback providers), `create_priority` (try providers in priority order), `register_provider_class`.
 
-### `cache.py` — AICache
+### `cache.py` - AICache
 
 Response cache for AI operations. Uses SHA256 hashing of request parameters as cache key. TTL-based expiry. LRU eviction when cache is full. Tracks hit/miss statistics.
 
-### `metrics.py` — AIMetricsCollector
+### `metrics.py` - AIMetricsCollector
 
 Per-provider metrics collection. Tracks total requests, tokens (prompt/completion), latency (min/max/avg), error rates, and cost estimates. Provides per-provider rollups and overall system summary.
 
-### `middleware.py` — Middleware Pipeline
+### `middleware.py` - Middleware Pipeline
 
 Chain-of-responsibility pattern for pre/post processing of AI requests.
 
 **Built-in middleware:**
-- `LoggingMiddleware` — Request/response logging
-- `RateLimitMiddleware` — Per-provider rate limiting
-- `SafetyMiddleware` — Content filtering and policy enforcement
+- `LoggingMiddleware` - Request/response logging
+- `RateLimitMiddleware` - Per-provider rate limiting
+- `SafetyMiddleware` - Content filtering and policy enforcement
 
 Custom middleware can be added by extending `BaseMiddleware`.
 
-### `conversation.py` — Conversation & ConversationManager
+### `conversation.py` - Conversation & ConversationManager
 
 Multi-turn conversation management. Each conversation tracks messages, token count, and metadata. Supports summarization for long conversations. Enforces token limits with automatic truncation.
 
-### `config.py` — AIConfig & AIConfigManager
+### `config.py` - AIConfig & AIConfigManager
 
 Configuration management for AI providers. YAML/ENV/CLI override chain. Supports named profiles with per-profile provider/model/temperature/max_tokens settings.
 
-### `models.py` — Data Models
+### `models.py` - Data Models
 
 15+ data models including: `ChatRequest`, `ChatResponse`, `CompletionRequest`, `CompletionResponse`, `EmbeddingRequest`, `EmbeddingResponse`, `Message`, `MessageRole`, `ModelInfo`, `ModelCapability`, `ProviderStatus`, `StreamingChunk`, `TokenUsage`.
 
-### `exceptions.py` — Error Handling
+### `exceptions.py` - Error Handling
 
 Complete exception hierarchy: `AIError`, `ProviderNotFoundError`, `AuthenticationError`, `RateLimitError`, `TimeoutError`, `ProviderUnavailableError`, `InvalidRequestError`, `ConfigurationError`.
 
 Includes `CircuitBreaker` (with OPEN/HALF_OPEN/CLOSED states) and `RetryHandler` (configurable retries, backoff, max delay).
 
-### `adapters/base.py` — BaseHTTPAdapter
+### `adapters/base.py` - BaseHTTPAdapter
 
 Abstract HTTP adapter for REST-based AI providers. Handles common HTTP transport concerns.
 
-### `providers/ollama.py` — OllamaProvider
+### `providers/ollama.py` - OllamaProvider
 
 Full Ollama integration: chat, complete, embed, streaming, health checks, model listing. Connects to local Ollama instance at configurable endpoint.
 
-### `providers/openai.py` — OpenAIProvider
+### `providers/openai.py` - OpenAIProvider
 
 Full OpenAI integration: chat, complete, embed, streaming, health checks, model listing. Uses API key authentication.
 
-### `prompts/` — Prompt Management
+### `prompts/` - Prompt Management
 
 `PromptManager`, `PromptTemplate`, `PromptCategory` for managing prompt templates. Supports 10 categories with parameter substitution.
 
@@ -122,13 +122,13 @@ Full OpenAI integration: chat, complete, embed, streaming, health checks, model 
 
 ## Key Design Principles
 
-- **Strict dependency inversion** — AI code depends on abstractions (`AIProvider`), not concrete implementations
-- **Plugin-based discovery** — New providers can be added without modifying core
-- **Caching** — All AI responses cached with configurable TTL (SHA256 key)
-- **Middleware pipeline** — Logging, rate limiting, safety checks in chain-of-responsibility pattern
-- **Metrics** — Per-provider latency, token usage, error rates, cost estimation
-- **Conversation management** — Multi-turn with token limits and automatic summarization
-- **Safety middleware** — Content filtering and policy enforcement before/after provider execution
+- **Strict dependency inversion** - AI code depends on abstractions (`AIProvider`), not concrete implementations
+- **Plugin-based discovery** - New providers can be added without modifying core
+- **Caching** - All AI responses cached with configurable TTL (SHA256 key)
+- **Middleware pipeline** - Logging, rate limiting, safety checks in chain-of-responsibility pattern
+- **Metrics** - Per-provider latency, token usage, error rates, cost estimation
+- **Conversation management** - Multi-turn with token limits and automatic summarization
+- **Safety middleware** - Content filtering and policy enforcement before/after provider execution
 
 ---
 

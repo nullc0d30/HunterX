@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the JavaScript intelligence use-case service.
-
-Exercises the full pipeline against an in-memory TIDB: scope enforcement, tool
-selection, passive mode, per-asset collection through the SDK engine,
-correlation with confidence floors, secret discovery events, history diffing,
-TIDB persistence and the ``javascript.*`` event stream.
-"""
+"""Tests for the JavaScript intelligence use-case service."""
 
 from __future__ import annotations
 

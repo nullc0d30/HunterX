@@ -3,11 +3,8 @@
 
 """Mission state machine.
 
-Owns the ratified mission lifecycle: Created → Queued → Planning → Ready →
-Executing → (Paused / Waiting / Retrying) → Completed / Cancelled / Failed →
-Archived. The machine is pure transition logic over
-:class:`~hunterx.domain.mission_planning.MissionPlanningStatus`; callers apply
-it to a plan through :class:`MissionPlanTransition`.
+Owns the mission lifecycle: Created to Queued to Planning to Ready to Executing to (Paused / Waiting / Retrying) to
+Completed / Cancelled / Failed to Archived.
 """
 
 from __future__ import annotations

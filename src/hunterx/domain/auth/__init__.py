@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authentication, session & identity intelligence domain.
-
-Pure-domain contracts and deterministic analysis for the Wave 9
-authentication intelligence capability: canonical observation models, the
-static/observable detection engine, classification, confidence scoring,
-correlation, conflict resolution, historical diffing, scope enforcement and
-collection strategy. No I/O and no execution in this package.
-"""
+"""Authentication, session & identity intelligence domain."""
 
 from __future__ import annotations
 

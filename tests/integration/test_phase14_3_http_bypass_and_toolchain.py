@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 14.3 — toolchain health + HTTP status/access-control bypass.
-
-PART A — toolchain: the audited tool adapters (httpx/arjun/katana/nuclei/
-ffuf/sqlmap) must never emit an invocation the installed binary rejects.
-Regression: ffuf fails closed on a missing wordlist (its siblings already do).
-
-PART B — generic HTTP 402/404/502 / access-control bypass. The existing
-``http-access-differential`` capability must function end-to-end with REAL
-discovery (no injected proof markers): a restricted endpoint observed on the
-surface derives a hypothesis, a controlled mutation that exposes meaningful
-protected content validates, and status-only / length-only / generic bodies
-are always contradicted (never a vulnerability). Loopback-only probes are
-preserved; nothing is DVWA-specific.
-"""
+"""3, toolchain health + HTTP status/access-control bypass."""
 
 from __future__ import annotations
 
@@ -49,7 +36,7 @@ def app() -> VulnerableApp:
 
 
 # ---------------------------------------------------------------------------
-# PART A — toolchain health
+# PART A, toolchain health
 # ---------------------------------------------------------------------------
 
 
@@ -126,7 +113,7 @@ class TestToolchainInvocationContracts:
 
 
 # ---------------------------------------------------------------------------
-# PART B — HTTP status/access-control bypass capability
+# PART B, HTTP status/access-control bypass capability
 # ---------------------------------------------------------------------------
 
 
@@ -444,8 +431,8 @@ class TestAccessDifferentialFindingLifecycle:
 
 class TestAccessDifferentialMissionBridge:
     """A discovered restricted surface (no injected proof marker) flows through
-    the mission: hypothesis → generic differential probe → validated → finding
-    lifecycle → REPORT_READY. Duplicate findings are prevented.
+    the mission: hypothesis to generic differential probe to validated to finding
+    lifecycle to REPORT_READY. Duplicate findings are prevented.
     """
 
     def _runner(self, app: VulnerableApp):

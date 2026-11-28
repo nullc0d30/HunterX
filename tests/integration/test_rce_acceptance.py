@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 8 — RCE / command-injection end-to-end acceptance.
+"""RCE / command-injection end-to-end acceptance.
 
-Proves the full chain through the existing architecture against the controlled
-loopback vulnerable fixture:
-
-endpoint discovered → parameter discovered → command-injection hypothesis →
-capability probe → content-signature analysis (command output ``uid=`` absent
-from baseline) → verification → evidence → reproduction → PoC → replay →
-VALIDATED → REPORT_READY.
-
-RCE verification is NOT status-based: it requires command-execution evidence
-(command output in the injected response, absent from the baseline).
+Proves the full chain through the existing architecture against the controlled loopback vulnerable fixture.
 """
 
 from __future__ import annotations

@@ -3,9 +3,8 @@
 
 """Tool recommendation engine.
 
-Recommends the best tool, an alternative, a fallback, complementary tools, a
-replacement for deprecated tools, and flags deprecated providers. Combines
-selection scores, capability knowledge and reliability signals.
+Recommends the best tool, an alternative, a fallback, complementary tools, a replacement for deprecated tools, and
+flags deprecated providers.
 """
 
 from __future__ import annotations

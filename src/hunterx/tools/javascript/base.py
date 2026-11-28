@@ -3,16 +3,7 @@
 
 """Base adapter for JavaScript intelligence tools.
 
-Every JavaScript tool adapter implements the SDK :class:`ToolAdapter` lifecycle
-and shares this base. JavaScript analysis is an in-process capability: the
-adapter receives already-acquired script content through the execution
-parameters (no binary, no subprocess), runs the domain analyzers and secret/
-technology/dependency detectors, and serialises the per-asset analysis into the
-pipeline's JSON payload under the ``javascript`` key exactly as
-:func:`~hunterx.domain.javascript.models.findings_from_payload` expects.
-
-Adapters stay content-free in unit tests: tests inject source text and assert
-on the JSON payload without touching the network.
+Every JavaScript tool adapter implements the SDK :class:`ToolAdapter` lifecycle and shares this base.
 """
 
 from __future__ import annotations
@@ -207,18 +198,7 @@ def _severity(finding: object) -> str:
 
 
 def _fetch_script(url: str) -> tuple[str, bool]:
-    """Acquire script content for ``url`` (loopback-only) or return empty.
-
-    A bounded retry absorbs transient connection resets from busy local
-    servers (dev/test targets close idle or loaded connections aggressively),
-    so script acquisition is robust inside a mission run.
-    The retry window must be wider than the reset storm: after a heavy
-    toolchain burst a busy server keeps resetting new
-    connections for several seconds, and a 3-attempt flat retry exhausts its
-    budget inside that window, permanently losing the asset. Five attempts
-    with linear backoff (0.5-2.5s sleeps) ride out the storm while staying
-    strictly bounded — no unbounded retry is possible.
-    """
+    """Acquire script content for ``url`` (loopback-only) or return empty."""
     if not is_loopback_target(url):
         return "", False
     for attempt in range(5):

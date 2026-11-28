@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool chain executor (Sprint 034.5).
-
-Executes a planned :class:`ToolChain` end-to-end through the Tool Integration
-SDK: steps run in dependency order, each step's raw output is preserved, parsed
-output is projected into canonical observations with full provenance (source
-tool, execution id, mission id, target id, timestamp, raw artifact reference,
-confidence), discovered hosts/URLs feed dependent steps, and failures are
-classified with a capability-equivalent fallback attempt while partial results
-are preserved.
-
-A chain result never invents evidence: a step that produced no observation is
-recorded as such, and a failed step never becomes "target is safe".
-"""
+"""Tool chain executor."""
 
 from __future__ import annotations
 
@@ -50,7 +38,7 @@ _RECORD_KEYS: tuple[str, ...] = (
     "content",
 )
 
-#: Capability → canonical observation kind used for record projection.
+# : Capability to canonical observation kind used for record projection.
 _CAPABILITY_KIND: dict[str, str] = {
     "subdomain-discovery": "domain",
     "subdomain-enumeration": "domain",

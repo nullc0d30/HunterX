@@ -3,10 +3,7 @@
 
 """User and access Target Intelligence Database entities.
 
-Users, roles, permissions, teams and API clients. The TIDB stores only
-identity and authorization data; credentials and tokens live in the secrets
-vault (see ``hunterx.domain.entities.tidb.security``), so passwords and
-secret material never appear here.
+Users, roles, permissions, teams and API clients.
 """
 
 from __future__ import annotations
@@ -65,7 +62,7 @@ class Permission(TidbEntity):
     Attributes:
         name: unique permission name (e.g. ``finding.read``).
         resource: resource the permission applies to.
-        action: verb (read, write, delete, execute, ...).
+        action: verb (read, write, delete, execute,...).
         description: permission description.
 
     """

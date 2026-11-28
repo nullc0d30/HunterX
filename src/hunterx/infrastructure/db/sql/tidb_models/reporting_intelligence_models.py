@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB professional reporting entities.
-
-System-of-record tables for the Sprint 029 professional finding intelligence
-& reporting capability: report metadata, report versions, templates and
-template versions, claim records, QA results, evidence snapshots, report
-packages, remediation plans, retest plans and submission state.
-
-Security boundary: every table stores canonical, redacted report data only —
-never credentials, never exploit payloads, never out-of-scope request
-material. The envelope ``version`` column carries the report/template version
-and the envelope ``created_at`` carries creation time.
-"""
+"""ORM models for TIDB professional reporting entities."""
 
 from __future__ import annotations
 

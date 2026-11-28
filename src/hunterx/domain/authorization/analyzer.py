@@ -1,22 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Static/observable authorization intelligence detection engine.
-
-The analyzer turns an :class:`AuthorizationInput` bundle — one HTTP response
-snapshot, associated script content, API security schemes and operations,
-GraphQL metadata, WebSocket endpoints, observed URLs, policy documents and
-pre-existing TIDB intelligence — into a canonical set of authorization
-observations with deterministic evidence and confidence. It is pure: no I/O, no
-execution, no authorization testing, no identifier substitution. Sensitive
-values are masked before they ever reach an observation.
-
-Detectors: subjects, roles, groups, permissions, scopes, claims, policies,
-resources, actions, resource identifiers, ownership, tenants, admin surfaces,
-function/object/field-level access control, frontend authorization logic,
-backend authorization logic, API authorization correlation, GraphQL, WebSocket,
-service-to-service, decision indicators and mass-assignment fields.
-"""
+"""Static/observable authorization intelligence detection engine."""
 
 from __future__ import annotations
 
@@ -1377,7 +1362,7 @@ class AuthorizationAnalyzer:
     def _detect_decisions(self, analysis: AuthorizationAnalysis, ctx: _Context) -> None:
         """Represent observed/documented authorization decision indicators.
 
-        Only safe, already-observed evidence produces a decision indicator —
+        Only safe, already-observed evidence produces a decision indicator,
         HunterX never actively probes authorization behaviour.
         """
         if ctx.bundle.status_code in (401, 403):

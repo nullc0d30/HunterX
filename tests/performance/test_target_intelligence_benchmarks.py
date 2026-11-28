@@ -3,10 +3,8 @@
 
 """Performance tests for the Adaptive Target Intelligence layer.
 
-The system must support thousands of assets and millions of observations with
-bounded in-memory growth and no N+1 scans. These benchmarks exercise the
-ingestion, coverage, correlation and cycle pipelines at scale with generous
-budgets that catch quadratic blowups without being flaky on slow CI.
+The system must support thousands of assets and millions of observations with bounded in-memory growth and no N+1
+scans.
 """
 
 from __future__ import annotations

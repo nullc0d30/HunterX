@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the TargetMemoryService application layer.
-
-Exercises the service against the in-memory TIDB repository factory and the
-event bus: observation history persistence with first/last seen merge,
-snapshot reproduction and deterministic diffing, mission/hypothesis/tool/risk/
-finding memory, campaigns, revalidation, coverage gaps, recommendations,
-planner context and typed event publishing.
-"""
+"""Component tests for the TargetMemoryService application layer."""
 
 from __future__ import annotations
 

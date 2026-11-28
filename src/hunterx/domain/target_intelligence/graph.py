@@ -3,16 +3,8 @@
 
 """Attack Surface Graph.
 
-Sprint 026. The AttackSurfaceGraph is the continuously evolving representation
-of everything HunterX knows about a target's attack surface: assets as nodes
-and typed relationships as edges. It composes with the existing topology
-abstraction (:class:`TopologyGraph`) and adds intelligence-specific queries:
-assets by kind, sub-graph extraction, change-driven re-analysis and coverage
-lookups.
-
-The graph is always *derived* from canonical state (assets + relationships) and
-never holds the source of truth. It supports in-memory and SQL-backed ports and
-can be swapped for a dedicated graph database behind the same interface.
+The AttackSurfaceGraph is the continuously evolving representation of everything HunterX knows about a target's
+attack surface: assets as nodes and typed relationships as edges.
 """
 
 from __future__ import annotations
@@ -30,7 +22,7 @@ class AttackSurfaceGraph:
     """A typed graph over assets with intelligence queries.
 
     Attributes:
-        assets_by_key: canonical key → asset.
+        assets_by_key: canonical key to asset.
         topology: the underlying topology graph.
         changes: recently detected changes.
 
@@ -141,7 +133,7 @@ class AttackSurfaceGraph:
         """Return the assets that should receive coverage cells.
 
         Only leaf-ish, testable assets (URLs, endpoints, services, ports,
-        APIs, cloud resources) are coverage targets — domain nodes are
+        APIs, cloud resources) are coverage targets, domain nodes are
         structural.
         """
         testable = {

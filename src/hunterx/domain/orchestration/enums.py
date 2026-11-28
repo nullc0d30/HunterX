@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission orchestration enums.
-
-The canonical mission lifecycle and orchestration vocabulary: mission types,
-mission states, phase kinds, scope classification, failure classes,
-failure management strategies, execution-policy levels and coverage kinds.
-"""
+"""Mission orchestration enums."""
 
 from __future__ import annotations
 
@@ -91,7 +86,7 @@ class MissionPhaseKind(Enum):
 
 
 class ScopeClassification(Enum):
-    """Classification of a discovered asset with respect to the mission scope.
+    """Classification of a discovered asset for the mission scope.
 
     Only :attr:`IN_SCOPE` assets may be acted upon automatically. Assets
     classified ``REQUIRES_AUTHORIZATION`` or ``UNKNOWN`` are never touched

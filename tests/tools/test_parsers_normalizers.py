@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Parser / normalizer contract certification (Sprint 034.5).
-
-Certifies that tool output is parsed into structured records and normalized
-into canonical observations with provenance, both online (adapter-driven) and
-offline (``tools parse`` / ``tools normalize``).
-"""
+"""Parser / normalizer contract certification."""
 
 from __future__ import annotations
 

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for URL-discovery / crawler tools.
-
-Every URL discovery tool (gospider, hakrawler, gau, waybackurls, urlfinder)
-invokes an external binary through the shared runner seam and normalizes its
-output (JSONL or plain URL lines) into canonical :class:`URLObservation`
-instances emitted under the pipeline ``crawl`` payload.
-
-Hostile output is treated as data: malformed lines are skipped, never executed.
-"""
+"""Base adapter for URL-discovery / crawler tools."""
 
 from __future__ import annotations
 

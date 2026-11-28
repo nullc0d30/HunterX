@@ -3,13 +3,7 @@
 
 """Unit tests for the advisory AI action-suggestion producer.
 
-Covers the AI suggestion contract:
-
-- a valid AI response is parsed and validated against the candidate set;
-- a suggestion not in the candidate set is rejected;
-- malformed / non-JSON / empty AI responses fall back to "no suggestion";
-- AI client unavailability never raises and yields a deterministic fallback;
-- the prompt is constrained (no secrets, candidate ids only).
+Covers the AI suggestion contract.
 """
 
 from __future__ import annotations

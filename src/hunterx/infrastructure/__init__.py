@@ -3,10 +3,7 @@
 
 """Infrastructure adapters.
 
-Implements the ports defined in :mod:`hunterx.domain.ports`. Adapters are the
-only layer allowed to touch third-party libraries (SQLAlchemy, Redis clients,
-Vault, etc.) and the OS. Each adapter is framework-optional: importing this
-package never imports heavy dependencies eagerly.
+Implements the ports defined in :mod:`hunterx.domain.ports`.
 """
 
 from __future__ import annotations

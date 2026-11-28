@@ -3,15 +3,7 @@
 
 """BBOT tool adapter.
 
-Integrates Black Lantern Security's ``bbot`` — a modular recursive OSINT
-framework — into the Tool Integration SDK. The adapter drives the
-``subdomain-enum`` preset, captures the NDJSON event stream and maps bbot
-event types (``DNS_NAME``, ``IP_ADDRESS``, ``IP_NETWORK``, ``ASN``, ``ORG``,
-``URL``) onto canonical discovery records.
-
-CLI contract (verified against bbot usage):
-    ``bbot -t <domain> -f subdomain-enum --json -n <name> -o <dir> [-rf passive]``
-    prints one JSON event per line to stdout.
+Integrates Black Lantern Security's ``bbot``, a modular recursive OSINT framework, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

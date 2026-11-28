@@ -3,9 +3,7 @@
 
 """Orchestration repository ports.
 
-Persistence contracts for the offensive orchestration layer. Adapters are
-provided by the infrastructure layer (in-memory for tests/development, SQL for
-production) and wired by the platform assembler.
+Persistence contracts for the offensive orchestration layer.
 """
 
 from __future__ import annotations

@@ -1,23 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Professional finding intelligence & reporting models.
-
-Pure, immutable value objects for the Sprint 029 professional reporting
-capability: the canonical finding-intelligence aggregate, classification
-(CWE / OWASP / ATT&CK / CAPEC / CVE / CVSS), severity and priority
-assessments, finding quality, reportability verdicts, evidence bundles and
-artifacts with integrity hashes, timeline entries, tool provenance, source
-reliability, report claims, remediation and retest plans, reproduction and
-PoC presentation sections, report versions and snapshots, QA results, cross
--finding correlations, security-testing matrices and the consolidated report
-document.
-
-These objects are storage-agnostic; the TIDB entities
-(:mod:`hunterx.domain.entities.tidb.reporting_intelligence`) are their
-persistence projection and the application service maps between them. No I/O
-and no rendering happens here.
-"""
+"""Professional finding intelligence & reporting models."""
 
 from __future__ import annotations
 
@@ -915,7 +899,7 @@ class ReproductionSection:
 
 @dataclass(frozen=True, slots=True)
 class PoCPresentation:
-    """PoC presentation integrated from the Sprint 028 proof engine."""
+    """PoC presentation integrated from the proof engine."""
 
     poc_id: str = ""
     finding_id: str = ""

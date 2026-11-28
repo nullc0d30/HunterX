@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [7.1.4] — 2026-08-23
+## [7.1.4] - 2026-08-23
 
 ### Fixed
 
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `__circular__` marker, non-finite floats → `"NaN"`/`"Infinity"`).
   - Engine-level `json_serializer` boundary in `create_engine_from_settings`
     guarantees **every** SQLAlchemy `JSON`/`JSONB` column (600+ across 30
-    models) sanitizes at bind time — no schema churn, future-proof.
+    models) sanitizes at bind time - no schema churn, future-proof.
   - Audit snapshots (`_snapshot`, `_before_snapshot`) sanitize at creation for
     deterministic `ChangeHistory` diffs and clean `TimelineEvent` payloads.
   - Legacy Text-JSON path (`repositories._json_dumps`) uses the same boundary.
@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `src/hunterx/shared/json_safe.py` — canonical JSON-safe boundary with
+- `src/hunterx/shared/json_safe.py` - canonical JSON-safe boundary with
   explicit serializer registry (`register_json_safe`) for project-approved
   custom serializers (priority 1 in custom-object policy).
 - Regression test suite `tests/integration/test_json_persistence_boundary.py`
@@ -65,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [7.1.3] — 2026-08-22
+## [7.1.3] - 2026-08-22
 
 ### Fixed
 
@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `RESOURCE_BUDGET_EXHAUSTED`. A rate-limited free model (HTTP 429) sets the
   attacker's completion reason to `MODEL_UNAVAILABLE`, so `exhausted()` stays
   `False` forever (its `no_new_paths` predicate requires the last reason to be
-  `empty`) — every mission with a 429ing model then terminated as "resource
+  `empty`) - every mission with a 429ing model then terminated as "resource
   exhaustion" regardless of the real budget. Fixes:
   - `RESOURCE_BUDGET_EXHAUSTED` (and `TIME_BUDGET_EXHAUSTED`) are now emitted
     **only** when the corresponding real resource predicate is true
@@ -107,13 +107,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   16 to 100 so a full assessment is not truncated mid-hunt by the cycle cap
   (the execution budget of 1000 remains the real bound; `max_idle_cycles`
   still terminates idle runs).
-- **OpenRouter 429 cooldown/fallback preserved** — a rate-limited model keeps
+- **OpenRouter 429 cooldown/fallback preserved** - a rate-limited model keeps
   its shared cooldown and deterministic fallback, and now explicitly terminates
   as `AI_UNAVAILABLE` (never resource exhaustion, never completion).
 
 ### Added
 
-- `MissionOutcome.blocked_reason` — the explicit, explainable reason for every
+- `MissionOutcome.blocked_reason` - the explicit, explainable reason for every
   non-success terminal.
 - Tool-execution accounting clarified: `mission.context.tool_executions`
   records every execution *entry* (budgeted tool executions + differential
@@ -128,12 +128,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exhaustion and never falsely completes; tool failure is not resource
   exhaustion; deferred hypotheses do not masquerade as completion; and report
   JSON internal consistency (INVARIANTS A–H).
-- `scripts/demo_resource_exhaustion_fix.py` — behavioral acceptance demo of the
+- `scripts/demo_resource_exhaustion_fix.py` - behavioral acceptance demo of the
   rate-limited-model regression.
 
 ---
 
-## [7.1.2] — 2026-08-22
+## [7.1.2] - 2026-08-22
 
 ### Fixed
 
@@ -145,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `MissionPolicyEngine.evaluate_stop` treated `COVERAGE_TARGET_ACHIEVED` as a
     terminal condition on coverage alone. It is now a *candidate*: it only
     becomes terminal when the mission's **objective completion contract**
-    (new `hunterx.domain.mission_orchestration.completion`) is satisfied —
+    (new `hunterx.domain.mission_orchestration.completion`) is satisfied -
     work performed, no pending plan work, no unclassified actionable open
     hypothesis, coverage baseline met, and (for a full assessment) active
     testing performed when a probeable surface exists, attack paths evaluated,
@@ -182,14 +182,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mission. The AI request budget (minimum interval) reserves the model for
   non-trivial decisions. Telemetry now records `ai_cooldown_events`,
   `ai_deterministic_decisions`, and truthful `ai_fallbacks` (the incident
-  showed `ai_fallbacks=0` despite 6× 429 — a lie).
+  showed `ai_fallbacks=0` despite 6× 429 - a lie).
 - **AI failure ≠ mission completion**: an AI rate limit / failure / unavailability
   can never become `coverage_target_achieved`; deterministic orchestration
   continues, and the telemetry/report expose the fallback state.
 
 ### Added
 
-- `hunterx.domain.mission_orchestration.completion` — objective-aware,
+- `hunterx.domain.mission_orchestration.completion` - objective-aware,
   configurable completion contract with explainable gates.
 - Mission telemetry extended: `ai_cooldown_events`, `ai_deterministic_decisions`,
   `hypotheses_deferred`, `hypotheses_blocked`, `hypotheses_tested`,
@@ -202,12 +202,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fallback, AI-unavailable continuation, root asset, tool failure exit-code
   truthfulness, actionable-open-hypothesis continuation, active-testing and
   browser applicability gates, and hypothesis classification.
-- `scripts/demo_mission_lifecycle.py` — behavioral acceptance demo (real
+- `scripts/demo_mission_lifecycle.py` - behavioral acceptance demo (real
   loopback target, real differential probes).
 
 ---
 
-## [7.1.1] — 2026-08-22
+## [7.1.1] - 2026-08-22
 
 ### Fixed
 
@@ -222,10 +222,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of `context.services`, a crawler adds hundreds of endpoints, and the
     `O(SERVICES × ENDPOINTS)` cross-linking built a dense bipartite graph that
     `AttackPathEngine._chains` expanded with an **exponential BFS on every
-    observation** — a transient ~1.7–4.8 GiB allocation per cycle whose freed
+    observation** - a transient ~1.7–4.8 GiB allocation per cycle whose freed
     memory ratcheted the process RSS upward and stalled the mission (the hang).
   - The governor sampler was **not** the problem: it tracked `/proc` VmRSS
-    within 25% and did transition to EMERGENCY — but enforcement cannot
+    within 25% and did transition to EMERGENCY - but enforcement cannot
     interrupt a single long synchronous analysis.
 - **Bounded attack-path analysis.** `record_attack_paths` now caps the number
   of services (64) and endpoints (200) used in graph construction, and
@@ -236,7 +236,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   45-second mission now completes at a stable ~195 MiB RSS.
 - **Bounded target-model maps.** `apply_mission_bounds` now trims
   `context.services` / `context.assets` / `context.technologies` (previously
-  untrimmed — a single port scan added 1000+ service entries) plus byte-level
+  untrimmed - a single port scan added 1000+ service entries) plus byte-level
   bounds: `max_observation_content_bytes` summarizes oversized observation
   content, `max_aggregate_state_bytes` caps the retained aggregate, and
   `max_model_context_bytes` bounds the reasoning context.
@@ -252,7 +252,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cross-sectional probe records process RSS/VmRSS/VmHWM/VmPeak, process-tree
   RSS, Python heap (opt-in `tracemalloc`), mission-aggregate item counts and
   approximate serialized bytes, model context and queue sizes, plus the
-  governor's own reading at the same instant — written as JSON-lines to
+  governor's own reading at the same instant - written as JSON-lines to
   `HUNTERX_RESOURCE_TELEMETRY_FILE`. Enables data-driven failure
   classification (sampler bug vs. enforcement gap vs. unbounded state vs.
   temporary allocation) instead of guessing.
@@ -266,11 +266,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [7.1.0] — 2026-08-22
+## [7.1.0] - 2026-08-22
 
 ### Added
 
-- **Resource-aware autonomous execution — centralized Mission Resource Governor.**
+- **Resource-aware autonomous execution - centralized Mission Resource Governor.**
   A single authoritative resource-governance layer (`hunterx.resource`) manages
   the resource envelope of the *entire* HunterX mission process tree (parent,
   child tools, grandchildren, external binaries, probes, model calls, queues and
@@ -287,7 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Resource states with explicit behaviour**: `NORMAL` (bounded execution),
   `CONSTRAINED` (reduce concurrency), `DEGRADED` (stop nonessential work),
   `CRITICAL` (stop new expensive work), `EMERGENCY` (graceful mission
-  termination) — configurable thresholds, throttled `[RESOURCE]` telemetry logs.
+  termination) - configurable thresholds, throttled `[RESOURCE]` telemetry logs.
 - **Admission control through the governor**: every external tool execution
   (approve/delay/deny by memory/cpu class + concurrency cap), HTTP probe, model
   call and assessment-queue scheduling passes through the governor; the
@@ -315,7 +315,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so the mission's many short write sessions never deadlock on
   `database is locked`.
 - **New `StopCondition` vocabulary for truthful resource stops**:
-  `memory_budget_exhausted`, `resource_pressure`, `mission_deadline_exceeded` —
+  `memory_budget_exhausted`, `resource_pressure`, `mission_deadline_exceeded` -
   a resource-triggered stop is never reported as success (run status
   `degraded`, structured reason on the outcome).
 - **Configuration**: all thresholds are exposed through the existing
@@ -334,11 +334,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A real-world `full_security_assessment` runaway (process tree climbing to
   ~90%+ host memory, kernel `folio_wait_bit_common` swap-thrash) is prevented:
   the governor detects the climb and terminates the mission safely within its
-  configured envelope — never driving the host to ~90%+ memory.
+  configured envelope - never driving the host to ~90%+ memory.
 
 ---
 
-## [7.0.1] — 2026-08-21
+## [7.0.1] - 2026-08-21
 
 ### Added
 
@@ -368,7 +368,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   API mapping and vulnerability scanning), and the adaptive runner wires every
   observation to its class-specific probe (hypothesis → probe → verify).
 - Completion gate: a mission may no longer enter `reporting` merely because the
-  initial reconnaissance plan is exhausted — reporting requires the objectives
+  initial reconnaissance plan is exhausted - reporting requires the objectives
   to be satisfied (meaningful work happened, no pending plan work, no open
   high-value hypotheses) or a legitimate terminal condition; remaining
   open-hypothesis work is reported honestly as `blocked`, never as success.
@@ -384,8 +384,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   genuinely informational results are explicitly classified as non-actionable
   evidence instead of being silently dropped.
 - Deterministic fallback planner: when no action is ready, the runner derives
-  work from the current state — class-specific probes for open hypotheses and
-  web discovery for incomplete web attack surfaces — so the mission is fully
+  work from the current state - class-specific probes for open hypotheses and
+  web discovery for incomplete web attack surfaces - so the mission is fully
   functional without AI.
 - AI/OpenRouter telemetry: the AI path records provider, model, request
   success/failure, HTTP status (incl. 429), timeouts, fallbacks and
@@ -408,7 +408,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Multi-provider AI routing closure: runtime adapters for OpenAI, Anthropic/Claude,
   DeepSeek, OpenRouter, Google Gemini and xAI/Grok behind the existing generic
-  `AIPort` abstraction — shared OpenAI-compatible transport where appropriate,
+  `AIPort` abstraction - shared OpenAI-compatible transport where appropriate,
   native wire formats for Anthropic and Gemini, independent provider/model
   selection, per-provider API endpoints and credentials, truthful provider
   errors (auth, payment, invalid model, rate limit, outage, timeout) and no
@@ -433,17 +433,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [7.0.0] — 2026-08-12
+## [7.0.0] - 2026-08-12
 
 ### Added
 - Clean Architecture v7 core (`src/hunterx`): domain, application, infrastructure, engines, agents, tools, plugins, knowledge, reporting, config, CLI and API layers
-- Autonomous mission orchestration — create, run, checkpoint, resume and finalize full-spectrum security-assessment missions
-- Adaptive mission planning — attack-path planning, replanning and explainable next-best-action selection
-- Toolchain intelligence layer — 100+ registered security tools with machine-readable contracts, structured execution, parsing/normalization and dependency-aware chaining
-- Evidence-driven vulnerability validation — hypothesis testing, validation verdicts, and controlled, safe proof/PoC engineering with replay verification
-- Professional reporting — findings, evidence bundles, remediation plans and multi-format exports (markdown, HTML, JSON, SARIF, PDF, package)
-- Target memory & campaign intelligence — snapshots, diffs, coverage and revalidation planning
-- TIDB persistence — SQL storage with 21 linear Alembic migrations, events, audit and versioning
+- Autonomous mission orchestration - create, run, checkpoint, resume and finalize full-spectrum security-assessment missions
+- Adaptive mission planning - attack-path planning, replanning and explainable next-best-action selection
+- Toolchain intelligence layer - 100+ registered security tools with machine-readable contracts, structured execution, parsing/normalization and dependency-aware chaining
+- Evidence-driven vulnerability validation - hypothesis testing, validation verdicts, and controlled, safe proof/PoC engineering with replay verification
+- Professional reporting - findings, evidence bundles, remediation plans and multi-format exports (markdown, HTML, JSON, SARIF, PDF, package)
+- Target memory & campaign intelligence - snapshots, diffs, coverage and revalidation planning
+- TIDB persistence - SQL storage with 21 linear Alembic migrations, events, audit and versioning
 - `HUNTERX_*` environment-variable configuration overrides
 - Mission persistence across CLI invocations and process restarts (restore path)
 - Safe XML parsing via `defusedxml` (XXE / entity-expansion hardened)
@@ -455,14 +455,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Harden `hunterx` base install and Docker image runtime
 - Ruff, dead-code (vulture) and bandit security gates green
 
-## [6.0.0] — 2026-07-30
+## [6.0.0] - 2026-07-30
 
 ### Added
-- Autonomous Multi-Agent Platform — 10 agents with orchestrator, event and message buses, workflow engine, scheduler, state management, memory, and context
-- Reasoning Engine — goals, planner, prompts, validator, formatter, policies, consensus, confidence, and memory subsystems
-- Security Skills Framework — 41 built-in skills, registry, loader, executor, marketplace, telemetry, cache, policy, validator, and planner
-- Payload Intelligence Platform — sync, index, search, reasoning, feedback, graph, provenance, policy, mutation, metadata, ranking, and context modules
-- AI Provider Abstraction Layer — OpenAI and Ollama providers with cache, metrics, middleware, conversation management, prompts, config, circuit breaker, and retry
+- Autonomous Multi-Agent Platform - 10 agents with orchestrator, event and message buses, workflow engine, scheduler, state management, memory, and context
+- Reasoning Engine - goals, planner, prompts, validator, formatter, policies, consensus, confidence, and memory subsystems
+- Security Skills Framework - 41 built-in skills, registry, loader, executor, marketplace, telemetry, cache, policy, validator, and planner
+- Payload Intelligence Platform - sync, index, search, reasoning, feedback, graph, provenance, policy, mutation, metadata, ranking, and context modules
+- AI Provider Abstraction Layer - OpenAI and Ollama providers with cache, metrics, middleware, conversation management, prompts, config, circuit breaker, and retry
 - Knowledge Graph, Threat Model, Attack Chain, MITRE ATT&CK Mapping, Risk Engine, Browser Intelligence, and Adaptive Memory
 - Explainable AI engine for all findings
 - Purple Team detection rule generation
@@ -490,7 +490,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Concurrent agent execution
 
 ### Documentation
-- Comprehensive documentation site at https://nullc0d30.github.io/HunterX
+- complete documentation site at https://nullc0d30.github.io/HunterX
 - SDK and plugin development guides
 - Architecture and design decision documents
 
@@ -511,7 +511,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.0.1] — 2026-07-22
+## [4.0.1] - 2026-07-22
 
 ### Changed
 - License changed from Proprietary to Apache 2.0
@@ -537,11 +537,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.0] — 2026-07-22
+## [4.0] - 2026-07-22
 
 ### Added
 - REST API server (FastAPI)
-- Authentication providers — Basic, Bearer, Cookie, Form
+- Authentication providers - Basic, Bearer, Cookie, Form
 - 200+ detection signatures
 - Time-based blind detection
 - OOB detection
@@ -568,7 +568,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [3.1] — 2026-07-20
+## [3.1] - 2026-07-20
 
 ### Fixed
 - Thread safety fixes
@@ -590,7 +590,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [3.0] — 2026-07-01
+## [3.0] - 2026-07-01
 
 ### Added
 - Initial release

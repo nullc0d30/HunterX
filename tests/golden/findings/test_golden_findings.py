@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden finding scenarios (Sprint 034.5).
+"""Golden finding scenarios.
 
-Certifies the finding flow gate: a detection without reproducible evidence must
-NOT become a fully validated finding. Each scenario asserts the evidence
-sufficiency level and that only evidence-backed hypotheses advance toward
-validation; known vulnerabilities, variants and novel behaviors are exercised.
+Certifies the finding flow gate: a detection without reproducible evidence must NOT become a fully validated
+finding.
 """
 
 from __future__ import annotations

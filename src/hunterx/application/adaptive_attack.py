@@ -3,17 +3,7 @@
 
 """Adaptive attack application service.
 
-Phase 2. Bridges the adaptive attack domain model into mission execution:
-
-    execution outcome → feedback classification → adaptive control state →
-    bounded pacing/aggression/backoff/retry + vector selection + probe plans +
-    generic workflow representation.
-
-The service is target-agnostic: it consumes generic ``(surface, capability,
-context, strategy)`` objects and only schedules the vectors that actually apply
-to a discovered surface. Payload generation is delegated to HunterX's existing
-vulnerability-capability engine; nothing here hardcodes a target or a tool
-chain.
+Bridges the adaptive attack domain model into mission execution.
 """
 
 from __future__ import annotations
@@ -50,7 +40,7 @@ from hunterx.shared.time import utcnow_iso
 PayloadProvider = Callable[[str, dict[str, Any]], tuple[str, ...]]
 
 #: Bounded fallback payloads used only when the capability engine has no probe
-#: for a class (a handful of benign, well-known markers — never an unbounded
+# : for a class (a handful of benign, well-known markers, never an unbounded
 #: wordlist).
 _FALLBACK_PAYLOADS: dict[str, tuple[str, ...]] = {
     "sql-injection": ("'", '"', "1 OR 1=1", "1' AND '1'='1", "1; DROP", "1 UNION SELECT NULL"),
@@ -119,7 +109,7 @@ class AdaptiveAttackService:
         """Classify an execution outcome and drive the adaptive controller.
 
         Returns the classified signal. Every defensive response (429/403/5xx/
-        timeout/connection/latency/WAF) throttles the engine — it is never
+        timeout/connection/latency/WAF) throttles the engine, it is never
         treated as mission completion.
         """
         sample = self.monitor.observe(
@@ -204,7 +194,7 @@ class AdaptiveAttackService:
         """Build a bounded attack probe plan for ``(surface, capability)``.
 
         The payload set is sourced from the platform capability engine (or the
-        wired provider) and truncated to the current aggression tier's budget —
+        wired provider) and truncated to the current aggression tier's budget,
         escalation raises coverage, never the flood volume.
         """
         level = self.aggression_level()

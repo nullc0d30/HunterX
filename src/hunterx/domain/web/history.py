@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Temporal change detection for the web attack-surface inventory.
-
-Compares a current crawl against a previously persisted snapshot and reports
-which URLs appeared, disappeared or changed (status/content-type). Deterministic
-and stateless — the caller supplies the historical and current observations.
-"""
+"""Temporal change detection for the web attack-surface inventory."""
 
 from __future__ import annotations
 

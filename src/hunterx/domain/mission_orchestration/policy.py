@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission policy & stop-condition engine.
-
-Sprint 032. Policies define mission intent: objective, scope, allowed
-techniques, resource limits, time limits, authentication contexts, validation
-depth, proof depth, coverage target and stop conditions. Policies are mission
-configuration — never hardcoded into individual tools. Stop conditions are
-evaluated deterministically after every observation.
-"""
+"""Mission policy & stop-condition engine."""
 
 from __future__ import annotations
 
@@ -43,16 +36,7 @@ class PolicyVerdict:
 class MissionPolicyEngine:
     """Enforce mission policies on candidate actions.
 
-    Every action receives the mission context, target context, scope context
-    and execution policy. The gate chain is: scope → authorization → technique
-    → resource budget → concurrency.
-
-    Stop conditions are evaluated after every observation. Coverage-derived
-    conditions (``COVERAGE_TARGET_ACHIEVED``) are NOT terminal on their own:
-    they become terminal only when the mission's objective completion contract
-    confirms every mandatory dimension was assessed (see
-    :mod:`hunterx.domain.mission_orchestration.completion`). The contract is
-    injected by the orchestrator via :attr:`completion_gate`.
+    Every action receives the mission context, target context, scope context and execution policy.
     """
 
     #: Injected objective completion contract: ``(mission) -> (satisfied, unmet)``.
@@ -106,7 +90,7 @@ class MissionPolicyEngine:
             return StopCondition.UNRECOVERABLE_FAILURE
 
         # Time exhaustion is checked before the combined resource check so a
-        # wall-clock overrun is labelled ``TIME_BUDGET_EXHAUSTED`` — never
+        # wall-clock overrun is labelled ``TIME_BUDGET_EXHAUSTED``, never
         # misreported as ``RESOURCE_BUDGET_EXHAUSTED``.
         if (
             StopCondition.TIME_BUDGET_EXHAUSTED in conditions
@@ -175,7 +159,7 @@ class MissionPolicyEngine:
 
         High-priority hypotheses (``priority >= 0.75``) always qualify. An
         OPEN class-specific vulnerability hypothesis (a concrete sql-injection
-        / xss / lfi / command-injection / ... candidate with a probeable
+        / xss / lfi / command-injection /... candidate with a probeable
         provenance class) is the engine's own discovered work too: the hunt
         never stops on a validated finding while a derived vulnerability
         candidate is still untested.
@@ -219,7 +203,7 @@ class MissionPolicyEngine:
     def _has_open_high_value_hypotheses(mission: OrchestratedMission) -> bool:
         """Return ``True`` when a high-value hypothesis is still unresolved.
 
-        Coverage measures what was tested — it does NOT prove the target is
+        Coverage measures what was tested, it does NOT prove the target is
         secure. A coverage percentage must never let the mission terminate
         while a high-value hypothesis (priority >= 0.75 or an open
         class-specific vulnerability candidate) remains open, so

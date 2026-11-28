@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Katana binary web crawler adapter.
-
-Invokes the external ``katana`` crawler through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam with a JSON-lines
-output format and parses each record into canonical URL observations. Katana is
-one of two integrated crawling tools alongside the in-process crawler; it is
-the external-binary path for large surface discovery.
-
-The adapter stays binary-free in unit tests: tests inject a fake runner and
-assert on the JSON payload.
-"""
+"""Katana binary web crawler adapter."""
 
 from __future__ import annotations
 
@@ -165,7 +155,7 @@ class KatanaAdapter(WebToolAdapter):
         try:
             record = json.loads(stripped)
         except (json.JSONDecodeError, TypeError):
-            # Plain URL line (no JSON) — the most common current-katana output.
+            # Plain URL line (no JSON), the most common current-katana output.
             if " " in stripped or "\t" in stripped:
                 return None
             return {"url": stripped}

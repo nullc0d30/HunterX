@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Audit event types.
-
-Typed audit events recorded for compliance and forensics: authentication,
-authorization, configuration changes, mission lifecycle, tool execution,
-plugin lifecycle and database changes. These ride the same event bus as every
-other event and are additionally persisted by the event store.
-"""
+"""Audit event types."""
 
 from __future__ import annotations
 

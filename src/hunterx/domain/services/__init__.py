@@ -3,10 +3,8 @@
 
 """Domain services.
 
-Domain services encode business rules that do not naturally belong to a single
-entity: planning, correlation, deduplication and risk scoring. The concrete
-implementations live in :mod:`hunterx.engines`; these interfaces keep the
-dependency direction pointing inward.
+Domain services encode business rules that do not naturally belong to a single entity: planning, correlation,
+deduplication and risk scoring.
 """
 
 from __future__ import annotations

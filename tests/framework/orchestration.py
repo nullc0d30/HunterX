@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""In-memory orchestration test doubles and helpers.
-
-Shared fixtures for the offensive orchestration layer: in-memory repositories,
-a fake execution engine producing deterministic normalized output, and
-planner/executor helper factories.
-"""
+"""In-memory orchestration test doubles and helpers."""
 
 from __future__ import annotations
 

@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""DNS Intelligence canonical domain models.
-
-Pure data contracts for the DNS Intelligence capability: the canonical DNS
-record every DNS tool adapter produces, zone, delegation, nameserver and
-resolver descriptors, the raw observations and resolutions a run collects, the
-analytical findings (wildcards, DNSSEC state, mail infrastructure), the change
-and conflict records produced by historical comparison, and the batch that
-carries everything back to the application layer. No I/O and no execution here.
-
-The TIDB ``network``/``dns`` entities (:mod:`hunterx.domain.entities.tidb`)
-are the persistence projection of these models; this module is the runtime
-surface the DNS pipeline is built on.
-"""
+"""DNS Intelligence canonical domain models."""
 
 from __future__ import annotations
 

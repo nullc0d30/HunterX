@@ -3,9 +3,8 @@
 
 """Pure domain layer.
 
-Contains the entities, value objects, events, exceptions, ports and service
-interfaces that model the security platform without any dependency on
-frameworks or infrastructure.
+Contains the entities, value objects, events, exceptions, ports and service interfaces that model the security
+platform without any dependency on frameworks or infrastructure.
 """
 
 from __future__ import annotations

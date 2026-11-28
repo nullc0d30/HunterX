@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology view builder.
-
-Projects the correlated graph into the canonical attack-surface views: asset
-inventory, network, DNS, service, certificate, organization infrastructure,
-external attack surface and shared infrastructure. Views are serializable
-mappings suitable for reporting and rendering; they never mutate state.
-"""
+"""Topology view builder."""
 
 from __future__ import annotations
 
@@ -95,7 +89,7 @@ class TopologyViewBuilder:
         *,
         mission_id: str = "",
     ) -> dict[str, Any]:
-        """Return the service topology view (host → port → service)."""
+        """Return the service topology view (host to port to service)."""
         return self._view("service", relationships, mission_id=mission_id, rel_types=self._SERVICE_TYPES)
 
     def certificate_graph(

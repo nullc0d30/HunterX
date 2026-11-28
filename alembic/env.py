@@ -3,10 +3,8 @@
 
 """Alembic migration environment for the HunterX TIDB.
 
-The target metadata is the shared declarative ``Base`` with every legacy and
-TIDB model imported, so ``autogenerate`` covers the whole schema. The database
-URL comes from ``HUNTERX_DB_URL`` when set, otherwise from the
-``sqlalchemy.url`` value in ``alembic.ini``.
+The target metadata is the shared declarative ``Base`` with every legacy and TIDB model imported, so
+``autogenerate`` covers the whole schema.
 """
 
 from __future__ import annotations

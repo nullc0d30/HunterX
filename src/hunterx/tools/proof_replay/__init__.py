@@ -3,9 +3,7 @@
 
 """Safe proof replay tools.
 
-In-process, deterministic proof-replay adapters that integrate with the Tool
-Integration SDK lifecycle. Replays are structured proof demonstrations with
-bounded inputs — never arbitrary executable scripts or weaponized payloads.
+In-process, deterministic proof-replay adapters that integrate with the Tool Integration SDK lifecycle.
 """
 
 from __future__ import annotations

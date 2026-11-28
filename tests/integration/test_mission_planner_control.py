@@ -1,21 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 2 — planner-loop / action-dedup / termination repair regression tests.
+"""Planner-loop / action-dedup / termination repair regression tests.
 
-Pins the required control flow:
-
-1. Same target + same tool + materially identical input is not executed
-   indefinitely (action identity / replay protection).
-2. New evidence (a new endpoint, parameter, technology, asset or hypothesis)
-   legitimately permits a repeated tool.
-3. The planner invalidates a repeated branch and transitions to another
-   actionable branch.
-4. A mission cannot report successful completion while
-   ``objectives_complete`` is false (termination distinguishes
-   completed/blocked/exhausted/failed/cancelled).
-5. Existing valid missions still terminate correctly (deterministic,
-   finalized, truthful outcome).
+Pins the required control flow.
 """
 
 from __future__ import annotations
@@ -244,7 +232,7 @@ class TestPlannerLoop:
             a for a in graph.actions.values() if a.capability == "vulnerability_scanning"
         ]
         identities = [a.identity_key() for a in nuclei_actions if not a.status.is_terminal]
-        # Every pending nuclei action is distinct (replay protection) — and
+        # Every pending nuclei action is distinct (replay protection), and
         # none of them is a replay of an already-completed identical action.
         assert len(identities) == len(set(identities))
         for action in nuclei_actions:

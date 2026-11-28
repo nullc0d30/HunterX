@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Apache 2.0 License — HunterX
+title: Apache 2.0 License - HunterX
 description: >-
   HunterX is licensed under the Apache License, Version 2.0. Full license
   text and summary of terms for the open-source vulnerability scanner.

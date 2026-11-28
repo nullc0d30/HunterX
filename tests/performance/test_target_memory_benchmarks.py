@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance tests for Target Memory & Campaign Intelligence.
-
-The historical layer must support 10k-100k+ observations, large snapshots and
-large diffs with bounded time and no N+1 scans for current-state queries.
-These benchmarks use generous budgets that catch quadratic blowups without
-being flaky on slow CI.
-"""
+"""Performance tests for Target Memory & Campaign Intelligence."""
 
 from __future__ import annotations
 

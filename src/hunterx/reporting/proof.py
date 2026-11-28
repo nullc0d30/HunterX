@@ -3,13 +3,7 @@
 
 """Vulnerability Proof & PoC report views and builders.
 
-Presentation-facing projection of a proof run. The builder aggregates proofs,
-PoCs, evidence, replays, impact, confidence, transitions and the reproduction
-package into a renderer-friendly view that answers: WHAT is vulnerable, WHERE,
-WHY, HOW it was validated, WHAT evidence proves it, WHAT PoC demonstrates it,
-CAN it be reproduced, WHAT impact was demonstrated, WHAT confidence exists, WHAT
-tool produced the evidence, WHEN it was validated and WHAT scope authorized it.
-Reports never expose secrets.
+Presentation-facing projection of a proof run.
 """
 
 from __future__ import annotations
@@ -28,7 +22,7 @@ from hunterx.domain.vulnerability_proof.models import (
     ReproductionPackage,
     VulnerabilityProof,
 )
-from hunterx.domain.vulnerability_validation.enums import VerdictResult  # noqa: F401  (re-exported for symmetry)
+from hunterx.domain.vulnerability_validation.enums import VerdictResult  # noqa: F401 (re-exported for symmetry)
 from hunterx.domain.vulnerability_validation.models import ValidationEvidence, VulnerabilityHypothesis
 from hunterx.shared.time import utcnow_iso
 

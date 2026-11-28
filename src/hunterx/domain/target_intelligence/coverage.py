@@ -3,10 +3,7 @@
 
 """Coverage Engine.
 
-Sprint 026. Coverage is NOT "number of tools executed" — it is the state of the
-(Target × Asset × Capability × Tool) matrix. The engine records coverage cells,
-answers matrix queries, computes per-dimension ratios and produces the
-explainable intelligence score dimensions that drive the next-action engine.
+Coverage is NOT "number of tools executed", it is the state of the (Target × Asset × Capability × Tool) matrix.
 """
 
 from __future__ import annotations
@@ -109,7 +106,7 @@ class CoverageEngine:
     def ingest_negative(self, negative: NegativeResult) -> CoverageEntry:
         """Record a negative result as a ``TESTED`` coverage cell.
 
-        A negative result never means "not vulnerable" globally — it means the
+        A negative result never means "not vulnerable" globally, it means the
         capability was exercised under recorded conditions with no evidence.
         """
         return self.record(

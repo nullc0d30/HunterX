@@ -1,21 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API intelligence canonical domain models.
-
-Pure data contracts for the API Discovery & API Attack-Surface Intelligence
-capability (Sprint 014 / Wave 8): hosts, located spec documents, canonical API
-versions, endpoint operations, parameters, schema fingerprints,
-authentication/authorization schemes, rate-limit/pagination/filter indicators,
-evidence, conflicts, historical changes, execution summaries, the collection
-strategy and the batch that carries everything back to the application layer.
-No I/O and no execution here.
-
-The TIDB ``api_intelligence`` entities
-(:mod:`hunterx.domain.entities.tidb.api_intelligence`) are the persistence
-projection of these models; this module is the runtime surface the API
-intelligence pipeline is built on.
-"""
+"""API intelligence canonical domain models."""
 
 from __future__ import annotations
 

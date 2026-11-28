@@ -3,12 +3,7 @@
 
 """Network mapping & attack-surface topology domain.
 
-Pure-domain capability that transforms canonical TIDB entities into a unified,
-queryable attack-surface topology. The domain is deliberately free of I/O: it
-defines the entity/relationship model, deterministic derivation and resolution
-rules, correlation and conflict handling, temporal history, analysis, path
-finding, graph views and scope enforcement. The application layer bridges these
-to the TIDB (system of record) and the Tool Integration SDK.
+Pure-domain capability that transforms canonical TIDB entities into a unified, queryable attack-surface topology.
 """
 
 from __future__ import annotations

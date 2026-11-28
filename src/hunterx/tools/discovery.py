@@ -3,9 +3,7 @@
 
 """Tool discovery.
 
-Discovers installed tool adapters from an importable set of modules/classes
-and registers them with an executor. Tools declare their descriptors; the
-discovery layer just finds and instantiates them.
+Discovers installed tool adapters from an importable set of modules/classes and registers them with an executor.
 """
 
 from __future__ import annotations

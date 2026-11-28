@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for Adaptive Mission & Attack-Path Planning.
-
-Builds the full platform and drives the adaptive mission planning service
-through the TIDB SQL persistence layer (SQLite), verifying the normalized
-records round-trip through the generic repository factory.
-"""
+"""Integration tests for Adaptive Mission & Attack-Path Planning."""
 
 from __future__ import annotations
 

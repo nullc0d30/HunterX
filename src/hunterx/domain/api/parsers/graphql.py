@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""GraphQL SDL / schema-shape parser.
-
-In-process parser that turns GraphQL SDL (schema definition language) text into
-canonical API intelligence observations: query/mutation/subscription operations
-with their root fields, plus a schema fingerprint. No network and no
-introspection probe — the parser consumes SDL that a prior tool already
-captured.
-"""
+"""GraphQL SDL / schema-shape parser."""
 
 from __future__ import annotations
 

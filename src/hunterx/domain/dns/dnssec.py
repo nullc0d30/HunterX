@@ -3,10 +3,8 @@
 
 """DNSSEC intelligence.
 
-Analyzes DNSSEC material (DS, DNSKEY, RRSIG, NSEC/NSEC3) to determine whether
-a zone is secured, correctly delegating and protected against forged answers.
-Analysis is deterministic: each check is a pure predicate over the collected
-records.
+Analyzes DNSSEC material (DS, DNSKEY, RRSIG, NSEC/NSEC3) to determine whether a zone is secured, correctly
+delegating and protected against forged answers.
 """
 
 from __future__ import annotations

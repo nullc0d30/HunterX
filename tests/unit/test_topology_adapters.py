@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the topology (route-mapping) tool adapters.
-
-The traceroute adapter is exercised with a fake binary runner fed golden
-output (plain numeric, hostname, unreachable and malformed variants) so no
-external tool or network is required. Tests assert the generated command line
-and the canonical route records attached to the execution output.
-"""
+"""Tests for the topology (route-mapping) tool adapters."""
 
 from __future__ import annotations
 

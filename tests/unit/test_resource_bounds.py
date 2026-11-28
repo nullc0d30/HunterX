@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-governance tests: bounded in-memory state.
-
-Verifies that unbounded growth of observations / hypotheses / evidence /
-decisions is prevented while important evidence (open hypotheses, validated
-findings, the most recent observations) is preserved. The durable system of
-record is the database — the in-memory aggregate is only the working set.
-"""
+"""Resource-governance tests: bounded in-memory state."""
 
 from __future__ import annotations
 
@@ -83,7 +77,7 @@ class TestBoundedHypotheses:
     def test_open_hypotheses_are_never_evicted(self) -> None:
         hypotheses = [_Hypothesis(hypothesis_id=f"h{i}", state="proposed", priority=0.1) for i in range(20)]
         # 15 open hypotheses with a cap of 10: terminal are dropped first, but
-        # there are none — so the lowest-priority open ones go.
+        # there are none, so the lowest-priority open ones go.
         trim_hypotheses(hypotheses, 10)
         assert len(hypotheses) == 10
         assert all(h.state == "proposed" for h in hypotheses)

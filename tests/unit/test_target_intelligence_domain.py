@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the Adaptive Target Intelligence domain layer.
-
-Covers the canonical models, enums, the attack-surface graph, the coverage
-engine and matrix, the unknowns/gap engine, the hypothesis engine, the
-next-action engine, target history & change detection, correlation, conflict
-handling, stores, scope isolation, scoring and replay.
-"""
+"""Tests for the Adaptive Target Intelligence domain layer."""
 
 from __future__ import annotations
 

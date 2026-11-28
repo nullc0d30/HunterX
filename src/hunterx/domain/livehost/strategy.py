@@ -3,10 +3,8 @@
 
 """Live Host & Service Discovery collection strategy.
 
-Maps an execution mode (passive/active/hybrid) and a target onto the concrete
-set of tools, ports and analyses the capability should run. The strategy is a
-pure function of (mode, target, requested features) so the same inputs always
-yield the same collection plan, and it fails closed for passive postures.
+Maps an execution mode (passive/active/hybrid) and a target onto the concrete set of tools, ports and analyses the
+capability should run.
 """
 
 from __future__ import annotations

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource-governance tests: the centralized Mission Resource Governor.
-
-Covers budget derivation per environment (4 GB / 8 GB / 16+ GB), the absolute
-3 GB ceiling, process-tree accounting, state transitions (NORMAL →
-CONSTRAINED → DEGRADED → CRITICAL → EMERGENCY), adaptive concurrency, tool /
-probe / model admission control, replan budget, mission deadlines, emergency
-process-tree termination and honest resource telemetry.
-"""
+"""Resource-governance tests: the centralized Mission Resource Governor."""
 
 from __future__ import annotations
 

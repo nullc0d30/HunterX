@@ -1,31 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 14.2 — deep DVWA-style authenticated coverage regressions.
+"""2, deep DVWA-style authenticated coverage regressions.
 
-Focused regression tests for the root causes found while diagnosing why the
-Phase 14.1 deep run missed the DVWA-low SQLi / LFI / RCE surfaces:
-
-1. Multi-candidate parameter→class derivation (``id`` → IDOR *and* SQL
-   injection; ``page`` → LFI; ``ip``/``host`` → command injection) with
-   token-boundary matching (an ``api``/``skip`` parameter must NOT derive a
-   command-injection hypothesis).
-2. Arjun-shaped parameter observations (``{"findings": [{"name", "endpoint",
-   "method"}]}``) and structured crawler endpoint records ingest cleanly into
-   the context model, preserving POST methods in provenance.
-3. POST-discovered form fields produce body-carrying probes that genuinely
-   reach body-only handlers (DVWA exec is a POST-only form) — and are
-   honestly refuted on safe surfaces.
-4. Per-endpoint parameter discovery replanning (deduplicated by
-   capability+asset) instead of a single mission-level arjun run.
-5. Deep path-traversal payloads reach DVWA's six-level traversal depth.
-6. Authenticated session lifecycle: a probe whose session died mid-mission
-   (an authenticated crawl can touch a logout endpoint) must never evaluate
-   the login wall — the mission re-establishes the session and retries the
-   probe once, so walled probes are inconclusive, never refuted/validated.
-
-The capabilities, evidence gates and completion policy are untouched: these
-tests only pin the discovery/hypothesis/probe plumbing fixes.
+Focused regression tests for the root causes found while diagnosing why the 1 deep run missed the DVWA-low SQLi /
+LFI / RCE surfaces.
 """
 
 from __future__ import annotations
@@ -79,7 +58,7 @@ class TestMultiCandidateParameterDerivation:
         assert "command-injection" in [c for c, _ in _classes_for_surface("host")]
 
     def test_token_boundary_prevents_substring_false_positives(self) -> None:
-        # ``ip`` is a substring of ``api``/``skip``; ``id`` of ``ids`` —
+        # ``ip`` is a substring of ``api``/``skip``; ``id`` of ``ids``
         # none of these may fabricate a command-injection/IDOR hypothesis.
         assert [c for c, _ in _classes_for_surface("api")] == ["xss"]
         assert [c for c, _ in _classes_for_surface("skip")] == ["xss"]
@@ -464,7 +443,7 @@ class TestProbeExecutorFollowsRedirects:
 
 class TestClassSpecificHypothesesBlockPrematureStop:
     """The hunt never stops on a validated finding while a derived
-    class-specific vulnerability hypothesis (sql-injection / xss / lfi / ...)
+    class-specific vulnerability hypothesis (sql-injection / xss / lfi /...)
     is still open, even when its priority is below the 0.75 high-value bar.
     """
 
@@ -528,7 +507,7 @@ class TestAuthenticatedProbesNeverEvaluateLoginWall:
     """An authenticated probe whose session died mid-mission must never be
     evaluated against the login wall (the wall is not target evidence): the
     executor reports the final URL, the mission re-establishes the session and
-    retries the probe once, and a still-walled probe stays inconclusive —
+    retries the probe once, and a still-walled probe stays inconclusive,
     never refuted or validated.
     """
 
@@ -577,6 +556,9 @@ class TestAuthenticatedProbesNeverEvaluateLoginWall:
                 self.end_headers()
 
             def do_POST(self) -> None:  # noqa: N802
+                # Drain the body first: an unread body makes the connection
+                # reset on Windows and the login intermittently fails.
+                self.rfile.read(int(self.headers.get("Content-Length") or 0))
                 if self.path.startswith("/login.php"):
                     self.send_response(302)
                     self.send_header("Location", "/")
@@ -688,7 +670,7 @@ class TestFormFieldParameterDiscovery:
     """Arjun enumerates URL query parameters; HTML form fields (notably POST
     forms) are invisible to it, so form-only surfaces never produce a
     parameter hypothesis. The mission extracts form field names in-process so
-    body-carrying probes can assess those surfaces (generic — any form-based
+    body-carrying probes can assess those surfaces (generic, any form-based
     endpoint benefits; nothing is DVWA-specific).
     """
 
@@ -714,6 +696,7 @@ class TestFormFieldParameterDiscovery:
                 self.end_headers()
 
             def do_POST(self) -> None:  # noqa: N802
+                self.rfile.read(int(self.headers.get("Content-Length") or 0))
                 self.send_response(200)
                 self.end_headers()
 

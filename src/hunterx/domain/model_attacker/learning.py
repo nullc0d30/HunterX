@@ -3,12 +3,7 @@
 
 """Model learning context: contradictions, findings and adjacent attack paths.
 
-Contradictions and validated findings are first-class reasoning inputs. A
-contradicted hypothesis is never re-run (its fingerprint is remembered as
-disproven), and a validated finding expands the search: the affected surface's
-related endpoints, objects and parameters become candidate adjacent paths for
-the next reasoning round. Chaining is evidence-derived here — the concrete
-hypotheses are always produced by the connected model from this context.
+Contradictions and validated findings are first-class reasoning inputs.
 """
 
 from __future__ import annotations
@@ -91,7 +86,7 @@ def adjacent_paths_for(finding: dict[str, Any], surface_nodes: list[dict[str, An
     Evidence-derived: the finding's surface keeps its parameters, the surface's
     sibling endpoints carry the same parameters, and the finding's capability
     may apply to the sibling endpoints. The model turns these candidates into
-    concrete hypotheses — the paths are never hardcoded chains.
+    concrete hypotheses, the paths are never hardcoded chains.
     """
     surface = str(finding.get("surface") or finding.get("endpoint") or "")
     capability = str(finding.get("capability") or "")

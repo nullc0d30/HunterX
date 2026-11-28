@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Checkpoint manager.
-
-Snapshots a :class:`~hunterx.domain.mission_planning.MissionPlan` to a
-:class:`~hunterx.domain.mission_planning.Checkpoint` and restores plans from
-checkpoints, supporting full recovery and partial rerun. Completed phases and
-steps are recorded explicitly so a restored plan can resume from exactly where
-execution stopped.
-"""
+"""Checkpoint manager."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: CLI Reference — HunterX v6.0.0
+title: CLI Reference - HunterX v6.0.0
 keywords: CLI reference, hunterx commands, penetration testing CLI
 description: >-
   Complete CLI reference for HunterX vulnerability scanner. All commands,
@@ -116,7 +116,7 @@ hunterx [global-options] <command> [subcommand] [options]
 
 ## Subcommand Reference
 
-### `hunterx scan` — Vulnerability Scanning
+### `hunterx scan` - Vulnerability Scanning
 
 Run a vulnerability scan against a target. This is the primary command.
 
@@ -126,7 +126,7 @@ hunterx scan target.com --ai --ai-model llama3.2
 hunterx scan https://target.com --auth bearer --token $TOKEN --oob
 ```
 
-### `hunterx module` — Module Management
+### `hunterx module` - Module Management
 
 List and search available scan modules.
 
@@ -136,7 +136,7 @@ hunterx module info <id>
 hunterx module search <query>
 ```
 
-### `hunterx report` — Report Viewer
+### `hunterx report` - Report Viewer
 
 View scan reports and system overview.
 
@@ -146,7 +146,7 @@ hunterx report -o <dir>
 hunterx report --json
 ```
 
-### `hunterx doctor` — Diagnostics
+### `hunterx doctor` - Diagnostics
 
 Run system diagnostics to verify installation and configuration.
 
@@ -154,7 +154,7 @@ Run system diagnostics to verify installation and configuration.
 hunterx doctor
 ```
 
-### `hunterx config` — Configuration
+### `hunterx config` - Configuration
 
 View or validate current configuration.
 
@@ -162,7 +162,7 @@ View or validate current configuration.
 hunterx config --show
 ```
 
-### `hunterx update` — Updates
+### `hunterx update` - Updates
 
 Update payloads and modules.
 
@@ -173,7 +173,7 @@ hunterx update --release
 hunterx update --payloads
 ```
 
-### `hunterx api` — REST API Server
+### `hunterx api` - REST API Server
 
 Start the built-in REST API server.
 
@@ -182,7 +182,7 @@ hunterx api --port 8443
 hunterx api --host 0.0.0.0 --port 8080
 ```
 
-### `hunterx payload` — Payload Intelligence
+### `hunterx payload` - Payload Intelligence
 
 ```bash
 hunterx payload sync
@@ -198,7 +198,7 @@ hunterx payload provenance <query>
 
 `hunterx payload sync` synchronizes the community-maintained [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) knowledge base (shallow git clone or latest GitHub release archive). `hunterx payload index` builds a local SQLite + FTS5 search index with provenance tracking (source repository, commit, release tag, checksum).
 
-### `hunterx agents` — Multi-Agent Platform
+### `hunterx agents` - Multi-Agent Platform
 
 ```bash
 hunterx agents list
@@ -207,7 +207,7 @@ hunterx agents enable <id>
 hunterx agents disable <id>
 ```
 
-### `hunterx workflow` — Workflow Engine
+### `hunterx workflow` - Workflow Engine
 
 ```bash
 hunterx workflow run <id>
@@ -215,14 +215,14 @@ hunterx workflow inspect <id>
 hunterx workflow graph <id>
 ```
 
-### `hunterx reasoning` — Reasoning Engine
+### `hunterx reasoning` - Reasoning Engine
 
 ```bash
 hunterx reasoning inspect <goal_id>
 hunterx reasoning validate <goal_id>
 ```
 
-### `hunterx skills` — Security Skills Framework
+### `hunterx skills` - Security Skills Framework
 
 ```bash
 hunterx skills list
@@ -238,7 +238,7 @@ hunterx skills export <id>
 hunterx skills stats
 ```
 
-### `hunterx ai` — AI Provider Management
+### `hunterx ai` - AI Provider Management
 
 ```bash
 hunterx ai providers

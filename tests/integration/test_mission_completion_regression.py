@@ -1,21 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for the mission execution / completion lifecycle.
-
-Reference incident: ``full_security_assessment`` reached
-``stop_condition=coverage_target_achieved`` at 76.47% coverage with 67 open
-hypotheses, zero active testing, NOT_ASSESSED browser and zero attack paths.
-These tests guard the corrected semantics:
-
-- coverage is only an input to completion (objective contract gates it);
-- an incomplete assessment is never reported as complete/reporting;
-- actionable open hypotheses keep the hunt alive;
-- OpenRouter 429s use shared cooldown + deterministic fallback (never a false
-  completion, never a storm);
-- tool failures carry a truthful exit code;
-- a URL target registers a root asset.
-"""
+"""Regression tests for the mission execution / completion lifecycle."""
 
 from __future__ import annotations
 
@@ -118,7 +104,7 @@ class _RecordingAI:
         if self._fail:
             raise RuntimeError("provider unavailable")
         if self._rate_limited:
-            error = RuntimeError("openrouter: rate limited (HTTP 429) — retry later")
+            error = RuntimeError("openrouter: rate limited (HTTP 429) - retry later")
             error.retry_after = self._retry_after  # type: ignore[attr-defined]
             raise error
         return json.dumps({"suggested_action_id": "act-1", "reason": "top pick"})
@@ -316,7 +302,7 @@ class TestOpenHypothesisKeepsHunting:
         mission = _mission(orchestration)
 
         # Seed an open, actionable (vulnerability-class) hypothesis directly.
-        hypothesis = mission.hypothesis("missing")  # noqa: F841  # placeholder
+        hypothesis = mission.hypothesis("missing")  # noqa: F841 # placeholder
         from hunterx.domain.mission_orchestration.models import MissionHypothesis
         from hunterx.domain.target_intelligence.enums import HypothesisType
 

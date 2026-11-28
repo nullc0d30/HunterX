@@ -1,7 +1,5 @@
-# 21 — Reporting Standards
+# 21, Reporting Standards
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Reporting Engine, renderers, templates, exports, evidence packages
 
 ---
@@ -11,7 +9,7 @@
 Reporting transforms **canonical, evidence-backed findings** into professional
 artifacts for technical teams, executives, compliance reviewers, and
 integrators. Reports are derived **only** from the Unified Security Schema
-(`08`) — renderers never touch raw findings directly.
+(`08`), renderers never touch raw findings directly.
 
 ---
 
@@ -57,19 +55,19 @@ same bytes (up to embedded dynamic timestamps, which are pinned in headers).
 
 - JSON is the **source of truth** for format fidelity; other formats derive from it.
 - SARIF mapping: rule = finding category; level = severity; location = primary
-  affected asset; `relatedLocations` = evidence endpoints; `partialFingerprints`
-  = canonical finding hash; `properties` = provenance + CWE/CVE refs.
+ affected asset; `relatedLocations` = evidence endpoints; `partialFingerprints`
+ = canonical finding hash; `properties` = provenance + CWE/CVE refs.
 
 ---
 
 ## 5. Evidence Package
 
 - Bundles: screenshots, raw HTTP request/response pairs, logs, tool raw
-  outputs (within retention), payloads used, verification transcripts.
+ outputs (within retention), payloads used, verification transcripts.
 - Each artifact records: object key, SHA-256, captured_at, source tool/step,
-  redaction status.
+ redaction status.
 - Package is a **checksummed archive** (zip with a manifest.json + per-file
-  hashes) so reviewers can verify integrity.
+ hashes) so reviewers can verify integrity.
 - PII and secrets are redacted before packaging (masking at export boundary).
 
 ---
@@ -108,12 +106,12 @@ reports (deterministic mapping files; AI drafting optional and labeled).
 
 ```
 ReportService.request(mission, views, formats)
-  → assemble ReportBundle (from TIDB + graph + evidence refs)
-  → for each view: apply template (versioned)
-  → for each format: render (deterministic)
-  → compute content_hash
-  → store artifacts in object store + report records
-  → emit report.generated event → notify subscribers
+ → assemble ReportBundle (from TIDB + graph + evidence refs)
+ → for each view: apply template (versioned)
+ → for each format: render (deterministic)
+ → compute content_hash
+ → store artifacts in object store + report records
+ → emit report.generated event → notify subscribers
 ```
 
 - Long renders run as async jobs (`20` §6).
@@ -125,9 +123,9 @@ ReportService.request(mission, views, formats)
 
 - Templates are versioned; a report records `template_version`.
 - Template changes: additive/minor = minor template bump; structural change =
-  major (older reports remain reproducible).
+ Major (older reports remain reproducible).
 - Report templates support: HTML/CSS (HTML+PDF), Jinja (MD/HTML), JSON schema
-  (JSON), SARIF schema.
+ (JSON), SARIF schema.
 
 ---
 
@@ -135,17 +133,17 @@ ReportService.request(mission, views, formats)
 
 - Branding (logo, client name) injected at render; never baked into data.
 - Locale/templates: report text templated; i18n supported for UI-facing
-  formats (MD/HTML); JSON/SARIF always canonical English keys.
+ formats (MD/HTML); JSON/SARIF always canonical English keys.
 
 ---
 
 ## 11. Versioning & Retention of Reports
 
 - Reports are immutable artifacts: a new generation creates new report records;
-  old ones retained per retention policy (`09` §8).
+ old ones retained per retention policy (`09` §8).
 - `content_hash` enables deduplication and verification.
 - Re-generate vs re-render: regenerate = re-run analysis (new data);
-  re-render = same data, new format/template.
+ re-render = same data, new format/template.
 
 ---
 
@@ -163,7 +161,7 @@ ReportService.request(mission, views, formats)
 
 - All findings in technical report reference evidence (`evidence_refs`).
 - Executive report excludes raw payloads; summarizes with risk posture.
-- No secrets in any format — verified by security tests (`15` §6).
+- No secrets in any format, verified by security tests (`15` §6).
 - Mandatory formats per mission profile honored (`12` §7).
 
 ---

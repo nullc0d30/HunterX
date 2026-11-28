@@ -1,8 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the enriched event bus: routing, filtering, priorities,
-persistence, dead-letter queue and replay."""
+"""Unit tests for the enriched event bus: routing, filtering, priorities, persistence, dead-letter queue and replay."""
 
 from __future__ import annotations
 

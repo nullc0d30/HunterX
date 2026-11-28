@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared fixtures for the TIDB persistence certification suite.
-
-Provides both SQL-backed and in-memory TIDB repository factories over the same
-port so the certification tests can exercise equivalent semantics on both
-backends (Sprint 034.3 — persistence & data-isolation certification).
-"""
+"""Shared fixtures for the TIDB persistence certification suite."""
 
 from __future__ import annotations
 

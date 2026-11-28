@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance and scale tests for the Sprint 028 finding orchestration.
-
-Validates that the engines and the application service handle thousands of
-findings, large evidence sets and high-volume queries without N+1 access
-patterns or unbounded memory, and that evidence analysis stays deterministic
-and linear in the evidence count.
-"""
+"""Performance and scale tests for the finding orchestration."""
 
 from __future__ import annotations
 

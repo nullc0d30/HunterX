@@ -3,17 +3,7 @@
 
 """Hypothesis loop engine.
 
-Sprint 032. The central loop of the autonomous mission:
-
-    OBSERVE → HYPOTHESIZE → TEST → OBSERVE → UPDATE HYPOTHESIS → TEST →
-    VERIFY → PROVE
-
-A hypothesis transitions through evidence-driven states (SUPPORTED /
-WEAKLY_SUPPORTED / REFUTED / INCONCLUSIVE / VALIDATED / DISPROVED /
-NOVEL_BEHAVIOR) and the novel-vulnerability pipeline
-(UNKNOWN_BEHAVIOR → BEHAVIORAL_MODEL → HYPOTHESIS → EXPERIMENT → OBSERVATION →
-NEW_HYPOTHESIS → MINIMAL_PROOF → VALIDATED_BEHAVIOR) so HunterX does not depend
-exclusively on known signatures.
+The central loop of the autonomous mission.
 """
 
 from __future__ import annotations
@@ -36,7 +26,7 @@ from hunterx.shared.time import utcnow_iso
 
 
 class HypothesisLoopEngine:
-    """Advance the observation → hypothesis → validation → proof loop.
+    """Advance the observation to hypothesis to validation to proof loop.
 
     The engine is pure state: it derives hypothesis transitions and novel
     pipeline stages from observations. It never executes tools.
@@ -56,14 +46,7 @@ class HypothesisLoopEngine:
     ) -> MissionHypothesis:
         """Recompute the hypothesis state from new evidence.
 
-        Rules (deterministic):
-        * any contradicting evidence with no supporting evidence → REFUTED.
-        * contradicting evidence that outweighs supporting → DISPROVED.
-        * ≥ ``SUPPORT_THRESHOLD`` supporting evidence, none contradicting →
-          SUPPORTED (independent verification is required before VALIDATED).
-        * supporting evidence but below threshold → SUPPORTED /
-          WEAKLY_SUPPORTED by strength.
-        * neither side moves the hypothesis → INCONCLUSIVE.
+        Rules (deterministic): * any contradicting evidence with no supporting evidence to REFUTED.
         """
         supporting_refs = tuple(dict.fromkeys(hypothesis.supporting_evidence + tuple(supporting)))
         contradicting_refs = tuple(dict.fromkeys(hypothesis.contradicting_evidence + tuple(contradicting)))
@@ -118,7 +101,7 @@ class HypothesisLoopEngine:
     def prove(self, hypothesis: MissionHypothesis, *, proof_ref: str = "") -> MissionHypothesis:
         """Record proof on a validated hypothesis.
 
-        Proof is only accepted when the hypothesis is already validated — a
+        Proof is only accepted when the hypothesis is already validated, a
         proof can never turn a candidate into a finding by itself.
         """
         if hypothesis.state is not HypothesisState.VALIDATED:
@@ -145,9 +128,9 @@ class HypothesisLoopEngine:
     ) -> NovelBehaviorRecord:
         """Advance a novel-behavior record through the experiment loop.
 
-        Stage transitions are deterministic: UNKNOWN_BEHAVIOR → BEHAVIORAL_MODEL
-        → HYPOTHESIS → EXPERIMENT → OBSERVATION → NEW_HYPOTHESIS → MINIMAL_PROOF
-        → VALIDATED_BEHAVIOR.
+        Stage transitions are deterministic: UNKNOWN_BEHAVIOR to BEHAVIORAL_MODEL
+        to HYPOTHESIS to EXPERIMENT to OBSERVATION to NEW_HYPOTHESIS to MINIMAL_PROOF
+        to VALIDATED_BEHAVIOR.
         """
         new_stage = stage or _next_stage(record.stage)
         classification = record.classification

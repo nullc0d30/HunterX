@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Execution-dependent toolchain validation (Sprint 034.5).
+"""Execution-dependent toolchain validation.
 
-These tests require the real external binaries and are EXCLUDED by default
-(``pytest -m 'not tools'``). They exist to document and validate real-binary
-execution; the adapter/parser/normalizer contract itself is fully certified by
-the fixture-driven suites (tests/tools, tests/golden/tools) without binaries.
+These tests require the real external binaries and are EXCLUDED by default (``pytest -m 'not tools'``).
 """
 
 from __future__ import annotations

@@ -4,9 +4,7 @@
 """Cloud analysis tool adapter.
 
 Registers the ``cloud-analysis`` tool: an in-process adapter that runs the
-:class:`~hunterx.domain.cloud.analyzer.CloudAnalyzer` over a static-material
-bundle. It never contacts cloud resources, never authenticates and never
-retrieves secrets.
+:class:`~hunterx.domain.cloud.analyzer.CloudAnalyzer` over a static-material bundle.
 """
 
 from __future__ import annotations

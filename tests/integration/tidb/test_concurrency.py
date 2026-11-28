@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Concurrency tests (Sprint 034.3 §18).
+"""Concurrency tests (18).
 
-Concurrent writes against the same target, different targets, the same finding
-and different findings are exercised on a file-backed SQLite database (WAL +
-busy timeout). The suite verifies no silent data loss, no duplicate records and
-a consistent final state.
+Concurrent writes against the same target, different targets, the same finding and different findings are exercised
+on a file-backed SQLite database (WAL + busy timeout).
 """
 
 from __future__ import annotations
@@ -113,7 +111,7 @@ def test_concurrent_writes_to_same_target(file_factory) -> None:
         t.join()
 
     repo = factory.repository_for(IntelligenceAssetRecord)
-    # All 40 distinct asset rows must be present — no lost updates on the shared
+    # All 40 distinct asset rows must be present, no lost updates on the shared
     # target's collection (each worker wrote distinct ids).
     assert repo.count() == 40
     assert all(not e for e in worker.result)

@@ -3,9 +3,7 @@
 
 """Mission orchestration event emitter.
 
-Publishes the canonical mission orchestration events (``mission.*``) through an
-``EventBusPort``. Every emitter method is a no-op when no event bus is wired so
-the orchestration engine stays usable without observability.
+Publishes the canonical mission orchestration events (``mission.*``) through an ``EventBusPort``.
 """
 
 from __future__ import annotations

@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for topology (route-mapping) tools.
-
-Shares the Tool Integration SDK lifecycle with the recon/livehost adapters:
-invoke the external binary through an injectable runner, parse the captured
-output into canonical :class:`RouteRecord` instances and serialize them into the
-pipeline payload under ``routes``. Adapters stay binary-free in unit tests by
-injecting a fake runner.
-"""
+"""Base adapter for topology (route-mapping) tools."""
 
 from __future__ import annotations
 

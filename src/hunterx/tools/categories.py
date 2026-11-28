@@ -3,9 +3,7 @@
 
 """Tool category base classes.
 
-Specialized base classes for each tool family. They exist so plugins can pick
-a well-defined contract (e.g. scanners must declare ``capabilities``
-containing ``scan``) while still inheriting the full tool runtime.
+Specialized base classes for each tool family.
 """
 
 from __future__ import annotations

@@ -3,10 +3,7 @@
 
 """Execution dependency resolver.
 
-Resolves the tools that must be installed and healthy before ``tool_id`` can
-run. Built on the TIP dependency engine (capability graph) and the SDK
-installation manager, so a missing prerequisite blocks the execution pipeline
-before anything is spawned.
+Resolves the tools that must be installed and healthy before ``tool_id`` can run.
 """
 
 from __future__ import annotations
@@ -24,8 +21,8 @@ class DependencyResolver:
     Usage::
 
         resolver = DependencyResolver(registry, installer)
-        missing = resolver.unmet(tool_id)          # list of tool ids to install
-        resolver.assert_satisfied(tool_id)          # raises ToolDependencyError
+        missing = resolver.unmet(tool_id) # list of tool ids to install
+        resolver.assert_satisfied(tool_id) # raises ToolDependencyError
     """
 
     def __init__(

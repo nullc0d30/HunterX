@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Reportability engine.
-
-Determines whether a finding is reportable by evaluating scope, validation,
-proof, reproducibility, impact, severity, confidence, evidence completeness,
-duplicate status, false-positive status, required metadata and policy. The
-verdict is one of REPORTABLE / INCOMPLETE / DISPUTED / DUPLICATE /
-OUT_OF_SCOPE / NOT_ACTIONABLE.
-"""
+"""Reportability engine."""
 
 from __future__ import annotations
 

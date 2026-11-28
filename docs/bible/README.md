@@ -3,20 +3,16 @@ layout: default
 title: HunterX Development Bible
 description: >-
   The HunterX Development Bible: the official engineering foundation and single
-  source of truth for every HunterX sprint — architecture, coding standards,
+  source of truth for every HunterX change - architecture, coding standards,
   SDKs, schemas and development workflows.
 permalink: /bible/
 ---
 
 # HunterX Development Bible
 
-**Status:** Ratified corpus
-**Version:** 1.0.0
-**Owner:** HunterX Architecture Council
-
 The **HunterX Development Bible** is the official engineering foundation and
-single source of truth for every HunterX sprint. All implementation MUST comply
-with these documents. No placeholders, no TODOs, no implementation code — this
+single source of truth for every HunterX change. All implementation MUST comply
+with these documents. No placeholders, no TODOs, no implementation code, this
 is the specification of record.
 
 ---
@@ -24,14 +20,14 @@ is the specification of record.
 ## How to Use This Bible
 
 1. **New contributors:** read `01 - Vision.md`, `02 - Architecture.md`,
-   `04 - Coding Standards.md`, and `24 - Quality Assurance.md` first.
+ `04 - Coding Standards.md`, and `24 - Quality Assurance.md` first.
 2. **Building a tool integration:** follow `22 - Tool Integration Standard.md`
-   (which references `06`, `07`, and `15`).
+ (which references `06`, `07`, and `15`).
 3. **Writing a plugin:** follow `05 - Plugin SDK Specification.md`.
 4. **Changing behavior:** update the affected docs in the same PR
-   (`23 - Development Workflow.md`, `24 - Quality Assurance.md`).
+ (`23 - Development Workflow.md`, `24 - Quality Assurance.md`).
 5. **Growing the platform:** `25 - Future Expansion.md` guarantees the Core
-   stays stable while tools, plugins, missions, and deployments expand.
+ stays stable while tools, plugins, missions, and deployments expand.
 
 ---
 
@@ -69,11 +65,11 @@ is the specification of record.
 
 ## Binding Status
 
-- **Ratified** — must be followed; changes via the ADR / Schema Change process
-  (`24 - Quality Assurance.md` §6–§7).
+- **Final**, must be followed; changes via the ADR / Schema Change process
+ (`24 - Quality Assurance.md` §6-§7).
 - A conflict between docs is resolved in this order: `01` (philosophy) →
-  `02` (architecture) → the specific domain doc → implementation decisions
-  recorded as an ADR.
+ `02` (architecture) → the specific domain doc → implementation decisions
+ recorded as an ADR.
 
 ---
 
@@ -87,7 +83,6 @@ is the specification of record.
 
 ## Related Project Documentation
 
-- `docs/ARCHITECTURE.md`, `docs/AGENTS.md` — current implementation notes
-  (superseded by this Bible where they conflict; migration tracked as
-  engineering work).
-- `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md` — project-level docs.
+- `docs/archive/v6/`, the retired v6 documentation set, superseded by this
+ Bible where the two disagree.
+- `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, project-level docs.

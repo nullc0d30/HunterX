@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Repository contract tests (Sprint 034.3 §17).
+"""Repository contract tests (17).
 
-The same contract suite runs against the in-memory and SQL TIDB repository
-implementations. The suite verifies equivalent semantic behavior for the
-documented ``TidbRepository`` port operations.
+The same contract suite runs against the in-memory and SQL TIDB repository implementations.
 """
 
 from __future__ import annotations
@@ -183,7 +181,7 @@ def test_json_fields_survive_roundtrip(factory) -> None:
 
 
 def test_documented_validation_divergence(factory) -> None:
-    """Documented semantic divergence (Sprint 034.3 §17).
+    """Documented semantic divergence (17).
 
     The SQL repository validates the TIDB envelope on ``save`` and rejects an
     invalid entity; the in-memory repository does not validate. This is the one
@@ -199,7 +197,7 @@ def test_documented_validation_divergence(factory) -> None:
 
 
 def test_documented_unknown_field_divergence(factory) -> None:
-    """Documented semantic divergence (Sprint 034.3 §17).
+    """Documented semantic divergence (17).
 
     SQL ``list_by``/``list`` reject unknown columns with ``ValueError``; the
     in-memory repository silently returns empty results.

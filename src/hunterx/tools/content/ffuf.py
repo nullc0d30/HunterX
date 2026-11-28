@@ -3,15 +3,8 @@
 
 """Ffuf tool adapter.
 
-Integrates ``ffuf`` — a fast web fuzzer — into the Tool Integration SDK for
-content discovery, URL fuzzing and parameter fuzzing. The adapter builds a
-structured command line from the execution context (URL, wordlist, matcher,
-rate/concurrency controls), requests JSON output (``-o - -of json``) and parses
-the ``results`` array into canonical content-discovery records.
-
-Scope and wordlist safety are enforced upstream by the arsenal layer: the
-wordlist is validated data (a regular file on disk), never executable content,
-and the target URL must stay inside the authorized scope.
+Integrates ``ffuf``, a fast web fuzzer, into the Tool Integration SDK for content discovery, URL fuzzing and
+parameter fuzzing.
 """
 
 from __future__ import annotations

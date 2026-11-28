@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests: the autonomous adaptive intelligence loop.
-
-HunterX starts with ONLY a target scope and mission objective, then must
-autonomously discover assets, build the graph, identify unknowns, select tools,
-ingest observations, update coverage, generate hypotheses, select validation,
-and produce ranked next actions. The exact tool sequence is NOT hardcoded —
-decisions must emerge from the intelligence state.
-"""
+"""Acceptance tests: the autonomous adaptive intelligence loop."""
 
 from __future__ import annotations
 
@@ -29,7 +22,7 @@ from hunterx.engines.target_intelligence import TargetIntelligenceEngine
 
 
 class _FakeSelector:
-    """Deterministic test double for the Sprint 025 mission-aware selector."""
+    """Deterministic test double for the mission-aware selector."""
 
     _TOOLS = {
         "subdomain_enumeration": ("subfinder", ("amass", "assetfinder")),

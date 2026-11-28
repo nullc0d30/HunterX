@@ -3,10 +3,7 @@
 
 """Intelligence Correlation Engine.
 
-Sprint 026. Correlates observations across tools, time, assets, missions and
-technologies. Correlation is provenance-preserving: it never merges away a
-disagreement. The engine produces correlation chains (same fact, multiple
-tools) and hands off genuine contradictions to the conflict detector.
+Correlates observations across tools, time, assets, missions and technologies.
 """
 
 from __future__ import annotations
@@ -99,7 +96,7 @@ class IntelligenceCorrelationEngine:
 
         Conflicts are detected when two different tools report *different*
         values for the same (asset, observation type) with comparable
-        confidence — those are never merged.
+        confidence, those are never merged.
         """
         buckets: dict[tuple[str, str, str], list[Observation]] = {}
         for observation in observations:

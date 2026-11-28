@@ -3,9 +3,8 @@
 
 """Release engineering.
 
-Semantic versioning helpers, changelog generation, release-note extraction,
-artifact checksum generation/verification and a rollback compatibility check.
-Pure logic (no network) so the release workflow is deterministic and testable.
+Semantic versioning helpers, changelog generation, release-note extraction, artifact checksum
+generation/verification and a rollback compatibility check.
 """
 
 from __future__ import annotations
@@ -152,7 +151,7 @@ def parse_changelog(text: str) -> list[ChangelogEntry]:
     entries: list[ChangelogEntry] = []
     current: ChangelogEntry | None = None
     for line in text.splitlines():
-        match = re.match(r"^##\s+\[([^\]]+)\]\s*(?:[—\-]\s*(.*))?$", line)
+        match = re.match(r"^##\s+\[([^\]]+)\]\s*(?:[-\-]\s*(.*))?$", line)
         if match:
             if current:
                 entries.append(current)

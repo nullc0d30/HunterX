@@ -3,8 +3,7 @@
 
 """Tests for the OpenRouter AI provider adapter.
 
-All HTTP traffic is served by an injected fake client; no real API calls are
-made during tests.
+All HTTP traffic is served by an injected fake client; no real API calls are made during tests.
 """
 
 from __future__ import annotations
@@ -13,6 +12,7 @@ import pytest
 
 from hunterx.domain.exceptions import OperationError
 from hunterx.infrastructure.ai import OpenRouterClient
+from hunterx.infrastructure.ai.openrouter import DEFAULT_MODEL
 
 
 class _FakeResponse:
@@ -33,11 +33,14 @@ class _FakeClient:
         self._responses = list(responses)
         self.requests: list[dict[str, object]] = []
 
-    def post(self, url: str, *, json: object, headers: dict[str, str]) -> _FakeResponse:
+    def post(self, url: str, *, json: object, headers: dict[str, str], timeout: float | None = None) -> _FakeResponse:
         self.requests.append({"url": url, "json": json, "headers": headers})
         if not self._responses:
             raise AssertionError("no response queued for the fake HTTP client")
         return self._responses.pop(0)
+
+    def get(self, url: str, *, timeout: float | None = None) -> _FakeResponse:
+        return _FakeResponse({"data": []})
 
 
 def _client(*responses: _FakeResponse, model: str | None = None) -> tuple[OpenRouterClient, _FakeClient]:
@@ -52,7 +55,7 @@ class TestComplete:
         assert client.complete("say hi") == "hello world"
         assert fake.requests[0]["url"] == "https://openrouter.ai/api/v1/chat/completions"
         payload = fake.requests[0]["json"]
-        assert payload["model"] == "deepseek/deepseek-chat"
+        assert payload["model"] == DEFAULT_MODEL
         assert payload["messages"] == [{"role": "user", "content": "say hi"}]
 
     def test_complete_uses_default_model_when_configured(self) -> None:

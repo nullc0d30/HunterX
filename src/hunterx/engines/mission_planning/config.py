@@ -3,19 +3,7 @@
 
 """Mission configuration resolver.
 
-Merges configuration from every layer of a mission request and renders
-``{{ variable }}`` placeholders. Precedence, lowest to highest:
-
-1. Phase variables (profile defaults)
-2. Template variables
-3. Request configuration (``request.config``)
-4. Request variables (``request.variables``)
-5. Environment overrides (``MISSION_<KEY>``)
-
-Values support ``{{ name }}`` interpolation and can reference environment
-values through ``{{ env.VAR }}``. The resolver is strict: an unresolved
-placeholder raises :class:`MissionPlanningError` so plans never ship with
-holes.
+Merges configuration from every layer of a mission request and renders ``{{ variable }}`` placeholders.
 """
 
 from __future__ import annotations

@@ -3,9 +3,7 @@
 
 """In-memory core entity repositories.
 
-Reference implementations of the entity repository ports without any
-database. Used by the platform composition root as the default persistence
-backend and by the test suite.
+Reference implementations of the entity repository ports without any database.
 """
 
 from __future__ import annotations

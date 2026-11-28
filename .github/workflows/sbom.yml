@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — SBOM & Provenance.
+# HunterX - SBOM & Provenance.
 #
 # Generates CycloneDX + SPDX SBOMs and a provenance manifest on every push to
 # main and on every release tag. Artifacts are uploaded for the release.

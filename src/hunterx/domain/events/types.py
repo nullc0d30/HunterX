@@ -3,9 +3,7 @@
 
 """Domain events raised by engine and application layers.
 
-These are convenience constructors for the canonical event types defined by
-the platform. Publishing a typed event keeps payload schemas consistent across
-producers.
+These are convenience constructors for the canonical event types defined by the platform.
 """
 
 from __future__ import annotations
@@ -4722,7 +4720,7 @@ class AuthorizationDiscoveryFailedEvent(DomainEvent):
 
 
 # ---------------------------------------------------------------------------
-# Cloud & SaaS intelligence events (Sprint 017 / Wave 11)
+# Cloud & SaaS intelligence events (/)
 # ---------------------------------------------------------------------------
 
 
@@ -5753,7 +5751,7 @@ class VulnerabilityAdvisoryDiscoveredEvent(DomainEvent):
 
 
 class VulnerabilityMatchCreatedEvent(DomainEvent):
-    """Emitted when a technology→vulnerability match is created."""
+    """Emitted when a technology to vulnerability match is created."""
 
     def __init__(
         self,
@@ -5783,7 +5781,7 @@ class VulnerabilityMatchCreatedEvent(DomainEvent):
 
 
 class VulnerabilityMatchRemovedEvent(DomainEvent):
-    """Emitted when a technology→vulnerability match is removed."""
+    """Emitted when a technology to vulnerability match is removed."""
 
     def __init__(
         self,
@@ -7519,7 +7517,7 @@ class VulnerabilityProofStrategyCandidateRejectedEvent(DomainEvent):
 
 
 class _FindingOrchestrationEvent(DomainEvent):
-    """Base for Sprint 028 finding lifecycle events.
+    """Base for finding lifecycle events.
 
     Every orchestration event carries the scoping and provenance fields the
     finding lifecycle requires: ``mission_id``, ``target_id``, ``finding_id``,
@@ -8002,7 +8000,7 @@ class FindingReportReadyEvent(_FindingOrchestrationEvent):
 
 
 class _ReportEvent(DomainEvent):
-    """Base for Sprint 029 professional reporting events.
+    """Base for professional reporting events.
 
     Every report event carries the scoping and provenance fields the report
     lifecycle requires: ``mission_id``, ``target_id``, ``finding_id``,
@@ -8375,7 +8373,7 @@ class ReportReopenedEvent(_ReportEvent):
 
 
 class _TargetMemoryEvent(DomainEvent):
-    """Base for Sprint 030 target memory events.
+    """Base for target memory events.
 
     Every target-memory event carries the scoping fields the historical layer
     requires: ``target_id``, ``mission_id`` and ``snapshot_id``/``diff_id`` in
@@ -8605,7 +8603,7 @@ class CoverageGapDetectedEvent(_TargetMemoryEvent):
 
 
 class _CampaignEvent(DomainEvent):
-    """Base for Sprint 030 campaign events."""
+    """Base for campaign events."""
 
     def __init__(
         self,
@@ -8690,7 +8688,7 @@ class CampaignCompletedEvent(_CampaignEvent):
 
 
 class _HypothesisMemoryEvent(DomainEvent):
-    """Base for Sprint 030 hypothesis memory events."""
+    """Base for hypothesis memory events."""
 
     def __init__(
         self,

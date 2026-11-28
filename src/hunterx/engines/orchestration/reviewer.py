@@ -4,8 +4,11 @@
 """Base interface for mission result reviewers."""
 
 from __future__ import annotations
+
 from typing import Protocol, runtime_checkable
+
 from hunterx.engines.orchestration.executor import MissionRunResult
+
 
 @runtime_checkable
 class BaseReviewer(Protocol):

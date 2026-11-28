@@ -3,28 +3,7 @@
 
 """Tool Intelligence Platform (TIP).
 
-The intelligence layer of HunterX v7. TIP knows *about* tools — what they do,
-what they need, what they produce, how they relate — without ever executing
-them. Subsystems (planner, AI engine, workflow engine, CLI, API) query TIP
-through :class:`ToolIntelligenceAPI` (the facade) or the individual engines.
-
-Engines
-=======
-- ``ToolIntelligenceRegistry`` — metadata / knowledge / capability /
-  compatibility / runtime state stores.
-- ``ToolTaxonomy`` — canonical category tree and capability vocabulary.
-- ``CapabilityEngine`` — capability definitions and provider lookups.
-- ``DependencyEngine`` — tool-to-tool and capability-to-tool resolution.
-- ``CompatibilityEngine`` — OS / architecture / runtime environment checks.
-- ``ToolSelectionEngine`` — criteria-based best-fit ranking.
-- ``ToolRecommendationEngine`` — best / alternative / fallback recommendations.
-- ``ToolStateMachine`` — lifecycle state transitions.
-- ``ToolLifecycleManager`` — register, install, verify, deprecate, ...
-- ``ToolHealthMonitor`` — reliability and availability tracking.
-- ``ToolPerformanceAnalyzer`` — duration / finding / cost history.
-- ``ToolValidationFramework`` — configuration sanity checks.
-- ``ToolDocumentationGenerator`` — per-tool Markdown reference pages.
-- ``ToolAIInterface`` — question/answer bridge for the AI engine.
+The intelligence layer of HunterX v7.
 """
 
 from __future__ import annotations

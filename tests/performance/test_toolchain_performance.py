@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance benchmarks for the full toolchain (Sprint 031).
+"""Performance benchmarks for the full toolchain.
 
-Executed by the performance quality gate with pytest-benchmark. Covers parser
-throughput (subfinder JSONL, dnsx JSONL, nuclei JSONL), normalization
-throughput, knowledge-fixture synthesis and selection scoring for large tool
-catalogs. No external binary is ever invoked.
+Executed by the performance quality gate with pytest-benchmark.
 """
 
 from __future__ import annotations

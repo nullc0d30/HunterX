@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Target Intelligence — canonical models.
-
-Sprint 026. Pure, read-only data contracts for the target intelligence layer:
-the intelligence target, its assets, immutable observations, evidence records,
-history entries, changes, coverage entries/matrix, information gaps,
-hypotheses, proposed actions, explainable decisions, negative results,
-conflicts and the explainable intelligence score.
-
-These models are deliberately free of I/O and storage; the TIDB
-``target_intelligence`` entities are the persistence projection and the
-application service is the only orchestration surface. Provenance is
-first-class on every record so all decisions remain reproducible.
-"""
+"""Adaptive Target Intelligence, canonical models."""
 
 from __future__ import annotations
 
@@ -96,8 +84,8 @@ class IntelligenceTarget:
     """A canonical intelligence target.
 
     A target is NOT equivalent to a hostname. It is the authorized objective of
-    a mission — an organization, program, domain tree, network range, cloud
-    account or repository — that the mission is allowed to interrogate.
+    a mission, an organization, program, domain tree, network range, cloud
+    account or repository, that the mission is allowed to interrogate.
 
     Attributes:
         target_id: stable target identifier.
@@ -107,7 +95,7 @@ class IntelligenceTarget:
         classification: target classification (e.g. ``web``, ``api``, ``cloud``).
         criticality: business criticality label (``low``/``medium``/``high``/``critical``).
         kind: :class:`IntelligenceTargetKind`.
-        value: canonical target value (domain, CIDR, account id, ...).
+        value: canonical target value (domain, CIDR, account id,...).
         discovered_at: when the target first entered the intelligence graph.
         first_seen / last_seen: state-time observation stamps.
         status: :class:`IntelligenceTargetStatus`.
@@ -195,7 +183,7 @@ class IntelligenceAsset:
     """A discovered asset represented independently from the target.
 
     Assets are canonical graph nodes (subdomain, ip, port, service, url,
-    endpoint, parameter, api, graphql, certificate, cloud resource, ...). They
+    endpoint, parameter, api, graphql, certificate, cloud resource,...). They
     reuse the topology :class:`EntityKind` vocabulary so the target
     intelligence graph composes with the attack-surface topology.
 
@@ -802,7 +790,7 @@ class InformationGap:
 
 @dataclass(frozen=True, slots=True)
 class Hypothesis:
-    """A conjecture to validate — never a conclusion.
+    """A conjecture to validate, never a conclusion.
 
     Attributes:
         hypothesis_id: stable hypothesis identifier.
@@ -815,7 +803,7 @@ class Hypothesis:
         contradicting_observations: observation ids that contradict it.
         required_evidence: evidence kinds required for validation.
         validation_strategy: how to validate (capability/tool family).
-        proof_strategy: proof strategy id (Sprint 021/022).
+        proof_strategy: proof strategy id (/022).
         confidence: current confidence in ``[0, 1]``.
         priority: priority in ``[0, 1]``.
         status: :class:`HypothesisStatus`.
@@ -1056,7 +1044,7 @@ class NegativeResult:
     """A carefully-scoped negative result.
 
     ``Tool A found no SQLi`` means *Tool A produced no SQLi evidence under its
-    test conditions* — it never means *SQLi does not exist*. Negative results
+    test conditions*, it never means *SQLi does not exist*. Negative results
     record the capability, tool, scope, conditions, coverage and confidence so
     the semantics stay precise.
 
@@ -1123,7 +1111,7 @@ class NegativeResult:
 class IntelligenceConflict:
     """A preserved contradiction between observations/tools.
 
-    Conflicting tool results are never averaged — the conflict is preserved and
+    Conflicting tool results are never averaged, the conflict is preserved and
     triggers additional validation or higher-quality evidence collection.
 
     Attributes:
@@ -1193,9 +1181,9 @@ class IntelligenceScore:
 
     Attributes:
         target_id: owning target.
-        dimensions: dimension → score in ``[0, 1]``.
+        dimensions: dimension to score in ``[0, 1]``.
         aggregate: overall score in ``[0, 1]``.
-        weights: dimension → weight (records explainability).
+        weights: dimension to weight (records explainability).
         computed_at: UTC ISO-8601 computation stamp.
         policy_id: ranking/weight policy id applied.
 

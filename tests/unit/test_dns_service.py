@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the DnsService orchestrator.
-
-Exercises a full DNS intelligence run: tool selection, execution through the
-SDK pipeline with a fake dnsx runner and an injectable dnspython resolver,
-normalization, validation, correlation, DNSSEC/mail analysis, historical
-comparison, TIDB persistence and the ``dns.*`` event stream.
-"""
+"""Tests for the DnsService orchestrator."""
 
 from __future__ import annotations
 

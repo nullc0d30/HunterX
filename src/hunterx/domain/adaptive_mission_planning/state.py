@@ -3,15 +3,7 @@
 
 """Adaptive mission state machine.
 
-Explicit, event-driven transitions between :class:`MissionState` values. The
-canonical flow:
-
-CREATED → SCOPING → DISCOVERY → ENUMERATION → MAPPING → ANALYSIS →
-HYPOTHESIS_GENERATION → VALIDATION → PROOF → REASSESSMENT → REPORTING →
-COMPLETED
-
-with PAUSED / BLOCKED / FAILED / CANCELLED as exceptional states reachable
-from any active state.
+Explicit, event-driven transitions between :class:`MissionState` values.
 """
 
 from __future__ import annotations

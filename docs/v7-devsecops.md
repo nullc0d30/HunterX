@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX DevSecOps Platform — Sprint 006.9
+title: HunterX DevSecOps Platform -
 description: >-
   The HunterX Production Readiness & Release Engineering platform: DevSecOps
   CI/CD, mandatory quality gates, security pipeline, supply-chain security,
@@ -9,10 +9,6 @@ permalink: /v7-devsecops/
 ---
 
 # HunterX DevSecOps Platform
-
-**Status:** Ratified (Sprint 006.9)
-**Version:** 1.0.0
-**Owner:** HunterX Engineering Council
 
 ---
 
@@ -31,7 +27,7 @@ safe to release. It covers:
 - Compliance, repository hygiene, and automated readiness assessment.
 
 Out of scope: security *capabilities* of the shipped product, Recon tool
-integration, and Mission logic — those belong to Capability Wave sprints that
+integration, and Mission logic, those belong to the capability layers that
 follow this foundation.
 
 ---
@@ -39,16 +35,16 @@ follow this foundation.
 ## 2. Principles
 
 1. **Fail closed on release, fail open on tooling.** A failing mandatory quality
-   gate blocks the merge and the release. A missing optional scanner is reported
-   as *skipped* and does not block the pipeline.
+ gate blocks the merge and the release. A missing optional scanner is reported
+ as *skipped* and does not block the pipeline.
 2. **Everything mandatory is explicit.** Every gate lists `mandatory: true` in
-   `eng/config/gates.yaml`. There is no silent opt-out.
+ `eng/config/gates.yaml`. There is no silent opt-out.
 3. **Artifacts are deterministic and inspectable.** Every pipeline writes JSON
-   under `artifacts/` that humans and bots can audit.
+ under `artifacts/` that humans and bots can audit.
 4. **Documentation is a deliverable, not a nicety.** The docs gate fails when the
-   engineering documentation is missing a mandated section.
+ engineering documentation is missing a mandated section.
 5. **Security is a quality gate.** Static analysis, dependency scanning, secret
-   detection and SBOM generation run on every CI push, not just at release time.
+ detection and SBOM generation run on every CI push, not just at release time.
 
 ---
 
@@ -60,7 +56,7 @@ with the uniform signature `(runner, repo_root, spec) -> GateResult` defined in
 `eng/config/gates.yaml`.
 
 Gates run via `eng.tooling.ToolRunner`, a subprocess wrapper that is injectable
-in tests. `GateRunner.run_blocking()` raises `eng.gates.GateBlockedError` when a
+in tests. `GateRunner.run_blocking` raises `eng.gates.GateBlockedError` when a
 mandatory gate fails, which the CI workflow treats as a merge blocker.
 
 The full gate catalog is documented in [v7-quality-gates.md](v7-quality-gates.md).
@@ -69,10 +65,10 @@ The CI wiring is documented in [v7-cicd-architecture.md](v7-cicd-architecture.md
 ### Invocation
 
 ```bash
-python -m eng gates              # run all configured gates
-python -m eng gates --gate mypy  # run a subset
-python -m eng gates --json       # write artifacts/gates-report.json
-python -m eng gates --blocking   # exit 1 when a mandatory gate fails
+python -m eng gates # run all configured gates
+python -m eng gates --gate mypy # run a subset
+python -m eng gates --json # write artifacts/gates-report.json
+python -m eng gates --blocking # exit 1 when a mandatory gate fails
 ```
 
 ### Gate Status Model
@@ -94,7 +90,7 @@ runs a battery of scanners and aggregates their findings into a single report
 [v7-security-pipeline.md](v7-security-pipeline.md).
 
 Design contract: **missing scanners degrade gracefully**. When a scanner binary
-is not installed, the corresponding scan is reported as *skipped* — it never
+is not installed, the corresponding scan is reported as *skipped*, it never
 fails the pipeline. Scans that target artifacts that do not exist yet (for
 example the container image before it is published) use
 `skip_failures_containing` to recognize the expected "not found" failure and
@@ -106,11 +102,11 @@ report it as skipped rather than blocking CI.
 
 `eng/supplychain.py` produces supply-chain artifacts and enforces policy:
 
-- `generate_sbom()` — CycloneDX 1.5 SBOM from the lock file.
-- `generate_sbom_spdx()` — SPDX 2.3 JSON SBOM.
-- `check_licenses()` — enforces the SPDX allow-list in `_ALLOWED_LICENSES`.
-- `write_provenance()` — a provenance manifest recording version, commit, build
-  date and the artifact set.
+- `generate_sbom`, CycloneDX 1.5 SBOM from the lock file.
+- `generate_sbom_spdx`, SPDX 2.3 JSON SBOM.
+- `check_licenses`, enforces the SPDX allow-list in `_ALLOWED_LICENSES`.
+- `write_provenance`, a provenance manifest recording version, commit, build
+ date and the artifact set.
 
 Run with `python -m eng sbom [--format cyclonedx|spdx]`. The release workflow
 signs the SBOM and checksums with cosign; see

@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared harness for the Sprint 033 full-spectrum mission acceptance tests.
+"""Shared harness for the full-spectrum mission acceptance tests.
 
-The harness drives a deterministic, synthetic target environment through the
-autonomous mission orchestrator. Each full-spectrum mission (bug bounty, web
-pentest, API security, attack surface, cloud/SaaS, vulnerability research, red
-team recon) supplies its own scenario: objective, target, synthetic tool
-responses, capability sequence and expected final state.
-
-The harness deliberately reuses the orchestrator's reasoning loop
-(ingest → hypothesize → test → validate → prove → impact → cascade → coverage)
-rather than a hardcoded tool sequence. Tool failures, contradictory results and
-false positives are injected per scenario to prove DETECTION != VALIDATION.
+The harness drives a deterministic, synthetic target environment through the autonomous mission orchestrator.
 """
 
 from __future__ import annotations
@@ -121,7 +112,9 @@ class FullSpectrumMissionRunner:
         for step in self.scenario.scenarios:
             self._execute(mission_id, step)
 
-        self.orchestrator.finalize(mission_id)
+        self.orchestrator.finalize(
+            mission_id, stop_condition=StopCondition.OBJECTIVES_COMPLETE
+        )
         return self.orchestrator.get(mission_id).to_dict()
 
     # -- helpers -------------------------------------------------------------

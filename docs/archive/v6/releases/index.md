@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Releases — HunterX
+title: Releases - HunterX
 description: >-
   HunterX release notes and version history. Current version 6.0.0
   with Security Skills Framework, Reasoning Engine, Multi-Agent Platform,

@@ -3,13 +3,8 @@
 
 """Findomain tool adapter.
 
-Integrates ``findomain`` — a cross-platform subdomain enumerator using CT logs,
-passive DNS and (optionally) wordlist brute force — into the Tool Integration
-SDK.
-
-CLI contract (verified against findomain usage):
-    ``findomain -t <domain> -q`` prints one subdomain per line to stdout.
-    ``-i`` also resolves and reports IPs, ``-w <file>`` enables brute force.
+Integrates ``findomain``, a cross-platform subdomain enumerator using CT logs, passive DNS and (optionally) wordlist
+brute force, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

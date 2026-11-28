@@ -1,28 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud & SaaS attack-surface intelligence canonical domain models.
-
-Pure data contracts for the Cloud & SaaS Attack-Surface Intelligence capability
-(Sprint 017 / Wave 11): cloud providers, accounts/subscriptions/projects/
-organizations/tenants, regions, resources, services, endpoints (with plane and
-exposure classification), environments, identity & IAM indicators, SaaS
-platforms, SaaS applications, SaaS integrations, webhooks, third-party
-dependencies, storage/compute/container/Kubernetes/database/message/gateway/CDN/
-load-balancer/CI/CD resource indicators, secret-management indicators (never
-values), exposure indicators (intelligence, never vulnerabilities), generic
-observations, evidence, conflicts, historical changes, execution summaries, the
-collection strategy and the batch that carries everything back to the
-application layer. No I/O and no execution here.
-
-The TIDB ``cloud_intelligence`` entities
-(:mod:`hunterx.domain.entities.tidb.cloud_intelligence`) are the persistence
-projection of these models; this module is the runtime surface the cloud
-intelligence pipeline is built on.
-
-Security boundary: intelligence & discovery only. Sensitive values are masked or
-fingerprinted before they reach these records.
-"""
+"""Cloud & SaaS attack-surface intelligence canonical domain models."""
 
 from __future__ import annotations
 
@@ -326,7 +305,7 @@ def make_evidence(
 # -- observation records ------------------------------------------------------
 
 # The trailing "provenance block" shared by every observation:
-#   source, tool_id, target_key, correlation_id, mission_id, execution_id,
+# source, tool_id, target_key, correlation_id, mission_id, execution_id
 #   observed_at, record_id
 
 

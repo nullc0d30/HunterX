@@ -3,9 +3,7 @@
 
 """Report lifecycle state machine.
 
-The report lifecycle is explicit: every transition between report states is
-gated. ``READY_FOR_SUBMISSION`` is only reachable after QA passed and no
-unsupported high-impact claim is open.
+The report lifecycle is explicit: every transition between report states is gated.
 """
 
 from __future__ import annotations

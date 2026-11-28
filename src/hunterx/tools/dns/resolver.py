@@ -3,16 +3,8 @@
 
 """Active DNS resolver client and pool.
 
-Resolves names through a pool of resolvers using ``dnspython`` with per-query
-timeouts, retries, deduplication and TTL-aware caching. The client is the
-active-mode workhorse of the DNS capability: it queries each record type for a
-target, normalizes answers into canonical :class:`DnsRecord` instances and
-treats resolver output as untrusted input (never executes, never parses
-beyond structured answers).
-
-Caching uses the shared :class:`~hunterx.domain.ports.messaging.CachePort`
-abstraction with target-scoped cache keys so no parallel cache framework is
-introduced.
+Resolves names through a pool of resolvers using ``dnspython`` with per-query timeouts, retries, deduplication and
+TTL-aware caching.
 """
 
 from __future__ import annotations

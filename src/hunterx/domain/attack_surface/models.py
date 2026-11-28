@@ -3,12 +3,7 @@
 
 """Attack-surface data model.
 
-Phase 1 generic capability model. Every concept here is target-agnostic: a
-surface is any discovered, probeable or schedulable thing; a target-specific
-business object (a user, an order, a product, ...) is represented *dynamically*
-as a :class:`DynamicObject` whose ``object_type`` is an arbitrary string —
-never a hardcoded class. The orchestration logic keys off ``SurfaceKind`` and
-``SurfaceLayer`` values, so new target shapes never require new code paths.
+generic capability model.
 """
 
 from __future__ import annotations
@@ -163,7 +158,7 @@ class SurfaceNode:
         key: canonical node key (``kind:name``).
         parent_key: parent node key (``""`` for the target root).
         dynamic_type: target-specific object type (e.g. ``user``, ``order``,
-            ``product``) — an arbitrary string, never a hardcoded class.
+            ``product``), an arbitrary string, never a hardcoded class.
         attributes: free-form surface attributes.
         context: :class:`SurfaceContext` observed for the surface.
         confidence: surface confidence in ``[0, 1]``.
@@ -269,7 +264,7 @@ class SurfaceEdge:
 class DynamicObject:
     """A target-specific object discovered on the surface.
 
-    Business objects (users, orders, products, documents, tenants, ...) are
+    Business objects (users, orders, products, documents, tenants,...) are
     represented dynamically: ``object_type`` is the discovered type string and
     ``identifiers`` carries the observed object identifiers (ids, keys, slugs)
     with their locations. No target-specific class or route is ever assumed.
@@ -511,7 +506,7 @@ class ExhaustionReport:
 
     Attributes:
         verdict: :class:`CompletionVerdict`.
-        criteria: criterion → satisfied flag.
+        criteria: criterion to satisfied flag.
         reason: human explanation of the verdict.
         surfaced: number of surfaces discovered.
         applicable_combinations: applicable capability×surface×context records.

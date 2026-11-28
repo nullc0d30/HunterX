@@ -3,9 +3,8 @@
 
 """Parser engine.
 
-Parsers convert raw tool output (stdout, files, JSON) into a structured,
-schema-shaped representation that the normalizer can consume. A parser is a
-callable mapping ``(tool_name, raw)`` to a list of structured records.
+Parsers convert raw tool output (stdout, files, JSON) into a structured, schema-shaped representation that the
+normalizer can consume.
 """
 
 from __future__ import annotations

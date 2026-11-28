@@ -3,15 +3,7 @@
 
 """In-process JavaScript intelligence analyzer adapter.
 
-The binary-free analysis path for the JavaScript Intelligence & Client-Side
-Attack-Surface Discovery capability. The adapter runs the versioned detection
-rules through the domain :class:`AnalyzerSet`, the secret scanner with strict
-masking, and the technology/dependency detectors over one script source, and
-emits a normalized per-asset :class:`JSAssetAnalysis`.
-
-``run`` needs no network: content is passed through the execution parameters
-(``content``/``url``), so unit tests stay hermetic:
-``JavaScriptAnalyzerAdapter().run(context, collector)``.
+The binary-free analysis path for the JavaScript Intelligence & Client-Side Attack-Surface Discovery capability.
 """
 
 from __future__ import annotations
@@ -67,7 +59,7 @@ class JavaScriptAnalyzerAdapter(JavaScriptToolAdapter):
     def analyze(self, source: str, context: AnalyzeContext) -> JSAssetAnalysis:
         """Run the full analysis pipeline over ``source``."""
         analyzers = self._analyzers
-        analysis = JSAssetAnalysis(asset=None)  # type: ignore[arg-type]  # asset set by base.run
+        analysis = JSAssetAnalysis(asset=None)  # type: ignore[arg-type] # asset set by base.run
         analysis.endpoints = analyzers.endpoint.analyze(source, context)
         analysis.routes = analyzers.route.analyze(source, context)
         analysis.configuration = analyzers.configuration.analyze(source, context)

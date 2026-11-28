@@ -3,10 +3,8 @@
 
 """API intelligence tool adapter registry.
 
-Builds and registers the API intelligence adapters (OpenAPI, Swagger, GraphQL,
-WebSocket, SOAP, hints) on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
-This is the single place that knows the API intelligence tool set, so callers
-(tests, the API service, the platform) never construct individual adapters.
+Builds and registers the API intelligence adapters (OpenAPI, Swagger, GraphQL, WebSocket, SOAP, hints) on an
+:class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

@@ -3,15 +3,7 @@
 
 """Base adapter for safe validation tools.
 
-Every safe validation tool integrates with HunterX through the Tool Integration
-SDK :class:`ToolAdapter` lifecycle. This base class defines the safe-probe
-contract: adapters receive a bounded, already-gated probe request through the
-execution parameters and serialize canonical observations into the pipeline JSON
-payload under the ``observations`` key.
-
-No validation adapter may bypass the SDK, and no adapter may perform destructive,
-weaponized or out-of-scope actions — the parameters it receives have already
-passed the scope and safety gates of the validation engine.
+Every safe validation tool integrates with HunterX through the Tool Integration SDK :class:`ToolAdapter` lifecycle.
 """
 
 from __future__ import annotations

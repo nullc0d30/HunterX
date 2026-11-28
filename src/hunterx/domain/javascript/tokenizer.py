@@ -3,23 +3,7 @@
 
 """Safe JavaScript tokenizer.
 
-A pure, dependency-free lexical scanner for JavaScript sources. The tokenizer
-produces a flat, lossy-safe stream of tokens (strings, template literals,
-identifiers, numbers, keywords, punctuation, comments) with precise line/column
-locations so downstream analyzers can attach evidence locations without ever
-executing or parsing the code.
-
-Safety properties:
-
-* no ``eval``, no AST construction, no code execution,
-* strings/templates/comments are scanned to their terminator with escape
-  handling, so adversarial input cannot break the scan,
-* comments (line and block) and template interpolation are surfaced as tokens
-  so secret/technology scanners can inspect them too.
-
-The tokenizer is intentionally NOT a full ECMAScript parser: it is a
-conservative lexer that never hangs on malformed input and always terminates
-on any finite source.
+A pure, dependency-free lexical scanner for JavaScript sources.
 """
 
 from __future__ import annotations
@@ -290,7 +274,7 @@ class JSTokenizer:
         """Return the identifier/member names referenced in ``source``.
 
         Handles dotted member chains and object shorthand keys. This is a
-        lexical approximation — no scope analysis is performed.
+        lexical approximation, no scope analysis is performed.
         """
         members: list[str] = []
         for token in self.tokenize(source):

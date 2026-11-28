@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Supply-chain security tooling.
-
-Generates CycloneDX SBOMs, validates the lock file is consistent with
-``pyproject.toml``, verifies license allow-lists, and produces a provenance
-manifest describing how artifacts were built. All outputs are deterministic
-and land under ``artifacts/``.
-"""
+"""Supply-chain security tooling."""
 
 from __future__ import annotations
 

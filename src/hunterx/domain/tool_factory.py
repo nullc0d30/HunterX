@@ -3,11 +3,8 @@
 
 """Tool Integration Factory domain models.
 
-The Tool Integration Factory generates standardized Tool Integration Packs —
-identical, validated project structures for every future security tool. This
-module defines the pack specification, the generated pack, its manifest,
-validation reports, semantic versioning, the compatibility matrix and the
-integration templates the generator engine renders from.
+The Tool Integration Factory generates standardized Tool Integration Packs, identical, validated project structures
+for every future security tool.
 """
 
 from __future__ import annotations

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the authentication intelligence domain contracts.
-
-Exercises the pure domain layer: canonical models, serialization round-trips,
-classification, confidence scoring, correlation, conflict detection, history
-diffing, scope enforcement, strategy and validation.
-"""
+"""Tests for the authentication intelligence domain contracts."""
 
 from __future__ import annotations
 

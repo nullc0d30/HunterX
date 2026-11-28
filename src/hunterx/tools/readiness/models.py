@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Readiness — pure data contracts.
+"""Tool Readiness, pure data contracts.
 
-Machine-readable definitions of external security tools, per-tool readiness
-verdicts, capability coverage and mission preflight results. These models are
-the shared vocabulary between the discovery, provisioning, readiness and
-preflight layers. No I/O happens here.
+Machine-readable definitions of external security tools, per-tool readiness verdicts, capability coverage and
+mission preflight results.
 """
 
 from __future__ import annotations
@@ -19,25 +17,7 @@ from typing import Any
 class ToolReadinessStatus(Enum):
     """Lifecycle states of a tool's readiness probe.
 
-    ``UNKNOWN`` — not yet probed.
-    ``DISCOVERING`` — probe in progress.
-    ``AVAILABLE`` — executable found, executability verified, version detected.
-    ``MISSING`` — executable not found on PATH (tool exists and is installable,
-        but is not currently installed).
-    ``BROKEN`` — executable exists but cannot execute / version probe failed.
-    ``SHADOWED`` — the resolved executable is NOT the expected security tool; a
-        same-named competitor (e.g. a Python package CLI) shadows the provider.
-    ``OUTDATED`` — installed version below the supported minimum.
-    ``MANUAL_ONLY`` — the tool is installable only through manual steps HunterX
-        will not automate (precise instructions are recorded).
-    ``NOT_CLI`` — the tool's useful operation requires a GUI/UI or a daemon; it
-        is excluded from the supported CLI catalog.
-    ``DEPRECATED`` — the tool is obsolete/unmaintained; retained only as
-        knowledge.
-    ``UNSUPPORTED`` — no installation method is declared for this tool.
-    ``PLATFORM_UNAVAILABLE`` — installation methods exist but none is
-        compatible with the current platform.
-    ``PROVISIONING_FAILED`` — an install attempt was made but verification failed.
+    ``UNKNOWN``, not yet probed.
 
     """
 
@@ -86,10 +66,10 @@ class AIProviderStatus(Enum):
 class PreflightStatus(Enum):
     """Mission preflight verdict.
 
-    ``PASS`` — every required capability has an available provider.
-    ``DEGRADED`` — required capabilities are satisfied; optional/recommended
+    ``PASS``, every required capability has an available provider.
+    ``DEGRADED``, required capabilities are satisfied; optional/recommended
         providers are missing (mission may run with reduced coverage).
-    ``BLOCKED`` — a required capability has no provider and provisioning is not
+    ``BLOCKED``, a required capability has no provider and provisioning is not
         possible or failed; the mission must not enter active execution.
 
     """
@@ -452,7 +432,7 @@ class InstallOutcome:
 class InstallProgress:
     """Live per-tool progress event emitted during provisioning.
 
-    The installer UI consumes these events to render ``[N/M] tool ... ✓``
+    The installer UI consumes these events to render ``[N/M] tool... ✓``
     lines without polluting the provisioning layer with terminal concerns.
 
     Attributes:

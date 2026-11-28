@@ -3,10 +3,8 @@
 
 """Topology temporal history.
 
-Compares the previous persisted topology with the newly correlated one and
-produces temporal changes (new/removed/changed). History merging preserves the
-earliest ``first_seen`` while advancing ``last_seen`` so the temporal model is
-append-only and explainable.
+Compares the previous persisted topology with the newly correlated one and produces temporal changes
+(new/removed/changed).
 """
 
 from __future__ import annotations

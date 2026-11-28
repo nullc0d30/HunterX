@@ -3,14 +3,8 @@
 
 """TruffleHog tool adapter.
 
-Integrates ``trufflehog`` — a secret scanner for repositories, filesystems and
-S3 buckets — into the Tool Integration SDK. The adapter requests JSONL output
-(``--json``) and parses each finding into canonical *redacted* secret records.
-
-SECURITY BOUNDARY: trufflehog JSON records contain the raw ``Secret`` value.
-This adapter drops it at parse time and persists only ``secret_type``,
-``location``, ``fingerprint``, ``masked_value``, ``source``, ``confidence`` and
-``provenance``.
+Integrates ``trufflehog``, a secret scanner for repositories, filesystems and S3 buckets, into the Tool Integration
+SDK.
 """
 
 from __future__ import annotations

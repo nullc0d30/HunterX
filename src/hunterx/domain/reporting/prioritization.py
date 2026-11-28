@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Finding prioritization engine.
-
-Priority is not severity: it combines severity, confidence, finding quality,
-asset criticality, exploitability, proof strength, attack-path position,
-business impact, exposure, remediation difficulty and root-cause recurrence
-into a P0-P4 ranking.
-"""
+"""Finding prioritization engine."""
 
 from __future__ import annotations
 

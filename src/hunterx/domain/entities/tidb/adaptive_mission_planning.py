@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive Mission & Attack-Path Planning — Target Intelligence Database entities.
-
-Sprint 027. System-of-record entities for the adaptive mission planning
-engine: missions, action nodes, dynamic dependencies, conditional branches,
-plan versions, plan deltas, decisions, attack paths, gaps, checkpoints,
-failures, tool fallbacks and tool selections. Each entity mirrors the pure
-domain model in ``hunterx.domain.adaptive_mission_planning``; the application
-service maps between them. Envelope (id, timestamps, versioning, soft-delete)
-comes from :class:`TidbEntity`.
-"""
+"""Adaptive Mission & Attack-Path Planning, Target Intelligence Database entities."""
 
 from __future__ import annotations
 

@@ -3,16 +3,7 @@
 
 """In-process signature detector adapter.
 
-The binary-free technology fingerprinting path. The adapter fetches the target
-through an injectable ``FetchFn`` seam, runs the
-:class:`~hunterx.domain.technology.detector.SignatureDetector` over the
-collected evidence and emits canonical technology observations — the fallback
-detector that requires no external tool (like tcp-connect and dnspython in
-earlier capabilities).
-
-Unlike binary adapters this adapter has no CLI; ``run`` collects evidence
-in-process so unit tests never touch the network:
-``SignatureAdapter(fetch=fake_fetch, detector=SignatureDetector())``.
+The binary-free technology fingerprinting path.
 """
 
 from __future__ import annotations

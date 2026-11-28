@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Transaction integrity tests (Sprint 034.3 §19).
-
-Verifies that multi-step persistence operations never leave the database in an
-invalid partial state: ``save_many`` batches are atomic, a constraint violation
-rolls back cleanly, and a failed write in a finding→evidence→proof flow leaves
-no half-written rows and preserves prior committed state.
-"""
+"""Transaction integrity tests (19)."""
 
 from __future__ import annotations
 

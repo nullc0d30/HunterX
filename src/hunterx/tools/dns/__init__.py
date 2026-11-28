@@ -3,11 +3,8 @@
 
 """DNS tool adapters.
 
-Integrates the DNS tooling (ProjectDiscovery ``dnsx`` binary and the
-``dnspython`` active resolver) into the Tool Integration SDK. Every adapter
-emits canonical :class:`~hunterx.domain.dns.models.DnsRecord` instances into
-the pipeline payload under ``dns_records``; the active resolver client provides
-pooling, retries, deduplication and caching for in-process resolution.
+Integrates the DNS tooling (ProjectDiscovery ``dnsx`` binary and the ``dnspython`` active resolver) into the Tool
+Integration SDK.
 """
 
 from hunterx.tools.dns.base import DnsToolAdapter

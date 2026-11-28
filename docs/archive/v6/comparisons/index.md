@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Comparisons — HunterX vs Other Scanners
+title: Comparisons - HunterX vs Other Scanners
 description: >-
   Objective feature and architecture comparisons between HunterX and other
   vulnerability scanners: Nuclei, OWASP ZAP, Burp Suite Professional, and

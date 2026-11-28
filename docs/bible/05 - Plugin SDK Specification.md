@@ -1,7 +1,5 @@
-# 05 — Plugin SDK Specification
+# 05, Plugin SDK Specification
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Plugin authors, Plugin Host, Registry, Marketplace
 **Schema:** `config/plugin.schema.yaml`
 
@@ -37,28 +35,28 @@ Only the public SDK (`hunterx.plugins.sdk`) is available.
 
 ```
 manifest written
-  → VALIDATED        (schema + dependency check)
-  → SIGNED           (signature required for full trust)
-  → REGISTERED       (catalogued in Registry)
-  → INSTALLED        (files placed in managed plugin store)
-  → LOADED           (imported into isolated host, permissions bound)
-  → EXECUTING        (active; hooks/detectors fire)
-  → UPDATED          (new version replaces old; migration hooks run)
-  → UNLOADED         (clean shutdown, resources released)
-  → REMOVED          (uninstalled; data retention per policy)
-  → (BANNED)         (quarantine after security incident)
+ → VALIDATED (schema + dependency check)
+ → SIGNED (signature required for full trust)
+ → REGISTERED (catalogued in Registry)
+ → INSTALLED (files placed in managed plugin store)
+ → LOADED (imported into isolated host, permissions bound)
+ → EXECUTING (active; hooks/detectors fire)
+ → UPDATED (new version replaces old; migration hooks run)
+ → UNLOADED (clean shutdown, resources released)
+ → REMOVED (uninstalled; data retention per policy)
+ → (BANNED) (quarantine after security incident)
 ```
 
 State diagram:
 
 ```
-           validate ──► signed ──► registered ──► installed ──► loaded ──► executing
-              │                                          ▲             │
-              ▼                                          │             ▼
-          REJECTED ───────────────────────────────► unloaded ◄──► updated
-                                                       │
-                                                       ▼
-                                                  removed / banned
+ validate ──► signed ──► registered ──► installed ──► loaded ──► executing
+ │ ▲ │
+ ▼ │ ▼
+ REJECTED ───────────────────────────────► unloaded ◄──► updated
+ │
+ ▼
+ removed / banned
 ```
 
 ### 2.1 Lifecycle Events
@@ -88,39 +86,39 @@ api_version: "1.0"
 id: com.example.sec.slack-notifier
 name: Slack Notifier
 description: Posts finding events to a Slack channel.
-version: 1.4.2          # SemVer
+version: 1.4.2 # SemVer
 type: hook
 author:
-  name: Example Corp
-  email: security@example.com
-  url: https://example.com
+ name: Example Corp
+ email: security@example.com
+ url: https://example.com
 license: Apache-2.0
 python_requires: ">=3.11,<3.14"
 engine_compatibility:
-  core_min: "6.0.0"
-  core_max: "7.0.0"
+ core_min: "6.0.0"
+ core_max: "7.0.0"
 sdk_min: "1.0.0"
 dependencies:
-  - id: com.example.sec.http
-    version: ">=2.0.0"
-  - python: { requests: ">=2.28" }
+ - id: com.example.sec.http
+ version: ">=2.0.0"
+ - python: { requests: ">=2.28" }
 permissions:
-  network: [outbound-https]     # capability-based
-  filesystem: { read: [], write: [] }
-  process: { execute: false }
-  secrets: [SLACK_WEBHOOK_URL]
+ network: [outbound-https] # capability-based
+ filesystem: { read: [], write: [] }
+ process: { execute: false }
+ secrets: [SLACK_WEBHOOK_URL]
 entry_points:
-  hooks:
-    - event: finding.created
-      handler: plugin:handle_finding
-      priority: 100
+ hooks:
+ - event: finding.created
+ handler: plugin:handle_finding
+ priority: 100
 resources:
-  max_memory_mb: 256
-  max_runtime_s: 60
+ max_memory_mb: 256
+ max_runtime_s: 60
 signing:
-  key_id: "0123..."
-  algorithm: ed25519
-  signature: "base64..."
+ key_id: "0123..."
+ algorithm: ed25519
+ signature: "base64..."
 ```
 
 ### 3.1 Mandatory Fields
@@ -136,11 +134,11 @@ signing:
 ## 4. Registration
 
 - Registration happens at **startup scan** (plugin store directories) and
-  **runtime install** (`hunterx plugin install <src>`).
+ **runtime install** (`hunterx plugin install <src>`).
 - Registry maintains the active catalog: `plugin_id → manifest + state + hash`.
 - No two plugins may claim the same `id`; a version conflict between two plugins
-  requiring incompatible `core`/`sdk` ranges is a **hard conflict** → the later
-  one is rejected with a clear error.
+ requiring incompatible `core`/`sdk` ranges is a **hard conflict** → the later
+ one is rejected with a clear error.
 - Registration is **idempotent**: re-registering the same `(id, version)` is a no-op.
 
 ---
@@ -148,32 +146,32 @@ signing:
 ## 5. Loading & Hosting
 
 - Plugins load into an **isolated runtime** (subprocess host by default;
-  container host for untrusted plugins). The core talks to the host over the
-  host ABI (JSON messages or IPC), never direct imports for untrusted code.
+ container host for untrusted plugins). The core talks to the host over the
+ host ABI (JSON messages or IPC), never direct imports for untrusted code.
 - Loading sequence:
-  1. Verify signature (if present) against trusted keys.
-  2. Validate manifest again (defense in depth).
-  3. Instantiate the host with declared permissions.
-  4. Import entry-point modules; bind handlers.
-  5. Call `on_load(context)`; on exception → `plugin.rejected`, plugin disabled.
+ 1. Verify signature (if present) against trusted keys.
+ 2. Validate manifest again (defense in depth).
+ 3. Instantiate the host with declared permissions.
+ 4. Import entry-point modules; bind handlers.
+ 5. Call `on_load(context)`; on exception → `plugin.rejected`, plugin disabled.
 - Load failures are non-fatal to the core; the plugin is marked `disabled`
-  with the error recorded.
+ with the error recorded.
 
 ---
 
 ## 6. Execution Model
 
 - Hooks and detectors receive a **`PluginContext`** with: scope envelope,
-  correlation id, mission id, read-only domain views, and typed request/response
-  primitives.
+ correlation id, mission id, read-only domain views, and typed request/response
+ primitives.
 - Execution is bounded: `resources.max_runtime_s`, `max_memory_mb` enforced by
-  the host. Violation → kill + `plugin.banned` (transient) or downgrade.
+ the host. Violation → kill + `plugin.banned` (transient) or downgrade.
 - Hooks run synchronously per event but may schedule async work; the host
-  enforces the deadline.
+ enforces the deadline.
 - Return contract: hooks return an optional `PluginResult` (continue/abort/
-  modify). Detectors return `DetectorResult` (boolean + evidence).
+ modify). Detectors return `DetectorResult` (boolean + evidence).
 - Errors: plugin errors are isolated; a throwing hook never crashes the core.
-  The event is logged with the plugin id and `correlation_id`.
+ The event is logged with the plugin id and `correlation_id`.
 
 ---
 
@@ -205,13 +203,13 @@ Rules:
 ## 8. Dependencies
 
 - `dependencies` may reference other plugins (by `id` + version range) and
-  Python packages.
+ Python packages.
 - Resolution at install/load: satisfies ranges, detects conflicts, produces a
-  deterministic resolution graph.
+ deterministic resolution graph.
 - Plugins cannot load if a dependency is missing or incompatible; error lists
-  the missing/incompatible item.
+ the missing/incompatible item.
 - Python package dependencies install into the plugin's own environment
-  (venv or container), never the core environment.
+ (venv or container), never the core environment.
 
 ---
 
@@ -220,22 +218,22 @@ Rules:
 Two layers:
 
 1. **Schema validation** (install time): manifest against
-   `plugin.schema.yaml`; failure → reject with line-level errors.
+ `plugin.schema.yaml`; failure → reject with line-level errors.
 2. **Behavior validation** (load time): entry points resolve, handlers are
-   callable with the expected signature, permissions are consistent.
+ callable with the expected signature, permissions are consistent.
 3. **Sandbox validation** (CI/publish time, for marketplace): automated
-   `plugin test` runs in a container with a safety harness (see
-   `15 - Testing Standards.md`).
+ `plugin test` runs in a container with a safety harness (see
+ `15 - Testing Standards.md`).
 
 ---
 
 ## 10. Versioning
 
 - SemVer 2.0.0 strictly. Breaking manifest/entry-point changes require a
-  **major** bump of the *SDK* and a bump of `sdk_min`/`api_version` in plugins.
+ **major** bump of the *SDK* and a bump of `sdk_min`/`api_version` in plugins.
 - Core engine compatibility is expressed by `engine_compatibility.core_min/max`.
 - On `plugin.updated`, the host runs optional `migrations:` hooks (from the new
-  manifest) before switching versions.
+ manifest) before switching versions.
 
 ---
 
@@ -243,19 +241,19 @@ Two layers:
 
 - `hunterx plugin remove <id>` → `unload → remove files → purge registrations`.
 - Removal is transactional: if unload fails, files remain and the plugin is
-  marked `remove-pending`.
+ marked `remove-pending`.
 - Data created by a plugin is retained per `data retention` policy
-  (see `09 - Database Design.md` §Retention); removal does not cascade-delete
-  evidence or findings that are still referenced.
+ (see `09 - Database Design.md` §Retention); removal does not cascade-delete
+ evidence or findings that are still referenced.
 
 ---
 
 ## 12. Updates
 
 - `hunterx plugin update <id>` resolves the newest compatible version from the
-  marketplace or local source.
+ marketplace or local source.
 - Update is atomic: new version validates in a staging host first; on success,
-  old version unloads, new loads; on failure, old version remains active.
+ old version unloads, new loads; on failure, old version remains active.
 - Rolling back to a previous version is supported (`hunterx plugin pin`).
 
 ---
@@ -299,7 +297,7 @@ The SDK exposes (namespaced, stable, versioned):
 - Read-only domain views (`TargetView`, `FindingView`, `EvidenceView`).
 - Capability enum and permission helpers.
 - Typed request/response primitives for hooks and skills.
-- `on_load`, `on_unload`, `health()` hooks.
+- `on_load`, `on_unload`, `health` hooks.
 
 Anything not in this surface is **private** and may change without notice.
 

@@ -4,9 +4,6 @@
 """Standard Tool Integration Pack layout.
 
 Every Tool Integration Pack follows exactly the same directory structure.
-No custom layouts are allowed: the layout is the contract. Generators emit
-files for every path below and the validator enforces that no required file
-is missing.
 """
 
 from __future__ import annotations

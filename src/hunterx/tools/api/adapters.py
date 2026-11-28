@@ -3,22 +3,7 @@
 
 """API intelligence tool adapters.
 
-Six SDK adapters implement the API Discovery & API Attack-Surface Intelligence
-tool set:
-
-* ``api-openapi`` — locates and parses OpenAPI 2/3/3.1 (JSON/YAML) documents.
-* ``api-swagger`` — locates Swagger 2.0 documents and Swagger UI endpoints.
-* ``api-graphql`` — models GraphQL surfaces from SDL or discovered endpoints.
-* ``api-websocket`` — models WebSocket endpoints from discovered hints.
-* ``api-soap`` — locates and parses WSDL 1.1/2.0 documents.
-* ``api-hints`` — folds existing web/JS/technology intelligence into API
-  observations (the passive, traffic-free path).
-
-Active adapters probe well-known spec URLs only when the run posture is not
-``passive`` and the target origin is in scope; all fetching flows through an
-injectable seam (``FetchedPage``) so unit tests stay hermetic. Spec content can
-also be supplied directly via parameters (``spec_content``/``wsdl_content``/
-``sdl``), which is the passive and test path.
+Six SDK adapters implement the API Discovery & API Attack-Surface Intelligence tool set.
 """
 
 from __future__ import annotations

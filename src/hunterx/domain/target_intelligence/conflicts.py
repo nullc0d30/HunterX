@@ -3,11 +3,7 @@
 
 """Intelligence Conflict Resolution.
 
-Sprint 026. When Tool A says "vulnerable" and Tool B says "not vulnerable",
-HunterX never auto-chooses one. The conflict is preserved and triggers
-additional validation or higher-quality evidence collection. This module
-detects conflicts from observations and manages their lifecycle (open →
-escalated → resolved).
+When Tool A says "vulnerable" and Tool B says "not vulnerable", HunterX never auto-chooses one.
 """
 
 from __future__ import annotations

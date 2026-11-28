@@ -3,9 +3,8 @@
 
 """Master profile registry.
 
-Stores the complete, authoritative per-tool :class:`ToolMasterProfile`
-records together with the arsenal-level relationship graph, playbooks,
-datasets and mission models. Thread-safe, keyed by ``tool_id``.
+Stores the complete, authoritative per-tool :class:`ToolMasterProfile` records together with the arsenal-level
+relationship graph, playbooks, datasets and mission models.
 """
 
 from __future__ import annotations

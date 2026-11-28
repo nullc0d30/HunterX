@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Performance Tests.
+# HunterX - Performance Tests.
 #
 # Runs the pytest-benchmark performance suite and the performance quality gate
 # (benchmark drift + slow-test detection). The baseline is committed under

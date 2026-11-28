@@ -1,8 +1,5 @@
-"""technology intelligence tables
-
-Revision ID: 7ab1a304e8bb
-Revises: 7f1c9a2b0e4d
-Create Date: 2026-08-08 18:04:14.487703
+"""technology intelligence tables Revision ID: 7ab1a304e8bb Revises: 7f1c9a2b0e4d Create Date: 2026-08-08
+18:04:14.487703.
 
 """
 from collections.abc import Sequence

@@ -3,11 +3,8 @@
 
 """Target Intelligence State assembly & scoring.
 
-Sprint 026. Assembles the :class:`TargetIntelligenceState` snapshot from the
-stores and computes the explainable multi-dimension intelligence score. The
-score never collapses into a single opaque number: each dimension is reported
-with its weight and the aggregate is a weighted combination recorded for
-explainability.
+Assembles the :class:`TargetIntelligenceState` snapshot from the stores and computes the explainable multi-dimension
+intelligence score.
 """
 
 from __future__ import annotations
@@ -132,7 +129,7 @@ def recommend_phase(
 ) -> IntelligencePhase:
     """Recommend the next intelligence phase from the current state.
 
-    The recommendation is derived from coverage, unknowns and hypothesis state —
+    The recommendation is derived from coverage, unknowns and hypothesis state,
     never from a hardcoded tool sequence. The highest phase whose preconditions
     hold is returned, so a fully-covered target advances to PROOF/REPORTING
     rather than stalling at DISCOVERY.

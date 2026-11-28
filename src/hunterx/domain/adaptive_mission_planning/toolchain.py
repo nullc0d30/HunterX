@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool selection, tool chains and failure recovery.
-
-The planner selects tools through the Sprint 025 Tool Mastery port, builds
-capability-driven tool chains dynamically (never a hardcoded pipeline) and
-recovers from failures by classifying them and choosing retry / retry
-differently / replace tool / change strategy / pause / mark unavailable /
-replan. Tool substitution is capability-checked, never blind.
-"""
+"""Tool selection, tool chains and failure recovery."""
 
 from __future__ import annotations
 
@@ -30,7 +23,7 @@ from hunterx.domain.adaptive_mission_planning.models import (
 
 
 class ToolMasterySelector(Protocol):
-    """The Sprint 025 mission-aware selector surface the planner uses."""
+    """The mission-aware selector surface the planner uses."""
 
     def select(
         self,
@@ -51,7 +44,7 @@ class ToolSelectionEngine:
     """Select tools for action nodes through the mastery selector.
 
     Args:
-        selector: Sprint 025 selector (or adapter exposing ``select``).
+        selector: selector (or adapter exposing ``select``).
         mission_type: mission type string forwarded to the selector.
         default_candidates: fallback tool families per capability when the
             selector yields nothing (deterministic fallback planning).
@@ -152,7 +145,7 @@ class ToolChainPlanner:
     """Build a capability-driven, dependency-aware tool chain.
 
     The chain is generated from the required capabilities in order; the exact
-    chain is not hardcoded — it emerges from the target state and the selected
+    chain is not hardcoded, it emerges from the target state and the selected
     tools.
     """
 

@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sandbox policy versus enforcement (Sprint 034.4 §7, §32).
+"""Sandbox policy versus enforcement (7,).
 
-The certification rule: a class/policy is NOT enforcement. These tests pin the
-*actual* behavior of each sandbox layer so the boundary is honest:
-
-- :class:`~hunterx.plugins.sandbox.SandboxPolicy` is permission *policy* only.
-- :class:`~hunterx.infrastructure.sandbox.SubprocessSandbox` is a fresh-interpreter
-  + timeout boundary, NOT an OS sandbox (no rlimit, no seccomp, no mount
-  isolation). ``allowed_imports`` is an allow-list *policy*; Python itself can
-  bypass it via ``__import__``.
-- :class:`~hunterx.tools.sdk.sandbox.ExecutionSandbox` enforces declared
-  permissions, secret-gated environment construction and secret masking.
+The certification rule: a class/policy is NOT enforcement.
 """
 
 from __future__ import annotations
@@ -59,7 +50,8 @@ def test_plugin_policy_is_not_os_isolation() -> None:
 def test_subprocess_sandbox_allowed_imports_is_policy_not_enforcement() -> None:
     """The ``allowed_imports`` allow-list is advisory: Python can bypass it via
     ``__import__``. The sandbox therefore must never be relied on for hostile
-    code containment — documented as a policy-only boundary."""
+    code containment, documented as a policy-only boundary.
+    """
     sandbox = SubprocessSandbox(allowed_imports=())
     result = sandbox.run("print(__import__('os').name)")
     assert result.strip() == "posix" or result.strip() == "nt"

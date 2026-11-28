@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Executable command knowledge for the integrated external toolchain.
-
-Machine-actionable invocation knowledge (command, arguments, argument types,
-defaults, output formats, parser, supported modes, target binding) for every
-external tool HunterX claims to integrate. This module enriches the canonical
-Tool Intelligence Platform (TIP) registry — the TIP remains the single source
-of truth. There is no second tool registry and no second tool list.
-
-Registration is additive and idempotent: fields already populated by the
-platform tool registrations are never overwritten.
-"""
+"""Executable command knowledge for the integrated external toolchain."""
 
 from __future__ import annotations
 
@@ -28,7 +18,7 @@ from hunterx.domain.tool_intelligence import (
 from hunterx.tools.intelligence.api import ToolIntelligenceAPI
 
 #: Per-tool command knowledge merged into the TIP knowledge contract.
-#: Keys: cli_binary, arguments, outputs (formats/parser/normalizer), safe_mode,
+# : Keys: cli_binary, arguments, outputs (formats/parser/normalizer), safe_mode
 #: inputs (accepts/required/optional), modes, safety_class.
 COMMAND_KNOWLEDGE: dict[str, dict[str, Any]] = {
     # -- content discovery ----------------------------------------------------

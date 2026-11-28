@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission-loop tests for the aggressive, adaptive attack engine.
-
-Proves the Phase 2 behavior inside the real mission runner: execution outcomes
-drive the target-feedback state machine, the bounded aggression tier reaches
-tool execution contexts, healthy targets escalate controlled aggression while
-defensive targets throttle — and defensive responses are never converted into
-mission completion.
-"""
+"""Mission-loop tests for the aggressive, adaptive attack engine."""
 
 from __future__ import annotations
 
@@ -126,7 +119,7 @@ class TestAdaptiveThrottling:
         runner, orchestration, mission_id = _runner(engine, adaptive_attack_factory=_fresh_adaptive())
         result = runner.run(mission_id, max_cycles=16)
         adaptive = result["adaptive_attack"]
-        # The runner observed defensive (429) feedback: throttling is feedback,
+        # The runner observed defensive (429) feedback: throttling is feedback
         # never a reason to fabricate completion (or to hang forever).
         assert adaptive is not None
         mission = orchestration.get(mission_id)
@@ -143,7 +136,7 @@ class TestAdaptiveThrottling:
         engine = FakeExecutionEngine(outputs=_throttling_outputs())
         runner, orchestration, mission_id = _runner(engine, adaptive_attack_factory=_fresh_adaptive())
         runner.run(mission_id, max_cycles=16)
-        service = runner._adaptive_attack  # noqa: SLF001  (component test)
+        service = runner._adaptive_attack  # noqa: SLF001 (component test)
         assert service is not None
         signals = [sample.signal.value for sample in service.monitor.signals()]
         assert any(signal in ("rate_limited", "server_error", "access_denied") for signal in signals)
@@ -159,7 +152,7 @@ class TestAdaptiveThrottling:
         assert adaptive["aggression"] in ("medium", "high", "maximum")
 
     def test_blocking_is_never_completion(self) -> None:
-        """Persistent hard blocking reports BLOCKED — never a success stop."""
+        """Persistent hard blocking reports BLOCKED, never a success stop."""
         from hunterx.application.adaptive_attack import AdaptiveAttackService
         from hunterx.domain.adaptive_attack.control import AdaptiveRateController, AttackControlConfig
 

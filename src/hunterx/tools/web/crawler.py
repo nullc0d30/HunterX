@@ -3,17 +3,7 @@
 
 """In-process web crawler adapter.
 
-The binary-free crawling path. The adapter walks a bounded, in-scope crawl of
-the target: it fetches pages through the injectable :data:`WebFetchFn` seam,
-follows links up to a depth ceiling, records redirects, and runs the domain
-parsers over each page to discover API/WebSocket/GraphQL endpoints and
-authentication boundaries. It emits canonical crawl observations as a JSON
-payload under the ``crawl`` key.
-
-Scope is enforced by :class:`~hunterx.domain.web.scope.WebScopeEnforcer`
-built from execution parameters and is fail-closed: with no roots configured
-nothing is fetched. Redirect targets and discovered infrastructure are
-recorded as observations but never fetched out of scope.
+The binary-free crawling path.
 """
 
 from __future__ import annotations

@@ -1,8 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for execution SDK components: sandbox, resources, timeout, retry,
-locks, cache and queue."""
+"""Tests for execution SDK components: sandbox, resources, timeout, retry, locks, cache and queue."""
 
 from __future__ import annotations
 

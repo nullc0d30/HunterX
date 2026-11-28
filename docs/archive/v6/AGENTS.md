@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Autonomous Multi-Agent Platform — HunterX v6.0.0
+title: Autonomous Multi-Agent Platform - HunterX v6.0.0
 description: >-
   Multi-agent platform for HunterX red team framework. 10 specialized
   AI-assisted agents for automated vulnerability assessment, penetration testing,
@@ -20,7 +20,7 @@ HunterX v6.0.0 employs a multi-agent architecture where specialized agents colla
 
 All components are implemented under `core/agents/`.
 
-### base.py — SecurityAgent Abstract Class
+### base.py - SecurityAgent Abstract Class
 
 The foundational abstract class for all agents. Defines 18 methods that every agent must implement:
 
@@ -45,7 +45,7 @@ The foundational abstract class for all agents. Defines 18 methods that every ag
 | `recall_memory()` | Retrieve a value from agent memory |
 | `clear_memory()` | Wipe the agent's memory store |
 
-### orchestrator.py — AgentOrchestrator
+### orchestrator.py - AgentOrchestrator
 
 Central coordinator responsible for loading agents, delegating goals to capable agents, and executing workflows. The orchestrator is the entry point for all multi-agent operations.
 
@@ -55,55 +55,55 @@ Central coordinator responsible for loading agents, delegating goals to capable 
 - Execute workflows (DAG-based) through the WorkflowEngine
 - Monitor agent health and manage lifecycle
 
-### registry.py — AgentRegistry
+### registry.py - AgentRegistry
 
 A singleton registry that maintains the catalog of all available agents. Supports plugin discovery for dynamic agent loading.
 
 **Methods:**
-- `register(agent)` — Register an agent instance
-- `unregister(agent_id)` — Remove an agent from the registry
-- `list()` — List all registered agents
-- `find_by_capability(capability)` — Find agents that provide a specific capability
-- Plugin discovery — Auto-detect and register agents from plugin directories
+- `register(agent)` - Register an agent instance
+- `unregister(agent_id)` - Remove an agent from the registry
+- `list()` - List all registered agents
+- `find_by_capability(capability)` - Find agents that provide a specific capability
+- Plugin discovery - Auto-detect and register agents from plugin directories
 
-### coordinator.py — AgentCoordinator
+### coordinator.py - AgentCoordinator
 
 Routes goals to capable agents and facilitates multi-provider consensus when multiple agents can satisfy a goal. The coordinator consults the AgentRegistry to identify suitable agents and manages the delegation lifecycle.
 
-### capabilities.py — Capability System
+### capabilities.py - Capability System
 
 Defines 17 `AgentCapability` enum values representing discrete capabilities that agents can advertise. The `CapabilityRegistry` manages capability-to-agent mappings for efficient goal routing.
 
-### events.py — EventBus
+### events.py - EventBus
 
 A singleton event bus supporting publish/subscribe messaging with 25 distinct event types. Features include wildcard subscription patterns and event history retrieval for audit and debugging.
 
-### messaging.py — MessageBus
+### messaging.py - MessageBus
 
 A singleton message bus providing four communication patterns:
-- **Request/Response** — Direct agent-to-agent queries
-- **Broadcast** — One-to-many notifications
-- **Notification** — One-to-one targeted messages
-- **Cancellation** — Abort in-flight operations
+- **Request/Response** - Direct agent-to-agent queries
+- **Broadcast** - One-to-many notifications
+- **Notification** - One-to-one targeted messages
+- **Cancellation** - Abort in-flight operations
 
-### state.py — StateManager
+### state.py - StateManager
 
 Manages three categories of state:
-- **Agent state** — Per-agent operational state
-- **Workflow state** — State of in-progress and completed workflows
-- **Task state** — State of individual tasks
+- **Agent state** - Per-agent operational state
+- **Workflow state** - State of in-progress and completed workflows
+- **Task state** - State of individual tasks
 
 Supports **snapshots** (full state capture) and **checkpoints** (point-in-time saves for recovery).
 
-### task.py — AgentTask
+### task.py - AgentTask
 
 Represents a unit of work with a full status lifecycle. Key properties include priority, dependencies (for ordering), and retry configuration. Tasks transition through defined states as they are processed.
 
-### scheduler.py — AgentScheduler
+### scheduler.py - AgentScheduler
 
 Manages task execution using a priority queue. Features include dependency resolution (tasks execute only after their dependencies complete), concurrent execution, and automatic retry on failure.
 
-### workflow.py — WorkflowEngine
+### workflow.py - WorkflowEngine
 
 Executes DAG-based workflows composed of steps. Supports five step types:
 
@@ -115,17 +115,17 @@ Executes DAG-based workflows composed of steps. Supports five step types:
 | `wait` | Pause execution for a specified duration or until a condition |
 | (default/sequential) | Execute steps in order |
 
-Supports **checkpoint/resume** — workflows can be paused at checkpoints and resumed later.
+Supports **checkpoint/resume** - workflows can be paused at checkpoints and resumed later.
 
-### planner.py — AgentPlanner
+### planner.py - AgentPlanner
 
 Maps high-level goals to capable agents by consulting the CapabilityRegistry. Produces execution plans that the orchestrator and scheduler carry out.
 
-### memory.py — AgentMemory
+### memory.py - AgentMemory
 
 Per-agent key-value store with configurable TTL (time-to-live) and LRU (least-recently-used) eviction. Each agent maintains its own isolated memory partition.
 
-### context.py — AgentContext
+### context.py - AgentContext
 
 A unified context object that aggregates information from multiple sources:
 - Knowledge Graph
@@ -185,11 +185,11 @@ Handles inter-agent coordination, goal delegation, and conflict resolution. Acts
 
 ## Key Principles
 
-- **No direct AI provider communication** — Agents express goals only; the Reasoning Engine converts goals into AI tasks and returns validated results.
-- **Event-driven communication** — Agents communicate exclusively through the EventBus and MessageBus.
-- **DAG-based workflows** — All workflows are directed acyclic graphs supporting conditional branching, parallel execution, looping, and wait steps.
-- **Isolated memory** — Each agent maintains its own memory store with configurable TTL and LRU eviction policy.
-- **State persistence** — Agent, workflow, and task state can be snapshotted and checkpointed for recovery and audit.
+- **No direct AI provider communication** - Agents express goals only; the Reasoning Engine converts goals into AI tasks and returns validated results.
+- **Event-driven communication** - Agents communicate exclusively through the EventBus and MessageBus.
+- **DAG-based workflows** - All workflows are directed acyclic graphs supporting conditional branching, parallel execution, looping, and wait steps.
+- **Isolated memory** - Each agent maintains its own memory store with configurable TTL and LRU eviction policy.
+- **State persistence** - Agent, workflow, and task state can be snapshotted and checkpointed for recovery and audit.
 
 ---
 

@@ -3,10 +3,7 @@
 
 """Safe validation tool adapter registry.
 
-Registers the built-in safe validation adapters on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the safe-validation tool set, so callers (the validation engine,
-tests, the platform) never construct individual adapters.
+Registers the built-in safe validation adapters on an :class:`~hunterx.tools.sdk.engine.ExecutionEngine`.
 """
 
 from __future__ import annotations

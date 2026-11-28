@@ -2,9 +2,7 @@
   "capability": "target-memory-campaign-intelligence",
   "name": "Target Memory & Campaign Intelligence Engine",
   "version": "1.0.0",
-  "wave": 15,
-  "sprint": 30,
-  "status": "ratified",
+  "status": "stable",
   "description": "The historical intelligence capability that makes HunterX remember what it already knows, understand what changed, understand what was already tested, understand what failed, understand what remains unknown, and use that memory to plan the next authorized mission. It maintains a persistent, queryable historical understanding of every authorized target by referencing canonical entities (Target Intelligence, TIDB, Finding, Evidence, Mission, Knowledge, Correlation, PoC) - never duplicating them. Memory is treated as untrusted input: confidence, corroboration, freshness, source reliability and contradiction handling always gate what memory is allowed to redefine.",
   "inputs": [
     "immutable observations from Target Intelligence / tools",

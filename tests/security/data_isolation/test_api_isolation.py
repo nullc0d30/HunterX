@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Data-isolation tests through the public API (Sprint 034.3 §4, §5).
+"""Data-isolation tests through the public API (4,).
 
-TARGET-A / MISSION-A and TARGET-B / MISSION-B are populated through the HTTP
-API. The suite verifies that scoped reads never leak another target's or
-mission's intelligence, and that secret-like material never appears in API
-responses.
+TARGET-A / MISSION-A and TARGET-B / MISSION-B are populated through the HTTP API.
 """
 
 from __future__ import annotations

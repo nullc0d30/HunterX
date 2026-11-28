@@ -3,16 +3,7 @@
 
 """Naabu tool adapter.
 
-Integrates ProjectDiscovery's ``naabu`` — a fast port scanner — into the Tool
-Integration SDK. The adapter builds the CLI command from the execution context
-(target, ports, protocol, rate controls, concurrency), parses the JSONL output
-(``{"host", "port", "protocol", "reason"}``) into canonical
-:class:`PortFinding` records and publishes them on the execution output.
-
-CLI contract (verified against ProjectDiscovery docs):
-    ``naabu -host <target> -p <ports> -silent -json`` emits one JSON line per
-    discovered (open) port; ``-sU`` enables UDP scanning, ``-rate`` limits the
-    packet rate and ``-c`` sets concurrency.
+Integrates ProjectDiscovery's ``naabu``, a fast port scanner, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

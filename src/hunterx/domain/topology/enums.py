@@ -3,9 +3,8 @@
 
 """Topology enums.
 
-Canonical relationship types, entity kinds and derived-state enums for the
-network-mapping & attack-surface topology capability. Pure values shared by the
-domain, application and persistence layers.
+Canonical relationship types, entity kinds and derived-state enums for the network-mapping & attack-surface topology
+capability.
 """
 
 from __future__ import annotations

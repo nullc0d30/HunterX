@@ -3,16 +3,7 @@
 
 """End-to-end Target Memory & Campaign Intelligence test.
 
-Runs the Sprint 030 acceptance scenario through the composed platform:
-
-* MISSION 1 discovers assets/endpoints/technologies, validates a finding and
-  stores memory (observations, mission memory, hypothesis memory, tool
-  provenance, findings, snapshot).
-* MISSION 2 loads target memory, detects changes, identifies stale
-  observations and coverage gaps, prioritizes the changed attack surface,
-  executes planned validation and updates memory (second snapshot + diff).
-* CAMPAIGN INTELLIGENCE answers what changed, was discovered, was fixed,
-  remains vulnerable/untested and what should happen next.
+Runs the acceptance scenario through the composed platform.
 """
 
 from __future__ import annotations

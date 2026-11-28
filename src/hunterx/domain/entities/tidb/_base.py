@@ -3,15 +3,7 @@
 
 """Base for all Target Intelligence Database (TIDB) entities.
 
-TIDB entities are pure domain dataclasses. Every entity carries the shared
-system-of-record fields required by the Development Bible (`09 - Database
-Design.md` §3, §6): identity, assertion-time stamps (``created_at`` /
-``updated_at``), state-time stamps (``first_seen`` / ``last_seen``), and
-versioning/soft-delete support (``version``, ``revision``, ``schema_version``,
-``deleted_at``).
-
-Entities are deliberately storage-agnostic: the SQL adapter maps them to ORM
-rows and back via a generic row mapper (``infrastructure.db.sql.repositories``).
+TIDB entities are pure domain dataclasses.
 """
 
 from __future__ import annotations

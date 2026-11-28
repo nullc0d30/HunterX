@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Reporting Configuration — HunterX v6.0.0
+title: Reporting Configuration - HunterX v6.0.0
 keywords: HunterX Reporting, Output Directory, Evidence Level, Visualization
 description: >-
   Reference for HunterX reporting configuration. Learn how to configure output

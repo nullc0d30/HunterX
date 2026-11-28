@@ -3,15 +3,8 @@
 
 """Subfinder tool adapter.
 
-Integrates ProjectDiscovery's ``subfinder`` — a fast, passive subdomain
-enumeration tool — into the Tool Integration SDK. The adapter builds the CLI
-command from the execution context (mode, sources, rate limits), parses the
-JSONL output (``{"host", "ip", "source"}``) into canonical discovery records and
-publishes them on the execution output.
-
-CLI contract (verified against ProjectDiscovery docs):
-    ``subfinder -d <domain> -silent -oJ -cs`` emits JSONL to stdout; adding
-    ``-nW -oI`` enables active resolution and includes resolved IP addresses.
+Integrates ProjectDiscovery's ``subfinder``, a fast, passive subdomain enumeration tool, into the Tool Integration
+SDK.
 """
 
 from __future__ import annotations

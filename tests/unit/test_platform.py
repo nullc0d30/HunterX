@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the platform composition root.
-
-Covers platform assembly (``hunterx.platform.assembler.build_platform``),
-container wiring of every port and service, adapter selection from settings,
-the four v7 facades and their Core Engine integration, and the API/CLI entry
-points that consume a composed platform.
-"""
+"""Tests for the platform composition root."""
 
 from __future__ import annotations
 

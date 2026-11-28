@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Security Tests & Security Pipeline.
+# HunterX - Security Tests & Security Pipeline.
 #
 # Runs the SAST/SCA/secret-scanning pipeline (bandit, semgrep, pip-audit,
 # safety, trivy, gitleaks) plus the security test suite. Findings fail the PR

@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-\n# Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
 """Typed configuration settings.
 
-Settings are validated with pydantic and populated from environment variables
-prefixed with ``HUNTERX_`` plus optional YAML profiles. Secrets are never
-stored here — they live in the secrets layer (``hunterx.security``).
+Settings are validated with pydantic and populated from environment variables prefixed with ``HUNTERX_`` plus
+optional YAML profiles.
 """
 
 from __future__ import annotations
@@ -74,22 +72,8 @@ class ApiSettings(BaseModel):
 class AISettings(BaseModel):
     """AI provider configuration.
 
-    ``provider`` and ``model`` are plain values; API keys are
-    :class:`pydantic.SecretStr` so any repr / dump / log of the settings
-    object masks them automatically. Keys are loaded from the environment
-    (``HUNTERX_AI_OPENAI_KEY``, ``HUNTERX_AI_ANTHROPIC_KEY``,
-    ``HUNTERX_AI_OPENROUTER_KEY``, ``HUNTERX_AI_GEMINI_KEY``,
-    ``HUNTERX_AI_DEEPSEEK_KEY``, ``HUNTERX_AI_GROK_KEY``,
-    ``HUNTERX_AI_LMSTUDIO_KEY``, ``HUNTERX_AI_OLLAMA_KEY``,
-    ``HUNTERX_AI_OPENAI_COMPATIBLE_KEY``) or a ``.env`` file
-    and are never hardcoded in source. An empty ``provider`` keeps the safe
-    :class:`~hunterx.infrastructure.ai.NullAIClient` fallback in place.
-
-    For local/OpenAI-compatible providers (LM Studio, Ollama, generic), the
-    ``base_url`` points to the provider's OpenAI-compatible endpoint
-    (e.g. ``http://127.0.0.1:1234/v1`` for LM Studio,
-    ``http://127.0.0.1:11434/v1`` for Ollama). When empty, the provider's
-    default base URL is used.
+    ``provider`` and ``model`` are plain values; API keys are :class:`pydantic.SecretStr` so any repr / dump / log
+    of the settings object masks them automatically.
     """
 
     provider: str = Field(default="", description="AI provider name (openai | anthropic | openrouter | gemini | deepseek | grok | lmstudio | ollama | openai_compatible).")
@@ -106,7 +90,7 @@ class AISettings(BaseModel):
     ollama_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Ollama API key (masked, usually empty for local).")
     openai_compatible_key: SecretStr = Field(default_factory=lambda: SecretStr(""), description="Generic OpenAI-compatible API key (masked).")
 
-    #: Provider name → key field name. Configuration knowledge only; provider
+    # : Provider name to key field name. Configuration knowledge only; provider
     #: HTTP behaviour lives in the infrastructure adapters.
     _PROVIDER_KEY_FIELDS: ClassVar[dict[str, str]] = {
         "openai": "openai_key",

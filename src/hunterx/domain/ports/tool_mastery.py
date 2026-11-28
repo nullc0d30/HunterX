@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Mastery port.
-
-Defines the Sprint 025 contract between the mastery layer and the rest of
-HunterX: master profiles, relationship queries, playbooks, mission-aware
-selection, target history, coverage, datasets, version awareness, parser
-regression and result replay. Every subsystem consults this port instead of
-reaching into concrete mastery implementations.
-"""
+"""Tool Mastery port."""
 
 from __future__ import annotations
 

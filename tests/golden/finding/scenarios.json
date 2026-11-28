@@ -1,5 +1,5 @@
 {
-  "description": "Sprint 028 vulnerability validation & proof orchestration golden scenarios. Each scenario carries the initial observation, evidence, validation strategy, expected sufficiency, expected confidence level and expected final finding state.",
+  "description": "Vulnerability validation & proof orchestration golden scenarios. Each scenario carries the initial observation, evidence, validation strategy, expected sufficiency, expected confidence level and expected final finding state.",
   "version": "1.0.0",
   "scenarios": [
     {

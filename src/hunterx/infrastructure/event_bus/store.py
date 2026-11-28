@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Event persistence: append-only store, dead-letter queue and replay.
-
-The :class:`InMemoryEventStore` keeps an append-only, paginated history of
-every event published through the bus and supports replaying it (optionally
-filtered by type). :class:`InMemoryDeadLetterQueue` quarantines events whose
-handlers failed so they can be inspected and requeued.
-"""
+"""Event persistence: append-only store, dead-letter queue and replay."""
 
 from __future__ import annotations
 

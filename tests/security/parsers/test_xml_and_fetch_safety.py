@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""XML parser safety and SSRF boundary for in-process fetchers (Sprint 034.4
-§11, §20).
-
-- ``defusedxml`` (drop-in hardened ``xml.etree.ElementTree``) is used for tool
-  XML (nmap, SOAP): external entities are refused (no XXE) and entity-declaring
-  documents are refused (no entity-expansion bomb). Verified below; this is the
-  fix for bandit B314.
-- The in-process HTTP fetcher is scheme-locked to http/https so it can never be
-  an SSRF file-read primitive.
-"""
+"""XML parser safety and SSRF boundary for in-process fetchers (11,)."""
 
 from __future__ import annotations
 

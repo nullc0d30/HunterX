@@ -3,12 +3,8 @@
 
 """Baseline & differential testing engine.
 
-Sprint 032. Maintains baseline behavior for HTTP, DNS, TLS, authentication,
-response codes, headers, content, timing, parameters and application behavior.
-Differential tests compare a test request against a matching baseline and
-classify the behavior delta (status change, length change, header change,
-reflection, timing, callback, error behavior, content mutation). This is the
-behavioral evidence that separates a real weakness from a false positive.
+Maintains baseline behavior for HTTP, DNS, TLS, authentication, response codes, headers, content, timing, parameters
+and application behavior.
 """
 
 from __future__ import annotations

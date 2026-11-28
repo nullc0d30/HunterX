@@ -3,15 +3,8 @@
 
 """In-memory repository adapters.
 
-Reference implementations of every domain repository port that keep the
-platform runnable with zero external services. Used by the platform
-composition root as the default persistence backend, by development and by
-the test suite.
-
-Modules:
-    - :mod:`repositories` — core entity repositories (mission, finding, ...).
-    - :mod:`planning` — mission planning repositories.
-    - :mod:`factory` — Tool Integration Factory repositories.
+Reference implementations of every domain repository port that keep the platform runnable with zero external
+services.
 """
 
 from __future__ import annotations

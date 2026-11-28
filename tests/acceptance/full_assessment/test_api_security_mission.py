@@ -1,15 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Sprint 033 §9 — API Security full-spectrum mission acceptance test.
+"""9, API Security full-spectrum mission acceptance test.
 
-Synthetic REST/GraphQL environment. The mission discovers API endpoints,
-methods, parameters, schemas, authentication, hidden endpoints, GraphQL
-operations and introspection. Tools correlated include Kiterunner (hidden
-endpoints), Arjun (parameters), Katana (routes), InQL/GraphQLmap (GraphQL),
-HTTPx (probe) and Nuclei (scan). Validates a GraphQL introspection exposure and
-a BOLA (broken object-level authorization), while a schema-exposure claim from
-a single tool is rejected.
+Synthetic REST/GraphQL environment.
 """
 
 from __future__ import annotations
@@ -31,7 +25,7 @@ def _scenario() -> MissionScenario:
         description="Synthetic REST/GraphQL API security assessment with introspection and BOLA findings.",
     )
 
-    # 1. API mapping — REST surface
+    # 1. API mapping, REST surface
     scenario.add(
         ToolScenario(
             capability="api_mapping",
@@ -87,7 +81,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 4. GraphQL discovery — schema present + introspection enabled
+    # 4. GraphQL discovery, schema present + introspection enabled
     scenario.add(
         ToolScenario(
             capability="graphql_enumeration",
@@ -150,7 +144,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 6. BOLA — object-level authorization failure on /v1/orders/{id}
+    # 6. BOLA, object-level authorization failure on /v1/orders/{id}
     def _bola(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.orchestrator.add_hypothesis(
             mission_id,
@@ -199,7 +193,7 @@ def _scenario() -> MissionScenario:
         )
     )
 
-    # 7. schema exposure claim from a single tool — false positive
+    # 7. schema exposure claim from a single tool, false positive
     def _schema_fp(runner: FullSpectrumMissionRunner, mission_id: str, step: ToolScenario) -> None:
         runner.record_negative(
             mission_id,

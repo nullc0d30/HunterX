@@ -3,10 +3,7 @@
 
 """Domain entities.
 
-Entities are domain objects with an identity and a lifecycle. They are plain
-dataclasses with validation in ``__post_init__`` and helper methods for state
-transitions. Persistence details are deliberately absent — repositories
-(``hunterx.domain.ports``) map entities to storage.
+Entities are domain objects with an identity and a lifecycle.
 """
 
 from __future__ import annotations

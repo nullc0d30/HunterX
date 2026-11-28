@@ -1,30 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Resource governance — canonical resource states.
-
-The mission resource governor is the single authoritative layer that maps the
-live resource situation of the whole HunterX mission process tree (parent +
-children + grandchildren + external tools) onto an explicit state. Each state
-has a documented behaviour:
-
-``NORMAL``
-    Normal bounded execution at the configured concurrency.
-``CONSTRAINED``
-    Moderate pressure; concurrency is reduced.
-``DEGRADED``
-    High pressure; nonessential work (heavy tools, bulk probing) is stopped.
-``CRITICAL``
-    Hard pressure; no new expensive work is spawned (tools, probes, model
-    calls).
-``EMERGENCY``
-    The absolute budget is exceeded; the mission is terminated gracefully
-    (stop scheduling, terminate the process tree, persist state, mark
-    degraded).
-
-Thresholds are configurable (``hunterx.config.settings.ResourceSettings``) and
-are never hardcoded arbitrary values.
-"""
+"""Resource governance, canonical resource states."""
 
 from __future__ import annotations
 

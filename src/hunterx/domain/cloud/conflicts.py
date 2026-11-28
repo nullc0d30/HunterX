@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud intelligence conflict resolution.
-
-When multiple observations disagree about one cloud subject, the conflict
-resolver picks a deterministic winner (highest confidence, ties broken by
-source priority then lexicographic value) and records the disagreement. It is
-pure and never validates or contacts anything.
-"""
+"""Cloud intelligence conflict resolution."""
 
 from __future__ import annotations
 

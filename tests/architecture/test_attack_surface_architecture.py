@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the target-agnostic attack-surface subsystem.
-
-Verifies the Phase 1 discipline: pure domain (no infrastructure/tools/engines),
-an explainable capability mapper, a completion gate with no execution
-primitive, a universal assessment queue carrying every required field, and
-extensibility without a closed switch over target-specific kinds.
-"""
+"""Architecture tests for the target-agnostic attack-surface subsystem."""
 
 from __future__ import annotations
 
@@ -75,7 +69,7 @@ def test_completion_gate_never_executes() -> None:
 
 
 def test_assessment_task_carries_required_fields() -> None:
-    """The universal queue item bundles every Phase 1 scheduling attribute."""
+    """The universal queue item bundles every scheduling attribute."""
     fields = AssessmentTask.__dataclass_fields__  # type: ignore[attr-defined]
     for required in (
         "surface_key",

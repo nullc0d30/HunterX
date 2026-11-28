@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Output collection.
-
-Collects raw output from a tool execution into an :class:`ExecutionOutput`,
-detecting the formats present (stdout, stderr, files, JSON, XML, CSV, TXT,
-YAML, HTML, binary, screenshots, PCAP references). Tools and adapters write
-into a collector; the pipeline freezes it into the result.
-"""
+"""Output collection."""
 
 from __future__ import annotations
 

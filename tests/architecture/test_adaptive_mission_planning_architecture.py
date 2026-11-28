@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the Adaptive Mission & Attack-Path Planning layer.
-
-Verifies layer discipline (pure domain vs engine vs application vs
-infrastructure), import hygiene and the absence of a hardcoded universal tool
-pipeline or an opaque black-box scoring model.
-"""
+"""Architecture tests for the Adaptive Mission & Attack-Path Planning layer."""
 
 from __future__ import annotations
 

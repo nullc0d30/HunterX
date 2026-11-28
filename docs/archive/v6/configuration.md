@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX Configuration v6.0.0 — HunterX v6.0.0
+title: HunterX Configuration v6.0.0 - HunterX v6.0.0
 description: >-
   Complete configuration reference for HunterX v6.0.0 vulnerability scanner.
   YAML options, environment variables, operator profiles, and CLI overrides for

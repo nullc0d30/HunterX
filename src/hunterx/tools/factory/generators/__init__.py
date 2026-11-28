@@ -3,8 +3,7 @@
 
 """Tool Integration Factory generators.
 
-Every generator emits a slice of a Tool Integration Pack. The engine runs them
-in a fixed order and assembles the resulting files.
+Every generator emits a slice of a Tool Integration Pack.
 """
 
 from __future__ import annotations

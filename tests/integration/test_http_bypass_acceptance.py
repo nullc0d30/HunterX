@@ -1,17 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 9 — HTTP access / response differential end-to-end acceptance.
+"""HTTP access / response differential end-to-end acceptance.
 
-Proves the generalized access-differential capability through the existing
-architecture against controlled loopback fixtures:
-
-endpoint discovered → access-control hypothesis → targeted mutation →
-meaningful unauthorized access (proof marker exposed) → verification →
-evidence → reproduction → PoC → replay → VALIDATED → PROVED → REPORT_READY.
-
-Also proves the mandatory false-positive guards: status-code-only changes,
-body-length-only changes and generic-error bodies NEVER validate.
+Proves the generalized access-differential capability through the existing architecture against controlled loopback
+fixtures.
 """
 
 from __future__ import annotations

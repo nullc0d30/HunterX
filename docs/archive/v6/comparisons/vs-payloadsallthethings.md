@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs PayloadsAllTheThings — Comparison
+title: HunterX vs PayloadsAllTheThings - Comparison
 description: >-
   Technical comparison between HunterX (AI-assisted offensive security
   framework) and PayloadsAllTheThings (community-maintained payload knowledge
@@ -50,4 +50,4 @@ description: >-
 
 ## Complementary Use
 
-PayloadsAllTheThings is the payload knowledge base; HunterX is the assessment platform that consumes it. HunterX keeps PayloadsAllTheThings content synchronized, indexed, and safely executable — giving operators the depth of the community knowledge base with the guardrails of a security framework.
+PayloadsAllTheThings is the payload knowledge base; HunterX is the assessment platform that consumes it. HunterX keeps PayloadsAllTheThings content synchronized, indexed, and safely executable - giving operators the depth of the community knowledge base with the guardrails of a security framework.

@@ -3,13 +3,7 @@
 
 """Safe vulnerability validation report views and builders.
 
-Presentation-facing projection of a validation run. The builder aggregates
-verdicts, hypotheses, evidence and executions into a renderer-friendly view
-covering every mandated section: validation summary, confirmed/validated/
-suspected vulnerabilities, false positives, inconclusive tests, scope-blocked
-and safety-blocked tests, evidence inventory, validation timeline, risk
-changes, remediation-relevant evidence, tool execution summary, confidence
-summary and reproducibility information.
+Presentation-facing projection of a validation run.
 """
 
 from __future__ import annotations

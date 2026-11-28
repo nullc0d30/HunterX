@@ -10,10 +10,6 @@ permalink: /v7-quality-gates/
 
 # HunterX Quality Gates Reference
 
-**Status:** Ratified (Sprint 006.9)
-**Version:** 1.0.0
-**Owner:** HunterX Engineering Council
-
 ---
 
 ## 1. Purpose / Scope
@@ -26,7 +22,7 @@ its result. The gates are orchestrated by `eng.gates.GateRunner` and declared in
 expanded in [v7-security-pipeline.md](v7-security-pipeline.md).
 
 A gate is a function `(runner, repo_root, spec) -> GateResult` registered in
-`eng.gates.checks.default_checks()`. Every gate in `gates.yaml` defaults to
+`eng.gates.checks.default_checks`. Every gate in `gates.yaml` defaults to
 `mandatory: true`; a mandatory `FAIL` or `ERROR` raises
 `eng.gates.GateBlockedError` and blocks the merge.
 
@@ -38,12 +34,12 @@ Configuration lives in `eng/config/gates.yaml`:
 
 ```yaml
 gates:
-  - name: coverage
-    mandatory: true
-    threshold: 80.0
-  - name: performance
-    mandatory: true
-    threshold: 20.0
+ - name: coverage
+ mandatory: true
+ threshold: 80.0
+ - name: performance
+ mandatory: true
+ threshold: 20.0
 ```
 
 `mandatory` controls blocking; `threshold` is a per-gate numeric setting (a
@@ -53,9 +49,9 @@ Optional gates (`packaging`, `git-diff`) never block.
 Run the gates:
 
 ```bash
-python -m eng gates                # full suite
+python -m eng gates # full suite
 python -m eng gates --gate ruff mypy
-python -m eng gates --json         # artifacts/gates-report.json
+python -m eng gates --json # artifacts/gates-report.json
 ```
 
 ---
@@ -97,7 +93,7 @@ mypy eng src/hunterx/shared
 
 The engineering platform and the shared kernel (including the dependency
 injection container in `src/hunterx/shared/di.py`) are kept strict-clean. The
-remaining v7 source is type-checked incrementally as Capability Waves land; the
+remaining v7 source is type-checked incrementally as later layers land; the
 retired v6 flat package is excluded. When the full v7 tree reaches strict-clean,
 the target SHOULD be widened to `mypy --no-warn-unused-ignores src eng`.
 
@@ -200,9 +196,9 @@ the suite mid-work.
 
 1. Declare the gate in `eng/config/gates.yaml` (name, mandatory, threshold).
 2. Implement the checker in `eng.gates.checks` with the uniform signature.
-3. Register it in `default_checks()`.
+3. Register it in `default_checks`.
 4. Add a test under `tests/engineering/test_checks.py`.
 5. Document the gate in §4 of this document.
 
-Thresholds are tunable without code changes — they live in YAML. The blocking
+Thresholds are tunable without code changes, they live in YAML. The blocking
 semantics are driven entirely by `mandatory`.

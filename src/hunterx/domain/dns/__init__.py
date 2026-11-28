@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""DNS Intelligence domain package.
-
-Pure, framework-free contracts and logic for the DNS intelligence capability:
-record models, normalization, validation, confidence scoring, wildcard
-detection, DNSSEC and mail analysis, correlation/conflict handling, historical
-comparison, scope enforcement and collection strategy.
-
-The package depends only on the shared primitives and the recon domain for the
-execution mode enum — no I/O, no tool calls and no persistence here.
-"""
+"""DNS Intelligence domain package."""
 
 from hunterx.domain.dns.confidence import DnsConfidenceEngine, DnsConfidencePolicy
 from hunterx.domain.dns.conflicts import DnsConflict, DnsConflictResolver

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for TIP registration of the recon capability.
-
-Verifies that the six recon tools are registered into the Tool Intelligence
-Platform with taxonomy capability IDs and that the TIP metadata stays in sync
-with the Tool Integration SDK adapters (same tool set, same version pins).
-"""
+"""Tests for TIP registration of the recon capability."""
 
 from __future__ import annotations
 

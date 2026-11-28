@@ -3,10 +3,7 @@
 
 """Execution context builder.
 
-Builds :class:`ExecutionContext` instances with deterministic identifiers and
-sane defaults. Every execution created by the framework goes through this
-factory so identifiers (execution id, correlation id) and timestamps stay
-consistent.
+Builds :class:`ExecutionContext` instances with deterministic identifiers and sane defaults.
 """
 
 from __future__ import annotations

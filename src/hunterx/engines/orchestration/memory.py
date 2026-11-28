@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Persistent mission memory.
-
-Every target gets persistent mission memory: previously discovered assets,
-technologies, tools used, previous results, vulnerabilities, false positives,
-validations, risk, first-seen/last-seen and tool reliability. Memory is scoped
-per target so cross-target and cross-mission isolation is guaranteed.
-"""
+"""Persistent mission memory."""
 
 from __future__ import annotations
 

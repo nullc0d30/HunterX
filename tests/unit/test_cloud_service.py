@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the cloud & SaaS intelligence use-case service.
-
-Exercises the full pipeline with the in-process analyzer on an in-memory TIDB:
-scope admission, tool selection, classification, validation, correlation,
-conflict preservation, confidence, history comparison, TIDB persistence,
-topology updates and the ``cloud.*`` event stream.
-"""
+"""Tests for the cloud & SaaS intelligence use-case service."""
 
 from __future__ import annotations
 

@@ -3,19 +3,8 @@
 
 """Capability × Surface × Context mapping.
 
-The mapper turns a discovered surface into the set of security capabilities the
-platform should schedule against it, conditioned on the observed context. The
-*capability list* is always the live HunterX catalog (passed in at
-construction, sourced from the vulnerability-capability registry and coverage
-vocabulary); mapping rules that name capabilities absent from the catalog are
-silently dropped, so this module can never invent capabilities.
-
-Mapping is driven by declarative rules keyed by surface kind. Default rules
-cover the generic surface taxonomy (authorization → object/API surfaces,
-authentication → authentication surfaces, injection → input surfaces, SSRF →
-URL-fetching surfaces, file vulnerabilities → file surfaces, client-side issues
-→ client-side surfaces, workflow/state → access-control surfaces). New target
-technologies add rules without changing core orchestration.
+The mapper turns a discovered surface into the set of security capabilities the platform should schedule against it,
+conditioned on the observed context.
 """
 
 from __future__ import annotations
@@ -125,11 +114,11 @@ class CapabilityMapper:
     """Map discovered surfaces to applicable security capabilities.
 
     Args:
-        catalog: the live capability id list (authoritative — rules naming
+        catalog: the live capability id list (authoritative, rules naming
             capabilities outside it are dropped).
         registry: surface-kind registry used for default rules.
         rules: explicit rules; ``None`` builds the default rule set.
-        capabilities_priority: capability id → importance overrides.
+        capabilities_priority: capability id to importance overrides.
 
     """
 

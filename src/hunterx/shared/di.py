@@ -3,10 +3,7 @@
 
 """Dependency-injection container.
 
-A minimal, explicit service container. Implementations are registered as
-types or factories and resolved lazily. Components depend on abstract ports
-(defined in ``hunterx.domain.ports``) and receive their concrete adapters
-through this container at composition time.
+A minimal, explicit service container.
 """
 
 from __future__ import annotations

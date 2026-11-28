@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Base adapter for reconnaissance tools.
-
-Every recon tool adapter implements the SDK :class:`ToolAdapter` lifecycle and
-shares this base: it invokes the external binary through an injectable runner,
-parses the captured output into canonical :class:`DiscoveryRecord` instances
-and serialises them into the pipeline's JSON payload under ``discoveries``.
-The pipeline then stores them in the execution output where the recon service
-collects them for correlation.
-
-Adapters stay binary-free in unit tests: tests inject a fake runner and assert
-on the JSON payload instead of invoking real tools.
-"""
+"""Base adapter for reconnaissance tools."""
 
 from __future__ import annotations
 

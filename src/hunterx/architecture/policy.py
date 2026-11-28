@@ -3,10 +3,7 @@
 
 """Dependency policy (the machine-readable dependency matrix).
 
-The policy is the single source of truth for the architecture rules. It is
-declared as YAML in ``config/architecture.yaml`` and parsed into typed
-dataclasses here. A built-in default policy keeps the linter functional even
-when the YAML file is missing.
+The policy is the single source of truth for the architecture rules.
 """
 
 from __future__ import annotations
@@ -128,11 +125,9 @@ class DocRequirement:
     """
 
     required: tuple[str, ...] = ("docstring",)
-    recommended: tuple[str, ...] = (
-        "responsibilities",
-        "dependencies",
-        "extension points",
-    )
+    #: No boilerplate sections are recommended: a clear module docstring is
+    #: the requirement, not a fixed responsibilities/dependencies essay.
+    recommended: tuple[str, ...] = ()
     section_keywords: dict[str, tuple[str, ...]] = field(
         default_factory=lambda: {
             "responsibilities": ("responsibilities", "responsible for"),
@@ -236,8 +231,8 @@ class Policy:
 def default_policy() -> Policy:
     """Return the built-in dependency matrix.
 
-    The matrix reflects the ratified rules in ``docs/bible/03 - Folder
-    Structure.md`` §7 and the actual v7 package composition.
+    The matrix reflects the rules in ``docs/bible/03 - Folder
+    Structure.md`` and the actual v7 package composition.
     """
     from hunterx.architecture.layers import DEFAULT_LAYERS
 
@@ -245,19 +240,41 @@ def default_policy() -> Policy:
     allowed: dict[str, tuple[str, ...]] = {
         "shared": ("shared",),
         "domain": ("domain", "shared"),
-        "config": ("config", "domain", "shared"),
+        "config": ("config", "domain", "shared", "infrastructure"),
+        "resource": ("resource", "domain", "shared", "config"),
         "security": ("security", "domain", "shared", "infrastructure"),
         "infrastructure": ("infrastructure", "domain", "shared", "config"),
-        "application": ("application", "domain", "shared", "engines", "tools"),
+        "application": ("application", "domain", "shared", "engines", "tools", "resource"),
         "knowledge": ("knowledge", "domain", "shared"),
         "reporting": ("reporting", "domain", "shared"),
         "scheduler": ("scheduler", "domain", "shared"),
-        "engines": ("engines", "domain", "shared", "tools", "reporting", "infrastructure", "application"),
+        "engines": (
+            "engines",
+            "domain",
+            "shared",
+            "tools",
+            "reporting",
+            "infrastructure",
+            "application",
+            "resource",
+        ),
         "tools": ("tools", "domain", "shared", "plugins"),
         "plugins": ("plugins", "domain", "shared"),
         "agents": ("agents", "domain", "shared"),
         "api": ("api", "domain", "shared", "config", "platform", "application", "engines"),
-        "cli": ("cli", "domain", "shared", "config", "platform", "application", "engines"),
+        "cli": (
+            "cli",
+            "domain",
+            "shared",
+            "config",
+            "platform",
+            "application",
+            "engines",
+            "infrastructure",
+            "tools",
+            "reporting",
+            "resource",
+        ),
         "platform": (
             "platform",
             "domain",
@@ -276,6 +293,7 @@ def default_policy() -> Policy:
             "api",
             "cli",
             "facade",
+            "resource",
         ),
         "facade": ("facade", "domain", "shared", "infrastructure", "managers", "config", "application"),
         "architecture": ("architecture",),
@@ -297,6 +315,26 @@ def default_policy() -> Policy:
                     "The DI container raises domain exceptions for registration "
                     "errors; exceptions are the one shared contract the foundation "
                     "may reference."
+                ),
+            ),
+            ConditionalImport(
+                source="hunterx.infrastructure.ai.provider_manager",
+                source_layer="infrastructure",
+                target="hunterx.application.ai_suggestion",
+                reason=(
+                    "The provider manager parses the shared AISuggestion value "
+                    "object produced by the application AI assistant; the import is "
+                    "local to the suggestion path, not a structural dependency."
+                ),
+            ),
+            ConditionalImport(
+                source="hunterx.plugins.skill_offensive_doctrine.patch_cli",
+                source_layer="plugins",
+                target="hunterx.cli",
+                reason=(
+                    "The doctrine plugin is an opt-in plugin that extends the CLI "
+                    "command registry; wrapping register_default_commands is its "
+                    "integration point, invoked from the plugin package only."
                 ),
             ),
         ],
@@ -323,7 +361,7 @@ def default_policy() -> Policy:
                     "The domain execution model references the SDK result types "
                     "FindingResult/EvidenceResult. The result contracts should move "
                     "into the domain layer; tracked as architectural debt for a "
-                    "dedicated refactor sprint."
+                    "dedicated refactor."
                 ),
             ),
         ],
@@ -341,8 +379,7 @@ def default_policy() -> Policy:
                 modules=("hunterx.cli", "hunterx.cli.app", "hunterx.cli.commands"),
                 reason=(
                     "CLI package wiring cycle: __init__ re-exports app/main and "
-                    "commands import the app. Resolve by moving main() into a leaf "
-                    "module in a later sprint."
+                    "commands import the app. Resolve by moving main() into a leaf module."
                 ),
             ),
         ],

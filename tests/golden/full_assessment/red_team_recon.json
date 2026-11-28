@@ -1,6 +1,6 @@
 {
   "name": "red_team_recon_golden",
-  "description": "Golden dataset for the Sprint 033 red-team recon and validation mission: multi-step attack path from discovered subdomain through exposed service, hardcoded secret, authenticated API to an authorization weakness validated with impact.",
+  "description": "Golden dataset for the red-team recon and validation mission: multi-step attack path from discovered subdomain through exposed service, hardcoded secret, authenticated API to an authorization weakness validated with impact.",
   "objective": "red_team_assessment",
   "target": "victim.example.com",
   "assets": [

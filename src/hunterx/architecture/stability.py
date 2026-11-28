@@ -3,12 +3,8 @@
 
 """API stability checks.
 
-The public surface of the platform is snapshotted per module: exported names
-(from ``__all__``) and their kinds (class / function / constant) plus callable
-signatures. The snapshot is compared against a committed baseline
-(``config/api_baseline.json``). Removing or renaming a public name is a
-breaking change; altering a callable signature in a caller-breaking way is
-reported as well.
+The public surface of the platform is snapshotted per module: exported names (from ``__all__``) and their kinds
+(class / function / constant) plus callable signatures.
 """
 
 from __future__ import annotations

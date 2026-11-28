@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Technology confidence engine.
-
-Assigns a defensible, deterministic confidence score to every technology
-observation and recomputes it when several tools corroborate the same
-technology on the same asset. Confidence is a pure function of (tool
-reliability, validation status, evidence strength, version evidence quality,
-corroboration count, historical stability and conflict discount) — the same
-inputs always yield the same score and the score is explainable through the
-factors that contributed to it.
-"""
+"""Technology confidence engine."""
 
 from __future__ import annotations
 

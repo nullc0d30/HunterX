@@ -3,14 +3,8 @@
 
 """Directory / content bruteforce adapters.
 
-Integrates ``gobuster``, ``feroxbuster`` and ``dirsearch`` — the wordlist-driven
-content discovery tools — into the Tool Integration SDK. Each adapter invokes
-its external binary through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam and normalizes JSON /
-JSONL output into canonical content-discovery records.
-
-Wordlists are treated strictly as data (validated files on disk), never as
-executable content; targets must stay inside the authorized scope.
+Integrates ``gobuster``, ``feroxbuster`` and ``dirsearch``, the wordlist-driven content discovery tools, into the
+Tool Integration SDK.
 """
 
 from __future__ import annotations

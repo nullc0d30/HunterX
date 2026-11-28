@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the technology fingerprinting capability.
-
-Exercises the full wiring through the assembled platform: the fingerprinting
-service and query service registered in the container, the fingerprinting
-tools (httpx, whatweb, signature) available on the execution engine and TIP,
-and an end-to-end fingerprinting run over golden tool output with persisted
-technology intelligence and topology integration.
-"""
+"""Integration tests for the technology fingerprinting capability."""
 
 from __future__ import annotations
 

@@ -3,21 +3,8 @@
 
 """Autonomous mission execution runner.
 
-Sprint 033. Bridges the adaptive mission orchestrator (decide → ingest →
-replan) and the Tool Integration SDK so a real assessment actually executes:
-
-    decision → action → tool execution → observation → adaptive replanning
-
-The runner is an application-layer use case. It never hardcodes a tool chain:
-every cycle asks the mission decision engine to rank the ready actions of the
-adaptive plan, executes the selected tool through the Tool Integration SDK,
-ingests the result into the mission aggregate and lets the planner reconsider
-the plan from the new observations (Observe → Hypothesize → Probe → Verify).
-
-Execution failures are never silent: a failed tool execution produces a
-persisted observation, negative-evidence record, a classified planning failure
-and an explicit cycle outcome instead of returning the initial mission
-snapshot.
+Bridges the adaptive mission orchestrator (decide to ingest to replan) and the Tool Integration SDK so a real
+assessment actually executes.
 """
 
 from __future__ import annotations
@@ -54,13 +41,13 @@ from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_t
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine
 from hunterx.resource import ResourceGovernor, ResourceState
 from hunterx.shared.masking import mask_value
-from hunterx.shared.time import utcnow_iso
 from hunterx.shared.target import (
     has_meaningful_content,
     normalize_target,
     target_for_adapter,
     target_type_for,
 )
+from hunterx.shared.time import utcnow_iso
 from hunterx.tools.recon.runner import (
     bind_active_execution,
     clear_active_execution,
@@ -129,10 +116,10 @@ _CAPABILITY_BY_TRIGGER: dict[ReplanTrigger, str] = {
     ReplanTrigger.NEW_HYPOTHESIS_CREATED: "vulnerability_scanning",
 }
 
-#: Vulnerability class → targeted probe capability. A hypothesis derived from
-#: the attack surface (a ``q`` parameter → sql-injection, an ``id`` → IDOR, a
-#: ``url`` → SSRF, ...) is validated by its class-specific capability, never by
-#: a generic scan alone. This is the deterministic hypothesis → probe wiring:
+# : Vulnerability class to targeted probe capability. A hypothesis derived from
+# : the attack surface (a ``q`` parameter to sql-injection, an ``id`` to IDOR, a
+# : ``url`` to SSRF,...) is validated by its class-specific capability, never by
+# : a generic scan alone. This is the deterministic hypothesis to probe wiring:
 #: the planner binds a probe action to the hypothesis and the runner executes
 #: it. Only classes with a registered probe capability are mapped; classes
 #: without one fall back to generic ``vulnerability_scanning``.
@@ -230,7 +217,7 @@ def _javascript_asset_urls(content: Any) -> list[str]:
 
     Walks the discovery payload shapes (crawler ``crawl.urls`` records,
     ``urls``/``endpoints`` lists, direct ``url`` keys) and keeps only script
-    paths — the assets the in-process javascript analysis capability should
+    paths, the assets the in-process javascript analysis capability should
     mine.
     """
     urls: list[str] = []
@@ -284,7 +271,7 @@ _FORWARD_STATES: tuple[MissionState, ...] = (
     MissionState.COMPLETED,
 )
 
-#: Capability → planning state mapping used to move out of REASSESSMENT into
+# : Capability to planning state mapping used to move out of REASSESSMENT into
 #: the phase that actually contains the next scheduled work.
 _STATE_BY_CAPABILITY: dict[str, MissionState] = {
     "asset_discovery": MissionState.DISCOVERY,
@@ -327,7 +314,7 @@ class MissionExecutionService:
     Args:
         orchestration: the mission orchestration application service (owns the
             mission aggregate, persistence and events).
-        planning: the Sprint 027 adaptive planning engine (owns the execution
+        planning: the adaptive planning engine (owns the execution
             graph, tool selection and replanning).
         execution_engine: the Tool Integration SDK execution engine.
         event_bus: optional messaging port for runner-level events.
@@ -359,7 +346,7 @@ class MissionExecutionService:
         self._readiness = readiness
         #: Centralized mission resource governor (optional). When wired, the
         #: runner drives the mission under a hard resource envelope: resource
-        #: states (NORMAL→CONSTRAINED→DEGRADED→CRITICAL→EMERGENCY) adapt the
+        # : states (NORMAL to CONSTRAINED to DEGRADED to CRITICAL to EMERGENCY) adapt the
         #: concurrency, the process tree is accounted and terminated on an
         #: emergency budget stop, and every blocking operation is bounded.
         self._governor = governor
@@ -384,7 +371,7 @@ class MissionExecutionService:
         #: outside this set are re-checked before execution (Defect 3).
         self._preflight_capabilities: set[str] = set()
         #: Advisory AI action-suggestion producer (None keeps the mission
-        #: fully deterministic — the AI is never required for execution).
+        # : fully deterministic, the AI is never required for execution).
         self._ai_suggester = ai_suggester
         #: AI Hunt Director (autonomous decision authority). When wired, the AI
         #: decides the next security-testing action each cycle; HunterX
@@ -409,7 +396,7 @@ class MissionExecutionService:
             "provider_failures": 0,
             "adaptive_replans": 0,
         }
-        #: Bounded per-decision attribution trace (decision_id → provenance).
+        # : Bounded per-decision attribution trace (decision_id to provenance).
         from collections import deque
 
         self._decision_trace: deque[dict[str, Any]] = deque(maxlen=200)
@@ -418,8 +405,8 @@ class MissionExecutionService:
         #: Director rate-limit cooldown (free-tier providers 429 quickly).
         self._director_cooldown_until: float = 0.0
         self._director_consecutive_failures: int = 0
-        #: Autonomous model-driven attacker (Phase 7). When wired, the connected
-        #: model participates in the real attack loop each cycle: it reasons,
+        # : Autonomous model-driven attacker (). When wired, the connected
+        # : model participates in the real attack loop each cycle: it reasons
         #: produces attack hypotheses, every accepted hypothesis becomes a real
         #: assessment task on the attack-surface queue, results and findings
         #: feed back into its reasoning, and a finding never terminates the
@@ -437,14 +424,14 @@ class MissionExecutionService:
         #: Masked establishment outcome shared with events (never raw secrets).
         self._auth_outcome: dict[str, Any] | None = None
         #: Target-agnostic attack-surface model/mapper/queue/gate for the active
-        #: mission. Built per-mission unless injected (Phase 1). Never blocks
+        # : mission. Built per-mission unless injected (). Never blocks
         #: the loop: every touch is best-effort.
         self._attack_surface: AttackSurfaceService | None = attack_surface
         #: Latest attack-surface exhaustion report (``None`` when not wired).
         self._surface_report: Any | None = None
         #: Browser automation capability report (detected at run start).
         self._browser_report: dict[str, Any] | None = None
-        #: Aggressive-but-bounded adaptive attack controller (Phase 2). Built
+        # : Aggressive-but-bounded adaptive attack controller (). Built
         #: per-mission unless injected. Feeds execution outcomes back into the
         #: target-feedback state machine (aggression/pacing/backoff/retry).
         self._adaptive_attack: AdaptiveAttackService | None = adaptive_attack
@@ -457,18 +444,9 @@ class MissionExecutionService:
     # -- public API ---------------------------------------------------------
 
     def execute_cycle(self, mission_id: str, *, parameters: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Run one Observe → Decide → Act → Observe cycle for ``mission_id``.
+        """Run one Observe to Decide to Act to Observe cycle for ``mission_id``.
 
-        Returns a JSON-safe cycle outcome describing the decision, the tool
-        execution attempt and its outcome. Never marks a running mission as
-        complete just because a single cycle finished.
-
-        When an AI Hunt Director is wired AND usable, the AI decides the next
-        security-testing action FIRST; HunterX validates the decision through
-        the policy gate and executes it through the ordinary capability
-        pipeline. The advisory suggester + deterministic engine remain as the
-        fallback path (and are counted separately), so an AI failure degrades
-        honestly instead of silently.
+        Returns a JSON-safe cycle outcome describing the decision, the tool execution attempt and its outcome.
         """
         mission = self._orchestration.get(mission_id)
         if mission.mission.state.is_terminal:
@@ -507,7 +485,7 @@ class MissionExecutionService:
         if decision is not None and ai_trace:
             self._record_ai_trace(mission_id, decision, ai_trace)
         if decision is None:
-            # Deterministic idle-gap planner (Phase 10): when no action is
+            # Deterministic idle-gap planner (): when no action is
             # ready, the planner derives NEW work from the current state instead
             # of idling. Open, class-specific vulnerability hypotheses are
             # scheduled as targeted probes; an incomplete web attack surface is
@@ -550,25 +528,7 @@ class MissionExecutionService:
         parameters: dict[str, Any] | None = None,
         auto_provision: bool = True,
     ) -> dict[str, Any]:
-        """Run the adaptive mission execution loop until it settles.
-
-        The loop stops when the mission reaches a terminal state, the execution
-        budget is exhausted, no actionable decision remains, or ``max_cycles``
-        is reached. Completion is never claimed merely because the initial
-        discovery plan has been walked: only the terminal exit finalizes the
-        mission.
-
-        When a tool-readiness service is wired, a mission preflight runs first:
-        required capabilities without an available provider (and whose
-        provisioning fails) return a structured ``blocked`` outcome and the
-        mission never enters active execution. Missing optional capabilities
-        degrade the outcome but do not stop the loop.
-
-        Every terminal exit path finalizes the mission: the run record is
-        marked COMPLETED with a ``finished_at`` timestamp and the planning
-        state walks to COMPLETED, so no mission is ever left ``running`` when
-        the runner returns.
-        """
+        """Run the adaptive mission execution loop until it settles."""
         preflight = self._preflight(mission_id, auto_provision=auto_provision)
         if preflight is not None:
             self._publish(
@@ -597,7 +557,7 @@ class MissionExecutionService:
                 "coverage_ratio": 0.0,
                 "resource": self._resource_report(),
             }
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is not None:
             governor.start_mission(mission_id)
         self._init_memory_telemetry()
@@ -650,7 +610,7 @@ class MissionExecutionService:
                     self._resource_state = state.value
                     if state is ResourceState.EMERGENCY:
                         # Hard resource envelope exceeded: terminate the mission
-                        # safely — stop scheduling, terminate active child processes
+                        # safely, stop scheduling, terminate active child processes
                         # (graceful then forced), persist state, mark degraded.
                         self._publish(
                             "mission.resource.emergency",
@@ -694,7 +654,7 @@ class MissionExecutionService:
                 # observed surface, its accepted hypotheses become real assessment
                 # tasks that are discharged by the ordinary capability execution
                 # engine, and results/findings feed back into its reasoning. A
-                # finding never terminates the mission — the attacker only reports
+                # finding never terminates the mission, the attacker only reports
                 # genuine exhaustion when no work remains. Model calls are the most
                 # expensive per-call operation: under CRITICAL/EMERGENCY pressure
                 # they are skipped (no new model calls are spawned).
@@ -723,7 +683,7 @@ class MissionExecutionService:
                         idle = 0
                         continue
                     # SECURITY TEST MATRIX gate: queue exhaustion is never mission
-                    # completion — schedule work for incomplete applicable domains
+                    # completion, schedule work for incomplete applicable domains
                     # before considering idle terminal.
                     if self._matrix_incomplete(mission_id):
                         scheduled = self._schedule_matrix_actions(mission_id)
@@ -778,7 +738,7 @@ class MissionExecutionService:
                         continue
                     broke_early = True
                     break
-                # Phase 1 exhaustion gate: the attack surface is only complete when
+                # exhaustion gate: the attack surface is only complete when
                 # discovery, dynamic re-discovery, all applicable capability×surface
                 # combinations, the assessment queue and the verification queue are
                 # exhausted and no new attack paths remain. With a model attacker
@@ -787,8 +747,8 @@ class MissionExecutionService:
                     self._model_attacker is None or self._model_attacker.exhausted()
                 ):
                     # Even surface exhaustion cannot complete the mission while
-                    # applicable security domains remain untested — matrix work
-                    # (injection, authz, ...) is scheduled before finalizing.
+                    # applicable security domains remain untested, matrix work
+                    # (injection, authz,...) is scheduled before finalizing.
                     if self._matrix_incomplete(mission_id) and (
                         self._schedule_matrix_actions(mission_id)
                     ):
@@ -840,7 +800,7 @@ class MissionExecutionService:
         matrix_summary = self._matrix_report(mission_id)
         if ai_complete_requested:
             # The AI requested completion AND the Security Test Matrix was
-            # verified complete at request time — the one honest success path.
+            # verified complete at request time, the one honest success path.
             finalize_condition = StopCondition.OBJECTIVES_COMPLETE
         elif resource_stop is not None:
             # A resource-triggered stop is the truthful terminal: it is never
@@ -853,11 +813,17 @@ class MissionExecutionService:
             if self._mission_budget_exhausted(mission_id):
                 finalize_condition = StopCondition.RESOURCE_BUDGET_EXHAUSTED
             elif self._matrix_incomplete(mission_id):
-                # Incomplete assessment + remaining budget → the ceiling is a
+                # Incomplete assessment + remaining budget to the ceiling is a
                 # REASSESSMENT boundary. The mission is reported BLOCKED (work
                 # remains that the loop could not discharge within its cycle
-                # envelope) — never completed, never silently dropped.
-                finalize_condition = StopCondition.BLOCKED
+                # envelope), never completed, never silently dropped. A fully
+                # exhausted attack surface is the exception: nothing is left to
+                # assess, so the surface gate is the honest terminal.
+                finalize_condition = (
+                    self._surface_finalize_condition(mission_id, surface_report)
+                    or self._policy_success_stop(mission_id)
+                    or StopCondition.BLOCKED
+                )
                 self._publish(
                     "mission.cycle_ceiling.reassessment",
                     {
@@ -885,14 +851,19 @@ class MissionExecutionService:
             finalize_condition = StopCondition.BLOCKED
         elif self._matrix_incomplete(mission_id):
             # Applicable Security Test Matrix domains never reached a terminal
-            # state and no producer (AI or deterministic) can create more work
-            # within budget: honest BLOCKED, never a success stop.
-            finalize_condition = StopCondition.BLOCKED
+            # state. A genuinely exhausted attack surface is the one case where
+            # the assessment is still a valid terminal: every capability/surface
+            # combination was assessed and no plan work remains.
+            finalize_condition = (
+                self._surface_finalize_condition(mission_id, surface_report)
+                or self._policy_success_stop(mission_id)
+                or StopCondition.BLOCKED
+            )
         elif self._model_attacker is not None and not self._model_attacker.exhausted():
             # The model attacker still holds un-dispatched work.
             # AI_UNAVAILABLE is ONLY valid when the model is the ONLY remaining
             # actionable work. If deterministic work remains (open actionable
-            # hypotheses, pending surface work, browser gap, attack paths),
+            # hypotheses, pending surface work, browser gap, attack paths)
             # the mission must continue or be BLOCKED/NO_ACTIONABLE_WORK.
             if self._model_attacker.model_unavailable():
                 if self._deterministic_work_remaining(mission_id):
@@ -906,10 +877,12 @@ class MissionExecutionService:
                 # Model attacker not exhausted but not unavailable either
                 finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         else:
-            finalize_condition = self._surface_finalize_condition(mission_id, surface_report)
+            finalize_condition = self._surface_finalize_condition(
+                mission_id, surface_report
+            ) or self._policy_success_stop(mission_id)
             if finalize_condition is None:
                 # Plan exhausted, nothing actionable, contract unmet (or met and
-                # finalized as complete) — an incomplete run with no runnable
+                # finalized as complete), an incomplete run with no runnable
                 # action is NO_ACTIONABLE_WORK, never resource exhaustion.
                 finalize_condition = StopCondition.NO_ACTIONABLE_WORK
         self._finalize_run(mission_id, stop_condition=finalize_condition)
@@ -953,7 +926,7 @@ class MissionExecutionService:
 
         Proves (or honestly refutes) that the connected model generated hunt
         decisions: per-decision records with provider, model, selected
-        capability/domain/tool, policy verdict and execution outcome — never
+        capability/domain/tool, policy verdict and execution outcome, never
         credentials.
         """
         director = self._hunt_director
@@ -1013,7 +986,7 @@ class MissionExecutionService:
     def _preflight(self, mission_id: str, *, auto_provision: bool = True) -> Any | None:
         """Run the tool-readiness preflight gate for the mission plan.
 
-        Returns ``None`` when no readiness service is wired (legacy path — the
+        Returns ``None`` when no readiness service is wired (legacy path, the
         runner proceeds unconditionally). Otherwise returns the preflight
         verdict; a blocked verdict prevents active execution.
         """
@@ -1192,7 +1165,7 @@ class MissionExecutionService:
                 # The planner schedules the hypothesis-bound probe BEFORE the
                 # evidence assessment so an observation that settles a
                 # hypothesis (e.g. refutes it) still leaves the single bound
-                # probe action recorded — proving "never reprobed" rather than
+                # probe action recorded, proving "never reprobed" rather than
                 # "never probed".
                 self._replan_from_observation(mission_id, capability, raw, observation=ingested)
                 # Evidence-driven reassessment: update the hypotheses this
@@ -1207,8 +1180,8 @@ class MissionExecutionService:
                 )
                 self._sync_phase(mission_id)
                 # Attack paths are intelligence derived from the discovered
-                # surface — recorded as the mission moves through
-                # discovery → hypothesis → probe (never triggers execution).
+                # surface, recorded as the mission moves through
+                # discovery to hypothesis to probe (never triggers execution).
                 with contextlib.suppress(Exception):  # attack-path recording is best-effort
                     self._orchestration.record_attack_paths(mission_id)
                 self._surface_attack_paths(mission_id)
@@ -1228,7 +1201,7 @@ class MissionExecutionService:
                 observed_status: int | None = None
                 if capability == "parameter_discovery":
                     # Arjun enumerated no URL query parameters on this
-                    # endpoint — but the page may still carry HTML form
+                    # endpoint, but the page may still carry HTML form
                     # fields (POST forms are invisible to arjun). Extract
                     # them in-process so form-based surfaces produce
                     # parameter hypotheses and body-carrying probes. The
@@ -1392,7 +1365,7 @@ class MissionExecutionService:
 
         A failure is a real, observable event: a persisted failure observation,
         classified planning failure, negative-evidence record and coverage cell
-        — never a silent return to the initial snapshot.
+        , never a silent return to the initial snapshot.
         """
         mission = self._orchestration.get(mission_id)
         target = mission.context.target_id
@@ -1437,15 +1410,19 @@ class MissionExecutionService:
             )
         with contextlib.suppress(Exception):  # action may already be terminal
             self._planning.get_action(mission_id, action_id).mark(ActionStatus.FAILED)
-        self._orchestration.record_negative(
-            mission_id,
-            asset_key=target,
-            capability=capability,
-            kind="blocked",
-            tool_id=tool_id,
-            outcome="tool failure",
-            notes=error[:500],
-        )
+        # A capability with no available tool was never exercised against the
+        # target, so it can never count as negative evidence. Only an actual
+        # tool execution that failed is recorded as blocked evidence.
+        if tool_id:
+            self._orchestration.record_negative(
+                mission_id,
+                asset_key=target,
+                capability=capability,
+                kind="blocked",
+                tool_id=tool_id,
+                outcome="tool failure",
+                notes=error[:500],
+            )
         # A failed/blocked execution is NOT an assessment: leaving the cell
         # NOT_ASSESSED keeps it uncovered so it can never satisfy a coverage
         # target as if the capability had actually been exercised. Only a
@@ -1490,7 +1467,7 @@ class MissionExecutionService:
         normalized once and handed to each adapter in the shape its descriptor
         declares: web tools receive the full URL, host/domain/network tools
         receive the bare host. Passing a URL to a host tool silently produces
-        empty results — a false "no findings" — so the shape must match the
+        empty results, a false "no findings", so the shape must match the
         tool, never the operator's typing.
         """
         spec = normalize_target(target)
@@ -1509,8 +1486,9 @@ class MissionExecutionService:
                 merged["headers"] = dict(session.headers)
         # The adaptive controller's bounded aggression tier is exposed to tool
         # adapters so richer applicable strategies are selected while healthy.
-        if self._adaptive_attack is not None:
-            merged["aggression"] = self._adaptive_attack.aggression_level().value
+        adaptive = getattr(self, "_adaptive_attack", None)
+        if adaptive is not None:
+            merged["aggression"] = adaptive.aggression_level().value
         builder = (
             ExecutionContextBuilder(tool_id=tool_id, target=effective_target)
             .with_mission(mission_id)
@@ -1523,7 +1501,7 @@ class MissionExecutionService:
         # The per-tool timeout only applies when the tool descriptor declares
         # one (nuclei can legitimately run longer); otherwise the governor's
         # ceiling is the deadline.
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is not None and governor.tool_timeout_s() > 0:
             builder = builder.with_timeout(governor.tool_timeout_s())
         return builder.build()
@@ -1546,16 +1524,8 @@ class MissionExecutionService:
     def _permissions_for(self, tool_id: str) -> tuple[str, ...]:
         """Return the permissions the selected tool's adapter declares.
 
-        The sandbox denies any execution whose context does not explicitly
-        grant the adapter-requested permission flags (network/filesystem/...).
-        Without this the mission runner would create a context with an empty
-        permission set and every network-capable tool would be rejected before
-        it can run. This mirrors the adapter-permission resolution used by the
-        ad-hoc tool execution and chain-execution paths.
-
-        Engines that do not expose the adapter API (deterministic test fakes)
-        fall back to a no-permission context — they do not enforce the sandbox,
-        so the granted set is only relevant for the real execution engine.
+        The sandbox denies any execution whose context does not explicitly grant the adapter-requested permission
+        flags (network/filesystem/...).
         """
         engine = self._engine
         adapter_for = getattr(engine, "adapter_for", None)
@@ -1691,7 +1661,7 @@ class MissionExecutionService:
         markers: set[str] = set()
         haystacks: list[str] = []
         context = mission.context
-        haystacks.extend(str(url) for url in (getattr(context, "endpoints", {}) or {}).keys())
+        haystacks.extend(str(url) for url in (getattr(context, "endpoints", {}) or {}))
         haystacks.extend(f"{key}:{value}" for key, value in (getattr(context, "parameters", {}) or {}).items())
         haystacks.extend(
             f"{tech.name if hasattr(tech, 'name') else tech}"
@@ -1818,10 +1788,10 @@ class MissionExecutionService:
         """Assemble the COMPLETE mission state for the AI Hunt Director."""
         from hunterx.application.ai_hunt_director.protocol import (
             FindingSummary,
+            HuntContext,
             HypothesisSummary,
             ObservationSummary,
             ResourceState,
-            HuntContext,
         )
 
         mission = self._orchestration.get(mission_id)
@@ -1933,9 +1903,9 @@ class MissionExecutionService:
             technologies=[
                 str(t.name if hasattr(t, "name") else t) for t in (getattr(context, "technologies", {}) or {}).values()
             ],
-            services=[str(s) for s in (getattr(context, "services", {}) or {}).keys()],
-            endpoints=[str(url) for url in (getattr(context, "endpoints", {}) or {}).keys()],
-            parameters=[f"{k}" for k in (getattr(context, "parameters", {}) or {}).keys()],
+            services=[str(s) for s in (getattr(context, "services", {}) or {})],
+            endpoints=[str(url) for url in (getattr(context, "endpoints", {}) or {})],
+            parameters=[f"{k}" for k in (getattr(context, "parameters", {}) or {})],
             attack_surface={},
             attack_paths=list(getattr(context, "attack_paths", []) or []),
             negative_evidence=negative,
@@ -1974,13 +1944,17 @@ class MissionExecutionService:
         asset = str((decision.arguments or {}).get("asset") or "").strip()
         target = asset or mission.context.target_id
         scope = getattr(mission.context, "scope", None)
-        if scope is not None and hasattr(scope, "allows") and target:
-            if not self._target_in_scope(scope, target):
-                self._publish(
-                    "mission.policy.scope_violation",
-                    {"mission_id": mission_id, "requested_target": target},
-                )
-                return False, f"target '{target}' is outside authorized scope"
+        if (
+            scope is not None
+            and hasattr(scope, "allows")
+            and target
+            and not self._target_in_scope(scope, target)
+        ):
+            self._publish(
+                "mission.policy.scope_violation",
+                {"mission_id": mission_id, "requested_target": target},
+            )
+            return False, f"target '{target}' is outside authorized scope"
         known = {c.tool_id for c in self._capability_catalog(mission_id)[0]}
         if capability not in known:
             return False, f"unknown capability '{capability}'"
@@ -1994,7 +1968,7 @@ class MissionExecutionService:
         request whose HOST:PORT equals an included target's HOST:PORT is in
         scope: the AI legitimately addresses the authorized web origin by its
         bare host for host-level capabilities (port/service discovery). Any
-        other host remains out of scope — third-party domains never pass.
+        other host remains out of scope, third-party domains never pass.
         """
         if scope.allows(target):
             return True
@@ -2025,14 +1999,14 @@ class MissionExecutionService:
 
         Returns a decision payload for :meth:`_execute_decision`-style
         execution (``{"next_action": "", "ai": decision}``) or ``None`` when
-        the director is unavailable/failed/rejected — every rejection is
+        the director is unavailable/failed/rejected, every rejection is
         counted and traced.
         """
         director = self._build_hunt_director()
         if director is None:
             return None
         if time.monotonic() < self._director_cooldown_until:
-            # Provider rate-limit cooldown: do NOT re-fire (prevents 429 storms);
+            # Provider rate-limit cooldown: do NOT re-fire (prevents 429 storms)
             # the deterministic planner continues this cycle.
             return None
         stats = self._ai_stats
@@ -2218,7 +2192,7 @@ class MissionExecutionService:
     def _observation_from_result(self, capability: str, result: Any) -> dict[str, Any]:
         """Project a tool execution result into a normalized observation dict.
 
-        The raw tool output is treated as data — never as instructions. The
+        The raw tool output is treated as data, never as instructions. The
         observation type is derived from the action's capability.
 
         The content retained in memory is byte-bounded (a summary of the tool
@@ -2231,7 +2205,7 @@ class MissionExecutionService:
             content = output.json if isinstance(output.json, dict) else {"value": output.json}
         elif output.stdout:
             content = {"stdout": output.stdout[:20000]}
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is not None:
             from hunterx.resource.bounds import truncate_content
 
@@ -2254,7 +2228,7 @@ class MissionExecutionService:
         env/config mechanism, performs a generic form login against the
         loopback target and keeps the session in memory for the mission. The
         outcome is published (masked) and recorded on the mission as an
-        observation — an explicit failure is an honest negative, never a
+        observation, an explicit failure is an honest negative, never a
         blocker.
         """
         self._auth_attempted = False
@@ -2339,7 +2313,7 @@ class MissionExecutionService:
         availability, a Chromium executable and a real headless launch are all
         probed. When unavailable, ``browser_testing`` stays ``NOT_ASSESSED``
         with a clear reason and the mission continues with non-browser HTTP
-        capabilities — absence of browser testing is never converted into
+        capabilities, absence of browser testing is never converted into
         negative security evidence.
         """
         try:
@@ -2407,20 +2381,7 @@ class MissionExecutionService:
             self._record_coverage(mission_id, target, action.capability, "", state=CoverageState.NOT_ASSESSED)
 
     def _has_pending_plan_work(self, mission_id: str) -> bool:
-        """Return ``True`` when the plan still holds untested discovery work.
-
-        Only non-hypothesis-bound actions count as pending discovery work
-        (replan-scheduled surface expansion such as javascript analysis, or
-        unstarted chain capabilities). Hypothesis-bound validation nodes are
-        already accounted for by the policy's open-hypothesis gates, so a
-        mission with only those left may legitimately complete.
-
-        Pending authenticated work is represented here too: when credentials
-        are configured, session establishment runs before the first discovery
-        cycle, so the authenticated discovery pass is exactly this plan's
-        pending actions — the gate never lets the mission complete while that
-        authenticated work is still pending.
-        """
+        """Return ``True`` when the plan still holds untested discovery work."""
         try:
             graph = self._planning.get_plan(mission_id)
         except Exception:  # noqa: BLE001 - best-effort guard
@@ -2476,20 +2437,8 @@ class MissionExecutionService:
     ) -> None:
         """Let the planner reconsider the mission from the new observation.
 
-        Replanning is deduplicated: a capability already present in the live
-        graph (non-terminal) is never scheduled twice. Replanning only fires on
-        observations that carry meaningful evidence — an empty result never
-        schedules follow-on work.
-
-        Every hypothesis an observation produces is wired to its class-specific
-        probe capability (hypothesis → probe), so a discovered ``q`` parameter
-        drives a targeted ``sql_injection`` probe — not just a generic scan.
-
-        Replanning is bounded by the resource governor's ``max_replan_cycles``:
-        once the budget is exhausted the mission stops spawning new work and
-        instead converges (or degrades with a structured reason), so the
-        observe→hypothesize→decide→probe→reassess→replan cycle can never spin
-        indefinitely.
+        Replanning is deduplicated: a capability already present in the live graph (non-terminal) is never scheduled
+        twice.
         """
         if not self._replan_allowed(mission_id):
             self._publish(
@@ -2528,7 +2477,7 @@ class MissionExecutionService:
         graph = self._planning.get_plan(mission_id)
         scheduled_any = False
         # Script assets a crawler observation surfaces (``*.js``/``*.mjs``) are
-        # scheduled for in-process javascript analysis — one action per asset —
+        # scheduled for in-process javascript analysis, one action per asset
         # so SPA bundles are mined for API/search endpoints. This must run
         # BEFORE the generic follow-on dedup below, which may already have the
         # chain-scheduled capability in the graph.
@@ -2600,7 +2549,7 @@ class MissionExecutionService:
 
         Every open hypothesis with a probeable vulnerability class and no bound
         action is scheduled with its class-specific capability (the hypothesis
-        → probe transition). Deduplication is per-hypothesis so an open
+        to probe transition). Deduplication is per-hypothesis so an open
         hypothesis never respawns endless probes.
         """
         if not self._replan_allowed(mission_id):
@@ -2621,9 +2570,7 @@ class MissionExecutionService:
                 continue
             provenance = dict(hypothesis.provenance or {})
             vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
-            capability = _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class)
-            if not capability:
-                continue
+            capability = _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class, "vulnerability_scanning")
             if any(
                 action.hypothesis_id == hypothesis_id
                 for action in graph.actions.values()
@@ -2892,7 +2839,7 @@ class MissionExecutionService:
         Returns a :class:`ProbeVerdict`, or ``None`` when the hypothesis is not
         class-specific, no probe can be built, or the target is not an
         authorized loopback host. The verdict is advisory evidence for the
-        hypothesis state — it never fabricates a finding by itself.
+        hypothesis state, it never fabricates a finding by itself.
         """
         provenance = dict(hypothesis.provenance or {})
         vulnerability_class = str(provenance.get("vulnerability_class") or "")
@@ -3023,9 +2970,9 @@ class MissionExecutionService:
                     return None
             verdict = engine.analyze_probe(vulnerability_class, probe, responses)
             # Persist the probe execution as a first-class observation. This
-            # records that a TARGETED PROBE ran and what it observed — it is
+            # records that a TARGETED PROBE ran and what it observed, it is
             # advisory probe evidence, NOT vulnerability evidence. Vulnerability
-            # evidence (BEHAVIORAL_DIFFERENTIAL / ...) is only persisted on the
+            # evidence (BEHAVIORAL_DIFFERENTIAL /...) is only persisted on the
             # finding record when the verdict supports the class.
             self._orchestration.record_probe(
                 mission_id,
@@ -3101,16 +3048,8 @@ class MissionExecutionService:
     ) -> tuple[dict[str, Any] | None, int | None]:
         """Return ``(parameter_observation, observed_status)`` for ``endpoint``.
 
-        Arjun enumerates URL query parameters; HTML form fields (notably POST
-        forms) are invisible to it, so a form-only surface (e.g. a POST-only
-        command-execution form) never produces a parameter hypothesis and is
-        never assessed. The in-process HTML parser extracts form field names —
-        generically, for any form-based endpoint — so body-carrying
-        differential probes can assess those surfaces. The observed HTTP
-        status is returned alongside (even when no forms exist) so a
-        restricted endpoint (404/401/402/502/...) is recorded as an
-        access-control signal for the http-access-differential capability.
-        ``(None, None)`` when the endpoint cannot be fetched.
+        Arjun enumerates URL query parameters; HTML form fields (notably POST forms) are invisible to it, so a
+        form-only surface (e.g.
         """
         try:
             from hunterx.domain.vulnerability_capability.probe_executor import is_loopback_target
@@ -3162,7 +3101,7 @@ class MissionExecutionService:
         when the evidence-driven hypothesis that explains it has been
         independently validated. When a validated hypothesis has no matching
         candidate finding (e.g. it was derived from a discovered parameter), a
-        verified finding is created from the hypothesis itself — always with
+        verified finding is created from the hypothesis itself, always with
         the probe/observation provenance.
         """
         try:
@@ -3242,11 +3181,11 @@ class MissionExecutionService:
                                 "parameter": parameter,
                             },
                         )
-        # Bridge to the finding orchestration service: the validated,
+        # Bridge to the finding orchestration service: the validated
         # probe-verified hypothesis also produces the full finding record
-        # (vulnerability evidence, reproduction, PoC, real replay,
+        # (vulnerability evidence, reproduction, PoC, real replay
         # report-ready). The finding is downstream of the actual probe
-        # verdict — it is never fabricated from the target alone.
+        # verdict, it is never fabricated from the target alone.
         self._materialize_validated_finding(mission_id, hypothesis)
         # Security Test Matrix: a validated finding is positive validated
         # evidence for every domain the class's probe capability covers.
@@ -3273,7 +3212,7 @@ class MissionExecutionService:
         reproduction + PoC, replays the probe against the target (real
         re-execution) and only then marks the finding REPORT_READY. If the
         probe no longer supports the class, the finding stays at
-        CANDIDATE/SUPPORTED — no success is fabricated.
+        CANDIDATE/SUPPORTED, no success is fabricated.
         """
         service = self._finding_service
         if service is None:
@@ -3445,7 +3384,7 @@ class MissionExecutionService:
                 notes=reason,
             )
 
-    # -- deterministic adaptive planner (hypothesis → probe wiring) ----------
+    # -- deterministic adaptive planner (hypothesis to probe wiring) ----------
 
     def _open_hypothesis_work_remaining(self, mission_id: str) -> bool:
         """Return ``True`` when actionable hypothesis work is still pending.
@@ -3479,19 +3418,7 @@ class MissionExecutionService:
         return False
 
     def _deterministic_work_remaining(self, mission_id: str) -> bool:
-        """Return ``True`` when deterministic (non-model) work remains.
-
-        This checks for:
-        - Open actionable hypotheses (class-specific, high-priority) that could be probed
-        - Pending web discovery actions (endpoints, parameters, javascript analysis)
-        - Browser testing gap (browser_testing NOT_ASSESSED without explicit classification)
-        - Attack surface not evaluated (attack paths, surface relationships)
-        - Validation gap (supported hypotheses without findings, findings without validation)
-        - Pending plan work (discovery actions not yet run)
-
-        This is used to determine if AI_UNAVAILABLE is the ONLY remaining work,
-        or if deterministic work can continue without the model.
-        """
+        """Return ``True`` when deterministic (non-model) work remains."""
         try:
             mission = self._orchestration.get(mission_id)
             self._planning.get_plan(mission_id)
@@ -3578,17 +3505,7 @@ class MissionExecutionService:
         )
 
     def _schedule_hypothesis_probes(self, mission_id: str) -> bool:
-        """Deterministically schedule targeted probes for open hypotheses.
-
-        The deterministic fallback planner: for every open, class-specific,
-        high-value vulnerability hypothesis with no bound probe action, a
-        class-specific capability action is scheduled and bound to the
-        hypothesis. The runner then executes it through the ordinary
-        capability/tool path and the orchestrator assesses the hypothesis from
-        the probe verdict. AI is never required for this step.
-
-        Returns ``True`` when at least one probe was scheduled.
-        """
+        """Deterministically schedule targeted probes for open hypotheses."""
         try:
             mission = self._orchestration.get(mission_id)
         except Exception:  # noqa: BLE001 - best-effort guard
@@ -3601,8 +3518,6 @@ class MissionExecutionService:
             provenance = dict(hypothesis.provenance or {})
             vulnerability_class = str(provenance.get("vulnerability_class") or "").strip()
             if not vulnerability_class:
-                continue
-            if not _PROBE_CAPABILITY_BY_CLASS.get(vulnerability_class):
                 continue
             candidates.append(hypothesis.hypothesis_id)
         if not candidates:
@@ -3689,17 +3604,7 @@ class MissionExecutionService:
         return scheduled
 
     def _schedule_matrix_actions(self, mission_id: str) -> bool:
-        """Schedule assessment work for incomplete Security Test Matrix domains.
-
-        This is the queue-exhaustion backstop required by the completion
-        contract: when the plan has no ready action AND the AI director cannot
-        produce one, an applicable domain still marked NOT_ASSESSED / DEFERRED
-        gets its capability scheduled here. The mission may only idle (and the
-        run finalize) once every applicable domain is terminal or explicitly
-        blocked.
-
-        Returns ``True`` when at least one action was scheduled.
-        """
+        """Schedule assessment work for incomplete Security Test Matrix domains."""
         matrix = self._matrix_for(mission_id)
         if matrix is None or not self._replan_allowed(mission_id):
             return False
@@ -3725,7 +3630,7 @@ class MissionExecutionService:
                 break
             if not scheduled_capability:
                 # Every capability of this domain already ran; the execution
-                # outcome recording settles it — nothing more to schedule.
+                # outcome recording settles it, nothing more to schedule.
                 continue
             try:
                 delta = self._planning.replan_for_change(
@@ -3868,7 +3773,7 @@ class MissionExecutionService:
         """Return ``True`` when the adaptive controller is in ``BLOCKED``.
 
         A persistently blocking target must never be reported as a success
-        stop — blocking is blocking, not completion.
+        stop, blocking is blocking, not completion.
         """
         service = self._adaptive_attack
         if service is None:
@@ -3983,7 +3888,7 @@ class MissionExecutionService:
         meaningful: bool,
         mission_id: str,
     ) -> None:
-        """Execute queued assessments — real probes on probeable targets.
+        """Execute queued assessments, real probes on probeable targets.
 
         Loopback targets run through the capability execution engine so every
         queued ``Capability × Surface × Context`` assessment is discharged with
@@ -4056,7 +3961,7 @@ class MissionExecutionService:
 
         Exhaustion only counts once discovery, dynamic discovery, all applicable
         capability/surface combinations, the assessment queue and the
-        verification queue are done — and the planning graph carries no
+        verification queue are done, and the planning graph carries no
         untested work.
         """
         surface = self._attack_surface
@@ -4077,6 +3982,31 @@ class MissionExecutionService:
             self._surface_report = surface.exhaustion()
         return self._surface_report
 
+    def _policy_success_stop(self, mission_id: str) -> StopCondition | None:
+        """Return a success stop condition the mission policy genuinely fired.
+
+        The runner's own fallbacks (blocked / no-actionable-work) must never
+        override a terminal the mission policy itself reports: when the
+        operator configured ``FINDINGS_VALIDATED`` or
+        ``HIGH_VALUE_HYPOTHESES_RESOLVED`` and it fired, that is the honest
+        terminal.
+        """
+        try:
+            mission = self._orchestration.get(mission_id)
+            orchestrator = self._orchestration.engine.orchestrator
+            stop = orchestrator.policy.evaluate_stop(mission)
+        except Exception:  # noqa: BLE001 - policy evaluation is best-effort here
+            return None
+        if stop in (
+            StopCondition.OBJECTIVES_COMPLETE,
+            StopCondition.COVERAGE_TARGET_ACHIEVED,
+            StopCondition.HIGH_VALUE_HYPOTHESES_RESOLVED,
+            StopCondition.FINDINGS_VALIDATED,
+            StopCondition.ATTACK_SURFACE_EXHAUSTED,
+        ):
+            return stop
+        return None
+
     def _surface_finalize_condition(self, mission_id: str, report: Any | None) -> StopCondition | None:
         """Return the exhaustion stop condition when genuinely exhausted.
 
@@ -4095,7 +4025,7 @@ class MissionExecutionService:
         """Finalize the mission run (idempotent) so no run stays ``running``."""
         self._classify_matrix_at_finalize(mission_id)
         # COVERAGE_REVIEW is the last assessment phase before reporting: it
-        # records that every dimension was reviewed (recon, attack surface,
+        # records that every dimension was reviewed (recon, attack surface
         # hypotheses, active testing, validation, browser) before the terminal
         # transition. The domain finalize() then moves the mission to REPORTING.
         with contextlib.suppress(Exception):  # phase emission is best-effort
@@ -4129,7 +4059,7 @@ class MissionExecutionService:
 
         Domains without a direct probe capability (attack-path analysis,
         validation, proof generation) are classified from the mission's real
-        end state — never defaulted to a terminal state they did not earn.
+        end state, never defaulted to a terminal state they did not earn.
         """
         matrix = self._matrix_for(mission_id)
         if matrix is None:
@@ -4195,7 +4125,7 @@ class MissionExecutionService:
 
     def _init_memory_telemetry(self) -> None:
         """Build the runtime memory probe + telemetry log (best-effort)."""
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is None:
             return
         config = getattr(governor, "_config", None)
@@ -4216,7 +4146,7 @@ class MissionExecutionService:
         The snapshot includes the process RSS / VmRSS / VmHWM / VmPeak, the
         process-tree RSS (the governor's own sampler), the Python heap, the
         mission aggregate sizes and serialized bytes, the model context and the
-        governor's own measurement taken at the same instant — so the failure
+        governor's own measurement taken at the same instant, so the failure
         class (sampler bug vs. enforcement gap vs. unbounded state) can be
         determined from data, never guessed.
         """
@@ -4225,7 +4155,7 @@ class MissionExecutionService:
         try:
             import time as _time
 
-            governor = self._governor
+            governor = getattr(self, "_governor", None)
             config = getattr(governor, "_config", None)
             interval = float(getattr(config, "telemetry_interval_s", 5.0) or 5.0)
             now = _time.monotonic()
@@ -4255,7 +4185,7 @@ class MissionExecutionService:
 
     def _model_calls_allowed(self) -> bool:
         """Return ``False`` when resource pressure forbids new model calls."""
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is None:
             return True
         state = governor.evaluate()
@@ -4274,7 +4204,7 @@ class MissionExecutionService:
 
     def _resource_report(self) -> dict[str, Any]:
         """Return the JSON-safe resource report for the run result."""
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is None:
             return {"governor": "disabled", "state": self._resource_state}
         report = governor.report()
@@ -4283,7 +4213,7 @@ class MissionExecutionService:
 
     def _admit_probe(self) -> bool:
         """Admit a differential probe through the governor (backpressure)."""
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is not None:
             if self._probe_count_cycle >= governor.max_probes_per_cycle():
                 return False
@@ -4302,10 +4232,10 @@ class MissionExecutionService:
 
         Replanning is a resource consumer (it spawns new plan actions); the
         governor's ``max_replan_cycles`` gives replanning a hard termination
-        condition so the observe→hypothesize→decide→probe→replan cycle can
+        condition so the observe to hypothesize to decide to probe to replan cycle can
         never spin indefinitely.
         """
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is None:
             return self._replan_cycles < self._default_replan_budget()
         return governor.replan_budget(mission_id) > 0
@@ -4316,7 +4246,7 @@ class MissionExecutionService:
         Authoritative resource-exhaustion predicate: the execution budget
         (``executions_used >= executions_budget``) or the wall-clock budget
         (``time_budget_seconds > 0`` and exceeded). A mission with 984 of 1000
-        executions remaining is NOT exhausted — no caller may claim
+        executions remaining is NOT exhausted, no caller may claim
         ``resource_budget_exhausted`` for it.
         """
         try:
@@ -4328,7 +4258,7 @@ class MissionExecutionService:
     def _consume_replan(self, mission_id: str) -> bool:
         """Consume one replan-scheduling slot; ``False`` when exhausted."""
         self._replan_cycles += 1
-        governor = self._governor
+        governor = getattr(self, "_governor", None)
         if governor is None:
             return self._replan_cycles <= self._default_replan_budget()
         return governor.consume_replan(mission_id)
@@ -4409,7 +4339,7 @@ def _is_explicit_negative(result: Any) -> bool:
     """Return ``True`` for a structured, well-formed empty tool result.
 
     An explicit negative is a tool that executed successfully and produced
-    structured output (JSON) reporting nothing — e.g. ``subfinder -d host``
+    structured output (JSON) reporting nothing, e.g. ``subfinder -d host``
     returning an empty JSON document. An empty stdout-only result is
     uninformative, never a validated negative.
     """
@@ -4430,7 +4360,7 @@ def _landed_on_auth_wall(responses: list[dict[str, Any]]) -> bool:
     """Return ``True`` when probe responses landed on the authentication wall.
 
     An authenticated probe whose final (post-redirect) responses resolve to a
-    login page means the session was lost mid-mission — the login page is not
+    login page means the session was lost mid-mission, the login page is not
     target evidence and must never be evaluated as one.
     """
     return any("login" in str(response.get("url") or "") for response in (responses or []))
@@ -4439,8 +4369,8 @@ def _landed_on_auth_wall(responses: list[dict[str, Any]]) -> bool:
 def _probe_response_summary(responses: list[dict[str, Any]]) -> dict[str, Any]:
     """Summarize probe responses (status + bounded body length) for recording.
 
-    Only status codes and lengths are captured — never raw secret-bearing
-    bodies — so the probe observation proves the differential without leaking
+    Only status codes and lengths are captured, never raw secret-bearing
+    bodies, so the probe observation proves the differential without leaking
     sensitive response content.
     """
     return {

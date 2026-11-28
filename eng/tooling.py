@@ -3,10 +3,7 @@
 
 """Tool invocation helpers.
 
-Every external tool (ruff, mypy, pytest, coverage, bandit, semgrep, ...) is
-run through :class:`ToolRunner`. It is deliberately small and injectable so the
-gate/report logic can be unit-tested with fakes and does not shell out
-unpredictably in CI.
+Every external tool (ruff, mypy, pytest, coverage, bandit, semgrep,...) is run through :class:`ToolRunner`.
 """
 
 from __future__ import annotations

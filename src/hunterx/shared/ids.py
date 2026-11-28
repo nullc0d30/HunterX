@@ -3,9 +3,7 @@
 
 """Identity and content-hash utilities.
 
-IDs follow the ULID specification so they are time-sortable, collision-safe,
-and lexicographically ordered. Content hashes use SHA-256 and are used to
-deduplicate findings, evidence, and knowledge records.
+IDs follow the ULID specification so they are time-sortable, collision-safe, and lexicographically ordered.
 """
 
 from __future__ import annotations

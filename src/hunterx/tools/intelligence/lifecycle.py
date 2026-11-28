@@ -3,9 +3,8 @@
 
 """Tool lifecycle manager.
 
-Coordinates the full lifecycle of a tool: registration, installation,
-verification, updates, removal, version compatibility and health monitoring.
-The manager drives the state machine and records lifecycle outcomes.
+Coordinates the full lifecycle of a tool: registration, installation, verification, updates, removal, version
+compatibility and health monitoring.
 """
 
 from __future__ import annotations
@@ -109,7 +108,7 @@ class ToolLifecycleManager:
         return state
 
     def complete(self, tool_id: str) -> ToolRuntimeState:
-        """Record a successful run (RUNNING → COMPLETED)."""
+        """Record a successful run (RUNNING to COMPLETED)."""
         state = self._require_state(tool_id)
         target = self._state_machine.transition(
             state.state, ToolState.COMPLETED, tool_id=tool_id
@@ -120,7 +119,7 @@ class ToolLifecycleManager:
         return state
 
     def fail(self, tool_id: str) -> ToolRuntimeState:
-        """Record a failed run (RUNNING → FAILED)."""
+        """Record a failed run (RUNNING to FAILED)."""
         state = self._require_state(tool_id)
         target = self._state_machine.transition(
             state.state, ToolState.FAILED, tool_id=tool_id
@@ -132,7 +131,7 @@ class ToolLifecycleManager:
         return state
 
     def disable(self, tool_id: str) -> ToolRuntimeState:
-        """Disable a tool (any non-running state → DISABLED)."""
+        """Disable a tool (any non-running state to DISABLED)."""
         state = self._require_state(tool_id)
         target = self._state_machine.transition(
             state.state, ToolState.DISABLED, tool_id=tool_id
@@ -142,7 +141,7 @@ class ToolLifecycleManager:
         return state
 
     def enable(self, tool_id: str) -> ToolRuntimeState:
-        """Re-enable a disabled tool (DISABLED → AVAILABLE)."""
+        """Re-enable a disabled tool (DISABLED to AVAILABLE)."""
         state = self._require_state(tool_id)
         target = self._state_machine.transition(
             state.state, ToolState.AVAILABLE, tool_id=tool_id

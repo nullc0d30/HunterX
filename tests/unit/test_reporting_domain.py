@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the professional reporting domain engines.
-
-Covers severity, quality, reportability, prioritization, classification,
-lifecycle, claims, QA, redaction, evidence bundles, timeline, source
-reliability and templates. These tests never require a database.
-"""
+"""Unit tests for the professional reporting domain engines."""
 
 from __future__ import annotations
 

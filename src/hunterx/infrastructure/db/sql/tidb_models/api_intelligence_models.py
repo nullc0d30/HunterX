@@ -3,9 +3,7 @@
 
 """ORM models for TIDB API-intelligence entities.
 
-Mirrors ``hunterx.domain.entities.tidb.api_intelligence`` one-to-one. Every
-model carries the shared TIDB envelope via :class:`TidbModelMixin` plus the
-canonical API-inventory columns.
+Mirrors ``hunterx.domain.entities.tidb.api_intelligence`` one-to-one.
 """
 
 from __future__ import annotations

@@ -3,10 +3,8 @@
 
 """Automated claim checking.
 
-Before the final report: extract factual claims, resolve their sources,
-verify them against evidence and block unsupported high-impact claims. The
-report cannot become ``READY_FOR_SUBMISSION`` while an unsupported
-high-impact claim is open.
+Before the final report: extract factual claims, resolve their sources, verify them against evidence and block
+unsupported high-impact claims.
 """
 
 from __future__ import annotations
@@ -25,7 +23,7 @@ class ClaimExtractor:
     def extract(self, document: dict[str, Any] | None) -> tuple[ReportClaim, ...]:
         """Extract the material claims of a report document.
 
-        The extractor builds claims from the structured document data — never
+        The extractor builds claims from the structured document data, never
         by parsing AI prose.
 
         Args:

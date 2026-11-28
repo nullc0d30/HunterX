@@ -3,20 +3,7 @@
 
 """Technology fingerprinting use-case services.
 
-``FingerprintService`` is the orchestrator — the bridge between a mission and
-the fingerprinting tooling. Given a target and a posture, it validates scope,
-builds a :class:`TechStrategy`, selects the registered fingerprinting tools,
-runs each through the :class:`ExecutionEngine` pipeline, folds in existing
-intelligence (live service fingerprints, TLS metadata and previously persisted
-technology observations), normalizes, validates, resolves, correlates and
-confidence-scores the detections, detects conflicts, diffs history, persists
-everything to the TIDB, updates the attack-surface topology and publishes
-``technology.*`` events.
-
-``TechnologyQueryService`` reads persisted technology intelligence back from
-the TIDB and answers the reporting queries (inventory, stacks, versions, CMS,
-CDN/WAF, cloud/hosting indicators and changes). Both services depend on ports
-only.
+``FingerprintService`` is the orchestrator, the bridge between a mission and the fingerprinting tooling.
 """
 
 from __future__ import annotations

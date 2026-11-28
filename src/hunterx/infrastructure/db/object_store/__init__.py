@@ -3,9 +3,8 @@
 
 """Object-store adapters.
 
-Provides a filesystem implementation of :class:`~hunterx.domain.ports.ObjectStorePort`
-and :class:`~hunterx.domain.ports.EvidenceStore`. S3/MinIO adapters implement
-the same ports.
+Provides a filesystem implementation of :class:`~hunterx.domain.ports.ObjectStorePort` and
+:class:`~hunterx.domain.ports.EvidenceStore`.
 """
 
 from __future__ import annotations

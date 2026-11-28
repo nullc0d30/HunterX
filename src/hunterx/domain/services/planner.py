@@ -3,9 +3,7 @@
 
 """Planner domain service.
 
-The planner decomposes a mission into an ordered, dependency-aware plan of
-steps. Concrete planning strategies (deterministic workflows, AI-assisted)
-implement this interface.
+The planner decomposes a mission into an ordered, dependency-aware plan of steps.
 """
 
 from __future__ import annotations

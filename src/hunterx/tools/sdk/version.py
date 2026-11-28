@@ -3,9 +3,7 @@
 
 """Version manager.
 
-Tracks the installed version of each tool and validates requested versions
-against the installed one. Provides the version facts consumed by the health
-checker, installer and execution context.
+Tracks the installed version of each tool and validates requested versions against the installed one.
 """
 
 from __future__ import annotations
@@ -23,8 +21,8 @@ class VersionManager:
 
         versions = VersionManager()
         versions.record("nmap", "7.94")
-        versions.installed("nmap")            # "7.94"
-        versions.satisfies("nmap", ">=7.80")  # True
+        versions.installed("nmap") # "7.94"
+        versions.satisfies("nmap", ">=7.80") # True
     """
 
     def __init__(self) -> None:

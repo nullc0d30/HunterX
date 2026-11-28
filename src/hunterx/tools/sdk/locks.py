@@ -3,9 +3,7 @@
 
 """Tool lock manager.
 
-Prevents concurrent executions of the same tool on the same target. Locks are
-keyed by ``tool_id:target`` by default and support a blocking acquire with
-timeout. Re-entrant so nested executions from one thread are safe.
+Prevents concurrent executions of the same tool on the same target.
 """
 
 from __future__ import annotations
@@ -24,7 +22,7 @@ class ToolLockManager:
 
         locks = ToolLockManager()
         with locks.locked(tool_id="nmap", target="10.0.0.5"):
-            ...  # exclusive execution
+            ... # exclusive execution
     """
 
     def __init__(self) -> None:

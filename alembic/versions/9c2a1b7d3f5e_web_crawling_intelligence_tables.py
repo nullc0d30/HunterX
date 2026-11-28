@@ -1,14 +1,5 @@
-"""web crawling intelligence tables
-
-Revision ID: 9c2a1b7d3f5e
-Revises: 7ab1a304e8bb
-Create Date: 2026-08-09 10:00:00.000000
-
-Extends the TIDB web-layer schema (created in the baseline, extended by the
-technology intelligence migration) with the crawl-specific projections of the
-web crawling & web attack-surface discovery capability: web origins, URL
-observations, redirects, API/WebSocket/GraphQL endpoints, authentication
-boundaries, crawl run records and crawl evidence.
+"""web crawling intelligence tables Revision ID: 9c2a1b7d3f5e Revises: 7ab1a304e8bb Create Date: 2026-08-09
+10:00:00.000000.
 
 """
 from collections.abc import Sequence

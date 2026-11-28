@@ -3,10 +3,7 @@
 
 """Shared pytest fixtures.
 
-NOTE: this repo still carries the retired v6 flat ``hunterx/`` package at the
-repo root. pytest inserts the rootdir on ``sys.path`` ahead of the
-``pythonpath = ["src"]`` entry, so the v6 package would shadow v7. Prepending
-``src`` here guarantees every test imports the v7 package.
+NOTE: this repo still carries the retired v6 flat ``hunterx/`` package at the repo root.
 """
 
 from __future__ import annotations
@@ -93,3 +90,31 @@ def cache() -> MemoryCache:
 def knowledge_graph() -> InMemoryKnowledgeGraph:
     """A fresh in-memory knowledge graph store."""
     return InMemoryKnowledgeGraph()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def loopback_fixture_server():
+    """Serve the vulnerable test app on port 3010 for integration tests.
+
+    Several integration and acceptance tests point at ``http://localhost:3010``
+    and expect the local fixture app to be running. Starting it here keeps a
+    plain ``pytest`` run self-contained; if the port is already in use we leave
+    whatever is listening there alone.
+    """
+    import socket
+
+    from tests.framework.vulnerable_app import VulnerableApp
+
+    with socket.socket() as probe:
+        if probe.connect_ex(("127.0.0.1", 3010)) == 0:
+            yield None
+            return
+    try:
+        app = VulnerableApp(port=3010).start()
+    except OSError:
+        yield None
+        return
+    try:
+        yield app
+    finally:
+        app.stop()

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Persistence integration tests for the Autonomous Mission Orchestration.
-
-Builds the SQL TIDB repository factory over SQLite and verifies the new
-orchestration entities round-trip through the generic repository: mission,
-runs, policies, objectives, observations, hypotheses, decisions, negative
-evidence, coverage, baselines, checkpoints, branches and impact analyses.
-"""
+"""Persistence integration tests for the Autonomous Mission Orchestration."""
 
 from __future__ import annotations
 

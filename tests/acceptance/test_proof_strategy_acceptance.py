@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Vulnerability Proof Strategy Library (Sprint 022).
-
-These tests verify the 45 sprint acceptance criteria end-to-end: canonical
-ProofStrategy contract, registry, evidence/safety/scope-aware selection, tool
-capability matching, deterministic validator verdicts, machine-readable
-evidence requirements, contradiction handling, target-state invalidation,
-manual validation, novel candidates, versioning, TIDB persistence, knowledge
-graph integration, events, reporting, golden/security/performance/architecture
-coverage and the no-unrestricted-exploitation guarantees.
-"""
+"""Acceptance tests for the Vulnerability Proof Strategy Library."""
 
 from __future__ import annotations
 

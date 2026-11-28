@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery — application service tests.
-
-Hermetic service coverage with a scripted engine: honest provider states
-(available/unavailable/failed/partial/not-applicable/completed), stage
-aggregation, continuous-discovery feedback between stages, the attack-surface
-intake bridge, deduplication, and the guarantee that one failed tool never
-kills the mission.
-"""
+"""Universal discovery, application service tests."""
 
 from __future__ import annotations
 
@@ -168,7 +161,7 @@ class TestProviderStates:
         # Every other provider still ran to completion.
         assert states["dnspython"] == "completed"
         assert states["javascript"] == "completed"
-        # The HTTP stage's only available provider failed → the stage failed.
+        # The HTTP stage's only available provider failed to the stage failed.
         assert run.stage_state(DiscoveryStage.HTTP) == "failed"
         assert run.summary["assets_total"] > 0
 

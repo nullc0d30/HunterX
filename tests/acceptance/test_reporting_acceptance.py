@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the professional reporting capability.
-
-Each acceptance scenario drives a validated finding through the full
-reporting pipeline and asserts the expected outcome, including the QA
-rejection gate, secret redaction, duplicate/root-cause handling, the retest
-lifecycle and report determinism.
-"""
+"""Acceptance tests for the professional reporting capability."""
 
 from __future__ import annotations
 

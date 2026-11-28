@@ -1,24 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the advisory AI mission-decision path.
-
-Verifies that the AI suggestion producer is wired into the real mission
-execution decision loop and that the deterministic decision engine remains the
-final authority:
-
-- TEST 1 — the AI producer is invoked and receives mission/candidate context;
-- TEST 2 — the AI suggestion reaches ``decide_next``;
-- TEST 3 — when the AI suggestion is selected, ``ai_assisted`` is ``True`` and
-  the reason is preserved;
-- TEST 4 — an invalid AI proposal is rejected and the deterministic planner
-  continues (``ai_assisted`` False);
-- TEST 5 — AI unavailable does not crash the mission;
-- TEST 6 — malformed AI response falls back to deterministic planning;
-- TEST 7 — policy/sandbox/permission enforcement is unchanged (AI never
-  bypasses the sandbox);
-- TEST 8 — prior sandbox/coverage fixes remain intact.
-"""
+"""Integration tests for the advisory AI mission-decision path."""
 
 from __future__ import annotations
 
@@ -226,7 +209,7 @@ class TestNoAISuggester:
 class TestSecurityEnforcementPreserved:
     def test_sandbox_still_denies_without_permission(self) -> None:
         # Reuse the real sandbox path: a mission context without permissions
-        # must still be denied by the sandbox — AI does not bypass it.
+        # must still be denied by the sandbox, AI does not bypass it.
         from hunterx.domain.execution import FailureKind
         from hunterx.domain.tools import ToolDescriptor
         from hunterx.tools.sdk.adapter import ToolAdapter

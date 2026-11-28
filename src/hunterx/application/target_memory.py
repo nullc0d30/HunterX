@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence application services.
-
-Sprint 030. Orchestrate the historical intelligence layer against the TIDB:
-persist memory observations, reproduce snapshots, compute deterministic diffs,
-track mission/hypothesis/tool/risk/finding memory, manage campaigns, detect
-coverage gaps and recurrences, plan revalidation, preserve contradictions,
-derive advisory next-action recommendations and answer campaign-intelligence
-queries.
-
-Scope isolation is enforced on every write: a record is only persisted when
-its target belongs to the authorized tenant and mission context. Memory is
-treated as untrusted input — confidence, corroboration, freshness and
-contradiction state always gate what memory is allowed to redefine.
-"""
+"""Target Memory & Campaign Intelligence application services."""
 
 from __future__ import annotations
 

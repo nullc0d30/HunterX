@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Policy enforcement for adaptive mission planning.
-
-The policy engine is the security boundary of the planner: every candidate
-action must pass scope, authorization, safety and rate-limit gates before it
-can be scheduled. Scope and authorization are immutable — no planner, AI
-proposal or tool output may ever override them.
-"""
+"""Policy enforcement for adaptive mission planning."""
 
 from __future__ import annotations
 
@@ -53,8 +47,8 @@ _FORBIDDEN_CAPABILITIES = frozenset(
 class PolicyEngine:
     """Deterministic policy gates for candidate actions.
 
-    Gates are enforced in a fixed order: scope → authorization → safety →
-    forbidden capabilities → risk threshold → rate limit. A single denial
+    Gates are enforced in a fixed order: scope to authorization to safety to
+    forbidden capabilities to risk threshold to rate limit. A single denial
     blocks the action with an explainable :class:`PolicyDecision`.
     """
 
@@ -286,7 +280,7 @@ def _validation_rank(level: ValidationLevel) -> int:
     }.get(level, 1)
 
 
-#: Safety ceilings (mission mode → safety class) → allowed risk ceiling.
+# : Safety ceilings (mission mode to safety class) to allowed risk ceiling.
 _SAFETY_CEILING_RISK: dict[str, float] = {
     "passive": 0.1,
     "read_only": 0.1,

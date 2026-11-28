@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API intelligence domain package.
-
-Pure-domain building blocks for the API Discovery & API Attack-Surface
-Intelligence capability: canonical models, classification, scope enforcement,
-confidence scoring, correlation, conflict resolution, historical comparison,
-collection strategy, validation and the in-process spec parsers (OpenAPI,
-GraphQL, WebSocket, SOAP, Postman and web/JS hint fold-in).
-"""
+"""API intelligence domain package."""
 
 from __future__ import annotations
 

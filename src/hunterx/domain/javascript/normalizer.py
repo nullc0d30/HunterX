@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Normalization for JavaScript intelligence artifacts.
-
-Turns raw, tool-produced values into canonical forms: URL resolution (relative
-paths joined against a base), hostname/domain canonicalization, and endpoint /
-route / dependency key normalization. Normalization is idempotent and pure; the
-original value is preserved on the finding and only the canonical key is
-derived.
-"""
+"""Normalization for JavaScript intelligence artifacts."""
 
 from __future__ import annotations
 
@@ -118,7 +111,7 @@ def _resolve_url(value: str, base_url: str) -> tuple[str, str, str, str]:
             return parsed.scheme.lower(), host, parsed.path, stripped
         except ValueError:
             return "", "", "", stripped
-    # relative path — join against base
+    # relative path, join against base
     if base_url and "://" in base_url:
         try:
             joined = urllib.parse.urljoin(base_url, stripped)

@@ -3,9 +3,7 @@
 
 """Report renderers.
 
-Renderers convert a :class:`~hunterx.reporting.views.ReportView` into a
-concrete output format. The engine layer passes view models to renderers, so
-renderers stay small and format-focused.
+Renderers convert a :class:`~hunterx.reporting.views.ReportView` into a concrete output format.
 """
 
 from __future__ import annotations

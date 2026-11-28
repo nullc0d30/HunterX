@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Explainable action scoring.
-
-The scoring model weights twelve explainable factors (information gain,
-hypothesis relevance, coverage improvement, evidence value, proof value, asset
-criticality, mission priority, tool effectiveness, execution cost, execution
-risk, redundancy, dependency readiness) into a single ``[0, 1]`` score. The
-model is configurable — it is never an opaque AI-only score.
-"""
+"""Explainable action scoring."""
 
 from __future__ import annotations
 
@@ -45,7 +38,7 @@ class ScoringResult:
     Attributes:
         action_id: the scored action.
         score: aggregate ``[0, 1]`` score.
-        factors: per-factor contribution (factor → weighted value).
+        factors: per-factor contribution (factor to weighted value).
         rationale: the dominant rationale.
 
     """

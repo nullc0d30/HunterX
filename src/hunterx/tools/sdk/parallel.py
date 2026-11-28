@@ -3,9 +3,7 @@
 
 """Parallel execution manager.
 
-Runs multiple execution units concurrently under the resource manager's
-parallel-jobs cap. Each unit is a ``Callable[[ExecutionContext], ExecutionResult]``
-so the manager stays decoupled from the pipeline internals.
+Runs multiple execution units concurrently under the resource manager's parallel-jobs cap.
 """
 
 from __future__ import annotations

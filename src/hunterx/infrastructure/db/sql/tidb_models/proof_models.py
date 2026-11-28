@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB vulnerability-proof entities.
-
-System-of-record tables for the Wave 15 vulnerability proof & PoC capability:
-vulnerability proofs, proof contracts, proof plans and steps, proof executions,
-structured PoCs, replays, proof-linked evidence, proof gate decisions, impact
-assessments, confidence assessments, proof quality, finding lifecycle
-transitions and temporal proof history.
-
-Security boundary: these tables store safe-proof metadata, canonical observations
-and redacted evidence only — never exploit payloads, never credentials, never
-unrestricted executable PoC scripts and never out-of-scope request material.
-"""
+"""ORM models for TIDB vulnerability-proof entities."""
 
 from __future__ import annotations
 

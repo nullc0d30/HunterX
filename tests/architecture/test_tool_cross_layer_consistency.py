@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cross-layer tool identity consistency (CI).
-
-Tool Knowledge, Tool Manifest, Tool Discovery, Tool Provisioner, Tool Registry,
-Capability Resolver and the CLI must all reference the SAME canonical tool
-identity. This test prevents duplicated definitions, inconsistent names and
-aliases that resolve incorrectly.
-"""
+"""Cross-layer tool identity consistency (CI)."""
 
 from __future__ import annotations
 

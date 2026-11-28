@@ -3,10 +3,8 @@
 
 """Scope enforcement for DNS intelligence.
 
-Decides whether a DNS name or address may be collected, queried or persisted
-based on the mission's authorized targets, excluded names and excluded
-networks. The enforcer is pure and deterministic: the same inputs always yield
-the same decision, with a human-readable reason for every denial.
+Decides whether a DNS name or address may be collected, queried or persisted based on the mission's authorized
+targets, excluded names and excluded networks.
 """
 
 from __future__ import annotations

@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Intelligence Platform — domain models.
+"""Tool Intelligence Platform, domain models.
 
-Pure data models for the intelligence layer that understands, evaluates,
-orchestrates and optimizes security tools. No I/O, no adapters, no execution —
-these are the structured contracts that every TIP subsystem reads and writes.
+Pure data models for the intelligence layer that understands, evaluates, orchestrates and optimizes security tools.
 """
 
 from __future__ import annotations
@@ -18,8 +16,8 @@ from typing import Any
 class ToolState(Enum):
     """Lifecycle states of a tool as managed by the state machine.
 
-    States follow the ratified order: registered → installed → verified →
-    available → running → completed | failed, with deprecated and disabled as
+    States follow the order: registered to installed to verified to
+    available to running to completed | failed, with deprecated and disabled as
     terminal/modifier states.
     """
 
@@ -178,7 +176,7 @@ class ToolInputContract:
     """The inputs a tool consumes.
 
     Attributes:
-        accepts: canonical input types (``url``, ``domain``, ``host``, ...).
+        accepts: canonical input types (``url``, ``domain``, ``host``,...).
         required: input types that must be present.
         optional: input types that may be provided.
         transforms: preprocessing transforms to apply.
@@ -240,7 +238,7 @@ class ToolKnowledge:
     This is the machine-readable contract the Planner, AI Engine and
     Documentation Generator consume. Mirrors
     ``docs/bible/07 - Tool Knowledge Base Specification.md`` and is extended
-    by Sprint 023 with the invocation, safety, scope, resource, evidence and
+    by with the invocation, safety, scope, resource, evidence and
     proof contracts that drive the Tool Intelligence Layer.
     """
 
@@ -270,7 +268,7 @@ class ToolKnowledge:
     common_mistakes: tuple[str, ...] = ()
     examples: tuple[str, ...] = ()
     references: tuple[str, ...] = ()
-    # -- Sprint 023 Tool Intelligence Layer extensions ---------------------
+    # -- Tool Intelligence Layer extensions ---------------------
     supported_targets: tuple[str, ...] = ()
     supported_protocols: tuple[str, ...] = ()
     supported_vulnerabilities: tuple[str, ...] = ()
@@ -533,12 +531,12 @@ class ToolTaxonomyNode:
 
 
 # ==========================================================================
-# Sprint 023 — Tool Intelligence & Capability Knowledge Layer
+# Tool Intelligence & Capability Knowledge Layer
 #
-# The following contracts extend the TIP with the invocation, safety, scope,
+# The following contracts extend the TIP with the invocation, safety, scope
 # resource, evidence and proof knowledge that let HunterX understand WHAT a
 # tool does, WHEN/WHY to use it and HOW to execute, parse, normalize and
-# evaluate its results — without ever constructing raw shell commands.
+# evaluate its results, without ever constructing raw shell commands.
 # ==========================================================================
 
 
@@ -663,7 +661,7 @@ class ChainStatus(Enum):
 
 
 class EscalationLevel(Enum):
-    """Escalation ladder: passive observation → proof."""
+    """Escalation ladder: passive observation to proof."""
 
     PASSIVE_OBSERVATION = "passive-observation"
     ACTIVE_VALIDATION = "active-validation"
@@ -714,7 +712,7 @@ class ToolInputField:
 class ToolInputSchema:
     """Typed input contract validated before execution.
 
-    Invalid input MUST fail before execution — never inside the tool.
+    Invalid input MUST fail before execution, never inside the tool.
 
     Attributes:
         fields: declared input fields.
@@ -799,7 +797,7 @@ class ToolInvocationContract:
     """Structured, non-raw invocation contract for a tool.
 
     The contract is the ONLY way to launch a tool. Arguments are typed
-    structured values — never concatenated strings from AI-generated input.
+    structured values, never concatenated strings from AI-generated input.
 
     Attributes:
         command: executable identifier (never interpolated with arguments).
@@ -1177,19 +1175,7 @@ class ToolChainStep:
 class ToolChain:
     """A dependency-aware sequence of tool steps.
 
-    Attributes:
-        chain_id: unique chain identifier.
-        mission_id: owning mission.
-        objective: what the chain is trying to achieve.
-        steps: ordered steps.
-        dependencies: step_id → prerequisite step ids.
-        conditions: routing conditions between steps.
-        stop_conditions: conditions that stop the chain.
-        abort_conditions: conditions that abort the chain.
-        scope: scope the chain runs under.
-        safety_policy: safety policy reference.
-        created_by: creator label.
-        version: chain version.
+    Attributes: chain_id: unique chain identifier.
 
     """
 
@@ -1293,7 +1279,7 @@ class EscalationDecision:
 class ConflictingToolEvidence:
     """Preserved disagreement between tools.
 
-    Conflicting observations are never averaged — both are retained and a
+    Conflicting observations are never averaged, both are retained and a
     validation or proof-strategy selection is invoked.
 
     Attributes:
@@ -1404,8 +1390,8 @@ class TargetIntelligenceSnapshot:
         known_exclusions: exclusions applied.
         first_seen: UTC ISO-8601 first observation.
         last_seen: UTC ISO-8601 latest observation.
-        tool_coverage: tool_id → observation ids.
-        test_coverage: capability/check → observation ids.
+        tool_coverage: tool_id to observation ids.
+        test_coverage: capability/check to observation ids.
         confidence_state: per-category confidence.
         execution_history: tool execution records.
 
@@ -1487,12 +1473,12 @@ class ToolAvailabilityReport:
 
 
 # ==========================================================================
-# Sprint 031 — Full Toolchain Integration & Professional Tool Intelligence
+# Full Toolchain Integration & Professional Tool Intelligence
 #
 # Canonical vocabulary for the complete authorized offensive-security
 # toolchain. HunterX understands WHAT a tool does, WHEN/WHY to use it, WHAT
-# it requires, HOW to invoke it safely, WHAT its output means and — just as
-# importantly — WHAT its output does NOT prove.
+# it requires, HOW to invoke it safely, WHAT its output means and, just as
+# importantly, WHAT its output does NOT prove.
 # ==========================================================================
 
 
@@ -1501,7 +1487,7 @@ class ToolOutputSemantics(Enum):
 
     Tool failure must never be interpreted as vulnerability absence. A
     scanner that crashed, timed out or was rate-limited reports
-    ``ERROR``/``TIMEOUT``/``RATE_LIMITED`` — never ``NOT_FOUND``.
+    ``ERROR``/``TIMEOUT``/``RATE_LIMITED``, never ``NOT_FOUND``.
     """
 
     FOUND = "found"
@@ -1582,7 +1568,7 @@ class ToolParser:
         input_format: input format (``json``, ``jsonl``, ``xml``, ``csv``, ``text``...).
         schema: schema/record shape the parser produces.
         parser_version: semantic version of the parser itself.
-        output_mappings: record field → canonical field mappings.
+        output_mappings: record field to canonical field mappings.
         error_handling: how malformed/partial input is handled.
         backward_compatible: the parser tolerates older tool output.
 
@@ -1608,7 +1594,7 @@ class ToolNormalizer:
         tool: tool whose records the normalizer canonicalizes.
         schema: canonical observation schema the normalizer produces.
         normalizer_version: semantic version of the normalizer itself.
-        observation_mappings: record field → canonical observation kind.
+        observation_mappings: record field to canonical observation kind.
         migration: migration behavior between normalizer versions.
         backward_compatible: the normalizer tolerates older record shapes.
 

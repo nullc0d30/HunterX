@@ -1,7 +1,5 @@
-# 22 — Tool Integration Standard
+# 22, Tool Integration Standard
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** Every integrated tool; checklist for `tools/<tool-id>/`
 
 ---
@@ -10,7 +8,7 @@
 
 A tool is **integrated** into HunterX only when the complete integration
 package described in this document exists, passes all gates, and is merged.
-A "half-integrated" tool is not an integration — it is a defect.
+A "half-integrated" tool is not an integration, it is a defect.
 
 ---
 
@@ -39,16 +37,16 @@ Every integrated tool MUST contain **all** of the following:
 
 - Validates against `config/knowledge.schema.yaml`.
 - Declares: metadata, capabilities, CLI model (safe argv), profiles (≥
-  `fast/thorough/stealth/quiet`), modes, input/output contracts, dependencies,
-  error mapping, performance, workflow position, mission rules, AI rules.
+ `fast/thorough/stealth/quiet`), modes, input/output contracts, dependencies,
+ error mapping, performance, workflow position, mission rules, AI rules.
 - No secrets; no shell templates.
 
 ### 3.2 Adapter (`adapter.py`)
 
 - Implements at least one contract from `06` (`ScannerAdapter`, `CrawlerAdapter`,
-  `EnumeratorAdapter`, `AnalyzerAdapter`, `ReporterAdapter`, `ValidationAdapter`).
+ `EnumeratorAdapter`, `AnalyzerAdapter`, `ReporterAdapter`, `ValidationAdapter`).
 - Implemented methods: `execute`, `parse`, `normalize`, `validate`, `healthcheck`,
-  `capabilities`, `describe`.
+ `capabilities`, `describe`.
 - All execution through the sandboxed executor; never direct subprocess.
 
 ### 3.3 Parser (`parser.py`)
@@ -102,7 +100,7 @@ Minimum test set:
 - **Golden:** `data/golden/tools/<id>/` input→expected events.
 - **Integration:** run real binary (marked `@pytest.mark.tools`), assert end-to-end.
 - **Security:** overscope argv rejected; injection neutralized; no secret leak;
-  prompt-injection on poisoned output handled.
+ prompt-injection on poisoned output handled.
 - Coverage: ≥ 80% of parser+normalizer+adapter (`15` §9).
 
 ### 3.10 Documentation (`README.md`)
@@ -117,14 +115,14 @@ Minimum test set:
 
 ```
 proposal (tool + justification + capability gap)
-  → knowledge.yaml draft
-  → adapter/parser/normalizer implementation
-  → fixtures + goldens
-  → integration on sandboxed target
-  → security tests
-  → docs
-  → PR → CI gates → Architecture + Security review
-  → merge → registry index update (tools/index.yaml)
+ → knowledge.yaml draft
+ → adapter/parser/normalizer implementation
+ → fixtures + goldens
+ → integration on sandboxed target
+ → security tests
+ → docs
+ → PR → CI gates → Architecture + Security review
+ → merge → registry index update (tools/index.yaml)
 ```
 
 ---
@@ -135,10 +133,10 @@ proposal (tool + justification + capability gap)
 
 ```
 capabilities:
-  - id: vulnerability-scan
-    tools: [nuclei, nikto, openvas]
-  - id: subdomain-enum
-    tools: [subfinder, amass]
+ - id: vulnerability-scan
+ tools: [nuclei, nikto, openvas]
+ - id: subdomain-enum
+ tools: [subfinder, amass]
 ```
 
 - New capability ids require a review (shared vocabulary stability).
@@ -165,14 +163,14 @@ capabilities:
 - Upstream changes: re-run golden regeneration, bump `tool_versions`, re-test.
 - Deprecation: mark `deprecated: true`, warn on use, remove per retention policy.
 - Health: `hunterx tool health` monitors availability; outages degrade
-  gracefully (`17` §7).
+ gracefully (`17` §7).
 
 ---
 
 ## 8. References
 
-- `06 - Tool Adapter SDK.md` — adapter contracts
-- `07 - Tool Knowledge Base Specification.md` — knowledge file
-- `08 - Unified Security Schema.md` — canonical mapping
-- `15 - Testing Standards.md` — test requirements
-- `17 - Error Handling Standards.md` — failure handling for tools
+- `06 - Tool Adapter SDK.md`, adapter contracts
+- `07 - Tool Knowledge Base Specification.md`, knowledge file
+- `08 - Unified Security Schema.md`, canonical mapping
+- `15 - Testing Standards.md`, test requirements
+- `17 - Error Handling Standards.md`, failure handling for tools

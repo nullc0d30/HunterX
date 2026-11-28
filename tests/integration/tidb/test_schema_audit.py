@@ -1,10 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Schema inventory & completeness audit (Sprint 034.3 §1, §2, §3, §11, §12).
+"""Schema inventory & completeness audit (1,).
 
-Machine-checkable evidence that the critical TIDB tables, foreign keys,
-indexes and uniqueness constraints exist after schema creation.
+Machine-checkable evidence that the critical TIDB tables, foreign keys, indexes and uniqueness constraints exist
+after schema creation.
 """
 
 from __future__ import annotations
@@ -87,7 +87,7 @@ CRITICAL_TABLES = [
     "tidb_campaigns",
 ]
 
-# (table, column) → (referenced_table, referenced_column)
+# (table, column) to (referenced_table, referenced_column)
 KEY_FOREIGN_KEYS = [
     ("tidb_subdomains", "domain_id", "tidb_domains", "id"),
     ("tidb_dns_records", "domain_id", "tidb_domains", "id"),
@@ -106,7 +106,7 @@ KEY_FOREIGN_KEYS = [
     ("tidb_authentication_schemes", "api_id", "tidb_apis", "id"),
 ]
 
-# (table, index_name) — high-frequency query indexes
+# (table, index_name), high-frequency query indexes
 REQUIRED_INDEXES = [
     ("tidb_intelligence_targets", "ix_tidb_intelligence_targets_target_id"),
     ("tidb_intelligence_targets", "ix_tidb_intelligence_targets_mission_id"),
@@ -127,7 +127,7 @@ REQUIRED_INDEXES = [
     ("tidb_mission_orchestrations", "ix_tidb_mission_orchestrations_tenant"),
 ]
 
-# (table, column) — a uniqueness guarantee (unique constraint or unique index)
+# (table, column), a uniqueness guarantee (unique constraint or unique index)
 # must exist for the canonical key. Findings are additionally protected by the
 # envelope primary key (the service sets ``id=finding_id``).
 REQUIRED_UNIQUE = [

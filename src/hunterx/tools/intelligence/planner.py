@@ -1,12 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool Sequence Planner (Sprint 023).
+"""Tool Sequence Planner.
 
-Builds a dependency-aware :class:`ToolChain` from an objective and the
-capabilities needed to achieve it. Steps are ordered so every prerequisite
-runs before its dependents (topological order), and each step records the
-routing conditions and safety class declared by its tool's knowledge profile.
+Builds a dependency-aware :class:`ToolChain` from an objective and the capabilities needed to achieve it.
 """
 
 from __future__ import annotations
@@ -51,6 +48,7 @@ class ToolSequencePlanner:
         mission_id: str = "",
         scope: str = "",
         authorization: ToolSafetyClass = ToolSafetyClass.HIGH_IMPACT,
+        authorization_granted: bool = False,
         inputs: dict[str, Any] | None = None,
     ) -> ToolChain:
         """Plan a chain for ``objective`` covering ``capabilities``.
@@ -60,7 +58,9 @@ class ToolSequencePlanner:
 
         """
         inputs = inputs or {}
-        selections = self._select_for_capabilities(capabilities, authorization)
+        selections = self._select_for_capabilities(
+            capabilities, authorization, authorization_granted
+        )
         steps: list[ToolChainStep] = []
         dependencies: dict[str, tuple[str, ...]] = {}
         previous: str | None = None
@@ -88,6 +88,7 @@ class ToolSequencePlanner:
         self,
         capabilities: tuple[str, ...],
         authorization: ToolSafetyClass,
+        authorization_granted: bool,
     ) -> dict[str, ToolSelection]:
         from hunterx.domain.tool_intelligence import ToolSelectionCriteria
 
@@ -100,6 +101,7 @@ class ToolSequencePlanner:
                         require_installed=False,
                     ),
                     authorization=authorization,
+                    authorization_granted=authorization_granted,
                 )
             except ToolSelectionError as error:
                 raise ToolSelectionError(

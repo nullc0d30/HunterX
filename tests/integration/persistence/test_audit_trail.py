@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Audit trail tests (Sprint 034.3 §21).
-
-Important state changes (finding created/validated, mission started/paused/
-resumed/completed) must be reconstructable from the append-only audit trail
-with sufficient provenance.
-"""
+"""Audit trail tests (21)."""
 
 from __future__ import annotations
 
@@ -32,7 +27,7 @@ pytest.importorskip("sqlalchemy")
 def versioned_factory(session_factory):
     from hunterx.infrastructure.db.sql.versioning import install_versioning
 
-    install_versioning(session_factory, actor="certification", source="sprint-034.3")
+    install_versioning(session_factory, actor="certification", source="certification-run")
     return SqlTidbRepositoryFactory(session_factory)
 
 
@@ -156,7 +151,8 @@ def test_without_versioning_no_audit_is_written(session_factory) -> None:
 
 def test_platform_build_wires_versioning() -> None:
     """A production-style SQL platform must install the versioning listener so
-    every TIDB write is audited (Sprint 034.3 §21)."""
+    every TIDB write is audited (21).
+    """
     from hunterx.config.settings import DatabaseSettings, Settings
     from hunterx.domain.entities.tidb import IntelligenceTargetRecord
     from hunterx.platform import build_platform

@@ -1,25 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 1 — finding/validation integrity repair regression tests.
+"""Finding/validation integrity repair regression tests.
 
-Pins the semantic boundary between an Observation, a Candidate finding and a
-Validated vulnerability, and the required invariant:
-
-* an informational scanner result (WAF detection, tech/DNS/SPF/MX
-  fingerprinting, robots.txt, WHOIS/RDAP, ...) stays an observation /
-  intelligence — it NEVER becomes a candidate finding, let alone a validated
-  vulnerability;
-* a candidate finding without verification evidence NEVER becomes
-  verified/validated (it stays CANDIDATE/SUPPORTED);
-* a properly verified finding (supported differential probe on a real
-  vulnerability class) MAY become validated;
-* repeated identical observations from the same tool, target and endpoint
-  never create duplicate findings.
-
-These tests exercise the real mission execution path (planning → decision →
-execution → observation ingestion → hypothesis loop → promotion) with a
-deterministic fake tool layer.
+Pins the semantic boundary between an Observation, a Candidate finding and a Validated vulnerability, and the
+required invariant.
 """
 
 from __future__ import annotations

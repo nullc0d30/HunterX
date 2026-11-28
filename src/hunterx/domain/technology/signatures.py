@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""In-process technology signature database.
-
-A deterministic, curated set of detection signatures consumed by the
-:class:`~hunterx.domain.technology.detector.SignatureDetector` to recognise
-technologies from HTTP evidence (headers, HTML, meta, cookies and TLS
-certificates) without an external tool. Every signature is a pure pattern with
-an evidence type and a relative strength so weak indicators never masquerade as
-strong ones.
-
-The database is intentionally small, auditable and golden-tested; it is the
-fallback detector and the in-process execution path (like tcp-connect and
-dnspython in earlier capabilities), not a replacement for tool-based
-fingerprinting.
-"""
+"""In-process technology signature database."""
 
 from __future__ import annotations
 

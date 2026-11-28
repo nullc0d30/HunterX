@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Secret masking, redaction and lifecycle (Sprint 034.4 §13, §14).
+"""Secret masking, redaction and lifecycle (13,).
 
 Secrets must not leak into logs, reports, process listings or command lines.
-Redaction failures are tested explicitly: short values, CRLF, unicode and
-values nested in JSON/mappings.
 """
 
 from __future__ import annotations

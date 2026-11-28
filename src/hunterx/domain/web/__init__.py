@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Web crawling domain models and helpers.
-
-Canonical contracts for the web crawling & web attack-surface discovery
-capability: URL observations, redirects, API/WebSocket/GraphQL endpoints,
-authentication boundaries, crawl evidence, run batches, scope/policy/strategy
-and deterministic parsers. Pure domain — no I/O.
-"""
+"""Web crawling domain models and helpers."""
 
 from __future__ import annotations
 

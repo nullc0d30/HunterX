@@ -3,9 +3,7 @@
 
 """Layer definitions and module-to-layer resolution.
 
-A *layer* is the architectural unit enforced by the framework. Every module
-under ``src/hunterx`` belongs to exactly one layer (or to the special ``root``
-layer for the side-effect-free ``hunterx`` package itself).
+A *layer* is the architectural unit enforced by the framework.
 """
 
 from __future__ import annotations
@@ -69,6 +67,13 @@ DEFAULT_LAYERS: tuple[Layer, ...] = (
         packages=("hunterx.security",),
         description="Cross-cutting security services: policies, permissions, secret resolution.",
         owner="Security Team",
+        rank=4,
+    ),
+    Layer(
+        name="resource",
+        packages=("hunterx.resource",),
+        description="Mission resource governance: memory/CPU budgets, backpressure, telemetry.",
+        owner="Platform Team",
         rank=4,
     ),
     Layer(

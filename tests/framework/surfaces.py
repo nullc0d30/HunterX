@@ -3,13 +3,7 @@
 
 """Synthetic abstract target shapes for attack-surface testing.
 
-Phase 1 test fixtures only. Each shape is an *abstract target type* — a simple
-web app, a REST API, a GraphQL API, an authenticated application, a multi-user
-application, a file-handling application and a workflow-driven application.
-They deliberately model no real product (and in particular not OWASP Juice
-Shop); they exist solely to prove the target-agnostic surface model can
-represent, map and schedule arbitrary discovered surfaces without knowing the
-target in advance.
+test fixtures only.
 """
 
 from __future__ import annotations
@@ -24,7 +18,7 @@ class ObservationEvent:
 
     Attributes:
         observation_type: canonical observation-type string (endpoint,
-            parameter, object, workflow, technology, ...).
+            parameter, object, workflow, technology,...).
         content: discovery payload dict (crawl/parameters/objects/...).
         asset_key: the asset the observation was collected against.
         session_state: optional session-state hint.
@@ -42,7 +36,7 @@ class TargetShape:
     """A synthetic abstract target with its discovery observation feed.
 
     Attributes:
-        name: shape name (``simple_web_app``, ``rest_api``, ...).
+        name: shape name (``simple_web_app``, ``rest_api``,...).
         target: authorized target key.
         observations: ordered discovery events for the shape.
         expected_kinds: surface kinds the model should represent.

@@ -3,11 +3,8 @@
 
 """Live discovery correlation and conflict detection.
 
-Correlates observations from multiple tools/executions into a single canonical
-set, merging corroborating facts and surfacing conflicts. The correlator never
-silently discards an observation: values that disagree across sources are
-reported as :class:`DiscoveryConflict` records with full provenance, and every
-out-of-scope observation is counted rather than dropped silently.
+Correlates observations from multiple tools/executions into a single canonical set, merging corroborating facts and
+surfacing conflicts.
 """
 
 from __future__ import annotations
@@ -87,7 +84,7 @@ def correlate_observations(
 
     Observations sharing a canonical key are merged (sources accumulated,
     confidence raised by corroboration). Distinct values for the same group
-    (address, address+port, ...) produce a :class:`DiscoveryConflict`. Scope
+    (address, address+port,...) produce a :class:`DiscoveryConflict`. Scope
     enforcement drops out-of-scope observations.
     """
     enforcer = LiveScopeEnforcer(scope)

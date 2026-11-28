@@ -3,11 +3,7 @@
 
 """The architecture linter.
 
-:class:`ArchitectureLinter` is the orchestrator. It scans the package tree,
-extracts imports, validates them against the dependency policy, detects cycles,
-checks plugin/tool boundaries, validates documentation and compares the public
-API against the committed baseline. Every check emits :class:`Violation`
-objects with remediation guidance.
+:class:`ArchitectureLinter` is the orchestrator.
 """
 
 from __future__ import annotations

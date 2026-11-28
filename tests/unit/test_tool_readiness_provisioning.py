@@ -3,9 +3,8 @@
 
 """Unit tests for tool provisioning.
 
-Covers missing tool, supported installation method, successful installation,
-failed installation, unsupported platform and idempotency. The command runner
-is stubbed — no real package is ever installed.
+Covers missing tool, supported installation method, successful installation, failed installation, unsupported
+platform and idempotency.
 """
 
 from __future__ import annotations
@@ -319,7 +318,7 @@ class TestTrustedCommands:
         provisioner = _provisioner(discovery, platform, runner)
 
         # The install command for a package-manager tool must be exactly the
-        # static manifest vector — a hostile tool id can never alter it.
+        # static manifest vector, a hostile tool id can never alter it.
         outcome = provisioner.install(_definition("nmap", platform))
         assert outcome.method is not None
         assert runner.calls[0] == ["apt-get", "install", "-y", "nmap"]

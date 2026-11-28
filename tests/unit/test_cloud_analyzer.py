@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the cloud intelligence analyzer over golden bundles.
-
-Exercises the evidence-based detector set on deterministic fixtures: AWS, Azure,
-GCP, Cloudflare + SaaS, multi-cloud, Kubernetes, stale/dangling resources and a
-false-positive plain site that must yield no detections.
-"""
+"""Tests for the cloud intelligence analyzer over golden bundles."""
 
 from __future__ import annotations
 

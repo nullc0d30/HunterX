@@ -1,30 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Capability execution engine.
-
-Lifts the proven probe path out of the validation harness into the application
-layer: drains the attack-surface assessment queue and for every ready
-``(surface, capability, context)`` task:
-
-    1. checks capability applicability from target evidence (never assumed),
-    2. attempts the capability's tool chain (scanner -> scanner -> native
-       HunterX strategy), recording every tool execution honestly
-       (tool / command / exit code / stdout status / parsed result / duration),
-    3. executes the native differential probes — multi-vector, one probe per
-       signal strategy — bounded and loopback-guarded,
-    4. analyzes every probe, settles the task + assignment with the verdict,
-    5. records the per-(capability x surface x context) outcome and, when a
-       session exists, repeats the execution in the authenticated context
-       (auth-context matrix),
-    6. aggregates exactly-one authoritative status per capability and persists
-       the mission's ``capability_coverage.json``.
-
-Blocking is blocking, failure is failure: a probe refused on a non-loopback
-target is BLOCKED, an execution error is FAILED, an absent tool is recorded
-``unavailable`` and the chain falls through — a capability is never silently
-marked complete.
-"""
+"""Capability execution engine."""
 
 from __future__ import annotations
 
@@ -61,7 +38,7 @@ _PROBE_LAYERS = (
 #: Tool fallback chains per capability family: a specialized scanner is
 #: attempted first; when it is unavailable the chain falls through to the
 #: native HunterX differential strategy (always present). Absence is recorded
-#: explicitly — a capability is never silently marked complete.
+# : explicitly, a capability is never silently marked complete.
 DEFAULT_FALLBACK_CHAINS: dict[str, tuple[str, ...]] = {
     "sql-injection": ("sqlmap", "ghauri"),
     "nosql-injection": ("sqlmap",),
@@ -175,7 +152,7 @@ class CapabilityExecutionEngine:
     ) -> dict[str, Any]:
         """Build the mission's authoritative capability-coverage document.
 
-        Every capability in the live catalog receives exactly one status —
+        Every capability in the live catalog receives exactly one status,
         never a catalog-only claim.
         """
         if catalog is None:
@@ -340,7 +317,7 @@ class CapabilityExecutionEngine:
 
         Every probe contributes its differential signal family, its payload
         family (payload count), and any controlled mutations / body-template
-        vectors — never an assumed strategy.
+        vectors, never an assumed strategy.
         """
         labels: list[str] = []
         for probe in probes:
@@ -373,7 +350,7 @@ class CapabilityExecutionEngine:
                         parsed_result=None,
                         duration_ms=0,
                         strategy="scanner",
-                        error="adapter not available — falling through to the native strategy",
+                        error="adapter not available - falling through to the native strategy",
                     )
                 )
                 continue
@@ -451,7 +428,7 @@ class CapabilityExecutionEngine:
 
         Any supported verdict is a FINDING; every probe contradicted is a
         VERIFIED definite negative; otherwise the execution was uninformative
-        (NO_FINDING — tested, no signal).
+        (NO_FINDING, tested, no signal).
         """
         if not verdicts:
             return ProbeVerdict(uninformative=True, notes=f"no verdicts for {capability_id}"), CapabilityExecutionStatus.NO_FINDING, "probe produced no verdicts"

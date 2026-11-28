@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the Phase 6 capability-finding pipeline.
-
-Drives the full contract against a generic loopback target: capability
-execution (Phase 5) seeds candidates, the pipeline promotes them into the
-canonical finding lifecycle, replays them in isolation, classifies
-reproduction, assesses impact, generates PoCs, scores severity and
-finalizes report-ready packages. Honest negatives: safe targets produce no
-candidates, non-reproducible candidates are rejected (never fabricated into
-valid findings), and duplicates resolve to one logical finding.
-"""
+"""Component tests for the capability-finding pipeline."""
 
 from __future__ import annotations
 

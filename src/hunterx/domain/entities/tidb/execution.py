@@ -3,10 +3,7 @@
 
 """Execution-layer Target Intelligence Database entities.
 
-Persistent records of tool and mission executions. These are the durable
-side of the runtime execution models in ``hunterx.domain.execution`` and
-``hunterx.domain.mission_planning``: every pipeline run and mission attempt
-is recorded here for audit, analytics and replay.
+Persistent records of tool and mission executions.
 """
 
 from __future__ import annotations

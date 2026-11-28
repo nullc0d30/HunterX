@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Tool Ecosystem — HunterX v7
+title: Tool Ecosystem - HunterX v7
 keywords: HunterX tools, open source penetration testing tools, bug bounty tools, bug hunting tools, recon tools, web security tools, API security tools, vulnerability scanners, red team tools, security testing tools, OSINT reconnaissance tools, fuzzing tools, security research tools, HunterX integrations
 description: >-
   The HunterX v7 tool ecosystem: the open-source security tools HunterX
   integrates with, executes, parses, normalizes and correlates. Recon, port
   scanning, crawling, fuzzing, parameter discovery, vulnerability detection and
   validation, secrets, SAST, proxies, exploitation and knowledge resources.
-  Integration status is documented per tool — never overclaimed.
+  Integration status is documented per tool - never overclaimed.
 ---
 
 # Tool Ecosystem
@@ -30,14 +30,14 @@ capability manifest.
 Every tool below is labeled accurately. **HunterX never claims direct
 execution it does not implement.**
 
-- **Integrated &middot; fully supported** — structured execution, versioned
-  parser and normalizer, canonical observations.
-- **Integrated &middot; partial support** — parser/normalizer or adapter with
-  documented limitations.
-- **Integrated &middot; execution only** — structured execution with a guarded
-  adapter (never arbitrary subprocess).
-- **Planned / Resource** — registered as a knowledge resource or known tool in
-  the manifest; direct execution is not claimed.
+- **Integrated &middot; fully supported**, structured execution, versioned
+ parser and normalizer, canonical observations.
+- **Integrated &middot; partial support**, parser/normalizer or adapter with
+ documented limitations.
+- **Integrated &middot; execution only**, structured execution with a guarded
+ adapter (never arbitrary subprocess).
+- **Planned / Resource**, registered as a knowledge resource or known tool in
+ the manifest; direct execution is not claimed.
 
 ## How tool output becomes findings
 
@@ -263,9 +263,7 @@ canonical observations before it can influence a finding.
 |---|---|---|---|
 | Proof Replay | safe-validation, proof-replay | safe-validation, proof-replay, impact-statement | **Integrated** &middot; fully supported |
 
-
-
-HunterX integrates with and leverages the third-party open-source projects
+HunterX integrates with and usees the third-party open-source projects
 listed above. It does not claim ownership of them. Each project keeps its own
 license and attribution, which is preserved in
 [THIRD_PARTY_NOTICES](https://github.com/nullc0d30/HunterX/blob/main/THIRD_PARTY_NOTICES).
@@ -274,9 +272,9 @@ interoperability.
 
 ## Related
 
-- [Vulnerability Proof & PoC]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }}) — how proof
-  contracts validate hypotheses
-- [Full Toolchain Intelligence]({{ '/v7-full-toolchain-intelligence/' | relative_url }}) — the
-  integration architecture
-- [Tool Integration SDK]({{ '/v7-tool-integration-sdk/' | relative_url }}) — the adapter SDK
-- [Features]({{ '/features/' | relative_url }}) — platform capabilities
+- [Vulnerability Proof & PoC]({{ '/v7-vulnerability-proof-and-poc/' | relative_url }}), how proof
+ contracts validate hypotheses
+- [Full Toolchain Intelligence]({{ '/v7-full-toolchain-intelligence/' | relative_url }}), the
+ integration architecture
+- [Tool Integration SDK]({{ '/v7-tool-integration-sdk/' | relative_url }}), the adapter SDK
+- [Features]({{ '/features/' | relative_url }}), platform capabilities

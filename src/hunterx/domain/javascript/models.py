@@ -1,21 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript Intelligence canonical domain models.
-
-Pure data contracts for the JavaScript Intelligence & Client-Side Attack-Surface
-Discovery capability: asset acquisitions, per-asset analyses, endpoint/route/
-WebSocket/GraphQL/authentication references, third-party services, storage
-usage, secret indicators, technology & dependency evidence, configuration,
-source maps, workers, WebAssembly references, security-relevant API usage,
-dynamic imports, evidence, conflicts, historical changes, run batches and the
-per-asset analysis container. No I/O and no execution here.
-
-The TIDB ``javascript_intelligence`` entities
-(:mod:`hunterx.domain.entities.tidb.javascript_intelligence`) are the
-persistence projection of these models; this module is the runtime surface the
-JavaScript intelligence pipeline is built on.
-"""
+"""JavaScript Intelligence canonical domain models."""
 
 from __future__ import annotations
 
@@ -44,7 +30,7 @@ class JSMode(StrEnum):
 class JSAssetKind(StrEnum):
     """The class of JavaScript resource analysed.
 
-    Values mirror the acquisition matrix in the sprint: external scripts,
+    Values follow the acquisition matrix: external scripts,
     inline scripts, bundles, lazy-loaded chunks, dynamic resources, source
     maps, service workers, workers and WebAssembly references.
     """
@@ -387,7 +373,7 @@ class JSEvidence:
     Attributes:
         evidence_type: kind of evidence (``string``, ``call``, ``member``,
             ``comment``, ``template``, ``source-map``, ``snippet``).
-        value: evidence value — always masked/truncated, never a raw secret.
+        value: evidence value, always masked/truncated, never a raw secret.
         location: ``file:line:col``-style location.
         offset: byte offset in the source.
         snippet: short surrounding context (masked).
@@ -1737,31 +1723,7 @@ class JSExecutionSummary:
 class JSAssetAnalysis:
     """The complete analysis result for one JavaScript asset.
 
-    Attributes:
-        asset: the acquisition metadata.
-        parse_status: :class:`ParseStatus`.
-        analysis_version: rule/analysis version that produced this result.
-        tokens: number of tokens produced.
-        strings: number of string/template literals extracted.
-        endpoints: extracted endpoint references.
-        routes: extracted routes.
-        auth: authentication references.
-        domains: referenced external domains.
-        services: third-party services.
-        storage: storage indicators.
-        secrets: secret indicators.
-        technology: technology evidence.
-        dependencies: dependency indicators.
-        configuration: configuration indicators.
-        source_maps: source map references.
-        workers: worker references.
-        wasm: WebAssembly references.
-        security: security-relevant API usage.
-        dynamic_imports: dynamic import references.
-        evidence: collected evidence fragments.
-        conflicts: analysis conflicts.
-        started_at / completed_at: analysis timestamps.
-        record_id: stable identifier.
+    Attributes: asset: the acquisition metadata.
 
     """
 
@@ -1916,34 +1878,7 @@ class JSAssetAnalysis:
 class JavaScriptBatch:
     """The result of one JavaScript intelligence run.
 
-    Attributes:
-        mission_id: owning mission id (empty for ad-hoc runs).
-        correlation_id: correlation id shared by every execution in the run.
-        target: the target analysed.
-        mode: the execution posture used.
-        analyses: per-asset analyses.
-        assets: correlated asset acquisitions (one per content hash).
-        endpoints: correlated endpoint references.
-        routes: correlated client routes.
-        auth: correlated authentication references.
-        domains: correlated external domains.
-        services: correlated third-party services.
-        storage: correlated storage indicators.
-        secrets: correlated secret indicators.
-        technology: correlated technology evidence.
-        dependencies: correlated dependencies.
-        configuration: correlated configuration indicators.
-        source_maps: correlated source maps.
-        workers: correlated worker references.
-        wasm: correlated WebAssembly references.
-        security: correlated security indicators.
-        dynamic_imports: correlated dynamic imports.
-        evidence: collected evidence fragments.
-        conflicts: recorded analysis conflicts.
-        changes: historical changes detected.
-        executions: per-tool execution summaries.
-        created_at: UTC ISO-8601 run timestamp.
-        batch_id: stable identifier for this run.
+    Attributes: mission_id: owning mission id (empty for ad-hoc runs).
 
     """
 

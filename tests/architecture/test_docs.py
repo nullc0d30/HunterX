@@ -31,17 +31,12 @@ def test_missing_docstring_is_error(tmp_path: pathlib.Path) -> None:
     assert errors[0].severity == "error"
 
 
-def test_package_sections_recommended(tmp_path: pathlib.Path) -> None:
+def test_package_sections_are_not_required(tmp_path: pathlib.Path) -> None:
+    """A package docstring only needs a purpose; no boilerplate sections."""
     modules = _modules(tmp_path)
     modules["hunterx.mod"].write_text('"""A module."""\n', encoding="utf-8")
     modules["hunterx.pkg"].parent.mkdir(parents=True, exist_ok=True)
-    modules["hunterx.pkg"].write_text(
-        '"""Pkg.\n\nResponsibilities:\n    Does things.\n\nDependencies:\n    stdlib.\n"""\n',
-        encoding="utf-8",
-    )
+    modules["hunterx.pkg"].write_text('"""Pkg."""\n', encoding="utf-8")
     violations = validate_documentation(modules, default_policy().doc_requirements)
     section_warnings = [v for v in violations if v.code == ViolationCodes.DOC_SECTION_MISSING]
-    # non-package modules are not checked for sections
-    assert all(v.module == "hunterx.pkg" for v in section_warnings)
-    missing = section_warnings[0].details["missing"] if section_warnings else []
-    assert "extension points" in missing
+    assert not section_warnings

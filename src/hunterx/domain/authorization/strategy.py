@@ -3,13 +3,8 @@
 
 """Authorization intelligence collection strategy.
 
-Maps an execution mode (passive/active/hybrid) and a target onto the concrete
-set of analyses the capability should run. The strategy is a pure function of
-(mode, target, requested features) so the same inputs always yield the same
-plan. The authorization capability is intelligence-only: even active postures
-never test authorization behaviour, and passive postures only consume
-already-acquired static material (HTTP snapshots, script content, API schemes
-and operations, GraphQL metadata, TIDB intelligence).
+Maps an execution mode (passive/active/hybrid) and a target onto the concrete set of analyses the capability should
+run.
 """
 
 from __future__ import annotations

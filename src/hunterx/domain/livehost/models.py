@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Live Host & Service Discovery canonical domain models.
-
-Pure data contracts for the live host & service discovery capability: the
-canonical host, port, service, TLS and HTTP observations every tool adapter
-produces, the reachability outcomes, the change and conflict records produced
-by historical comparison and correlation, the execution summaries and the
-batch that carries everything back to the application layer. No I/O and no
-execution here.
-
-The TIDB ``network`` entities (:mod:`hunterx.domain.entities.tidb.network`)
-are the persistence projection of these models; this module is the runtime
-surface the discovery pipeline is built on.
-"""
+"""Live Host & Service Discovery canonical domain models."""
 
 from __future__ import annotations
 
@@ -226,7 +214,7 @@ class PortFinding:
         port: port number.
         protocol: transport protocol (``tcp``/``udp``).
         state: observed port state.
-        reason: reason reported by the tool (``syn-ack``, ``reset``, ...).
+        reason: reason reported by the tool (``syn-ack``, ``reset``,...).
         tool_id: the tool that produced the observation.
         source: upstream source of the observation.
         confidence: detection confidence in ``[0, 1]``.

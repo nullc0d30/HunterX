@@ -3,9 +3,7 @@
 
 """SQLAlchemy ORM models.
 
-Models mirror the domain entities 1:1 but are storage views, not domain
-objects. Complex values (metadata, lists, dicts) are stored as JSON text to
-keep the foundation schema portable across SQLite/Postgres.
+Models mirror the domain entities 1:1 but are storage views, not domain objects.
 """
 
 from __future__ import annotations

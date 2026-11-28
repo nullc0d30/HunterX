@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the DNS tool adapters (dnsx, dnspython, resolver).
-
-Every adapter is exercised with a fake binary runner fed golden output, or an
-injectable resolve callable, so no external tool or network is required. Tests
-assert the generated command line and the canonical DNS records attached to the
-execution output.
-"""
+"""Tests for the DNS tool adapters (dnsx, dnspython, resolver)."""
 
 from __future__ import annotations
 

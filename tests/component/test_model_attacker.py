@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the Phase 7 autonomous model-driven attack loop.
-
-The connected model participates in the *real* execution loop: its hypotheses
-become real assessment tasks on the attack-surface queue, the ordinary
-capability execution engine executes them, results and findings feed back into
-the model's reasoning, and a finding never terminates the mission. Honest
-negatives: duplicates are rejected, contradicted hypotheses are never re-run,
-and a failed model is reported as unavailable — never as exhaustion.
-"""
+"""Component tests for the autonomous model-driven attack loop."""
 
 from __future__ import annotations
 

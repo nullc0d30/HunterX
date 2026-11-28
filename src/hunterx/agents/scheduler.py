@@ -3,8 +3,7 @@
 
 """Agent scheduler.
 
-Dispatches agent runs on a recurring schedule. This is the agent-level
-scheduler; mission-level schedules belong to :mod:`hunterx.scheduler`.
+Dispatches agent runs on a recurring schedule.
 """
 
 from __future__ import annotations

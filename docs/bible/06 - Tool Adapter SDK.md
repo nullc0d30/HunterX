@@ -1,7 +1,5 @@
-# 06 — Tool Adapter SDK
+# 06, Tool Adapter SDK
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** All tool integrations, `tools/<tool-id>/adapter.py`
 **Schema:** `config/plugin.schema.yaml` (adapter plugins), `07 - Tool Knowledge Base Specification.md`
 
@@ -25,7 +23,7 @@ adapter stays focused.
 
 | Adapter | Responsibility | Typical tools |
 |---------|----------------|---------------|
-| `BaseAdapter` | Common contract every adapter implements | — (abstract) |
+| `BaseAdapter` | Common contract every adapter implements | - (abstract) |
 | `ScannerAdapter` | Active scanning / detection | nmap, nuclei, sqlmap, nikto, wpscan |
 | `CrawlerAdapter` | Web crawling / link discovery | wget, hakrawler, gobuster (dir) |
 | `EnumeratorAdapter` | Asset/intelligence enumeration | subfinder, amass, massdns, dnsx, certsh |
@@ -48,19 +46,19 @@ Every adapter must implement:
 | `parse(output: bytes) -> Iterable[ParsedItem]` | Convert raw output to structured items |
 | `normalize(items) -> Iterable[CanonicalEvent]` | Map parsed items to canonical entities |
 | `validate(items) -> ValidationReport` | Sanity-check normalized output |
-| `healthcheck() -> HealthReport` | Is the tool installed/available/authorized? |
-| `capabilities() -> set[Capability]` | What can this adapter do? |
-| `describe() -> AdapterInfo` | Metadata for registry/UI |
+| `healthcheck -> HealthReport` | Is the tool installed/available/authorized? |
+| `capabilities -> set[Capability]` | What can this adapter do? |
+| `describe -> AdapterInfo` | Metadata for registry/UI |
 
 Shared input/output types (defined in `hunterx.plugins.sdk`):
 
 - `ToolRequest`: `target_id`, `scope` (envelope), `args` (safe argv), `env_allowlist`,
-  `timeout_s`, `resource_limits`, `correlation_id`, `profile` (tool profile name).
+ `timeout_s`, `resource_limits`, `correlation_id`, `profile` (tool profile name).
 - `ToolResult`: `exit_code`, `stdout`, `stderr`, `duration_ms`, `outcome`
-  (SUCCESS/PARTIAL/FAILED/TIMEOUT/VIOLATED), `artifacts` (paths to raw outputs).
+ (SUCCESS/PARTIAL/FAILED/TIMEOUT/VIOLATED), `artifacts` (paths to raw outputs).
 - `ParsedItem`: normalized seed structure with `source_line`, `raw` reference.
-- `CanonicalEvent`: a typed event (`finding.created`, `service.discovered`, ...)
-  conforming to `08 - Unified Security Schema.md`.
+- `CanonicalEvent`: a typed event (`finding.created`, `service.discovered`,...)
+ conforming to `08 - Unified Security Schema.md`.
 
 ---
 
@@ -68,17 +66,17 @@ Shared input/output types (defined in `hunterx.plugins.sdk`):
 
 ```
 discover (registry scan of tools/)
-  → validate (knowledge.yaml + adapter import + healthcheck)
-  → register (adapter catalog)
-  → execute (per request)
-       ├─ preflight (scope check, healthcheck, secret binding)
-       ├─ sandbox run (process/container)
-       ├─ capture output (streamed)
-       ├─ parse
-       ├─ normalize
-       ├─ validate
-       └─ emit CanonicalEvents + ToolResult
-  → unload (on removal/update)
+ → validate (knowledge.yaml + adapter import + healthcheck)
+ → register (adapter catalog)
+ → execute (per request)
+ ├─ preflight (scope check, healthcheck, secret binding)
+ ├─ sandbox run (process/container)
+ ├─ capture output (streamed)
+ ├─ parse
+ ├─ normalize
+ ├─ validate
+ └─ emit CanonicalEvents + ToolResult
+ → unload (on removal/update)
 ```
 
 ---
@@ -89,8 +87,8 @@ Contract additions:
 
 ```python
 class ScannerAdapter(BaseAdapter):
-    def scan(self, request: ScanRequest) -> ScanResult: ...   # convenience wrapper
-    def discover(self, request: ScanRequest) -> Iterable[ServiceFinding]: ...
+ def scan(self, request: ScanRequest) -> ScanResult:... # convenience wrapper
+ def discover(self, request: ScanRequest) -> Iterable[ServiceFinding]:...
 ```
 
 - Declares which **detection classes** it can confirm (from the tool knowledge file).
@@ -116,8 +114,8 @@ Contract additions:
 
 - `enumerate(target, mode) -> Iterable[AssetDiscovery]`
 - Produces `Domain`, `Subdomain`, `Host`, `IP`, `Certificate` events.
-- `mode` values: `passive`, `active-light`, `active-full`, `bruteforce` — each
-  gated by mission profile approval level.
+- `mode` values: `passive`, `active-light`, `active-full`, `bruteforce`, each
+ gated by mission profile approval level.
 
 ---
 
@@ -138,7 +136,7 @@ Contract additions:
 
 - `render(report_models: ReportBundle) -> ReportArtifact`
 - Consumes **canonical report models only** (never raw findings) to produce an
-  output artifact (e.g., custom JSON-Lines export, CSV).
+ output artifact (e.g., custom JSON-Lines export, CSV).
 - Registered with the Reporting Engine renderer registry by format name.
 
 ---
@@ -150,7 +148,7 @@ Contract additions:
 - `validate(finding: Finding, evidence: Evidence) -> ValidationVerdict`
 - Verdict: `CONFIRMED`, `REFUTED`, `INCONCLUSIVE`, `PARTIAL`.
 - May run a PoC against a **copy/lab** or with explicit operator approval for
-  destructive checks (per mission profile).
+ destructive checks (per mission profile).
 - Returns structured `ValidationResult` with reproduction steps + evidence refs.
 
 ---
@@ -167,7 +165,7 @@ Base Specification.md`). The knowledge file is the *contract of record* for:
 - Performance expectations (rate limits, timeouts).
 - AI usage rules (what the AI may do with this tool's results).
 
-The adapter references knowledge via `describe()['knowledge_id']` and the
+The adapter references knowledge via `describe['knowledge_id']` and the
 `ToolExecutor` (see `02 - Architecture.md` §5.9) resolves and binds them.
 
 ---
@@ -175,41 +173,41 @@ The adapter references knowledge via `describe()['knowledge_id']` and the
 ## 12. Safety Contract (mandatory for all adapters)
 
 1. **No direct `subprocess` from adapter code.** All execution goes through
-   `tools/sandbox.py` (the sandboxed executor).
+ `tools/sandbox.py` (the sandboxed executor).
 2. **Args are structured** (argv lists), never shell strings. No `sh -c`.
 3. **Scope enforcement:** adapter must check every target/port/path against the
-   scope envelope *before* invocation; any deviation → `VIOLATED` outcome, no run.
+ scope envelope *before* invocation; any deviation → `VIOLATED` outcome, no run.
 4. **Timeouts & limits** are always applied (from request, not adapter defaults).
 5. **Secrets:** credentials are injected by the sandbox from `SecretPort` by
-   declared names; never accepted as free-form argv.
+ declared names; never accepted as free-form argv.
 6. **Destructive actions** (sqlmap `--dbs` on live DB, payload writes) require
-   the mission profile's `destructive_allowed` flag; otherwise blocked at the
-   executor.
+ the mission profile's `destructive_allowed` flag; otherwise blocked at the
+ executor.
 7. **Observability:** every execution emits `tool.started`, `tool.completed` /
-   `tool.failed` with correlation id, duration, outcome, and artifacts.
+ `tool.failed` with correlation id, duration, outcome, and artifacts.
 8. **Isolation:** untrusted tool output is never evaluated/executed; it is
-   parsed by declarative parsers only.
+ parsed by declarative parsers only.
 
 ---
 
 ## 13. Error Handling Contract
 
 - Adapter raises `AdapterError` subclasses: `ToolMissingError`, `ToolTimeoutError`,
-  `ToolCrashedError`, `ScopeViolationError`, `ParseError`, `UnsupportedModeError`.
+ `ToolCrashedError`, `ScopeViolationError`, `ParseError`, `UnsupportedModeError`.
 - Each carries a machine code (see `17 - Error Handling Standards.md`) and is
-  mapped to a `ToolResult.outcome`.
+ mapped to a `ToolResult.outcome`.
 - Retryability is declared per error class: transient (retryable) vs permanent.
 - Healthcheck failures degrade gracefully: the tool is marked unavailable and
-  the workflow routes around it (see `17` §Graceful Degradation).
+ the workflow routes around it (see `17` §Graceful Degradation).
 
 ---
 
 ## 14. Versioning & Compatibility
 
 - Adapters use SemVer; a tool's adapter version is independent of the tool's
-  version (the knowledge file binds `tool_version` ranges).
-- `healthcheck()` reports tool version; executor compares against
-  `knowledge.tool.supported_versions` and warns on mismatch.
+ version (the knowledge file binds `tool_version` ranges).
+- `healthcheck` reports tool version; executor compares against
+ `knowledge.tool.supported_versions` and warns on mismatch.
 - Adapter ABI is versioned via `sdk_min` in the manifest.
 
 ---
@@ -219,15 +217,15 @@ The adapter references knowledge via `describe()['knowledge_id']` and the
 Each adapter ships in `tools/<tool-id>/`:
 
 ```
-adapter.py        # implements one or more contracts above
-parser.py         # parser for tool output (streamed)
-normalizer.py     # canonical mapping
-knowledge.yaml    # Tool Knowledge File (mandatory)
-workflows.yaml    # workflow position rules
+adapter.py # implements one or more contracts above
+parser.py # parser for tool output (streamed)
+normalizer.py # canonical mapping
+knowledge.yaml # Tool Knowledge File (mandatory)
+workflows.yaml # workflow position rules
 mission_rules.yaml# mission applicability
-ai_rules.yaml     # AI usage rules
-tests/            # adapter/parser/normalizer tests
-README.md         # tool documentation
+ai_rules.yaml # AI usage rules
+tests/ # adapter/parser/normalizer tests
+README.md # tool documentation
 ```
 
 Full checklist: `22 - Tool Integration Standard.md`.
@@ -240,7 +238,7 @@ Full checklist: `22 - Tool Integration Standard.md`.
 - Integration: run real tool binary (marked, skippable in CI without tools).
 - Golden: known-good tool outputs → expected canonical events.
 - Security: overscope argv rejected; shell injection attempt neutralized;
-  secrets never leaked into stdout/errors.
+ secrets never leaked into stdout/errors.
 - See `15 - Testing Standards.md`.
 
 ---

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX Plugin Development Guide v6.0.0 — HunterX v6.0.0
+title: HunterX Plugin Development Guide v6.0.0 - HunterX v6.0.0
 description: >-
   Plugin development guide for HunterX v6.0.0 open-source vulnerability
   scanner. Build custom Detector, Reporter, Hook, Agent, and Skill plugins
@@ -241,9 +241,9 @@ plugins/detectors,plugins/reporters,plugins/hooks
 
 ## Best Practices
 
-1. **Isolation** — Each plugin should be self-contained with no cross-plugin dependencies.
-2. **Error handling** — Wrap external I/O in try/except blocks to avoid crashing the scan.
-3. **Idempotency** — Hooks and reporters should be safe to run multiple times.
-4. **Naming** — Use descriptive, unique names for each plugin to avoid registration collisions.
-5. **Performance** — Keep detector logic lean; heavy computation degrades scan throughput.
-6. **Documentation** — Include a module-level docstring describing the plugin's purpose.
+1. **Isolation** - Each plugin should be self-contained with no cross-plugin dependencies.
+2. **Error handling** - Wrap external I/O in try/except blocks to avoid crashing the scan.
+3. **Idempotency** - Hooks and reporters should be safe to run multiple times.
+4. **Naming** - Use descriptive, unique names for each plugin to avoid registration collisions.
+5. **Performance** - Keep detector logic lean; heavy computation degrades scan throughput.
+6. **Documentation** - Include a module-level docstring describing the plugin's purpose.

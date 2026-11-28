@@ -1,17 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""theHarvester tool adapter.
+"""TheHarvester tool adapter.
 
-Integrates ``theHarvester`` — a passive OSINT email/subdomain/IP collector —
-into the Tool Integration SDK. The adapter drives the search across the
-configured sources, reads the JSON result file the tool writes and maps
-hosts, IPs and interesting URLs onto canonical discovery records.
-
-CLI contract (verified against theHarvester usage):
-    ``theHarvester -d <domain> -b <sources> -l <limit> -f <base>`` writes
-    ``<base>.json`` with ``{"emails", "hosts", "ips", "interesting_urls"}``;
-    ``hosts`` entries are ``"host: ip"`` strings.
+Integrates ``theHarvester``, a passive OSINT email/subdomain/IP collector, into the Tool Integration SDK.
 """
 
 from __future__ import annotations

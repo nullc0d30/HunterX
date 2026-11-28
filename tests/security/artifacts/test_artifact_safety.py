@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Artifact and file-handling security (Sprint 034.4 §12).
+"""Artifact and file-handling security (12).
 
-Tool output files, screenshots, captures and report exports must be written
-inside controlled directories; hostile filenames must not traverse the
-filesystem.
+Tool output files, screenshots, captures and report exports must be written inside controlled directories; hostile
+filenames must not traverse the filesystem.
 """
 
 from __future__ import annotations

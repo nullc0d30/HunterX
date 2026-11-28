@@ -3,9 +3,7 @@
 
 """Report view models.
 
-Views are the presentation-facing projection of report data. Renderers read
-views (never domain entities directly) so a change in rendering never leaks
-into the domain, and vice versa.
+Views are the presentation-facing projection of report data.
 """
 
 from __future__ import annotations

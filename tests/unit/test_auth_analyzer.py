@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the authentication detection engine.
-
-Exercises the domain analyzer over the golden datasets and targeted bundles:
-login surfaces, OAuth/OIDC detection, SAML indicators, JWT indicators, cookie
-security metadata, token storage, CSRF, CORS, MFA/WebAuthn, identity providers,
-roles/scopes/tenants, session state and access classification. Also asserts the
-security invariants (no raw token/cookie values in observations).
-"""
+"""Tests for the authentication detection engine."""
 
 from __future__ import annotations
 

@@ -1,24 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 4 — universal deep-discovery validation.
+"""Universal deep-discovery validation.
 
-Final validation phase for the universal discovery pipeline. Proves the
-target-agnostic deep-discovery pipeline end to end:
-
-    1. the full stage plan runs against a generic loopback SPA/API fixture
-       through the platform's real in-process adapters (crawler, JS analyzer,
-       tech signatures, TCP probes, DNS, API intelligence, auth analysis),
-       feeding the attack-surface graph and assessment queue,
-    2. provider states are honest: binary-only tools are UNAVAILABLE (never
-       fabricated), a missing capability is NOT_APPLICABLE, a failed tool
-       never kills the mission,
-    3. deduplication + provenance, continuous-discovery feedback, and
-       serializable evidence,
-    4. a real black-box regression against ``http://localhost:3010`` treated
-       as an arbitrary external target (Juice Shop is only a regression
-       target — it never defines the engine),
-    5. the core carries no target-specific references.
+Final validation phase for the universal discovery pipeline.
 """
 
 from __future__ import annotations

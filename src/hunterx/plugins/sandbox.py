@@ -3,9 +3,7 @@
 
 """Plugin sandbox policy.
 
-Enforces permission boundaries around plugin execution. The policy evaluates
-whether a requested permission flag is allowed for a plugin before the action
-is performed; actual isolation is delegated to the configured sandbox port.
+Enforces permission boundaries around plugin execution.
 """
 
 from __future__ import annotations

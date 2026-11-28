@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Architecture tests for the vulnerability proof & PoC capability.
-
-Confirms the Wave 15 modules land in the expected layers and respect the
-dependency policy: the proof domain package stays pure (domain/shared only), the
-application service never imports infrastructure/engines/cli/api, reporting
-imports only domain/shared, and the domain package has no cycles.
-"""
+"""Architecture tests for the vulnerability proof & PoC capability."""
 
 from __future__ import annotations
 

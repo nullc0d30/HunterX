@@ -3,8 +3,7 @@
 
 """Deduplication engine.
 
-Determines whether a finding is a duplicate of an already-stored finding by
-comparing stable content hashes.
+Determines whether a finding is a duplicate of an already-stored finding by comparing stable content hashes.
 """
 
 from __future__ import annotations

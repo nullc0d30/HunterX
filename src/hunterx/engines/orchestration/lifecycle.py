@@ -3,10 +3,8 @@
 
 """Mission lifecycle state machine.
 
-The canonical mission lifecycle (CREATED → SCOPING → PLANNING → READY →
-RUNNING → … → COMPLETED | PARTIAL | FAILED | CANCELLED). Every transition is
-validated against an explicit transition table; illegal transitions raise
-:class:`InvalidStateTransitionError`.
+The canonical mission lifecycle (CREATED to SCOPING to PLANNING to READY to RUNNING to … to COMPLETED | PARTIAL |
+FAILED | CANCELLED).
 """
 
 from __future__ import annotations
@@ -73,7 +71,7 @@ class MissionLifecycle:
     """
 
     def can_transition(self, source: MissionState, target: MissionState) -> bool:
-        """Return ``True`` when ``source`` → ``target`` is legal."""
+        """Return ``True`` when ``source`` to ``target`` is legal."""
         return target in _ALLOWED.get(source, frozenset())
 
     def assert_transition(self, source: MissionState, target: MissionState) -> MissionState:

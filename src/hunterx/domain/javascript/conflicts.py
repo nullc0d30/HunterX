@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Conflict handling for JavaScript intelligence.
-
-When two tools or two assets disagree about the same artifact (for example two
-endpoints with the same key but different confidence, or a technology with two
-claimed versions), the resolver preserves the disagreement as a
-:class:`JSAnalysisConflict` and selects a canonical value by confidence and
-evidence strength. Nothing is silently dropped — contradictions become first
-class records.
-"""
+"""Conflict handling for JavaScript intelligence."""
 
 from __future__ import annotations
 

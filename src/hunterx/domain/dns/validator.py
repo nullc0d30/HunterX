@@ -3,10 +3,8 @@
 
 """DNS record and resolution validator.
 
-Validates raw DNS output before it is trusted: owner names, rdata values, TTL
-bounds, MX/SRV/CAA numeric ranges and response codes. Validation is pure and
-non-destructive — invalid observations are marked, never discarded, so the
-capability keeps provenance for every answer even when it cannot trust it.
+Validates raw DNS output before it is trusted: owner names, rdata values, TTL bounds, MX/SRV/CAA numeric ranges and
+response codes.
 """
 
 from __future__ import annotations

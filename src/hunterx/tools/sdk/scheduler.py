@@ -3,9 +3,7 @@
 
 """Task scheduler.
 
-Pulls items from the tool queue and dispatches each to a runner. The scheduler
-respects the resource manager's parallel-jobs cap and runs until the queue is
-empty. It is the production loop that drives queued executions.
+Pulls items from the tool queue and dispatches each to a runner.
 """
 
 from __future__ import annotations
@@ -26,8 +24,8 @@ class TaskScheduler:
     Usage::
 
         scheduler = TaskScheduler(queue, resources)
-        scheduler.run(runner)                    # drain the queue
-        scheduler.drain(runner, max_items=10)    # process up to N items
+        scheduler.run(runner) # drain the queue
+        scheduler.drain(runner, max_items=10) # process up to N items
     """
 
     def __init__(self, queue: ToolQueue, resources: ResourceManager) -> None:

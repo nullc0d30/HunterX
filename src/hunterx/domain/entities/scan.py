@@ -4,8 +4,6 @@
 """Scan entity.
 
 A scan represents a single tool execution pass over a target within a mission.
-Scans are the schedulable unit of work that the scheduler dispatches to the
-tool executor.
 """
 
 from __future__ import annotations

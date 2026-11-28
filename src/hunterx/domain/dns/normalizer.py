@@ -3,22 +3,7 @@
 
 """DNS record normalizer.
 
-Turns raw DNS observations into canonical :class:`DnsRecord` values while
-preserving the original observation. Normalization is idempotent and pure: the
-same raw input always yields the same normalized output, and the original
-``raw_value`` is never lost.
-
-Coverage:
-    * owner-name case and trailing dots,
-    * internationalized domain names (punycode),
-    * IPv4/IPv6 canonical (compressed) forms,
-    * TTL clamping (``0`` is preserved),
-    * MX/SRV priorities split from the exchange/target,
-    * CAA tag/flag/value decomposition,
-    * TXT fragment joining (quoted 255-byte segments),
-    * SOA field splitting,
-    * nameserver names,
-    * deterministic record ordering for multi-value answers.
+Turns raw DNS observations into canonical :class:`DnsRecord` values while preserving the original observation.
 """
 
 from __future__ import annotations
@@ -156,7 +141,7 @@ class DnsNormalizer:
 
     def _normalize_dnssec(self, value: str) -> tuple[str, int | None]:
         # DNSSEC material (DS/DNSKEY/TLSA/NSEC/NSEC3/RRSIG) is whitespace
-        # collapsed but otherwise preserved verbatim — reordering it would be
+        # collapsed but otherwise preserved verbatim, reordering it would be
         # lossy.
         return " ".join(value.split()), None
 

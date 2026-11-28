@@ -3,9 +3,8 @@
 
 """Multi-agent platform.
 
-Provides the abstract :class:`~hunterx.agents.base.SecurityAgent` contract,
-the agent registry, orchestrator and shared agent infrastructure. Concrete
-agents (recon, scanner, analyst, reporter) are provided by plugins.
+Provides the abstract :class:`~hunterx.agents.base.SecurityAgent` contract, the agent registry, orchestrator and
+shared agent infrastructure.
 """
 
 from __future__ import annotations

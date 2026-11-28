@@ -1,20 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence — pure domain engines.
+"""Target Memory & Campaign Intelligence, pure domain engines.
 
-Sprint 030. Deterministic, I/O-free engines that assemble, classify, diff and
-reason about historical target memory. Engines never read or write storage and
-never execute tools: they produce classified state and advisory
-recommendations that the application layer persists and the mission planner
-consumes.
-
-Design rules enforced here:
-
-* Determinism — the same snapshot pair always yields the same diff.
-* No overwrite — contradictions and stale observations are preserved.
-* Memory is untrusted — confidence, source reliability, corroboration and
-  freshness always gate what memory is allowed to redefine.
+Deterministic, I/O-free engines that assemble, classify, diff and reason about historical target memory.
 """
 
 from __future__ import annotations
@@ -61,7 +50,7 @@ from hunterx.shared.time import to_utc_datetime, utcnow_iso
 class RawObservation(Protocol):
     """Structural contract for observations the memory layer can ingest.
 
-    Matches the ``Observation`` model of Target Intelligence (Sprint 026) and
+    Matches the ``Observation`` model of Target Intelligence and
     any other provenance-carrying observation producer without forcing a
     dependency between domain packages.
     """
@@ -923,7 +912,7 @@ class PlannerContext:
 
     The planner receives the known state, unknown state, stale state, changed
     state, coverage gaps, previous failures and successes, and risk priorities
-    — never raw tool output.
+    , never raw tool output.
     """
 
     target_id: str

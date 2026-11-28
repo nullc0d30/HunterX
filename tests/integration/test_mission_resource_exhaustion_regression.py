@@ -1,26 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests: RESOURCE_BUDGET_EXHAUSTED semantics and honest terminals.
-
-The reference regression: a full_security_assessment terminated with
-``stop_condition=resource_budget_exhausted`` while the persisted budget showed
-``executions_used=16 / executions_budget=1000 / execution_remaining=984 /
-execution_exhausted=false / time_exhausted=false``. A wired-but-rate-limited
-OpenRouter model caused the runner to map "model attacker not exhausted" to
-resource exhaustion.
-
-Invariants enforced here:
-  A/B: resource_budget_exhausted requires a real resource predicate and a
-       non-empty exhausted_resource.
-  C:   objectives_complete=true => completion contract satisfied.
-  D:   completion-gate failure => objectives_complete=false.
-  E:   AI 429 => deterministic fallback, never completion, never resource
-       exhaustion.
-  F:   planning_state=blocked => explicit blocked_reason.
-  G:   phase reflects the final lifecycle state (blocked => reassessment).
-  H:   a budget with 984 executions remaining is never exhausted.
-"""
+"""Regression tests: RESOURCE_BUDGET_EXHAUSTED semantics and honest terminals."""
 
 from __future__ import annotations
 
@@ -65,7 +46,7 @@ class _RateLimitedAI:
     """A fake AI client that always raises HTTP 429 (OpenRouter free-tier)."""
 
     def complete(self, prompt: str, *, model: str | None = None, temperature: float = 0.0) -> str:  # noqa: ARG002
-        error = RuntimeError("openrouter: rate limited (HTTP 429) — retry later")
+        error = RuntimeError("openrouter: rate limited (HTTP 429) - retry later")
         error.retry_after = 15.0  # type: ignore[attr-defined]
         raise error
 
@@ -267,7 +248,7 @@ class TestNoFalseCompletion:
 
 class TestOpenRouter429DoesNotExhaust:
     def test_429_fallback_never_emits_resource_exhaustion(self) -> None:
-        # TEST 6 / INVARIANT E: 429 -> cooldown + deterministic fallback,
+        # TEST 6 / INVARIANT E: 429 -> cooldown + deterministic fallback
         # mission continues, never resource exhaustion, never completion.
         from hunterx.application.ai_suggestion import AIActionSuggester
         from hunterx.application.model_attacker import ModelAttacker
@@ -279,7 +260,7 @@ class TestOpenRouter429DoesNotExhaust:
             model_attacker=attacker,
         )
         # Also wire the advisory AI suggester so 429s flow through it too.
-        runner._ai_suggester = AIActionSuggester(  # noqa: SLF001  # test wiring
+        runner._ai_suggester = AIActionSuggester(  # noqa: SLF001 # test wiring
             _RateLimitedAI(), provider="openrouter", model="nvidia/nemotron:free", min_interval_s=0.0
         )
         mission = _mission(orchestration)
@@ -314,7 +295,7 @@ class TestToolFailureDoesNotExhaust:
 
 class TestReportInternalConsistency:
     def test_report_json_is_internally_consistent(self) -> None:
-        # TEST 10 / INVARIANT A/B/F/G: status, planning_state, phase,
+        # TEST 10 / INVARIANT A/B/F/G: status, planning_state, phase
         # stop_condition, exhausted_resource and budget flags must agree.
         from hunterx.application.model_attacker import ModelAttacker
         from hunterx.domain.model_attacker.reasoner import ModelReasoner

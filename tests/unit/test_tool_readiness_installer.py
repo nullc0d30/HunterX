@@ -3,14 +3,7 @@
 
 """Installer behavior regression tests.
 
-Covers the bootstrapper contract without running real package installs:
-
-- already-installed tool is reused (never reinstalled),
-- missing tool is provisioned then located on PATH,
-- tool in a non-standard directory is discovered via the user executable dir,
-- a wrong same-named executable is classified BROKEN and replaced,
-- repeated installation is idempotent,
-- PATH changes take effect in the current process (install → PATH → verify).
+Covers the bootstrapper contract without running real package installs.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the canonical capability vocabulary (Sprint 031)."""
+"""Unit tests for the canonical capability vocabulary."""
 
 from __future__ import annotations
 

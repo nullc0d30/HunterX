@@ -3,15 +3,7 @@
 
 """Logging adapters.
 
-Structured JSON logging with:
-
-- correlation/causation id injection from the tracing context,
-- sensitive-data masking for configured keys,
-- log enrichment (static and dynamic fields),
-- rotating file handlers for long-running processes.
-
-The :class:`LoggingManager` wires the root logger once and hands out child
-loggers to every subsystem.
+JSON logging and the console renderer used by the CLI.
 """
 
 from __future__ import annotations
@@ -45,7 +37,7 @@ _SENSITIVE_KEYS = frozenset(
 
 
 def set_correlation(**fields: str | None) -> None:
-    """Set correlation fields (correlation_id, causation_id, mission_id, ...)."""
+    """Set correlation fields (correlation_id, causation_id, mission_id,...)."""
     current = dict(_correlation.get() or {})
     current.update({k: v for k, v in fields.items() if v is not None})
     _correlation.set(current)

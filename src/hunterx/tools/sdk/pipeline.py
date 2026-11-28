@@ -3,14 +3,7 @@
 
 """Execution pipeline.
 
-Orchestrates the full lifecycle of one tool execution::
-
-    register → install → validate → verify → prepare → execute
-    → monitor → collect output → validate output → normalize → store
-    → generate events → cleanup
-
-Each stage is guarded so a failure produces a structured :class:`ExecutionResult`
-with a classified failure kind instead of an unhandled exception.
+Orchestrates the full lifecycle of one tool execution::.
 """
 
 from __future__ import annotations
@@ -185,7 +178,7 @@ class ExecutionPipeline:
             # Attach the collected output so the failure carries the truthful
             # exit code / stdout / stderr. Previously the failure kept the
             # default (exit_code=0) output while the error text said
-            # "exit code 1" — a contradiction in the report.
+            # "exit code 1", a contradiction in the report.
             return self._fail(
                 context,
                 session,

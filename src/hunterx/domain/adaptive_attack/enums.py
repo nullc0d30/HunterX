@@ -3,10 +3,8 @@
 
 """Adaptive attack-engine enums.
 
-Phase 2. Generic vocabulary for the aggressive-but-bounded adaptive attack
-engine: attack states, target-feedback signals, attack vectors, aggression
-levels and attack outcomes. All values are capability-model categories — never
-a specific target's routes, objects or technologies.
+Generic vocabulary for the aggressive-but-bounded adaptive attack engine: attack states, target-feedback signals,
+attack vectors, aggression levels and attack outcomes.
 """
 
 from __future__ import annotations
@@ -17,19 +15,7 @@ from enum import StrEnum
 class AttackState(StrEnum):
     """Canonical states of the adaptive attack state machine.
 
-    Transitions are driven by observed target behavior (feedback signals),
-    never by a fixed tool sequence:
-
-        NORMAL → AGGRESSIVE (healthy escalation)
-        NORMAL/AGGRESSIVE → THROTTLED (defensive response)
-        THROTTLED → BACKING_OFF (hard defensive response)
-        THROTTLED/BACKING_OFF → RECOVERING (target recovered)
-        RECOVERING → RESUMING → NORMAL (gradual restore)
-        THROTTLED/BACKING_OFF → BLOCKED (persistent hard blocking)
-        BLOCKED → RESUMING (target unblocked)
-
-    ``BLOCKED`` is never completion: the mission keeps a reduced presence and
-    resumes only when the target stops defending.
+    Transitions are driven by observed target behavior (feedback signals), never by a fixed tool sequence.
     """
 
     NORMAL = "normal"
@@ -133,7 +119,7 @@ class AggressionLevel(StrEnum):
 class AttackVector(StrEnum):
     """Canonical attack vectors an applicable surface may be tested through.
 
-    Only vectors that apply to a discovered surface are scheduled — a plain
+    Only vectors that apply to a discovered surface are scheduled, a plain
     query parameter never triggers multipart or GraphQL testing.
     """
 

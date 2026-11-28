@@ -4,7 +4,6 @@
 """In-memory repository implementations.
 
 Test doubles implementing the domain repository ports without any database.
-Used by unit tests and by the default wiring in development.
 """
 
 from __future__ import annotations

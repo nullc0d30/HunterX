@@ -3,9 +3,8 @@
 
 """Deterministic cloud intelligence confidence scoring.
 
-Confidence is a pure function of (source reliability, evidence strength,
-corroboration count, conflict discount and historical stability). Identical
-inputs always produce identical scores.
+Confidence is a pure function of (source reliability, evidence strength, corroboration count, conflict discount and
+historical stability).
 """
 
 from __future__ import annotations

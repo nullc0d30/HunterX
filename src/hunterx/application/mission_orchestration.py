@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration — use-case services.
-
-``MissionOrchestrationService`` bridges the :class:`MissionOrchestrationEngine`
-(the Sprint 032 adaptive loop) to the TIDB system-of-record: it persists
-normalized mission entities (missions, runs, phases, actions, decisions,
-hypotheses, branches, checkpoints, policies, objectives, coverage, timelines,
-observations, negative evidence, baselines, reasoning trace, telemetry, impact)
-and publishes ``mission.*`` events.
-
-``MissionOrchestrationQueryService`` reads the canonical mission views back:
-state, timeline, decisions, hypotheses, findings, attack paths, coverage and
-tool executions.
-"""
+"""Autonomous Mission Orchestration, use-case services."""
 
 from __future__ import annotations
 
@@ -563,7 +551,7 @@ class MissionOrchestrationService:
     def _apply_bounds(self, mission: OrchestratedMission) -> None:
         """Trim the in-memory mission aggregate to the configured resource caps.
 
-        Only the in-memory working set is bounded — the TIDB persisted records
+        Only the in-memory working set is bounded, the TIDB persisted records
         remain the durable mission state. Runs in constant time while the
         aggregate is within its caps (the common case).
         """

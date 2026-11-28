@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Capability execution — domain semantics.
-
-Exactly-one authoritative status per capability (FINDING / VERIFIED /
-NO_FINDING / NOT_APPLICABLE / BLOCKED / FAILED), precedence aggregation,
-coverage persistence shape, and the no-catalog-only-claims guarantee.
-"""
+"""Capability execution, domain semantics."""
 
 from __future__ import annotations
 

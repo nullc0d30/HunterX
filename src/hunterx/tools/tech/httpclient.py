@@ -1,22 +1,12 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""In-process HTTP fetcher for the signature detector.
-
-Collects an :class:`~hunterx.domain.technology.detector.HttpEvidence` bundle
-(status, headers, body, title, meta, cookies, script references and TLS
-certificate subject/issuer) with the Python standard library. The fetch is an
-injectable seam (``FetchFn``) so the signature adapter stays fully testable
-without a network: unit tests inject a fake fetch returning golden evidence.
-
-The fetcher treats every response as untrusted data — nothing returned by the
-server is ever executed or interpolated into a command line.
-"""
+"""In-process HTTP fetcher for the signature detector."""
 
 from __future__ import annotations
 
 import re
-import socket  # nosec B105  # the fetcher only reads public TLS certificate metadata
+import socket  # nosec B105 # the fetcher only reads public TLS certificate metadata
 import ssl
 from collections.abc import Callable
 from typing import Any

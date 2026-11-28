@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the LiveHostService orchestrator.
-
-Exercises a full live host & service discovery run: tool selection, execution
-through the SDK pipeline with fake binary runners fed golden output (nmap XML,
-naabu JSONL, masscan JSON) and an injectable TCP-connect probe, normalization,
-validation, correlation, conflict resolution, historical comparison, TIDB
-persistence and the ``host.*`` event stream.
-"""
+"""Tests for the LiveHostService orchestrator."""
 
 from __future__ import annotations
 

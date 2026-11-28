@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target normalization & scope-bypass resistance (Sprint 034.4 §3, §4).
+"""Target normalization & scope-bypass resistance (3,).
 
-Equivalent spellings (scheme, case, port, trailing dot, userinfo, encoded
-forms) must never escape a fail-closed scope decision. Redirect targets never
-widen scope.
+Equivalent spellings (scheme, case, port, trailing dot, userinfo, encoded forms) must never escape a fail-closed
+scope decision.
 """
 
 from __future__ import annotations

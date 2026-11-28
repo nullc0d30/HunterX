@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Network mapping & attack-surface topology use-case services.
-
-``TopologyService`` is the orchestrator: it collects existing target
-intelligence from the TIDB, optionally runs route-level tools through the
-Tool Integration SDK, derives and correlates relationships, detects and
-preserves conflicts, diffs history, analyzes the graph, persists the derived
-topology into the TIDB (the single system of record) and publishes
-``topology.*`` events.
-
-``TopologyQueryService`` reads persisted topology relationships back from the
-TIDB and answers the canonical graph queries (neighbors, ancestors,
-descendants, shortest paths, shared infrastructure, clusters, ...). Both
-services depend on ports only.
-"""
+"""Network mapping & attack-surface topology use-case services."""
 
 from __future__ import annotations
 

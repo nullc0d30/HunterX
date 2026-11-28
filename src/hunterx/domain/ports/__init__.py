@@ -3,10 +3,7 @@
 
 """Ports (abstract interfaces).
 
-Ports define the contracts that infrastructure adapters implement. Domain and
-application layers depend only on these abstractions; concrete adapters
-(``hunterx.infrastructure``) are wired in at composition time. This keeps the
-platform swappable and testable.
+Ports define the contracts that infrastructure adapters implement.
 """
 
 from __future__ import annotations

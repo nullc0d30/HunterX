@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the technology fingerprinting tool adapters.
-
-Each adapter is exercised with a fake binary runner fed golden output (httpx
-JSONL, whatweb JSON), or an injectable fetch callable for the in-process
-signature detector, so no external tool or network is required. Tests assert
-the generated command line and the canonical technology observations attached
-to the execution output.
-"""
+"""Tests for the technology fingerprinting tool adapters."""
 
 from __future__ import annotations
 

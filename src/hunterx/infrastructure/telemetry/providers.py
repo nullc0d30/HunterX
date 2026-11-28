@@ -4,12 +4,7 @@
 """Telemetry providers.
 
 Providers aggregate metrics, tracing and export under one
-:class:`~hunterx.domain.ports.observability.TelemetryProviderPort`:
-
-- :class:`MemoryTelemetryProvider` — default, everything in-process.
-- :class:`PrometheusTelemetryProvider` — Prometheus text exposition export.
-- :class:`OpenTelemetryTelemetryProvider` — OTLP export when
-  ``opentelemetry`` is installed (optional extra).
+:class:`~hunterx.domain.ports.observability.TelemetryProviderPort`:.
 """
 
 from __future__ import annotations

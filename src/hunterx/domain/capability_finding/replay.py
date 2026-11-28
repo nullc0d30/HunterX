@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Deterministic replay for validated-finding reproduction.
-
-Replay re-executes the candidate probe against the same loopback target using
-the differential transport (:class:`ProbeExecutor`) — a dedicated raw-HTTP
-path that shares no state with the discovery services, so replay traffic is
-isolated from ordinary discovery traffic. Replay is deterministic: the probe
-is rebuilt from the candidate's retained evidence (same method, endpoint,
-parameter and payloads) and re-analyzed with the capability engine.
-
-Secrets are handled safely: cookies are injected but never recorded (only
-``cookie_present`` is kept), and headers never enter replay records.
-"""
+"""Deterministic replay for validated-finding reproduction."""
 
 from __future__ import annotations
 

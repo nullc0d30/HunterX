@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud & SaaS provider detection registry.
-
-Evidence-based signature matching that turns fragmented observations (DNS
-records, hostnames, HTTP headers, TLS certificate metadata, technology
-observations, JavaScript SDK references and documentation text) into typed
-provider/service/resource detections. Provider is never inferred from branding
-alone: every match is a deterministic, explainable signature with a strength
-and a region/resource extraction.
-
-Security boundary: matching only. No requests, no authentication, no resource
-access.
-"""
+"""Cloud & SaaS provider detection registry."""
 
 from __future__ import annotations
 

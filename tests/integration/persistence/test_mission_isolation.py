@@ -1,11 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Mission isolation tests (Sprint 034.3 §5).
+"""Mission isolation tests (5).
 
-MISSION-A and MISSION-B target the same asset. Their tool executions,
-hypotheses, evidence, findings, decisions, timelines and state must remain
-correctly associated with no cross-mission contamination.
+MISSION-A and MISSION-B target the same asset.
 """
 
 from __future__ import annotations

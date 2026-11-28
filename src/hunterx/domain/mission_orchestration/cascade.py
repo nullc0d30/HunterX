@@ -3,11 +3,8 @@
 
 """Finding cascade & reassessment engine.
 
-Sprint 032. A validated finding may create new attack hypotheses (SSRF →
-internal service discovery → new service → new endpoint → new vulnerability
-candidate). After every major validated finding the orchestrator recalculates
-the attack surface, updates the graph, generates new hypotheses and continues.
-The cascade engine derives those follow-on hypotheses deterministically.
+A validated finding may create new attack hypotheses (SSRF to internal service discovery to new service to new
+endpoint to new vulnerability candidate).
 """
 
 from __future__ import annotations
@@ -39,7 +36,7 @@ class CascadeTrigger:
         finding_id: the validated finding.
         vulnerability_class: class of the validated finding.
         asset_key: asset the finding affects.
-        detail: additional context (discovered service, endpoint, credential, ...).
+        detail: additional context (discovered service, endpoint, credential,...).
 
     """
 
@@ -56,9 +53,9 @@ class FindingCascadeEngine:
     """Derive follow-on hypotheses from validated findings.
 
     Rules are deterministic: each vulnerability class maps to the cascade
-    hypotheses it enables (SSRF → internal service discovery; secret exposure →
-    authorized credential reuse; new API → authentication/authorization
-    analysis; ...).
+    hypotheses it enables (SSRF to internal service discovery; secret exposure to
+    authorized credential reuse; new API to authentication/authorization
+    analysis;...).
     """
 
     def cascade(self, trigger: CascadeTrigger) -> list[MissionHypothesis]:

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal capability-finding lifecycle (Phase 6).
-
-Turns a capability-execution finding (Phase 5) into a validated, reportable
-finding through the existing HunterX finding lifecycle: replay, reproduction,
-impact, PoC, severity and remediation — reusing the canonical finding schema.
-"""
+"""Universal capability-finding lifecycle."""
 
 from hunterx.domain.capability_finding.enums import ReproductionVerdict
 from hunterx.domain.capability_finding.lifecycle import (

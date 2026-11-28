@@ -3,17 +3,8 @@
 
 """Base adapter for secret discovery tools.
 
-Every secret discovery tool adapter (gitleaks, and future secret scanners)
-implements the SDK :class:`ToolAdapter` lifecycle and shares this base.
-External binaries are invoked through the shared
-:class:`~hunterx.tools.recon.runner.BinaryRunner` seam and emit canonical
-redacted secret records into the pipeline JSON payload under the ``secrets``
-key.
-
-SECURITY BOUNDARY: detected secrets are extremely sensitive. This base never
-persists raw values — it stores ``secret_type``, ``location``, a SHA-256
-``fingerprint``, a ``masked_value``, ``source``, ``confidence`` and
-``provenance`` only. Raw matches are dropped at parse time.
+Every secret discovery tool adapter (gitleaks, and future secret scanners) implements the SDK :class:`ToolAdapter`
+lifecycle and shares this base.
 """
 
 from __future__ import annotations

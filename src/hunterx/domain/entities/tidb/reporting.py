@@ -3,9 +3,7 @@
 
 """Reporting-layer Target Intelligence Database entities.
 
-Report building blocks and exports. The canonical ``Report`` aggregate lives
-in ``hunterx.domain.entities``; these entities add structure, attachments
-and export/consumption records around it.
+Report building blocks and exports.
 """
 
 from __future__ import annotations
@@ -25,7 +23,7 @@ class ReportSection(TidbEntity):
         title: section title.
         order: display order.
         body: section body (markdown/text).
-        kind: section kind (markdown, findings, charts, metrics, ...).
+        kind: section kind (markdown, findings, charts, metrics,...).
 
     """
 
@@ -67,7 +65,7 @@ class ReportExport(TidbEntity):
 
     Attributes:
         report_id: owning report.
-        format: pdf|docx|html|json|markdown|... .
+        format: pdf|docx|html|json|markdown|....
         status: pending|rendering|ready|failed.
         object_key: object-store key of the produced artifact.
         size: artifact size in bytes.

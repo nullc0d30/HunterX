@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Versioned detection rules for JavaScript intelligence.
-
-Detection rules are the unit of intelligence: a named, versioned, human-readable
-description of a pattern plus the compiled regular expressions that match it.
-Rules are grouped by the artifact they produce (endpoint, route, configuration,
-storage, authentication, worker, WebAssembly, security API, dynamic import,
-third-party service, secret) and carry a baseline confidence and an evidence
-category so downstream analyzers never hard-code patterns.
-
-The registry is pure and deterministic: the same value always yields the same
-matches for the same rule set. Rules are intended to run against **token
-values** (string literals, template literals, member names) produced by the
-tokenizer, not against raw source, so matching is safe and context-aware.
-"""
+"""Versioned detection rules for JavaScript intelligence."""
 
 from __future__ import annotations
 
@@ -54,7 +41,7 @@ class JSRule:
         version: rule version (bumped when the pattern changes).
         confidence: baseline confidence in ``[0, 1]`` of a match.
         evidence_type: :class:`~hunterx.domain.javascript.models.JSEvidence`
-            evidence_type emitted for a match (``string``, ``call``, ...).
+            evidence_type emitted for a match (``string``, ``call``,...).
         enabled: whether the rule is active.
         tags: free-form tags for selection/filtering.
 

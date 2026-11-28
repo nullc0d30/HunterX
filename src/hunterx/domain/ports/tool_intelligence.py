@@ -3,10 +3,7 @@
 
 """Tool Intelligence port.
 
-The Tool Intelligence API contract. Every HunterX subsystem that needs to
-answer questions about tools (planner, AI engine, workflow engine, CLI, API)
-SHALL depend on this port and receive a concrete implementation (the TIP
-facade) through composition.
+The Tool Intelligence API contract.
 """
 
 from __future__ import annotations

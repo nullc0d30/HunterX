@@ -1,12 +1,12 @@
 ---
 layout: default
-title: HunterX v7 — Professional Finding Intelligence & Reporting — HunterX
+title: HunterX v7 - Professional Finding Intelligence & Reporting - HunterX
 permalink: /v7-professional-finding-intelligence-reporting/
 ---
 
-# HunterX v7 — Professional Finding Intelligence & Reporting
+# HunterX v7, Professional Finding Intelligence & Reporting
 
-Sprint 029 (Wave 14) capability. This document describes the professional
+This document describes the professional
 reporting architecture: how HunterX transforms a **validated finding** plus
 **evidence**, **proof**, **impact**, **provenance**, **target intelligence**
 and **correlation** into a professional security report package.
@@ -36,30 +36,30 @@ A report is never `READY_FOR_SUBMISSION` while:
 
 ```
  validated finding
-        │
-        ▼
+ │
+ ▼
  FindingIntelligence (aggregate)
-        │
-        ├─ classification  (CWE / OWASP / CAPEC / CVE / CVSS / ATT&CK)
-        ├─ severity        (evidence-backed, never class-derived)
-        ├─ quality         (report defensibility, distinct from confidence)
-        ├─ priority        (P0–P4, distinct from severity)
-        ├─ reportability   (REPORTABLE / INCOMPLETE / DISPUTED / ...)
-        ├─ business impact (evidence or analyst reasoning)
-        ├─ asset criticality (target intelligence integration)
-        ├─ attack-path relationships
-        ├─ root cause
-        ├─ evidence bundle (immutable, integrity-hashed)
-        ├─ timeline        (from actual events only)
-        ├─ tool provenance + source reliability
-        ├─ remediation + retest plans
-        └─ claims + QA + redaction
-        │
-        ▼
+ │
+ ├─ classification (CWE / OWASP / CAPEC / CVE / CVSS / ATT&CK)
+ ├─ severity (evidence-backed, never class-derived)
+ ├─ quality (report defensibility, distinct from confidence)
+ ├─ priority (P0–P4, distinct from severity)
+ ├─ reportability (REPORTABLE / INCOMPLETE / DISPUTED /...)
+ ├─ business impact (evidence or analyst reasoning)
+ ├─ asset criticality (target intelligence integration)
+ ├─ attack-path relationships
+ ├─ root cause
+ ├─ evidence bundle (immutable, integrity-hashed)
+ ├─ timeline (from actual events only)
+ ├─ tool provenance + source reliability
+ ├─ remediation + retest plans
+ └─ claims + QA + redaction
+ │
+ ▼
  ReportDocument (versioned, immutable)
-        │
-        ├─ Markdown / HTML / JSON / SARIF / PDF / package
-        └─ report lifecycle (DRAFT → ... → READY_FOR_SUBMISSION → CLOSED)
+ │
+ ├─ Markdown / HTML / JSON / SARIF / PDF / package
+ └─ report lifecycle (DRAFT →... → READY_FOR_SUBMISSION → CLOSED)
 ```
 
 ### Layer separation
@@ -97,8 +97,8 @@ Explicit transitions only (`ReportStateMachine`):
 
 ```
 DRAFT → EVIDENCE_REVIEW → ANALYSIS_COMPLETE → REPORTABLE → REPORT_GENERATED
-  → QA_REQUIRED → QA_PASSED / QA_FAILED → READY_FOR_SUBMISSION → SUBMITTED
-  → REOPENED / CLOSED
+ → QA_REQUIRED → QA_PASSED / QA_FAILED → READY_FOR_SUBMISSION → SUBMITTED
+ → REOPENED / CLOSED
 ```
 
 `READY_FOR_SUBMISSION` requires: QA passed, no unsupported high-impact claim,
@@ -117,8 +117,8 @@ false-positive status, required metadata and policy. Verdicts:
 `FindingQualityEngine` scores report defensibility across 12 weighted factors
 (evidence, validation, proof, reproducibility, impact, scope/asset/root-cause
 certainty, freshness, tool reliability, contradictions, report completeness).
-Produces `quality_score`, `quality_grade` (A–F) and `quality_explanation`.
-Quality answers *"how strong and defensible is this report?"* — it does not
+Produces `quality_score`, `quality_grade` (A-F) and `quality_explanation`.
+Quality answers *"how strong and defensible is this report?"*, it does not
 replace vulnerability confidence.
 
 ## Severity Engine
@@ -126,7 +126,7 @@ replace vulnerability confidence.
 `SeverityAssessmentEngine` derives severity from evidence-backed impact
 dimensions, exploitability evidence, proof replay, confidence, scope, asset
 criticality and business context. `critical` requires direct evidence of
-high-impact, exploitable impact — a class name alone can never produce it.
+high-impact, exploitable impact, a class name alone can never produce it.
 Findings without a replayed proof and confidence below 0.9 are capped below
 high.
 
@@ -183,7 +183,7 @@ version.
 `SourceReliabilityModelBuilder` classifies sources (direct observation,
 validated replay, controlled callback, tool signature, historical archive,
 external intelligence, AI inference, analyst annotation) into ordered
-reliability ranks. Direct validated evidence always outranks AI inference.
+Reliability ranks. Direct validated evidence always outranks AI inference.
 
 ## AI Reporting
 
@@ -212,7 +212,7 @@ indicators. Each check returns PASS / FAIL / WARN.
 
 `ReportRedactor` redacts passwords, API keys, tokens, cookies, session
 identifiers, private keys, unnecessary PII and internal secrets while
-preserving reproduction utility. Evidence remains internally referenceable —
+preserving reproduction utility. Evidence remains internally referenceable,
 only the report output is redacted.
 
 ## Templates
@@ -284,6 +284,6 @@ remediation/retest/generate/validate/export/sarif and report management.
 - **New classification mappings**: extend the catalogs in `classification.py`.
 - **New remediation guidance**: extend the catalog in `remediation.py`.
 - **New export formats**: add a renderer in `reporting/report_renderers.py` and
-  register it in the `render` dispatcher.
+ register it in the `render` dispatcher.
 - **AI providers**: implement `AIPort`; AI output remains advisory and is
-  always gated by claim verification and QA.
+ always gated by claim verification and QA.

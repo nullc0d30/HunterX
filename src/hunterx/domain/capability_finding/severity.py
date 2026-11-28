@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Evidence-derived severity for validated findings.
-
-Severity is never assumed: it is computed once from the candidate's retained
-evidence (vulnerability class base, auth context, differential strength and
-exploitation factors). Automatic ``CRITICAL`` is deliberately impossible —
-criticality requires evidence of direct compromise (authenticated context,
-exploitable class base and a strong differential), and even then the engine
-caps at ``HIGH`` unless every factor is met.
-"""
+"""Evidence-derived severity for validated findings."""
 
 from __future__ import annotations
 
@@ -109,7 +101,7 @@ class EvidenceSeverityEngine:
         if level >= _SEVERITY_LEVELS["critical"]:
             # Automatic critical is impossible: it requires a critical class
             # base (rce) plus every exploitation factor and a verified auth
-            # context — and even then the confidence must be high.
+            # context, and even then the confidence must be high.
             critical_ok = (
                 base == "critical"
                 and candidate.session_state not in ("", "anonymous")

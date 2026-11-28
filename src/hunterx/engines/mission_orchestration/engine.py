@@ -1,18 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous Mission Orchestration — engine facade.
+"""Autonomous Mission Orchestration, engine facade.
 
-Sprint 032. The :class:`MissionOrchestrationEngine` is the runtime facade of the
-autonomous mission orchestration layer. It delegates the adaptive loop to the
-pure domain :class:`MissionOrchestrator` (hypothesis loop, decision engine,
-baseline/differential testing, negative evidence, coverage, knowledge gaps,
-confidence, branches, telemetry, reasoning trace, policies, impact, cascade)
-and the underlying Sprint 027 :class:`AdaptiveMissionPlanningEngine` for plan
-mutation, attack paths, tool selection and failure recovery.
-
-The facade keeps the domain layer pure: it is injected with the pure engines
-and only wires them together.
+The :class:`MissionOrchestrationEngine` is the runtime facade of the autonomous mission orchestration layer.
 """
 
 from __future__ import annotations

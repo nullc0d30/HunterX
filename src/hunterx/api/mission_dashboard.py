@@ -3,12 +3,7 @@
 
 """Mission dashboard API routes.
 
-Sprint 033 §33. Operator visibility over an orchestrated mission. This router
-adds the dashboard endpoints that the mission orchestration router does not
-already expose (``/overview``, ``/attack-surface``, ``/evidence``, ``/proofs``,
-``/tools``). Coverage, hypotheses, findings, attack paths and timeline are
-already served by the ``/missions`` orchestration route group; registering them
-again here would duplicate the surface.
+33.
 """
 
 from __future__ import annotations

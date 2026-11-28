@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Artifact Signing (Cosign / Sigstore).
+# HunterX - Artifact Signing (Cosign / Sigstore).
 #
 # Signs release artifacts, SBOMs and the container image with keyless Sigstore
 # signatures (OIDC via GitHub Actions). Signatures are stored in the public

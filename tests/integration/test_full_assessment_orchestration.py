@@ -1,28 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""v7.0.1 regression tests: full_security_assessment orchestration.
-
-Reproduces the defect where ``full_security_assessment`` ran a fixed
-reconnaissance chain, entered reporting, and terminated with an internally
-inconsistent ``resource_budget_exhausted`` while ``executions_used=8 <<
-executions_budget=1000`` and no hypothesis/active-testing ever ran.
-
-Each test proves one of the acceptance criteria from the fix specification:
-
-1. Recon completion must not equal mission completion.
-2. An actionable observation produces a hypothesis (or an explicit
-   non-actionable classification).
-3. A web endpoint + available capability schedules/executes an active probe.
-4. ``resource_budget_exhausted`` is emitted only when the budget is actually
-   exhausted.
-5. An OpenRouter 429 is recorded as an AI failure + fallback, never as a
-   budget exhaustion.
-6. Browser unavailable ⇒ ``browser_testing = NOT_ASSESSED`` while non-browser
-   web assessment continues.
-7. A Nuclei ``deprecated-tls`` observation reaches the hypothesis pipeline.
-8. The planner selects a registered provider/tool for an applicable hypothesis.
-9. Two targets both progress beyond the fixed initial reconnaissance.
+"""V7.0.1 regression tests: full_security_assessment orchestration.
 """
 
 from __future__ import annotations
@@ -80,7 +59,7 @@ class TestReconMustNotEqualCompletion:
         # Active-testing probes were scheduled/executed (class-specific tools).
         active_tools = {"sqlmap", "dalfox", "ffuf", "sstimap"}
         assert executed & active_tools, "class-specific active-testing probes must be scheduled"
-        # The mission did not merely walk recon → reporting: probes executed.
+        # The mission did not merely walk recon to reporting: probes executed.
         assert result["probes_executed"] > 0 or executed & active_tools
         # The outcome is truthful: never a budget exhaustion at 8/1000 executions.
         outcome = mission.outcome
@@ -381,7 +360,7 @@ class TestTwoTargetRegression:
         mission = _mission(orchestration, target=_LOOPBACK)
 
         # A supported differential verdict validates a hypothesis, which
-        # promotes the linked candidate finding (hypothesis → probe → verify →
+        # promotes the linked candidate finding (hypothesis to probe to verify to
         # finding).
         monkeypatch.setattr(runner, "_differential_verdict", lambda mission_id, hypothesis: _supported_verdict())
 

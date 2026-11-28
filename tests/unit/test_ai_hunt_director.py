@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""AI Hunt Director unit tests — prompt completeness and decision parsing."""
+"""AI Hunt Director unit tests, prompt completeness and decision parsing."""
 
 from __future__ import annotations
 

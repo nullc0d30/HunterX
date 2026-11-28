@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Sprint 023 Tool Intelligence Layer.
-
-End-to-end scenario through the layer: register tools with full Sprint 023
-knowledge (safety, scope, resources, evidence mappings, proof capabilities),
-plan a dependency-aware chain, enforce every pre-execution gate, select with a
-safety ceiling, escalate within scope, run a reference adapter, correlate the
-canonical observations, record target intelligence and verify deterministic
-state — all without executing any external binary.
-"""
+"""Acceptance tests for the Tool Intelligence Layer."""
 
 from __future__ import annotations
 
@@ -42,7 +34,7 @@ from tests.framework.tip import make_compatibility, make_knowledge, make_metadat
 
 
 def _register_web_stack(tip: ToolIntelligenceAPI) -> None:
-    """Register a web-recon stack with full Sprint 023 knowledge."""
+    """Register a web-recon stack with full knowledge."""
     tip.register_tool(
         make_metadata(
             "crawler",

@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Sprint 031 tool knowledge fixtures.
-
-Every integrated tool must have a structured knowledge contract covering what
-it does, when to use it, what it requires, what its output means and what its
-output does NOT prove.
-"""
+"""Unit tests for the tool knowledge fixtures."""
 
 from __future__ import annotations
 
@@ -17,7 +12,7 @@ import pytest
 from hunterx.tools.mastery.api import ToolMasteryAPI
 from hunterx.tools.mastery.knowledge_fixtures import ToolKnowledgeFixtureRegistry
 
-#: The approved Sprint 031 toolchain.
+# : The approved toolchain.
 APPROVED_TOOLCHAIN = {
     "amass", "subfinder", "assetfinder", "findomain", "dnsx", "massdns",
     "shuffledns", "naabu", "nmap", "masscan", "rustscan", "httpx", "whatweb",

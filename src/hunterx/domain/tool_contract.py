@@ -1,22 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Consolidated machine-readable tool contract (Sprint 034.5).
+"""Consolidated machine-readable tool contract.
 
-The tool contract is the single, authoritative, machine-readable capability
-definition every integrated tool must expose. It aggregates the master profile,
-knowledge profile, evidence/proof wiring, failure knowledge and downstream
-chaining facts into one JSON-serializable envelope covering the minimum
-contract dimensions:
-
-identity, version, category, capabilities, requirements, input schema,
-argument builder, scope model, execution profile, timeout, resource limits,
-output formats, exit-code mapping, parser, normalizer, artifact handling,
-error mapping, retry policy, evidence mapping and downstream capabilities.
-
-Pure data. No I/O, no execution. The builder lives in the mastery layer
-(``hunterx.tools.mastery.contract``) because it needs the arsenal registry and
-the relationship graph.
+The tool contract is the single, authoritative, machine-readable capability definition every integrated tool must
+expose.
 """
 
 from __future__ import annotations

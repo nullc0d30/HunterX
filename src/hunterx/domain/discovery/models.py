@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery domain models.
-
-Pure data contracts for the universal discovery pipeline: a discovered asset
-with full provenance (source provider, evidence, timestamp, confidence), the
-outcome of one provider run, the aggregate of one stage, and the complete run.
-
-No I/O and no execution here — the application layer drives the engine and
-builds these structures; the attack-surface service consumes the derived
-observations.
-"""
+"""Universal discovery domain models."""
 
 from __future__ import annotations
 
@@ -31,7 +22,7 @@ class DiscoveryEvidence:
         provider: provider id that produced the asset.
         tool_id: tool id that produced the asset.
         source: upstream source (e.g. a crawler page, a JS bundle, a spec URL).
-        evidence: short evidence fragment (header, URL, JS location, ...).
+        evidence: short evidence fragment (header, URL, JS location,...).
         timestamp: UTC ISO-8601 discovery timestamp.
         confidence: confidence in ``[0, 1]``.
 
@@ -64,8 +55,8 @@ class DiscoveredAsset:
         kind: generic asset kind (``host``, ``subdomain``, ``ip``, ``port``,
             ``service``, ``technology``, ``url``, ``endpoint``, ``api_endpoint``,
             ``graphql_operation``, ``websocket``, ``javascript_endpoint``,
-            ``parameter``, ``object``, ``workflow``, ...).
-        name: canonical identity of the asset (host, URL, port, ...).
+            ``parameter``, ``object``, ``workflow``,...).
+        name: canonical identity of the asset (host, URL, port,...).
         canonical_key: stable deduplication key (kind + canonical name).
         layer: :class:`DiscoveryLayer` the asset belongs to.
         attributes: extra typed attributes (port number, method, tech version...).

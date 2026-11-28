@@ -1,5 +1,6 @@
+"""Doctrine activation triggers and confirmation message."""
+
 from __future__ import annotations
-from typing import List
 
 TRIGGERS = ["HUNT MODE", "DOCTRINE ON"]
 
@@ -9,4 +10,5 @@ def activate(message: str) -> bool:
     return any(t in msg for t in TRIGGERS)
 
 def confirmation_message() -> str:
-    return "HUNTERX DOCTRINE LOADED — offensive security mode ready. Define target and scope to begin."
+    """Return the message shown when the doctrine is activated."""
+    return "HUNTERX DOCTRINE LOADED - offensive security mode ready. Define target and scope to begin."

@@ -1,9 +1,7 @@
 {
   "capability": "authorization-and-access-control-intelligence",
   "version": "1.0.0",
-  "sprint": 16,
-  "wave": 10,
-  "status": "ratified",
+  "status": "stable",
   "summary": "Persistent, evidence-backed authorization & access-control intelligence for authorized targets: authorization subjects, roles, groups, permissions, scopes, claims, policies (RBAC/ABAC/ACL/PBAC/ReBAC/custom), resources, actions, resource-identifier metadata, ownership relationships, tenant boundaries, administrative surfaces, function/object/field-level access-control indicators, frontend/backend authorization logic, API authorization correlation, GraphQL/WebSocket/service-to-service authorization, decision indicators, mass-assignment fields and historical change detection. Intelligence only; never tests authorization, never substitutes identifiers, never accesses another user's or tenant's resources.",
   "inputs": {
     "targets": [
@@ -40,7 +38,7 @@
     "resources": "authorization resources with kind, identifier, parent",
     "actions": "normalized actions preserving original terminology",
     "identifiers": "resource-identifier metadata (numeric, uuid, ulid, slug, hash, opaque, path, query)",
-    "ownership": "ownership indicators (owner_id, created_by, author, principal, ...)",
+    "ownership": "ownership indicators (owner_id, created_by, author, principal,...)",
     "tenants": "tenant boundary indicators (header, claim, path, query)",
     "admin_surfaces": "administrative surface inventory",
     "function_level": "function-level access-control indicators",

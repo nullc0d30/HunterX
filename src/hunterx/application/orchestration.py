@@ -3,9 +3,7 @@
 
 """Offensive tool orchestration use-case service.
 
-A thin application-layer wrapper over the offensive orchestration engine. It
-mirrors the conventions of the other use-case services: operations return a
-:class:`Result` and persist through the engine's repository ports.
+A thin application-layer wrapper over the offensive orchestration engine.
 """
 
 from __future__ import annotations

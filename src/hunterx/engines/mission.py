@@ -3,10 +3,8 @@
 
 """Mission engine.
 
-Drives the end-to-end lifecycle of a mission: start → plan → execute
-workflow → collect normalized findings → correlate → finalize. The engine
-coordinates the planner, workflow engine and repositories through ports, so it
-is testable without infrastructure.
+Drives the end-to-end lifecycle of a mission: start to plan to execute workflow to collect normalized findings to
+correlate to finalize.
 """
 
 from __future__ import annotations

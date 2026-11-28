@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the technology fingerprinting domain.
-
-Covers the canonical models, taxonomy, normalization, resolution, version
-intelligence, signature-based detection, confidence scoring, correlation,
-conflict handling, scope enforcement, history comparison and validation. All
-tests are deterministic and require no I/O or external tools.
-"""
+"""Tests for the technology fingerprinting domain."""
 
 from __future__ import annotations
 

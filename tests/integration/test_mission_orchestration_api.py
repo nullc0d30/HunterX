@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the Autonomous Mission Orchestration API.
-
-Builds the full platform and drives the ``/missions`` route group through the
-FastAPI test client: create/get/start/pause/resume/cancel, state/timeline/
-decisions/hypotheses/findings/attack-paths/coverage/tool-executions reads, and
-the reasoning-loop endpoints.
-"""
+"""Integration tests for the Autonomous Mission Orchestration API."""
 
 from __future__ import annotations
 

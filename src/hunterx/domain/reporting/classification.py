@@ -3,12 +3,8 @@
 
 """Finding classification engine.
 
-Maps findings onto the canonical vulnerability taxonomy: CWE, OWASP
-(Top 10 / API Top 10 / ASVS / Testing Guide), CAPEC, CVE and MITRE ATT&CK.
-Mappings are evidence-backed and carry an explicit confidence and rationale;
-ATT&CK mappings are only produced where a technique genuinely applies and are
-never forced onto a finding. CVE identifiers are only attached when the
-finding evidence references them — HunterX never invents CVEs.
+Maps findings onto the canonical vulnerability taxonomy: CWE, OWASP (Top 10 / API Top 10 / ASVS / Testing Guide),
+CAPEC, CVE and MITRE ATT&CK.
 """
 
 from __future__ import annotations

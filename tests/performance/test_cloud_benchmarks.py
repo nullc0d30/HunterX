@@ -3,9 +3,7 @@
 
 """Performance baselines for the cloud & SaaS intelligence capability.
 
-Baselines: bundle analysis, 1k-observation correlation, 1k-record inventory
-queries and merged-confidence scoring. Committed results are drift-checked
-against ``artifacts/benchmarks``.
+Baselines: bundle analysis, 1k-observation correlation, 1k-record inventory queries and merged-confidence scoring.
 """
 
 from __future__ import annotations

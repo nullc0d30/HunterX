@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Performance tests for the professional reporting capability.
-
-Verifies that finding-intelligence assembly, evidence-bundle building and
-bulk report generation scale to large finding/evidence volumes without N+1
-queries, full table scans, unbounded memory or duplicate evidence loading.
-"""
+"""Performance tests for the professional reporting capability."""
 
 from __future__ import annotations
 

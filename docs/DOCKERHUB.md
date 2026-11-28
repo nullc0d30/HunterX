@@ -1,4 +1,4 @@
-# HunterX v7 — AI-Assisted Vulnerability Discovery, Validation & Proof Engine
+# HunterX v7, AI-Assisted Vulnerability Discovery, Validation & Proof Engine
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/nullc0d30/hunterx)](https://hub.docker.com/r/nullc0d30/hunterx)
 [![Docker Stars](https://img.shields.io/docker/stars/nullc0d30/hunterx)](https://hub.docker.com/r/nullc0d30/hunterx)
@@ -30,7 +30,7 @@ docker run --rm nullc0d30/hunterx:7.0.0 version
 docker run --rm nullc0d30/hunterx:7.0.0 help
 ```
 
-The image entrypoint is the `hunterx` CLI, which uses subcommands (for example `hunterx version`, `hunterx help`, `hunterx hunt ...`). Running the container with no arguments prints the usage text.
+The image entrypoint is the `hunterx` CLI, which uses subcommands (for example `hunterx version`, `hunterx help`, `hunterx hunt...`). Running the container with no arguments prints the usage text.
 
 ---
 
@@ -47,7 +47,7 @@ Detection → Evidence → Verification → Reproduction → PoC → Validated F
 ## Key Capabilities
 
 - Autonomous mission orchestration and adaptive mission planning (`hunterx mission`, `hunterx hunt`)
-- AI-assisted reasoning through a decoupled AI provider layer — grounded in evidence, never a substitute for it
+- AI-assisted reasoning through a decoupled AI provider layer, grounded in evidence, never a substitute for it
 - Toolchain intelligence layer with 92 registered open-source security tools, machine-readable contracts, structured execution, parsers and normalizers
 - Evidence-driven vulnerability validation with proof contracts, replay and reproducibility
 - Proof / PoC engineering with minimal safe proofs and evidence-gated confidence and impact
@@ -101,7 +101,7 @@ docker run --rm nullc0d30/hunterx:latest tools list
 docker run --rm nullc0d30/hunterx:latest hunt full_security_assessment https://YOUR-AUTHORIZED-TARGET
 ```
 
-Missions, findings, reports and target memory persist to the configured database (SQLite by default), so chained invocations such as `hunterx mission create ...` → `hunterx mission start <mission_id>` work across container runs when the same database volume is mounted.
+Missions, findings, reports and target memory persist to the configured database (SQLite by default), so chained invocations such as `hunterx mission create...` → `hunterx mission start <mission_id>` work across container runs when the same database volume is mounted.
 
 ### REST API
 
@@ -109,8 +109,8 @@ The image ships the FastAPI application. Start it and point a browser at `http:/
 
 ```bash
 docker run -d --name hunterx-api -p 8080:8080 \
-  --entrypoint uvicorn nullc0d30/hunterx:latest \
-  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+ --entrypoint uvicorn nullc0d30/hunterx:latest \
+ --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 ```bash
@@ -122,10 +122,10 @@ API-key authentication is opt-in. When enabled, every request (except `/health`)
 
 ```bash
 docker run -d --name hunterx-api -p 8080:8080 \
-  -e HUNTERX_API_AUTH_ENABLED=true \
-  -e HUNTERX_API_KEY=YOUR_ADMIN_KEY \
-  --entrypoint uvicorn nullc0d30/hunterx:latest \
-  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+ -e HUNTERX_API_AUTH_ENABLED=true \
+ -e HUNTERX_API_KEY=YOUR_ADMIN_KEY \
+ --entrypoint uvicorn nullc0d30/hunterx:latest \
+ --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 ### Persistent data
@@ -136,9 +136,9 @@ application data directory (`/opt/hunterx/data`, image default
 
 ```bash
 docker run -d --name hunterx-api -p 8080:8080 \
-  -v hunterx-data:/opt/hunterx/data \
-  --entrypoint uvicorn nullc0d30/hunterx:latest \
-  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+ -v hunterx-data:/opt/hunterx/data \
+ --entrypoint uvicorn nullc0d30/hunterx:latest \
+ --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 The container runs as the non-root `hunterx` user and `/opt/hunterx/data` is writable by it.
@@ -154,8 +154,8 @@ docker run -it --rm --entrypoint sh nullc0d30/hunterx:latest
 The repository ships a `docker-compose.yml` with two services:
 
 ```bash
-docker compose up -d hunterx-api          # API service (port 8080)
-docker compose run --rm hunterx help      # CLI service
+docker compose up -d hunterx-api # API service (port 8080)
+docker compose run --rm hunterx help # CLI service
 ```
 
 ---
@@ -165,7 +165,7 @@ docker compose run --rm hunterx help      # CLI service
 Configuration is resolved in this order (each level overrides the previous):
 
 1. Built-in defaults and the bundled `hunterx.yaml` profile
-2. A user profile file — `HUNTERX_CONFIG` environment variable, or `hunterx.yaml` in the working directory (`/app`)
+2. A user profile file, `HUNTERX_CONFIG` environment variable, or `hunterx.yaml` in the working directory (`/app`)
 3. `HUNTERX_*` environment variables
 
 ### Environment variables
@@ -212,19 +212,19 @@ Example:
 
 ```bash
 docker run --rm \
-  -e HUNTERX_AI_PROVIDER=openai \
-  -e HUNTERX_AI_MODEL=gpt-4o-mini \
-  -e HUNTERX_AI_OPENAI_KEY=YOUR_API_KEY \
-  nullc0d30/hunterx:7.0.0 config
+ -e HUNTERX_AI_PROVIDER=openai \
+ -e HUNTERX_AI_MODEL=gpt-4o-mini \
+ -e HUNTERX_AI_OPENAI_KEY=YOUR_API_KEY \
+ nullc0d30/hunterx:7.0.0 config
 ```
 
 Example:
 
 ```bash
 docker run --rm \
-  -e HUNTERX_LOG_LEVEL=DEBUG \
-  -e HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db \
-  nullc0d30/hunterx:7.0.0 config
+ -e HUNTERX_LOG_LEVEL=DEBUG \
+ -e HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db \
+ nullc0d30/hunterx:7.0.0 config
 ```
 
 > **Secrets.** Do not commit API keys or credentials. Pass secrets at runtime via `HUNTERX_*` environment variables or Docker secrets, and never place real credentials in a checked-in `hunterx.yaml`.
@@ -236,8 +236,8 @@ docker run --rm \
 - The container runs as the **non-root** `hunterx` user (UID 999) and exposes a single writable volume at `/opt/hunterx/data` for persistent state.
 - The image is multi-stage, based on `python:3.11-slim`, and publishes OCI labels (source, license, version) for supply-chain inspection.
 - Use **pinned image tags** (`nullc0d30/hunterx:7.0.0`) for reproducible deployments.
-- Protect API credentials: enable `HUNTERX_API_AUTH_ENABLED`, use a strong `HUNTERX_API_KEY`, and do not expose the API port beyond your trusted network.
-- Review anything you mount into the container — mounted host paths are visible to the container process.
+- Protect API credentials: Enable `HUNTERX_API_AUTH_ENABLED`, use a strong `HUNTERX_API_KEY`, and do not expose the API port beyond your trusted network.
+- Review anything you mount into the container, mounted host paths are visible to the container process.
 - HunterX executes security tooling that can generate active traffic. Only run it against systems you own or are explicitly authorized to test.
 
 ---
@@ -254,8 +254,8 @@ See [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/) and 
 
 | Problem | Likely cause | Action |
 |---|---|---|
-| `docker run ...` prints usage text | The CLI uses subcommands; no default command was supplied | Use `hunterx help` or a specific command such as `hunterx version` |
-| `attempt to write a readonly database` / `permission denied` writing state | The database path is not writable by the `hunterx` user (UID 999) | The image defaults to `HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db`. Ensure `/opt/hunterx/data` is writable by UID 999: use the compose named volume (`hunterx-data`), or for a bind mount run `chown -R 999:999 ./data` on the host dir |
+| `docker run...` prints usage text | The CLI uses subcommands; no default command was supplied | Use `hunterx help` or a specific command such as `hunterx version` |
+| `attempt to write a readonly database` / `permission denied` writing state | The database path is not writable by the `hunterx` user (UID 999) | The image defaults to `HUNTERX_DATABASE_URL=sqlite:////opt/hunterx/data/hunterx.db`. Ensure `/opt/hunterx/data` is writable by UID 999: Use the compose named volume (`hunterx-data`), or for a bind mount run `chown -R 999:999./data` on the host dir |
 | API returns `401` | Authentication is enabled and the request has no/incorrect key | Send a valid `X-API-Key` header |
 | Wrong version behavior | Running a legacy `6.x`/`4.x` image or an old `latest` | Pull a v7 tag and run `hunterx version` to confirm |
 | Config looks wrong | Env var name or YAML profile error | Run `docker run --rm nullc0d30/hunterx:latest config` to inspect the resolved configuration |
@@ -286,6 +286,6 @@ See [Responsible Use](https://nullc0d30.github.io/HunterX/responsible-use/) and 
 If HunterX is useful to your authorized security work, consider supporting its
 continued development:
 
-[GitHub Sponsors](https://github.com/sponsors/nullc0d30) — [![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30)](https://github.com/sponsors/nullc0d30)
+[GitHub Sponsors](https://github.com/sponsors/nullc0d30), [![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30)](https://github.com/sponsors/nullc0d30)
 
 HunterX is created and maintained by [Ahmed Awad (NullC0d3)](https://github.com/nullc0d30), released under the Apache License 2.0.

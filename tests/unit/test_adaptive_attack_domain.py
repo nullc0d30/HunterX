@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the aggressive-but-bounded adaptive attack engine.
-
-Covers feedback classification, the attack state machine, bounded controls
-(aggression/pacing/concurrency/backoff/retry), multi-vector selection, probe
-plan escalation and generic workflow representation. Every test uses synthetic,
-abstract surfaces — never a real product's routes or objects.
-"""
+"""Unit tests for the aggressive-but-bounded adaptive attack engine."""
 
 from __future__ import annotations
 

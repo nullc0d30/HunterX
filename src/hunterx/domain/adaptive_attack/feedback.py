@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target-feedback classification and monitoring.
-
-Phase 2. Classifies each execution outcome into a canonical
-:class:`FeedbackSignal` (429, 403, 5xx, timeout, connection failure, latency,
-WAF-like behavior, normal) and keeps a bounded rolling window of signals the
-adaptive rate controller consumes. Defensive responses are target feedback —
-never mission completion.
-"""
+"""Target-feedback classification and monitoring."""
 
 from __future__ import annotations
 
@@ -67,7 +60,7 @@ class FeedbackClassifier:
 
     Classification is deterministic: HTTP status wins over latency, and the
     explicit error/failure-kind markers resolve ambiguous statuses. A clean
-    response is ``NORMAL`` — defensive responses are never treated as evidence.
+    response is ``NORMAL``, defensive responses are never treated as evidence.
     """
 
     def __init__(self, *, high_latency_ms: int = 2000) -> None:

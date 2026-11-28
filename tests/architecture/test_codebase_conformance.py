@@ -3,13 +3,8 @@
 
 """Codebase conformance tests.
 
-These integration tests run the real linter against the actual HunterX source
-tree and assert the architecture is clean. They are the CI validation tests:
-if the source tree ever violates the dependency matrix, these tests fail.
-
-The check intentionally disables nothing except the API stability comparison
-(which uses the committed baseline and is validated separately) — the layer
-rules, cycle detection, plugin/tool boundaries and documentation gates all run.
+These integration tests run the real linter against the actual HunterX source tree and assert the architecture is
+clean.
 """
 
 from __future__ import annotations

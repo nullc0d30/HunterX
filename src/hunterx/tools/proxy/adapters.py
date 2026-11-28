@@ -3,13 +3,8 @@
 
 """Proxy / interception tool adapters.
 
-Integrates ``zap`` (OWASP ZAP baseline scanner) and ``mitmproxy`` (traffic
-interception) into the Tool Integration SDK. External binaries run through the
-shared runner seam and emit canonical observations.
-
-Interception traffic and scanner alerts are evidence data. ZAP alert lines are
-candidates requiring validation; mitmproxy captures are artifacts referenced by
-path, never opened by the SDK.
+Integrates ``zap`` (OWASP ZAP baseline scanner) and ``mitmproxy`` (traffic interception) into the Tool Integration
+SDK.
 """
 
 from __future__ import annotations

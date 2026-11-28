@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Intelligence Engine package (Sprint 026)."""
+"""Target Intelligence Engine package."""
 
 from __future__ import annotations
 

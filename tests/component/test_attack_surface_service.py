@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Component tests for the attack-surface application service.
-
-Every test drives one of the abstract synthetic target shapes (simple web app,
-REST API, GraphQL API, authenticated application, multi-user application,
-file-handling application, workflow-driven application) through the surface
-service and asserts the generic model represents and schedules what was
-actually discovered — never a hardcoded target.
-"""
+"""Component tests for the attack-surface application service."""
 
 from __future__ import annotations
 
@@ -54,7 +47,7 @@ class TestCatalogIsPlatformSourced:
         assert isinstance(catalog, list)
         assert catalog
         # The probeable capability classes must come from the existing
-        # vulnerability-capability registry — never a hardcoded Phase-1 list.
+        # vulnerability-capability registry, never a hardcoded Phase-1 list.
         from hunterx.domain.vulnerability_capability.registry import registered_classes
 
         assert set(registered_classes()).issubset(set(catalog))

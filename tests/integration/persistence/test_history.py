@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""History / timeline tests (Sprint 034.3 §9).
-
-Validates temporal intelligence: first/last seen, discovery history, state
-changes, finding history and proof history; chronological ordering; repeated
-observations that never overwrite historical evidence.
-"""
+"""History / timeline tests (9)."""
 
 from __future__ import annotations
 

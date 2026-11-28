@@ -3,9 +3,8 @@
 
 """Agent coordinator.
 
-Runs a multi-phase agent pipeline (recon → scan → analyze) for a mission by
-dispatching to agents at each phase and merging their results. This is the
-mission-level counterpart to the lower-level :class:`AgentOrchestrator`.
+Runs a multi-phase agent pipeline (recon to scan to analyze) for a mission by dispatching to agents at each phase
+and merging their results.
 """
 
 from __future__ import annotations

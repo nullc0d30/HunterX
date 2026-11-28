@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool layering enforcement tests (Sprint 031).
-
-The toolchain must stay properly separated: tool adapters never reach into
-higher layers, reporting never executes tools, and every new module resolves
-to the correct architectural layer.
-"""
+"""Tool layering enforcement tests."""
 
 from __future__ import annotations
 

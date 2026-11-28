@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — Compliance.
+# HunterX - Compliance.
 #
 # Verifies license allow-list compliance, third-party attribution (NOTICE,
 # THIRD_PARTY_NOTICES) and repository hygiene. Runs on every push to main.

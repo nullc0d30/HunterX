@@ -3,10 +3,7 @@
 
 """Network mapping & attack-surface topology TIDB entities.
 
-System-of-record entities for the Sprint 010 topology capability. The topology
-is a *derived* state over the canonical TIDB: relationships, conflicts,
-changes, clusters and build records are persisted here so queries, reporting
-and history are reproducible without ever introducing a second database.
+System-of-record entities for the topology capability.
 """
 
 from __future__ import annotations

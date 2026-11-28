@@ -3,11 +3,8 @@
 
 """Cloud intelligence tool adapter base.
 
-The :class:`CloudToolAdapter` extends the Tool Integration SDK
-:class:`ToolAdapter` contract with an ``analyze(bundle)`` seam. The shared
-``run`` implementation builds a :class:`CloudInput` bundle from the execution
-parameters, runs the analyzer and serialises the typed observations under the
-``cloud`` payload key.
+The :class:`CloudToolAdapter` extends the Tool Integration SDK :class:`ToolAdapter` contract with an
+``analyze(bundle)`` seam.
 """
 
 from __future__ import annotations

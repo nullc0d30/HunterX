@@ -3,10 +3,8 @@
 
 """Performance benchmarks for the HunterX foundation.
 
-Benchmarks are executed by the performance quality gate
-(``python -m eng gates --gate performance``) with pytest-benchmark. Results
-are compared against ``artifacts/benchmarks/baseline.json``; drift beyond the
-configured threshold (20% by default) fails the gate.
+Benchmarks are executed by the performance quality gate (``python -m eng gates --gate performance``) with
+pytest-benchmark.
 """
 
 from __future__ import annotations

@@ -3,10 +3,8 @@
 
 """Execution event bus.
 
-Domain events emitted during a tool execution: started, completed, failed,
-timeout, retry, output collected, normalization complete and database updated.
-The event bus delivers to registered subscribers synchronously and records
-each event for replay/audit.
+Domain events emitted during a tool execution: started, completed, failed, timeout, retry, output collected,
+normalization complete and database updated.
 """
 
 from __future__ import annotations

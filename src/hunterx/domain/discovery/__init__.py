@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Universal discovery — domain layer.
-
-Target-agnostic vocabulary and data contracts for the Phase 4 universal
-discovery pipeline: the ordered discovery stages, honest provider states,
-provenance-rich discovered assets and the declarative stage plan. The
-application layer (:mod:`hunterx.application.discovery`) drives the execution
-engine against this plan.
-"""
+"""Universal discovery, domain layer."""
 
 from hunterx.domain.discovery.canonical import (
     DiscoveryDeduper,

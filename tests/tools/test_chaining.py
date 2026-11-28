@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tool chaining certification (Sprint 034.5).
-
-Certifies that planned tool chains execute end-to-end in dependency order,
-produce canonical observations with full provenance, feed discovered hosts/URLs
-into dependent steps, classify failures and attempt capability-equivalent
-fallbacks while preserving partial results.
-"""
+"""Tool chaining certification."""
 
 from __future__ import annotations
 

@@ -4,7 +4,9 @@
 """Attack path visualization integration."""
 
 from __future__ import annotations
+
 import json
+
 
 class AttackPathVisualizer:
     """Exports the knowledge graph to a visualizable format."""

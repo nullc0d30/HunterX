@@ -3,8 +3,7 @@
 
 """Plugin result value objects.
 
-Typed results a plugin can return, keeping the finding/evidence schemas
-canonical across all plugins.
+Typed results a plugin can return, keeping the finding/evidence schemas canonical across all plugins.
 """
 
 from __future__ import annotations

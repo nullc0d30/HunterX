@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authentication observation validation.
-
-Deterministic structural and semantic validation of authentication
-observations: every record must carry a resolvable origin (or asset), a valid
-confidence within ``[0, 1]`` and, for typed records, a known kind. Invalid
-records are flagged with a machine-readable issue so downstream stages can drop
-or repair them without ever trusting malformed input.
-"""
+"""Authentication observation validation."""
 
 from __future__ import annotations
 

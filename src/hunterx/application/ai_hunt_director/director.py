@@ -3,32 +3,7 @@
 
 """AI Hunt Director Implementation.
 
-The AI Hunt Director is the autonomous decision-making authority for
-security-assessment missions. Every meaningful planning cycle it receives the
-complete mission state (target, scope, authorization, phase, discovered
-technologies/services/endpoints/parameters, observations, negative evidence,
-hypotheses, findings, attack paths, previous actions and their results,
-available tools with descriptions/schemas, resource budget AND the Security
-Test Matrix) and returns a structured decision:
-
-    {
-      "question": "<security question being answered>",
-      "security_domain": "<matrix domain>",
-      "reason": "...",
-      "action": "execute_tool" | "complete",
-      "capability": "<capability id>",
-      "tool": "<tool hint or empty for auto-select>",
-      "arguments": {"asset": "...", ...},
-      "expected_evidence": [...],
-      "validation_plan": "..."
-    }
-
-HunterX (never the AI) enforces scope, authorization, safety, budgets, tool
-contracts and evidence requirements through the policy gate before executing
-anything.
-
-Context is compacted to bounded summaries — never unlimited history, but
-never dropping security-relevant context.
+The AI Hunt Director is the autonomous decision-making authority for security-assessment missions.
 """
 
 from __future__ import annotations
@@ -45,7 +20,6 @@ from hunterx.application.ai_hunt_director.protocol import (
     HuntContext,
 )
 from hunterx.shared.ids import generate_id
-
 
 #: Maximum items per context section (context compaction bounds).
 _MAX_OBSERVATIONS = 25
@@ -77,7 +51,7 @@ Decision rules:
    parameters or technologies, your next decision MUST change because of it.
 4. "complete" is ONLY allowed when every applicable domain in the provided
    Security Test Matrix already has a terminal status. Otherwise pick work.
-5. Respond with ONE JSON object only — no prose, no markdown fences."""
+5. Respond with ONE JSON object only - no prose, no markdown fences."""
 
 _RESPONSE_SCHEMA = """{
   "question": "the security question this action answers",
@@ -128,10 +102,12 @@ class AIHuntDirector:
 
     @property
     def provider(self) -> str:
+        """Return the configured provider name."""
         return self._provider
 
     @property
     def model(self) -> str:
+        """Return the configured model name."""
         return self._model
 
     def decide_next_action(self, context: HuntContext) -> AIHuntDecision:
@@ -161,6 +137,7 @@ class AIHuntDirector:
         raise AIHuntDirectorError(f"AI Hunt Director failed: {last_error}")
 
     def explain_failure(self) -> str:
+        """Return the last failure recorded by the director."""
         return self.last_error
 
     # -- prompt construction ---------------------------------------------------
@@ -206,7 +183,7 @@ class AIHuntDirector:
                 summary = observation.content_summary.replace("\n", " ")[:220]
                 sections.append(f"- [{observation.observation_type}] via {observation.tool_id} @ {observation.asset_key}: {summary}")
         else:
-            sections.append("none yet — begin reconnaissance")
+            sections.append("none yet - begin reconnaissance")
 
         if context.negative_evidence:
             negative = context.negative_evidence[:_MAX_NEGATIVE_EVIDENCE]
@@ -240,7 +217,7 @@ class AIHuntDirector:
         for path in context.attack_paths[:_MAX_ATTACK_PATHS]:
             sections.append(f"- path: {json.dumps(path, default=str)[:200]}")
         if not context.attack_paths:
-            sections.append("attack paths: none correlated yet — evaluate chaining opportunities")
+            sections.append("attack paths: none correlated yet - evaluate chaining opportunities")
 
         sections.append("\n## PREVIOUS ACTIONS & RESULTS (chronological)")
         for decision in context.previous_decisions[-_MAX_PREVIOUS_DECISIONS:]:

@@ -3,17 +3,8 @@
 
 """Human-facing installer output helpers.
 
-Pure formatting functions (no I/O, no terminal escapes) so the installer UX is
-unit-testable and deterministic in both TTY and non-TTY environments:
-
-- multi-column inventory blocks (available / missing / broken / ...);
-- ``[N/M] tool ... ✓`` progress lines;
-- provisioning summaries;
-- final readiness banners.
-
-All functions return plain strings; callers decide where to print them. Width
-awareness is passed in (or auto-detected by the caller) so the layout adapts
-to the terminal without the formatter touching the environment.
+Pure formatting functions (no I/O, no terminal escapes) so the installer UX is unit-testable and deterministic in
+both TTY and non-TTY environments.
 """
 
 from __future__ import annotations
@@ -102,7 +93,7 @@ def columnize(items: Sequence[str], width: int, *, pad: int = 2, min_cols: int =
 
 
 def inventory_marks(tool_id: str, status: ToolReadinessStatus, *, max_name: int = 0) -> str:
-    """Return the marked, padded entry for one tool (``✓ amass  ``)."""
+    """Return the marked, padded entry for one tool (``✓ amass ``)."""
     mark = _status_mark(status)
     name = tool_id if max_name <= 0 else tool_id.ljust(max_name)
     return f"{mark} {name}"
@@ -115,13 +106,13 @@ def render_inventory(inventory: ToolInventory, width: int = 80) -> str:
 
         Available
         ────────────────────────────────────────────────────────────
-        ✓ amass        ✓ nmap         ✓ masscan
-        ✓ whatweb      ✓ gobuster     ✓ nikto
+        ✓ amass ✓ nmap ✓ masscan
+        ✓ whatweb ✓ gobuster ✓ nikto
         ────────────────────────────────────────────────────────────
 
         Missing
         ────────────────────────────────────────────────────────────
-        ○ subfinder    ○ assetfinder  ○ findomain
+        ○ subfinder ○ assetfinder ○ findomain
         ────────────────────────────────────────────────────────────
 
     Only non-empty buckets are rendered. The separator width is derived from
@@ -154,7 +145,7 @@ def render_inventory(inventory: ToolInventory, width: int = 80) -> str:
 def render_progress_line(index: int, total: int, tool_id: str, outcome: InstallOutcome | None = None) -> str:
     r"""Render one live progress line.
 
-    ``outcome is None`` means "about to start" — the line carries the tool
+    ``outcome is None`` means "about to start" - the line carries the tool
     name followed by dots so the user immediately sees the operation begin;
     the completed line (with ``✓`` / ``✗``) replaces it via ``\\r`` by the
     caller on a TTY, or is appended as a plain text follow-up on non-TTY.
@@ -262,12 +253,12 @@ def render_banner(title: str, items: Sequence[tuple[str, str]], *, width: int = 
     Example::
 
         ============================================================
-         HunterX v7.0.0 — Installation Complete
+         HunterX v7.0.0, Installation Complete
         ============================================================
 
-        ✓ HunterX Core ............... READY
-        ✓ Runtime ................... READY
-        ✓ Database .................. READY
+        ✓ HunterX Core............... READY
+        ✓ Runtime................... READY
+        ✓ Database.................. READY
 
         HunterX is ready to use.
         ============================================================

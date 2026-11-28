@@ -1,10 +1,4 @@
-"""tidb baseline
-
-Revision ID: 4302b30cb7c7
-Revises: 
-Create Date: 2026-08-06 07:58:26.699602
-
-"""
+"""tidb baseline Revision ID: 4302b30cb7c7 Revises: Create Date: 2026-08-06 07:58:26.699602."""
 from collections.abc import Sequence
 
 import sqlalchemy as sa

@@ -3,9 +3,7 @@
 
 """Mission entity.
 
-A mission is a scheduled or on-demand security operation over a set of
-authorized targets. Missions carry state and progress; the mission engine
-drives their lifecycle.
+A mission is a scheduled or on-demand security operation over a set of authorized targets.
 """
 
 from __future__ import annotations

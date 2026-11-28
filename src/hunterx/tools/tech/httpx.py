@@ -3,18 +3,8 @@
 
 """ProjectDiscovery httpx tool adapter.
 
-Integrates ProjectDiscovery's ``httpx`` — a fast, multi-purpose HTTP(S) toolkit
-with technology detection — into the Tool Integration SDK. The adapter builds
-the CLI command from the execution context, parses the JSONL output
-(``-json -tech-detect``) into canonical technology observations and publishes
-them on the execution output.
-
-CLI contract (verified against ProjectDiscovery docs):
-    ``httpx -u <target> -json -tech-detect -cdn -title -server -location
-    -tls-grab -silent`` emits one JSON object per target to stdout. Each object
-    carries ``url``, ``host``, ``port``, ``scheme``, ``status_code``,
-    ``webserver``, ``tech`` (array), ``cdn_name``, ``title``, ``location`` and
-    ``tls`` (certificate fields).
+Integrates ProjectDiscovery's ``httpx``, a fast, multi-purpose HTTP(S) toolkit with technology detection, into the
+Tool Integration SDK.
 """
 
 from __future__ import annotations

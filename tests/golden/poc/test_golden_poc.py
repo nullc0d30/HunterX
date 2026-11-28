@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden PoC scenarios (Sprint 034.5).
-
-Certifies the PoC lifecycle: generation is never validation; a PoC must be
-statically validated, then replayed against the exact target with matching
-behavior, and only a confirmed replay proves the finding. Refutation
-(non-reproducible, different target) is preserved and regresses the finding.
-"""
+"""Golden PoC scenarios."""
 
 from __future__ import annotations
 

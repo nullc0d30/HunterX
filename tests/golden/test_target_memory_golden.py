@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Golden datasets for Target Memory & Campaign Intelligence.
-
-Sprint 030 requires that memory correctly classifies the canonical scenarios:
-new asset, removed asset, changed IP, new/removed endpoint, technology change,
-new/remediated vulnerability, regression, failed/successful hypothesis,
-contradictory tool output, stale observation, coverage gap, attack-path change
-and cloud resource change.
-
-Each scenario records observations via the application service and asserts the
-resulting memory classification and derived intelligence.
-"""
+"""Golden datasets for Target Memory & Campaign Intelligence."""
 
 from __future__ import annotations
 

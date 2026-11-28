@@ -3,30 +3,7 @@
 
 """Configuration loader.
 
-Loads settings from, in order of increasing precedence:
-
-1. Built-in defaults.
-2. The bundled ``hunterx.yaml`` default profile.
-3. A user-provided profile file (``HUNTERX_CONFIG`` or ``hunterx.yaml`` in cwd).
-4. Environment variables (``HUNTERX_*``).
-
-AI credentials are additionally discovered from a ``.env`` file resolved
-intentionally (see :func:`discover_env_file`) so the configured provider is
-available regardless of the working directory or ``sudo`` usage:
-
-* ``$HUNTERX_ENV_FILE`` when set explicitly.
-* ``$HUNTERX_DATA_DIR/.env`` — the install data directory managed by
-  ``install.sh``.
-* ``.env`` in the current directory and its parents.
-* ``.env`` beside the ``$HUNTERX_CONFIG`` profile.
-* User configuration directories (the invoking user's home under ``sudo``):
-  ``~/.config/hunterx/.env``, ``~/.hunterx/.env``.
-* The system install data directory (``/opt/hunterx/data/.env``).
-
-Values already present in the real environment always win over file values so
-Docker/CI/Kubernetes secret injection keeps precedence.
-
-The result is a validated :class:`~hunterx.config.settings.Settings` instance.
+Loads settings from, in order of increasing precedence.
 """
 
 from __future__ import annotations
@@ -100,7 +77,7 @@ def _candidate_env_files() -> list[Path]:
         _add(home / ".hunterx" / ".env")
     for data_dir in _SYSTEM_DATA_DIRS:
         _add(Path(data_dir) / ".env")
-    # Development checkout: <repo>/src/hunterx/config/loader.py → repo .env.
+    # Development checkout: <repo>/src/hunterx/config/loader.py to repo.env.
     try:
         repo_root = Path(__file__).resolve().parents[3]
         if repo_root.name and (repo_root / "pyproject.toml").exists():
@@ -113,21 +90,7 @@ def _candidate_env_files() -> list[Path]:
 def discover_env_file() -> Path | None:
     """Return the first existing ``.env`` file from the intentional search path.
 
-    Search order (most specific first):
-
-    1. ``$HUNTERX_ENV_FILE``
-    2. ``$HUNTERX_DATA_DIR/.env``
-    3. ``.env`` from the current directory upward
-    4. ``.env`` beside ``$HUNTERX_CONFIG``
-    5. ``~/.config/hunterx/.env`` then ``~/.hunterx/.env`` (invoking user under sudo)
-    6. ``/opt/hunterx/data/.env`` (system install)
-    7. repository-root ``.env`` (development checkout)
-
-    Set ``HUNTERX_SKIP_ENV_FILE=1`` to disable file discovery entirely
-    (pure-environment mode: Docker, CI, hardened deployments).
-
-    Returns ``None`` when no candidate exists — configuration may legitimately
-    be supplied purely through the environment.
+    Search order (most specific first).
     """
     if os.environ.get("HUNTERX_SKIP_ENV_FILE", "").strip() in ("1", "true", "yes"):
         return None
@@ -207,9 +170,9 @@ def _resolve_profile_files(profile: str | Path | None) -> list[Path]:
 def _env_override_paths() -> dict[str, list[str]]:
     """Map every supported ``HUNTERX_*`` variable to a ``Settings`` field path.
 
-    Top-level fields map directly (``HUNTERX_LOG_LEVEL`` → ``log_level``);
+    Top-level fields map directly (``HUNTERX_LOG_LEVEL`` to ``log_level``);
     nested sections map with an underscore separator (``HUNTERX_DATABASE_URL``
-    → ``database.url``). ``HUNTERX_API_KEY`` and ``HUNTERX_API_READ_ONLY_KEY``
+    to ``database.url``). ``HUNTERX_API_KEY`` and ``HUNTERX_API_READ_ONLY_KEY``
     are accepted as aliases for the ``api`` section fields.
     """
     from hunterx.config.settings import (
@@ -319,7 +282,7 @@ def ai_configuration_source() -> str:
     """Return a human-readable description of where AI config was resolved from.
 
     One of ``environment``, ``<path> (.env)``, ``profile`` or ``not_configured``.
-    Never includes secret values — only the location names.
+    Never includes secret values, only the location names.
     """
     provider = os.environ.get("HUNTERX_AI_PROVIDER", "").strip()
     if provider:

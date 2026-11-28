@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the Autonomous Mission Orchestration domain.
-
-Covers the pure domain models and engines: mission aggregate and coverage,
-hypothesis loop, decision/information-gain engine, baseline & differential
-testing, negative evidence, knowledge gaps, confidence, branches, telemetry,
-reasoning trace, policy/stop conditions, impact analysis and finding cascades.
-"""
+"""Unit tests for the Autonomous Mission Orchestration domain."""
 
 from __future__ import annotations
 

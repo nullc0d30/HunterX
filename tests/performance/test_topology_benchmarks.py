@@ -3,10 +3,8 @@
 
 """Performance benchmarks for the network-mapping topology capability.
 
-Benchmarks are executed by the performance quality gate
-(``python -m eng gates --gate performance``) with pytest-benchmark. They
-measure correlation throughput and graph query latency on large synthetic
-topologies (thousands of assets, hundreds of thousands of relationships).
+Benchmarks are executed by the performance quality gate (``python -m eng gates --gate performance``) with
+pytest-benchmark.
 """
 
 from __future__ import annotations

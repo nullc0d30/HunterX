@@ -3,10 +3,7 @@
 
 """ORM models for Adaptive Mission & Attack-Path Planning TIDB entities.
 
-Sprint 027. Mirrors ``hunterx.domain.entities.tidb.adaptive_mission_planning``
-one-to-one. Indexes cover the canonical query paths: mission scoping, action
-ids, plan versions and states — so thousands of actions and large plan
-histories stay queryable without full scans.
+Mirrors ``hunterx.domain.entities.tidb.adaptive_mission_planning`` one-to-one.
 """
 
 from __future__ import annotations

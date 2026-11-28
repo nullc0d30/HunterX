@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the Live Host & Service Discovery tool adapters.
-
-Each adapter is exercised with a fake binary runner fed golden output (nmap
-XML, naabu JSONL, masscan JSON), or an injectable probe callable for the
-in-process TCP-connect adapter, so no external tool or network is required.
-Tests assert the generated command line and the canonical observations attached
-to the execution output.
-"""
+"""Tests for the Live Host & Service Discovery tool adapters."""
 
 from __future__ import annotations
 
@@ -325,7 +318,7 @@ class TestTcpConnectAdapter:
 
     def test_default_probe_maps_errors(self) -> None:
         adapter = TcpConnectAdapter()
-        assert adapter._probe is not None  # noqa: SLF001  # default probe wired without injection
+        assert adapter._probe is not None  # noqa: SLF001 # default probe wired without injection
 
 
 class TestRegistryAndTip:

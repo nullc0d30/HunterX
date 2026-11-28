@@ -3,28 +3,14 @@
 
 """Tool provisioning.
 
-Installs missing external tools through TRUSTED, STATIC installation methods
-declared in the readiness manifest. The provisioner:
-
-- never builds commands from user/target input — package names and module
-  paths are static manifest constants;
-- is idempotent — an already-available tool is never reinstalled
-  (detect → verify → reuse);
-- verifies every install by re-running discovery before declaring success;
-- reports ``UNSUPPORTED`` clearly when no compatible method exists for the
-  current platform;
-- always captures the executed command and its output so provisioning is
-  auditable.
-
-Unit tests inject a fake command runner — no real package is ever installed
-during normal test runs.
+Installs missing external tools through TRUSTED, STATIC installation methods declared in the readiness manifest.
 """
 
 from __future__ import annotations
 
 import os
 import shutil
-import subprocess  # nosec B404  # guarded static command vector (see _run)
+import subprocess  # nosec B404 # guarded static command vector (see _run)
 import sys
 from typing import Any
 
@@ -81,7 +67,7 @@ class CommandRunner:
         """Run ``argv`` and return ``(returncode, stdout, stderr)``."""
         effective = timeout_s if timeout_s is not None else self._timeout
         try:
-            completed = subprocess.run(  # nosec B603  # trusted static argv
+            completed = subprocess.run(  # nosec B603 # trusted static argv
                 argv,
                 capture_output=True,
                 text=True,
@@ -159,7 +145,7 @@ class ToolProvisioner:
             )
 
         # Non-provisionable catalog classifications are reported with their
-        # precise status and remediation — never retried as an install and
+        # precise status and remediation, never retried as an install and
         # never hidden behind a generic ``missing``/``unsupported`` verdict.
         if definition.classification == ToolReadinessStatus.NOT_CLI.value:
             return InstallOutcome(
@@ -300,7 +286,7 @@ class ToolProvisioner:
         """Return ``True`` when the runtime/package-manager for ``method`` exists.
 
         Prevents the provisioner from attempting commands that are unavailable
-        (``go`` absent, ``cargo`` absent, ``apt-get`` absent, ...) — only tools
+        (``go`` absent, ``cargo`` absent, ``apt-get`` absent,...), only tools
         and package managers actually present in the environment are used.
         """
         if method.kind == "apt":

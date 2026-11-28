@@ -3,16 +3,8 @@
 
 """Reconnaissance confidence engine.
 
-Assigns a defensible confidence score to every discovery observation and
-recomputes it when several tools corroborate the same asset. Confidence is a
-pure function of (tool reliability, asset kind, corroboration count) so the
-same inputs always yield the same score and scores stay comparable across
-runs.
-
-The default policy encodes the observed reliability of the integrated recon
-tools for each discovery kind. Subscriber tools (subfinder, amass, bbot) and
-active resolvers score higher than opportunistic index-scrapers (assetfinder,
-theHarvester).
+Assigns a defensible confidence score to every discovery observation and recomputes it when several tools
+corroborate the same asset.
 """
 
 from __future__ import annotations

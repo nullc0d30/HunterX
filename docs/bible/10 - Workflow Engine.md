@@ -1,7 +1,5 @@
-# 10 — Workflow Engine
+# 10, Workflow Engine
 
-**Status:** Ratified
-**Version:** 1.0.0
 **Applies to:** `engines/workflow.py`, mission pipelines, plan execution, scheduling
 
 ---
@@ -10,7 +8,7 @@
 
 The Workflow Engine executes **Directed Acyclic Graphs (DAGs)** of steps. It is
 the deterministic execution backbone of every mission. It handles dependencies,
-parallelism, retries, validation, checkpoints, and recovery — while the Planner
+parallelism, retries, validation, checkpoints, and recovery, while the Planner
 (`02` §5.5) decides *what* the graph looks like and the Mission Engine decides
 *why* the mission runs.
 
@@ -40,7 +38,7 @@ parallelism, retries, validation, checkpoints, and recovery — while the Planne
 | `parallel` | Run child steps concurrently (fan-out) with a join barrier |
 | `loop` | Repeat child steps while a condition holds; bounded by max_iterations |
 | `wait` | Pause for duration or until condition/event |
-| `transform` | Pure data transform (aggregate, map, dedup) — no I/O |
+| `transform` | Pure data transform (aggregate, map, dedup) - no I/O |
 | `submission` | Require operator approval/input (approval gate) |
 | `notify` | Emit an event / external notification; non-blocking |
 | `ai` | Invoke AI decision through the AI Engine (never direct) |
@@ -56,45 +54,45 @@ Workflows are defined in YAML (mission profiles) or JSON (API). Contract:
 id: external-recon
 version: 1
 phases:
-  - id: discovery
-    steps:
-      - id: subdomain-enum
-        type: tool
-        tool: subfinder
-        mode: passive
-        profile: fast
-        input: { target: "<target>", scope: "<scope>" }
-        output_schema: subdomain
-        depends_on: []
-      - id: dns-resolve
-        type: tool
-        tool: dnsx
-        input: { targets: "ref:subdomain-enum" }
-        depends_on: [subdomain-enum]
-  - id: detection
-    steps:
-      - id: port-scan
-        type: tool
-        tool: nmap
-        profile: stealth
-        depends_on: [dns-resolve]
-      - id: nuclei-scan
-        type: tool
-        tool: nuclei
-        profile: fast
-        depends_on: [port-scan]
-        retry: { max_attempts: 2, backoff: "exponential", retryable: [transient, timeout] }
-      - id: high-sev-gate
-        type: condition
-        condition: "output.findings.max_severity in ('high','critical')"
-        true: [validation]
-        false: [report]
-        depends_on: [nuclei-scan]
-      - id: validation
-        type: tool
-        tool: sqlmap-validate
-        requires_approval: true        # destructive-class
-        depends_on: [high-sev-gate]
+ - id: discovery
+ steps:
+ - id: subdomain-enum
+ type: tool
+ tool: subfinder
+ mode: passive
+ profile: fast
+ input: { target: "<target>", scope: "<scope>" }
+ output_schema: subdomain
+ depends_on: []
+ - id: dns-resolve
+ type: tool
+ tool: dnsx
+ input: { targets: "ref:subdomain-enum" }
+ depends_on: [subdomain-enum]
+ - id: detection
+ steps:
+ - id: port-scan
+ type: tool
+ tool: nmap
+ profile: stealth
+ depends_on: [dns-resolve]
+ - id: nuclei-scan
+ type: tool
+ tool: nuclei
+ profile: fast
+ depends_on: [port-scan]
+ retry: { max_attempts: 2, backoff: "exponential", retryable: [transient, timeout] }
+ - id: high-sev-gate
+ type: condition
+ condition: "output.findings.max_severity in ('high','critical')"
+ true: [validation]
+ false: [report]
+ depends_on: [nuclei-scan]
+ - id: validation
+ type: tool
+ tool: sqlmap-validate
+ requires_approval: true # destructive-class
+ depends_on: [high-sev-gate]
 ```
 
 Execution semantics:
@@ -102,7 +100,7 @@ Execution semantics:
 - Steps run when all `depends_on` complete with success.
 - A `parallel` step's children run concurrently; the join waits for all.
 - `condition` evaluates over the accumulated **step output namespace**
-  (`output.<step_id>.<field>`).
+ (`output.<step_id>.<field>`).
 - `loop` requires `max_iterations` (default 3, hard cap enforced).
 
 ---
@@ -112,15 +110,15 @@ Execution semantics:
 ### 5.1 Scheduling & Concurrency
 
 - Async task scheduler (`asyncio`) with a worker pool; per-mission and global
-  concurrency limits enforced by the queue (`02` §5.18).
+ concurrency limits enforced by the queue (`02` §5.18).
 - Ready set = steps whose dependencies completed; dispatched in priority order
-  (plan priority × profile priority).
+ (plan priority × profile priority).
 - Fan-out bounded by `max_concurrency` in the step/profile.
 
 ### 5.2 Validation Gates
 
 - Every step declares `output_schema`; output is validated before the step is
-  marked complete.
+ marked complete.
 - Validation failure → `step.failed` with reason; per retry policy.
 - Findings from steps are validated against `08 - Unified Security Schema.md`.
 
@@ -130,12 +128,12 @@ Per-step policy:
 
 ```yaml
 retry:
-  max_attempts: 3
-  backoff: exponential   # exponential|linear|fixed
-  base_delay_s: 1
-  max_delay_s: 60
-  jitter: true
-  retryable: [transient, timeout, rate_limited]   # outcome classes
+ max_attempts: 3
+ backoff: exponential # exponential|linear|fixed
+ base_delay_s: 1
+ max_delay_s: 60
+ jitter: true
+ retryable: [transient, timeout, rate_limited] # outcome classes
 ```
 
 - Non-retryable failures (scope violation, invalid config) fail immediately.
@@ -152,15 +150,15 @@ retry:
 ## 6. Checkpoint System
 
 - A checkpoint is taken **at every step boundary** (before dispatch) and
-  periodically during long-running steps (configurable interval).
+ periodically during long-running steps (configurable interval).
 - Checkpoint payload: step outputs (content-addressed), step statuses, plan
-  version, mission state, scope, correlation_id.
+ version, mission state, scope, correlation_id.
 - Checkpoints are stored in TIDB (`workflow_runs`, `task_runs`) + object store
-  for blobs; ids recorded on the run.
-- **Resume:** a failed/crashed run can resume from the last checkpoint —
-  completed steps are not re-run (idempotent consumers).
+ for blobs; ids recorded on the run.
+- **Resume:** a failed/crashed run can resume from the last checkpoint,
+ completed steps are not re-run (idempotent consumers).
 - **Determinism:** resume replays the same plan (plan_id unchanged) unless the
-  operator chooses replan; replan creates a new plan version (logged).
+ operator chooses replan; replan creates a new plan version (logged).
 
 ---
 
@@ -170,11 +168,11 @@ Failure handling hierarchy:
 
 ```
 step failure
-  → retry policy (bounded)
-  → route around (mark tool unavailable; skip with reason)
-  → degrade phase (execute fallback profile / reduced scope)
-  → pause workflow for operator intervention (requires_approval)
-  → fail workflow (mission recovery path)
+ → retry policy (bounded)
+ → route around (mark tool unavailable; skip with reason)
+ → degrade phase (execute fallback profile / reduced scope)
+ → pause workflow for operator intervention (requires_approval)
+ → fail workflow (mission recovery path)
 ```
 
 Recovery rules:
@@ -183,8 +181,8 @@ Recovery rules:
 - AI provider down → degrade to rule-based fallback for planning/triage.
 - Partial results are **preserved**; nothing already persisted is rolled back.
 - Workflow-level rollback is only for **transactional data steps** (not for
-  tool side effects); side-effect rollback is documented per tool in its
-  knowledge file.
+ tool side effects); side-effect rollback is documented per tool in its
+ knowledge file.
 
 ---
 
@@ -194,12 +192,12 @@ Mission Engine drives a **pipeline** = ordered phases. Each phase is a workflow.
 
 ```
 mission.started
-  ├─ phase: recon (workflow)
-  │    └─ workflow.completed → mission.phase_completed
-  ├─ phase: detection (workflow)
-  ├─ phase: validation (workflow; approval gates)
-  ├─ phase: correlation (workflow: transform steps)
-  └─ phase: reporting (workflow: report steps)
+ ├─ phase: recon (workflow)
+ │ └─ workflow.completed → mission.phase_completed
+ ├─ phase: detection (workflow)
+ ├─ phase: validation (workflow; approval gates)
+ ├─ phase: correlation (workflow: transform steps)
+ └─ phase: reporting (workflow: report steps)
 mission.completed
 ```
 
@@ -211,11 +209,11 @@ mission.completed
 ## 9. Determinism & Reproducibility
 
 - Plan and workflow graphs are content-addressed:
-  `graph_id = sha256(profile, scope, params, workflow_version)`.
+ `graph_id = sha256(profile, scope, params, workflow_version)`.
 - Tool invocations reuse cached idempotent outputs where the knowledge file
-  declares cacheability.
+ declares cacheability.
 - AI steps are recorded with seeds/params so replays are reproducible
-  (subject to provider nondeterminism, which is recorded, not hidden).
+ (subject to provider nondeterminism, which is recorded, not hidden).
 
 ---
 
@@ -259,7 +257,7 @@ Traces: one span per run; child spans per step/task; per-step metrics
 - Long-running steps stream results; no unbounded buffering.
 - Checkpoint save target < 500ms for a mid-size mission.
 - Concurrency limits are configurable and enforced globally to protect the
-  platform (see `14 - Performance Standards.md`).
+ platform (see `14 - Performance Standards.md`).
 
 ---
 

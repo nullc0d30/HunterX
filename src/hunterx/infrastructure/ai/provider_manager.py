@@ -1,30 +1,29 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""AI Provider Manager with failover support.
+"""AI provider failover.
 
-This module provides a provider manager that can handle failover between
-multiple AI providers (e.g., OpenRouter -> LM Studio -> Ollama -> deterministic).
+Tries each configured provider in order (for example OpenRouter, then LM Studio,
+then Ollama) and falls back to the deterministic path when none responds.
 """
 
 from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from hunterx.config.settings import AISettings
-from hunterx.domain.ports.services import AIPort
-from hunterx.domain.model_attacker.enums import AIFailureCategory
-from hunterx.infrastructure.ai.factory import build_ai_client, _KNOWN_PROVIDERS
-from hunterx.infrastructure.ai.providers import classify_ai_error
-from hunterx.infrastructure.ai.null import NullAIClient
 from hunterx.domain.exceptions import ConfigurationError
+from hunterx.domain.model_attacker.errors import classify_ai_error
+from hunterx.domain.ports.services import AIPort
+from hunterx.infrastructure.ai.factory import _KNOWN_PROVIDERS, build_ai_client
 
 
 @dataclass(frozen=True, slots=True)
 class ProviderConfig:
     """Configuration for a single AI provider."""
+
     name: str
     settings: AISettings
     priority: int = 0  # Lower = higher priority
@@ -65,7 +64,7 @@ class ProviderManager:
             raise ConfigurationError(f"Unknown provider: {config.name}")
 
         # Create settings for this provider
-        settings = AISettings(
+        _settings = AISettings(
             provider=config.name,
             model=config.settings.model,
             base_url=config.settings.base_url,
@@ -88,7 +87,7 @@ class ProviderManager:
             raise ConfigurationError(f"Failed to create {config.name} client: {exc}") from exc
 
     @property
-    def current_provider(self) -> Optional[AIPort]:
+    def current_provider(self) -> AIPort | None:
         """Get the current active provider."""
         if not self._providers:
             return None
@@ -102,7 +101,7 @@ class ProviderManager:
         return self._providers[self._current_index][0].name
 
     @property
-    def current_provider_config(self) -> Optional[ProviderConfig]:
+    def current_provider_config(self) -> ProviderConfig | None:
         """Get the current provider's configuration."""
         if not self._providers:
             return None
@@ -122,7 +121,6 @@ class ProviderManager:
 
     def _enter_cooldown(self, exc: Exception, *, auth_failure: bool = False) -> None:
         """Enter cooldown after a rate limit or error."""
-        from hunterx.infrastructure.ai.providers import _retry_after_seconds
         import random
 
         retry_after = float(getattr(exc, "retry_after", 0.0) or 0.0)
@@ -150,7 +148,6 @@ class ProviderManager:
     def suggest(self, mission: Any, candidates: list[Any]) -> Any:
         """Get a suggestion from the current provider with automatic failover."""
         from hunterx.application.ai_suggestion import AISuggestion
-        import dataclasses
 
         # Check if we're in cooldown
         if self.rate_limited():
@@ -174,15 +171,12 @@ class ProviderManager:
         self._last_attempt_at = time.monotonic()
 
         # Try current provider, failover on failure
-        for attempt in range(len(self._providers)):
+        for _attempt in range(len(self._providers)):
             provider = self.current_provider
             if provider is None:
                 break
 
             from hunterx.application.ai_suggestion import AISuggestion
-            from hunterx.domain.model_attacker.enums import AIFailureCategory
-            from hunterx.infrastructure.ai.providers import classify_ai_error
-            import dataclasses
 
             candidate_ids = [getattr(c, "action_id", "") for c in candidates]
             prompt = self._build_prompt(mission, candidates)
@@ -277,7 +271,7 @@ class ProviderManager:
         self._deterministic_decisions += 1
         return AISuggestion(error="All AI providers exhausted; deterministic fallback", deterministic=True)
 
-    def _get_model(self) -> Optional[str]:
+    def _get_model(self) -> str | None:
         """Get the model for the current provider."""
         if self.current_provider_config:
             return self.current_provider_config.settings.model

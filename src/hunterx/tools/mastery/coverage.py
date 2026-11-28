@@ -3,10 +3,7 @@
 
 """Arsenal coverage engine.
 
-Classifies how completely HunterX supports each tool and reports capability
-coverage. Never awards FULLY_SUPPORTED for "the binary can execute"; full
-support requires execution, parsing, normalization, capability knowledge,
-evidence mapping, error handling, version handling, scope, safety and tests.
+Classifies how completely HunterX supports each tool and reports capability coverage.
 """
 
 from __future__ import annotations

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Integration tests for the live ``hunterx hunt`` CLI experience.
-
-Verifies that ``hunt`` keeps the established stdout JSON contract while
-rendering real lifecycle events on stderr and recording run artifacts, and
-that ``--json`` (machine mode) keeps stdout pure JSON and stderr quiet while
-artifacts are still recorded.
-"""
+"""Integration tests for the live ``hunterx hunt`` CLI experience."""
 
 from __future__ import annotations
 
@@ -19,7 +13,7 @@ from hunterx.platform import build_platform
 from tests.framework.fakes import FakeExecutionEngine
 from tests.integration.test_mission_execution_lifecycle import _FAKE_OUTPUTS, _PassingReadiness
 
-_TARGET = "https://juice-shop.herokuapp.com"
+_TARGET = "http://127.0.0.1:3010"
 
 
 def _live_platform():

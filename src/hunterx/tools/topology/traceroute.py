@@ -3,16 +3,7 @@
 
 """Traceroute tool adapter.
 
-Integrates ``traceroute``/``tracepath`` into the Tool Integration SDK. The
-adapter builds the CLI command (numeric output by default), parses the plain
-text hop lines into canonical :class:`RouteRecord` instances and serializes
-them under the pipeline payload's ``routes`` key. The topology service converts
-consecutive hops into ``routes_to`` relationships.
-
-Text contract (verified against ``traceroute -n`` output):
-    Header lines are ignored; hop lines look like `` N  <addr>  <rtt> ms ...``
-    or `` N  * * *``. Addresses are IPs when ``-n`` is used; hostnames may
-    appear with the IP in parentheses otherwise.
+Integrates ``traceroute``/``tracepath`` into the Tool Integration SDK.
 """
 
 from __future__ import annotations
@@ -27,7 +18,7 @@ from hunterx.tools.topology.models import RouteRecord
 
 _VERSION = "2.1.0"
 
-#: `` 1  192.168.1.1  0.5 ms  0.4 ms  0.4 ms`` / `` 1  host.example.com (1.2.3.4)  ...``
+# : `` 1 192.168.1.1 0.5 ms 0.4 ms 0.4 ms`` / `` 1 host.example.com (1.2.3.4)...``
 _HOP_RE = re.compile(
     r"^\s*(?P<hop>\d+)\s+(?P<first>\S+)(?:\s+\((?P<addr>[0-9a-fA-F:.]+)\))?(?P<rest>.*)$"
 )

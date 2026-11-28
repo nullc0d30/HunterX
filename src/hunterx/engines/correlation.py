@@ -3,8 +3,8 @@
 
 """Correlation engine.
 
-Groups findings into clusters by shared target and content themes so the final
-report describes relationships rather than disconnected observations.
+Groups findings into clusters by shared target and content themes so the final report describes relationships rather
+than disconnected observations.
 """
 
 from __future__ import annotations

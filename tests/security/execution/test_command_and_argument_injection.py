@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Command/argument injection resistance (Sprint 034.4 §5, §6).
-
-Every subprocess invocation in the Tool Integration SDK must pass a structural
-argv (never a shell string), and target-derived values must remain data rather
-than becoming options or additional flags.
-"""
+"""Command/argument injection resistance (5,)."""
 
 from __future__ import annotations
 
@@ -150,7 +145,8 @@ def test_flag_value_target_adapters_pass_target_as_single_argument() -> None:
         (KatanaAdapter(), "-u", "https://example.com -x all"),
     ]
     for adapter, flag, target in cases:
-        argv = adapter.build_argv(_context(target))
+        params = {"wordlist": "/usr/share/wordlists/common.txt"} if isinstance(adapter, FfufAdapter) else None
+        argv = adapter.build_argv(_context(target, params))
         flag_index = argv.index(flag)
         value = argv[flag_index + 1]
         assert value == target, f"{adapter.descriptor.name}: target was mangled"

@@ -1,5 +1,5 @@
 {
-  "description": "Sprint 034.5 PoC certification golden scenarios. A PoC is minimal, reproducible, linked to evidence and finding, traceable to execution, and replayable through the authorized execution pipeline; refutation (non-reproducible / wrong target) is preserved, never silently accepted.",
+  "description": "PoC certification golden scenarios. A PoC is minimal, reproducible, linked to evidence and finding, traceable to execution, and replayable through the authorized execution pipeline; refutation (non-reproducible / wrong target) is preserved, never silently accepted.",
   "version": "1.0.0",
   "scenarios": [
     {

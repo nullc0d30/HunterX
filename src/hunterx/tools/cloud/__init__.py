@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cloud & SaaS intelligence tool integration.
-
-The Tool Integration SDK adapter (``cloud-analysis``) runs the in-process
-:class:`CloudAnalyzer` over a static-material bundle and serialises the typed
-observations under the ``cloud`` payload key. The TIP registration mirrors the
-adapter descriptor so intelligence and execution share one contract.
-"""
+"""Cloud & SaaS intelligence tool integration."""
 
 from __future__ import annotations
 

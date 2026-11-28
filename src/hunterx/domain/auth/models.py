@@ -1,26 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authentication, session & identity intelligence canonical domain models.
-
-Pure data contracts for the Wave 9 authentication intelligence capability
-(Sprint 015): authentication surfaces, endpoints, modeled flows, identity
-providers, OAuth/OIDC/SAML configurations, authentication schemes, cookie
-security metadata, token-storage indicators, CSRF mechanisms, CORS policies,
-MFA/WebAuthn mechanisms, role/scope/permission/tenant indicators, generic
-observations, evidence, conflicts, historical changes, execution summaries,
-the collection strategy and the batch that carries everything back to the
-application layer. No I/O and no execution here.
-
-Security boundary: the models carry metadata and masked/derived values only.
-No model field ever holds a raw password, access/refresh token, session-cookie
-value, OTP, recovery code or authorization-header value.
-
-The TIDB ``auth_intelligence`` entities
-(:mod:`hunterx.domain.entities.tidb.auth_intelligence`) are the persistence
-projection of these models; this module is the runtime surface the
-authentication intelligence pipeline is built on.
-"""
+"""Authentication, session & identity intelligence canonical domain models."""
 
 from __future__ import annotations
 
@@ -289,7 +270,7 @@ def record_to_dict(instance: object) -> dict[str, Any]:
     reduced to its value, and the record's ``type`` discriminator is included
     so :func:`observations_from_payload` can rebuild the typed record.
     """
-    payload: dict[str, Any] = _encode(dataclasses.asdict(instance))  # type: ignore[call-overload]  # instance is always a dataclass
+    payload: dict[str, Any] = _encode(dataclasses.asdict(instance))  # type: ignore[call-overload] # instance is always a dataclass
     payload["type"] = _record_type(instance)
     return payload
 

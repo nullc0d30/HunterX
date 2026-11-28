@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Security tests for the offensive tool orchestration capability.
-
-Validates that the orchestration layer cannot be tricked into scope bypass,
-safety bypass, cross-mission leakage or unrestricted execution: out-of-scope
-targets are blocked, exclusions always win, forbidden parameters are refused,
-replanning never expands scope, and deduplication cannot leak cross-mission
-state.
-"""
+"""Security tests for the offensive tool orchestration capability."""
 
 from __future__ import annotations
 

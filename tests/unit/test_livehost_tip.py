@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for TIP registration of the Live Host & Service Discovery capability.
-
-Verifies that the live discovery tools (nmap, naabu, masscan, tcp-connect) are
-registered into the Tool Intelligence Platform with taxonomy capability IDs and
-that the TIP metadata stays in sync with the Tool Integration SDK adapters.
-"""
+"""Tests for TIP registration of the Live Host & Service Discovery capability."""
 
 from __future__ import annotations
 

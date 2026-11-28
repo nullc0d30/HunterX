@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Topology scope policy and enforcement.
-
-Scope control is a hard requirement of the network-mapping capability: a
-relationship is only incorporated into the canonical graph when its source data
-is authorized and in-scope, and discovering new infrastructure (e.g. an IP or a
-third-party CDN) never expands the scan scope. The policy is deliberately
-deny-by-default.
-"""
+"""Topology scope policy and enforcement."""
 
 from __future__ import annotations
 
@@ -131,7 +124,7 @@ class TopologyScopeEnforcer:
         return ScopeDecision(False, "not authorized")
 
     def relationship(self, source: str, target: str) -> ScopeDecision:
-        """Return whether a source→target pair is in-scope.
+        """Return whether a source to target pair is in-scope.
 
         A relationship is in-scope when at least one endpoint is authorized and
         the relationship never promotes the other endpoint into scan scope.

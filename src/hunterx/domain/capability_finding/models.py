@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Models for the universal capability-finding lifecycle.
-
-A :class:`CapabilityCandidate` is the lossless hand-off between the
-capability-execution engine (Phase 5) and the validated-finding lifecycle
-(Phase 6): it retains the capability, surface, request/response evidence,
-baseline/differential facts, auth context, strategy and confidence so the
-candidate never needs to be re-discovered to be promoted, replayed or
-reported.
-"""
+"""Models for the universal capability-finding lifecycle."""
 
 from __future__ import annotations
 
@@ -24,7 +16,7 @@ from hunterx.shared.ids import generate_id
 class RequestReconstruction:
     """Deterministic, redacted reconstruction of the finding request.
 
-    Headers are intentionally excluded — they may carry session cookies and
+    Headers are intentionally excluded, they may carry session cookies and
     must never leak into replay records or PoC artifacts. Cookies are
     referenced as a presence flag only.
     """

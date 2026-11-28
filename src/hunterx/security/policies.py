@@ -3,9 +3,7 @@
 
 """Security policy.
 
-Declarative policy rules that the security manager evaluates: which roles may
-perform which permission. Kept as pure data so it can be loaded from
-configuration.
+Declarative policy rules that the security manager evaluates: which roles may perform which permission.
 """
 
 from __future__ import annotations

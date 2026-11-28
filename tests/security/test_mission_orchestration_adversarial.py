@@ -3,11 +3,7 @@
 
 """Adversarial orchestration tests for the Autonomous Mission Orchestration.
 
-Sprint 032 §50. The orchestrator must survive missing tools, broken parsers,
-unexpected output, duplicate/contradictory/stale/partial results, tool
-timeouts, target-state mutation, branch explosion, circular hypotheses, AI
-invalid decisions, invalid tool capability, resource exhaustion, checkpoint
-corruption, resume, parallel-execution races and cross-target contamination.
+50.
 """
 
 from __future__ import annotations

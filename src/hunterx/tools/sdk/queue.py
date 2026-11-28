@@ -3,9 +3,7 @@
 
 """Tool queue.
 
-A FIFO queue of pending tool executions consumed by the scheduler. Enqueueing
-is bounded by the resource manager's queue capacity and rejects items that
-violate concurrency policy (same tool+target already queued) when enforced.
+A FIFO queue of pending tool executions consumed by the scheduler.
 """
 
 from __future__ import annotations
@@ -44,7 +42,7 @@ class ToolQueue:
 
         queue = ToolQueue(capacity=100)
         queue.enqueue(context)
-        item = queue.dequeue()       # None when empty
+        item = queue.dequeue() # None when empty
         queue.acknowledge(item)
     """
 

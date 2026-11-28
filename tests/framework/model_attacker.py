@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Deterministic scripted model fixtures for the autonomous attack loop.
-
-A scripted model implements the same :class:`AIPort` interface the real
-providers expose, so it participates in the *real* execution loop: the model
-output feeds the reasoner, the reasoner's hypotheses become real assessment
-tasks, the engine executes them, and results feed back into the next reasoning
-round.
-"""
+"""Deterministic scripted model fixtures for the autonomous attack loop."""
 
 from __future__ import annotations
 
@@ -64,8 +57,8 @@ class ContextAwareHypothesisModel:
 
     Implements the same :class:`AIPort` interface as every real provider, so it
     participates in the real loop. It proposes one hypothesis per round against
-    an unproposed discovered surface — preferring a discovered parameter, then
-    falling back to a default vector on endpoint-level surfaces — and concludes
+    an unproposed discovered surface, preferring a discovered parameter, then
+    falling back to a default vector on endpoint-level surfaces, and concludes
     ``[]`` once no further path remains (the "no further attack path" signal
     the exhaustion semantics require).
     """

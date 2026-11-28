@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Examples — HunterX Usage
+title: Examples - HunterX Usage
 description: >-
   Real-world usage examples for HunterX vulnerability scanner. Basic scans,
   authenticated testing, AI analysis, API server, Docker deployment,

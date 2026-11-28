@@ -3,10 +3,7 @@
 
 """Managers facade.
 
-Thin manager facades over the platform ports. These are the stable, named
-components the sprint blueprint calls out (Cache Manager, Queue Manager,
-Event Bus, Dependency Manager). Each facade delegates to an injected port so
-backends stay swappable.
+Thin manager facades over the platform ports.
 """
 
 from __future__ import annotations

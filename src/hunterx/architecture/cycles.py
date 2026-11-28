@@ -3,10 +3,8 @@
 
 """Circular dependency detection.
 
-A directed graph is built from internal import records and Tarjan's
-strongly-connected-components algorithm identifies every component with more
-than one node — i.e. a dependency cycle. ``TYPE_CHECKING`` imports are excluded
-because they never execute, so they cannot form a real runtime cycle.
+A directed graph is built from internal import records and Tarjan's strongly-connected-components algorithm
+identifies every component with more than one node, i.e.
 """
 
 from __future__ import annotations

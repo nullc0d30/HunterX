@@ -3,19 +3,7 @@
 
 """Toolchain completion & verification tests.
 
-Covers the CLI-toolchain acceptance gate:
-
-- the supported CLI catalog is complete (every manifest tool gets a definition,
-  never an unexplained gap);
-- GUI/daemon tools are classified ``not_cli`` and removed from capability
-  providers;
-- manual-only tools are classified precisely (never a vague ``missing``);
-- ``hunterx tools check --json`` exposes the authoritative schema;
-- generic executable shadowing is detected (a same-named unrelated CLI can
-  never be reported as the security tool);
-- deterministic install methods exist for the full catalog;
-- neutral-CWD and clean-environment discovery work;
-- the ``tools matrix`` command emits the final machine-readable inventory.
+Covers the CLI-toolchain acceptance gate.
 """
 
 from __future__ import annotations
@@ -294,7 +282,7 @@ class TestToolsMatrix:
                 return object() if tool_id == "nmap" else None
 
         platform = type("P", (), {"tool_readiness_service": service})()
-        platform.tool_readiness_service._engine = _Engine()  # type: ignore[attr-defined]  # test double
+        platform.tool_readiness_service._engine = _Engine()  # type: ignore[attr-defined] # test double
         app = CliApplication()
         register_default_commands(app, platform)
 

@@ -3,9 +3,7 @@
 
 """Public plugin SDK.
 
-The stable surface plugin authors compile against. The SDK is deliberately
-small and stable: context access, result types, event emission and manifest
-metadata.
+The stable surface plugin authors compile against.
 """
 
 from __future__ import annotations

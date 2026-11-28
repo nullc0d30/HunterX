@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX v7 — AI-Powered Security Orchestration & Intelligence Platform
+# HunterX v7 - AI-Powered Security Orchestration & Intelligence Platform
 #
 # Build config uses a src/ layout (see docs/bible/03 - Folder Structure.md).
 # The legacy v6 flat package (hunterx/) is intentionally NOT packaged; it is
@@ -56,9 +56,11 @@ dependencies = [
     "dnspython>=2.6.0",
     "defusedxml>=0.7.1",
     "python-dotenv>=1.0.0",
+    # psutil is required by the resource governor (process tree management).
+    "psutil>=5.9.0",
     # SQL persistence (TIDB stores + Alembic migrations) is the default v7
     # persistence layer (SQLite by default), so SQLAlchemy is a base
-    # dependency — the base install and Docker image must run the CLI.
+    # dependency - the base install and Docker image must run the CLI.
     "sqlalchemy>=2.0",
     "alembic>=1.13.0",
 ]
@@ -126,6 +128,7 @@ testpaths = [
     "tests/acceptance",
     "tests/performance",
     "tests/engineering",
+    "tests/tools",
 ]
 python_files = ["test_*.py"]
 pythonpath = ["src"]
@@ -144,6 +147,8 @@ src = ["src"]
 extend-exclude = [
     "tests/__init__.py",
     "tests/test_*.py",
+    # Archived v6 tree: historical reference only, never imported or linted.
+    "docs/archive",
 ]
 
 [tool.ruff.lint]
@@ -163,6 +168,11 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM", "N", "D"]
 "alembic/env.py" = ["E402"]
 # Alembic-generated migrations are machine-written; style rules are noise.
 "alembic/versions/**" = ["D", "W291"]
+# The vulture allowlist is a list of bare names that vulture should keep; the
+# expressions are intentional and the names are deliberately undefined here.
+"config/vulture_allowlist.py" = ["B018", "D100", "F821"]
+# Example plugin packages are minimal on purpose.
+"examples/**" = ["D"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -176,6 +186,11 @@ exclude = [
 [[tool.mypy.overrides]]
 module = ["tests.*"]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+# PyYAML ships no type information.
+module = ["yaml"]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["src/hunterx"]

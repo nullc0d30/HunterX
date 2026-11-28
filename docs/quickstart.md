@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Quickstart — HunterX v7
+title: Quickstart - HunterX v7
 keywords: HunterX Quickstart, HunterX Usage, first mission
 description: >-
   Get HunterX v7 installed and run your first security-assessment mission in
@@ -17,7 +17,7 @@ authorized mission.
 - Python 3.11+
 - Linux, macOS or Windows
 - Authorization to test the target you exercise (see
-  [Responsible Use]({{ '/responsible-use/' | relative_url }}))
+ [Responsible Use]({{ '/responsible-use/' | relative_url }}))
 
 ## Install
 
@@ -46,9 +46,9 @@ python -m pip install -e ".[api,db,dev]"
 Verify:
 
 ```bash
-hunterx version        # HunterX v7.0.0
-hunterx help           # command list
-hunterx config         # resolved configuration
+hunterx version # HunterX v7.0.0
+hunterx help # command list
+hunterx config # resolved configuration
 ```
 
 ## Run your first mission
@@ -59,10 +59,10 @@ environment and check readiness, then start with an authorized target:
 
 ```bash
 # Tool readiness: detect, verify and (optionally) provision external tools
-hunterx install                        # base environment
-hunterx tools check                    # readiness table + capability coverage
-hunterx tools audit                    # integration maturity (knowledge + runtime)
-hunterx tools install --profile recon  # provision missing recon tools
+hunterx install # base environment
+hunterx tools check # readiness table + capability coverage
+hunterx tools audit # integration maturity (knowledge + runtime)
+hunterx tools install --profile recon # provision missing recon tools
 
 # Plan and start a full-spectrum hunt mission
 hunterx hunt full_security_assessment https://example.com
@@ -96,9 +96,9 @@ hunterx report export <report_id> markdown
 
 ## Next steps
 
-- [CLI Reference]({{ '/cli/' | relative_url }}) — every `hunterx` command
-- [Tool Readiness & Auto-Provisioning]({{ '/tool-readiness/' | relative_url }}) — how external tools are discovered and provisioned
-- [Configuration]({{ '/configuration/' | relative_url }}) — `HUNTERX_*` environment overrides
-- [AI Configuration]({{ '/configuration/ai/' | relative_url }}) — enable AI providers, API keys and models
-- [Features]({{ '/features/' | relative_url }}) — platform capabilities
-- [Documentation Hub]({{ '/documentation/' | relative_url }}) — the full v7 guide set
+- [CLI Reference]({{ '/cli/' | relative_url }}), every `hunterx` command
+- [Tool Readiness & Auto-Provisioning]({{ '/tool-readiness/' | relative_url }}), how external tools are discovered and provisioned
+- [Configuration]({{ '/configuration/' | relative_url }}), `HUNTERX_*` environment overrides
+- [AI Configuration]({{ '/configuration/ai/' | relative_url }}), enable AI providers, API keys and models
+- [Features]({{ '/features/' | relative_url }}), platform capabilities
+- [Documentation Hub]({{ '/documentation/' | relative_url }}), the full v7 guide set

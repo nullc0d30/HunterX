@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for the attack-surface completion gate.
-
-- targeted parameter-name → vulnerability-class hypothesis mapping (so a
-  discovered ``id`` implies IDOR, ``to`` implies open redirect, ``q`` implies
-  SQL injection, ...) — evidence-driven, never "run every class".
-- osv-scanner adapter: argv, parser, and mission integration.
-"""
+"""Regression tests for the attack-surface completion gate."""
 
 from __future__ import annotations
 

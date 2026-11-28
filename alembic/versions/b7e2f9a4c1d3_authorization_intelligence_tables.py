@@ -1,22 +1,5 @@
-"""authorization intelligence tables
-
-Revision ID: b7e2f9a4c1d3
-Revises: 4a9c1d5f3e82
-Create Date: 2026-08-09 16:00:00.000000
-
-Extends the TIDB schema with the Wave 10 authorization & access-control
-intelligence canonical inventory: subjects, roles, groups, permissions,
-scopes, claims, policies, resources, actions, resource-identifier metadata,
-ownership relationships, tenant boundaries, administrative surfaces,
-function/object/field-level access-control indicators, frontend/backend
-authorization logic, API authorization correlation, GraphQL/WebSocket/service
-authorization, decision indicators, mass-assignment fields, generic
-observations, evidence and historical-change records plus the run
-observability record.
-
-Security boundary: every table stores metadata and masked indicators only —
-never raw passwords, token values, authorization-header values, JWT claims or
-PII.
+"""authorization intelligence tables Revision ID: b7e2f9a4c1d3 Revises: 4a9c1d5f3e82 Create Date: 2026-08-09
+16:00:00.000000.
 
 """
 from collections.abc import Sequence

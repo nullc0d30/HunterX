@@ -1,20 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""JavaScript Intelligence domain package.
-
-Pure, framework-free contracts and logic for the JavaScript Intelligence &
-Client-Side Attack-Surface Discovery capability: data models, a safe tokenizer,
-versioned detection rules, the core analyzers (endpoints, routes, configuration,
-storage, authentication, workers, WebAssembly, security APIs, dynamic imports,
-third-party services, external domains), technology & dependency detection,
-secret scanning with strict masking, scope enforcement, confidence scoring,
-normalization, correlation, conflict handling, historical comparison and
-collection strategy.
-
-The package depends only on the shared primitives and the recon domain for the
-execution mode — no I/O, no tool calls and no persistence here.
-"""
+"""JavaScript Intelligence domain package."""
 
 from hunterx.domain.javascript.analyzers import (
     AnalyzeContext,

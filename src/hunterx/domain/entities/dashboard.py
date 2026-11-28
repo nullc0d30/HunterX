@@ -3,9 +3,8 @@
 
 """Dashboard data models.
 
-Lightweight, storage-agnostic models that future dashboards (mission view,
-metrics view, health view, event stream) will render from. They are pure value
-shapes: no persistence or rendering logic lives here.
+Lightweight, storage-agnostic models that future dashboards (mission view, metrics view, health view, event stream)
+will render from.
 """
 
 from __future__ import annotations

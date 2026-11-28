@@ -1,16 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Capability execution — records, tool orchestration, coverage persistence.
+"""Capability execution, records, tool orchestration, coverage persistence.
 
-The machine-readable coverage model every capability produces:
-
-    capability -> {status, applicable surfaces, context, tasks generated /
-    executed / failed / blocked, verification attempts, result, reason,
-    strategies, tools}
-
-Persisted with the mission as ``capability_coverage.json``. Every field is
-derived from what actually executed — never from the catalog alone.
+The machine-readable coverage model every capability produces.
 """
 
 from __future__ import annotations
@@ -64,7 +57,7 @@ class CapabilityExecutionRecord:
     capability_id: str
     surface_key: str
     endpoint: str = ""
-    vector: str = ""              # parameter / path / method / header ...
+    vector: str = ""              # parameter / path / method / header...
     session_state: str = "anonymous"
     outcome: CapabilityExecutionStatus = CapabilityExecutionStatus.NOT_APPLICABLE
     reason: str = ""
@@ -173,10 +166,10 @@ def build_capability_coverage(
     status:
 
         * with execution records: aggregated by :func:`aggregate_status`;
-        * mapped but never executed (a queue task existed): BLOCKED — a mapped
+        * mapped but never executed (a queue task existed): BLOCKED, a mapped
           capability that did not run is blocked, never complete;
         * never mapped to any discovered surface characteristic:
-          NOT_APPLICABLE — concluded from target evidence, never assumption.
+          NOT_APPLICABLE, concluded from target evidence, never assumption.
 
     Args:
         records: execution records for this mission.

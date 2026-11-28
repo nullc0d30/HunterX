@@ -1,8 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for execution SDK services: installer, version, health, capabilities,
-plugin, monitor, session, events, scheduler, parallel and adapter factory."""
+"""Tests for execution SDK services: installer, version, health, capabilities, plugin, monitor, session, events,
+scheduler, parallel and adapter factory.
+"""
 
 from __future__ import annotations
 

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""URL normalization for the web crawling capability.
-
-The normalizer is deterministic and stateless: it collapses equivalent
-spellings of a URL (default ports, fragments, query-key ordering, scheme and
-host casing, trailing slash) into one canonical form so correlation never treats
-``https://EXAMPLE.com:443/a?b=2&a=1`` and ``https://example.com/a?a=1&b=2`` as
-different resources. It deliberately keeps query values intact — only the key
-order is canonicalized — so parameter discovery never loses data.
-"""
+"""URL normalization for the web crawling capability."""
 
 from __future__ import annotations
 

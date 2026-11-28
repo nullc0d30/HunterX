@@ -1,26 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Final multi-target acceptance (Phase 8 acceptance pass).
-
-Proves the full contract across generic target profiles — discovery → attack
-surface graph → capability mapping → model hypotheses → real tasks → real
-execution → observations → verification → findings → model continuation →
-exhaustion — on deterministic synthetic fixtures only (Juice Shop is a
-separate black-box regression target and never defines the engine).
-
-Profiles exercised (all target-agnostic):
-    A. simple web application
-    B. REST API
-    C. GraphQL application
-    D. authenticated application
-    E. multi-user / authorization-differential application
-    F. file-handling application
-    G. workflow-heavy application
-
-No target is ever declared exhausted merely because no finding exists or a
-model is inactive: exhaustion requires real execution and a drained queue.
-"""
+"""Final multi-target acceptance (acceptance pass)."""
 
 from __future__ import annotations
 
@@ -48,7 +29,7 @@ from tests.framework.vulnerable_app import VulnerableApp
 from tests.framework.workflow_app import WorkflowApp
 
 #: Every capability in the live catalog must be traceable to a real execution
-#: record or an explicit structural/not-applicable reason — never a claim.
+# : record or an explicit structural/not-applicable reason, never a claim.
 _PROFILE_TARGETS: dict[str, type] = {
     "simple_web": VulnerableApp,
     "rest_api": VulnerableApp,
@@ -144,7 +125,7 @@ def _run_contract(target: str, feeds: tuple[tuple[str, tuple[str, ...]], ...]) -
 
 
 class TestTargetShapeMapping:
-    """Discovery → graph → capability mapping → queue for every profile shape."""
+    """Discovery to graph to capability mapping to queue for every profile shape."""
 
     @pytest.mark.parametrize("shape", ALL_SHAPES, ids=lambda shape: shape.name)
     def test_shape_discovery_maps_and_queues(self, shape: Any) -> None:
@@ -158,11 +139,11 @@ class TestTargetShapeMapping:
         scheduled = {task.capability_id for task in surface.queue.tasks()}
         assert surface.queue.total() >= 1, f"{shape.name}: no assessment tasks queued"
         # Every scheduled capability is real: a registered vulnerability class
-        # or a known discovery-planning capability — never an invented claim.
+        # or a known discovery-planning capability, never an invented claim.
         vuln_classes = set(registered_classes())
         unknown = scheduled - vuln_classes - _PLANNING_CAPABILITIES
         assert not unknown, f"{shape.name}: unknown scheduled capabilities {sorted(unknown)}"
-        # At least one genuine vulnerability-assessment task is queued — the
+        # At least one genuine vulnerability-assessment task is queued, the
         # shape must flow into real capability execution, not just bookkeeping.
         vuln_scheduled = scheduled & vuln_classes
         assert vuln_scheduled, f"{shape.name}: no vulnerability-assessment capability scheduled"
@@ -189,7 +170,7 @@ class TestLiveProfileContract:
             assert metrics["observations"] >= 1, f"{profile}: attack results must return to the model"
             assert metrics["model_calls"] >= 1, f"{profile}: the model must participate in the loop"
             assert metrics["completion_reason"] in ("exhausted", "resource_limit", "model_unavailable"), profile
-            # Exhaustion is only genuine with real execution — a target with a
+            # Exhaustion is only genuine with real execution, a target with a
             # drained queue and executed work may be exhausted; a target with
             # zero executed work is never "exhausted".
             if metrics["exhausted"]:

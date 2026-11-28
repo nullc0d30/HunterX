@@ -3,17 +3,7 @@
 
 """Live discovery conflict resolution policy.
 
-When several observations of the same group disagree (e.g. one tool reports a
-port ``open`` and another ``filtered``), the capability must pick a canonical
-value without silently discarding the losers. This module provides the
-deterministic resolution policy used by the correlator and the application
-layer.
-
-Unlike the DNS capability, live observations carry heterogeneous value fields
-(port state, service fingerprint, certificate digest, HTTP status), so a
-joined "all-values" strategy is not well defined and is deliberately not
-offered; the losing observations remain visible through the
-:class:`DiscoveryConflict` records the correlator produces.
+When several observations of the same group disagree (e.g.
 """
 
 from __future__ import annotations

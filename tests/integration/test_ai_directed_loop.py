@@ -3,24 +3,13 @@
 
 """Integration tests: AI Hunt Director drives the mission loop.
 
-Proves the core architectural contract:
-
-1. A configured, healthy AI makes the NEXT decision each cycle (not the
-   deterministic planner).
-2. Out-of-scope AI decisions are rejected by the deterministic policy gate
-   and never executed (scope isolation holds even against a rogue model).
-3. Queue exhaustion never ends an incomplete full_security_assessment: the
-   Security Test Matrix backstop schedules new work.
-4. AI decisions are attributable (provider/model recorded, ai_assisted=True).
+Proves the core architectural contract.
 """
 
 from __future__ import annotations
 
-import dataclasses
 import json
 from typing import Any
-
-import pytest
 
 from hunterx.application.mission_execution import MissionExecutionService
 from hunterx.application.mission_orchestration import MissionOrchestrationService
@@ -39,7 +28,7 @@ class ScriptedAIClient:
     def __init__(self, responses: list[str]) -> None:
         self.responses = list(responses)
         self.prompts: list[str] = []
-        provider = "scripted"
+        _provider = "scripted"
 
     def complete(self, prompt: str, *, model: str | None = None, temperature: float = 0.0) -> str:
         self.prompts.append(prompt)
@@ -106,7 +95,7 @@ _DECISION_RECON = json.dumps(
         "tool": "",
         "arguments": {"asset": "http://127.0.0.1:1"},
         "expected_evidence": ["discovered URLs"],
-        "validation_plan": "n/a — discovery",
+        "validation_plan": "n/a - discovery",
     }
 )
 
@@ -164,7 +153,7 @@ def test_premature_completion_is_refused_while_matrix_incomplete() -> None:
     ai = ScriptedAIClient([premature, _DECISION_RECON])
     runner, _orchestration, mission_id = _runner(ai)
     outcome = runner.execute_cycle(mission_id)
-    # Completion refused → the AI's premature completion was rejected
+    # Completion refused to the AI's premature completion was rejected
     # (ai_directed is None). The deterministic fallback may or may not
     # succeed depending on available tool outputs; both outcomes are honest.
     assert outcome.get("ai_directed") is None

@@ -3,21 +3,7 @@
 
 """Generic HTTP access/status-bypass fixture.
 
-A small threaded loopback server modelling the Phase 14.3 access-control
-bypass capability:
-
-* **/protected** — 403 on the canonical path; a controlled path-normalization
-  mutation (``/protected/``, ``/protected/.``) serves substantive protected
-  content. Safe control ``/safe/protected`` stays 403 on every mutation.
-* **/hidden** — 404 baseline; the same mutations serve protected content.
-  Safe control ``/safe/hidden`` stays 404.
-* **/statusbypass** — 403 -> 200 ``ok`` (status-only; never a vulnerability).
-* **/lengthonly** — 403 -> 200 with a generic denied body (never a
-  vulnerability).
-* **/error** — 502 -> 503 (proxy status change; never a vulnerability).
-
-A crawlable index links every endpoint so a real mission discovers the
-surface without fakes. Nothing here is DVWA-specific.
+A small threaded loopback server modelling the 3 access-control bypass capability.
 """
 
 from __future__ import annotations

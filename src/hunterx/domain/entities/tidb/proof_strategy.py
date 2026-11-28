@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Vulnerability Proof Strategy Library TIDB entities.
-
-System-of-record entities for the Sprint 022 strategy intelligence layer:
-proof strategies and their versions, strategy requirements, evidence rules,
-tool requirements, strategy candidates (novel), proof validation results and
-manual proof instructions.
-
-Security boundary: these tables store strategy contracts, canonical evidence
-rules and validation results — never exploit payloads, never credentials,
-never unrestricted executable PoC scripts and never out-of-scope request
-material.
-"""
+"""Vulnerability Proof Strategy Library TIDB entities."""
 
 from __future__ import annotations
 

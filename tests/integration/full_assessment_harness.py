@@ -1,12 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared harness for the v7.0.1 full-security-assessment orchestration tests.
-
-Drives the real adaptive mission runner (planning → decision → execution →
-ingestion → replan → probe → verify) over a deterministic fake execution engine
-so the full lifecycle is exercised without external binaries or network access.
-"""
+"""Shared harness for the v7.0.1 full-security-assessment orchestration tests."""
 
 from __future__ import annotations
 
@@ -20,7 +15,7 @@ from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlan
 from hunterx.engines.mission_orchestration import MissionOrchestrationEngine
 from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory
 
-#: Capability → registered tool candidates (mirrors the composition root).
+# : Capability to registered tool candidates (mirrors the composition root).
 DEFAULT_CANDIDATES: dict[str, tuple[str, ...]] = {
     "asset_discovery": ("assetfinder",),
     "subdomain_enumeration": ("subfinder", "amass", "assetfinder"),

@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Arsenal tool specs — compact declarative profiles for the full arsenal.
-
-Each :class:`ToolSpec` expands into a complete :class:`ToolMasterProfile`
-(identity + knowledge + support classification + evidence/proof semantics +
-chaining + safety). This is the authoritative data source for the
-``capabilities/universal-security-arsenal.json`` manifest.
-"""
+"""Arsenal tool specs, compact declarative profiles for the full arsenal."""
 
 from __future__ import annotations
 
@@ -71,8 +65,8 @@ class ToolSpec:
     binary_available: bool = False
 
 
-#: Adapter-backed tools (Sprint 034.5) whose arsenal spec predates the adapter.
-#: key → (adapter_id, parser_id, normalizer_id, support_level). This keeps the
+# : Adapter-backed tools () whose arsenal spec predates the adapter.
+# : key to (adapter_id, parser_id, normalizer_id, support_level). This keeps the
 #: authoritative arsenal aligned with the real execution registry.
 _ADAPTER_UPGRADES: dict[str, tuple[str, str, str, ToolSupportLevel]] = {
     "massdns": ("hunterx.tools.dns.massdns:MassdnsAdapter", "dns-json", "dns-normalizer", ToolSupportLevel.PARTIAL_SUPPORT),
@@ -160,7 +154,7 @@ def build_profile(spec: ToolSpec) -> ToolMasterProfile:
         version_constraints=spec.version_constraints,
         known_false_positives=spec.false_positives,
         known_false_negatives=spec.false_negatives,
-        provenance={"source": "sprint-025", "category": spec.category},
+        provenance={"source": "hunterx-tool-registry", "category": spec.category},
         knowledge_version="1.0.0",
     )
     compatibility = ToolCompatibility(
@@ -203,7 +197,7 @@ def build_profile(spec: ToolSpec) -> ToolMasterProfile:
         resource_requirements=spec.resource_requirements,
         rate_limits=spec.rate_limits,
         operational_knowledge=spec.operational_knowledge,
-        provenance={"source": "sprint-025", "category": spec.category},
+        provenance={"source": "hunterx-tool-registry", "category": spec.category},
     )
     upgrade = _ADAPTER_UPGRADES.get(spec.tool_id)
     if upgrade is not None:

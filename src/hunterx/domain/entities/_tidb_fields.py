@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""TIDB envelope mixin for canonical (pre-TIDB) domain entities.
-
-The canonical entities (``Target``, ``Finding``, ``Evidence``, ``Report``,
-``Asset``, ``Scan``, ``Mission``) predate the Target Intelligence Database.
-This mixin adds the shared system-of-record envelope required by the USS
-(`08 - Unified Security Schema.md`): versioning, soft delete and first/last
-seen tracking, so the canonical entities can live in the same schema as the
-TIDB entities and be mapped by the generic row mapper.
-
-The mixin is implemented with ``getattr``/``setattr`` so it can attach to any
-dataclass that declares the envelope fields with defaults.
-"""
+"""TIDB envelope mixin for canonical (pre-TIDB) domain entities."""
 
 from __future__ import annotations
 

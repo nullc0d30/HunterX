@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""API historical comparison.
-
-Compares current API intelligence state against historical records to detect
-changes over time: hosts added/removed, spec documents appearing or vanishing,
-endpoint operations added/removed/changed and parameter/auth changes. Every
-change is reported with the before/after values, the producing tool and the
-detection timestamp so it can be traced and correlated.
-"""
+"""API historical comparison."""
 
 from __future__ import annotations
 

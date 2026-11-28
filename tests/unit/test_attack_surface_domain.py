@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Unit tests for the target-agnostic attack-surface domain model.
-
-Covers the generic data model, surface-kind registry, layered graph, the
-``Capability × Surface × Context`` mapper, the universal assessment queue and
-the exhaustion completion gate. Every test uses synthetic, abstract surfaces —
-never a real product's routes or objects.
-"""
+"""Unit tests for the target-agnostic attack-surface domain model."""
 
 from __future__ import annotations
 

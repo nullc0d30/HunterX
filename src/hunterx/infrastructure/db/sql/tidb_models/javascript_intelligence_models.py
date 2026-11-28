@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""ORM models for TIDB JavaScript intelligence entities.
-
-System-of-record tables for the JavaScript Intelligence & Client-Side
-Attack-Surface Discovery capability: per-asset acquisitions, correlated
-findings (endpoints, routes, auth, domains, services, storage, secrets,
-technology, dependencies, configuration, workers, wasm, security, dynamic
-imports) and the derived intelligence records (conflicts, changes and run
-summaries).
-"""
+"""ORM models for TIDB JavaScript intelligence entities."""
 
 from __future__ import annotations
 

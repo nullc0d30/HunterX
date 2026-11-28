@@ -3,11 +3,7 @@
 
 """Unknowns Engine.
 
-Sprint 026. HunterX must explicitly represent uncertainty. The Unknowns Engine
-walks the target's assets, observations and coverage matrix and produces
-:class:`InformationGap` records — concrete questions that, if answered, advance
-the intelligence state. Missing information is NEVER treated as negative
-information.
+HunterX must explicitly represent uncertainty.
 """
 
 from __future__ import annotations
@@ -30,7 +26,7 @@ from hunterx.shared.ids import generate_id
 from hunterx.shared.time import utcnow_iso
 
 #: Tool families by capability used for candidate_tools on gaps. The engine
-#: treats these as *candidates*; the Sprint 025 selector makes the final call.
+# : treats these as *candidates*; the selector makes the final call.
 _CANDIDATE_TOOLS: dict[CoverageCapability, tuple[str, ...]] = {
     CoverageCapability.ASSET_DISCOVERY: ("assetfinder", "theharvester", "bbot"),
     CoverageCapability.SUBDOMAIN_ENUMERATION: ("subfinder", "amass", "assetfinder"),

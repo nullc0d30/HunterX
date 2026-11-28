@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Vulnerability knowledge provider adapter registry.
-
-Builds and registers the vulnerability knowledge provider adapters (NVD, CISA
-KEV, EPSS, MITRE CWE, vendor advisories, OSV/GHSA) on an
-:class:`~hunterx.tools.sdk.engine.ExecutionEngine`. This is the single place
-that knows the provider set, so callers (tests, the knowledge service, the
-platform) never construct individual adapters.
-"""
+"""Vulnerability knowledge provider adapter registry."""
 
 from __future__ import annotations
 

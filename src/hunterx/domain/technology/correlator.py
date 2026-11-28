@@ -3,12 +3,8 @@
 
 """Technology correlation and conflict detection.
 
-Correlates technology observations from multiple tools/executions into a single
-canonical set, merging corroborating facts and surfacing conflicts. The
-correlator never silently discards an observation: versions that disagree
-across sources are reported as :class:`TechConflict` records with full
-provenance, and every out-of-scope or below-threshold observation is counted
-rather than dropped silently.
+Correlates technology observations from multiple tools/executions into a single canonical set, merging corroborating
+facts and surfacing conflicts.
 """
 
 from __future__ import annotations

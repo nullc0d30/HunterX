@@ -3,21 +3,7 @@
 
 """Live mission console and run-artifact recording.
 
-The human-facing half of the mission execution loop. It listens to the real
-mission lifecycle events published on the platform event bus and renders them
-as live progress, and it records every event so a finished mission leaves
-three artifacts behind:
-
-- ``events.jsonl`` — one JSON line per lifecycle event (streamed live);
-- ``results.json`` — the final mission JSON (the established CLI contract)
-  plus run metadata and artifact paths;
-- ``report.txt`` — a lightweight human-readable mission report.
-
-Nothing here invents progress: every line maps to a real lifecycle event
-produced by the mission runner or the orchestration service. Secret-bearing
-command lines are redacted before they ever reach the bus (see
-:func:`redact_command`), so neither the renderer nor the artifacts can leak
-credentials.
+The human-facing half of the mission execution loop.
 """
 
 from __future__ import annotations
@@ -74,7 +60,7 @@ _SECRET_OPTIONS = frozenset(
     }
 )
 
-#: Header-style values (``Authorization: Bearer ...``) whose body is a secret.
+# : Header-style values (``Authorization: Bearer...``) whose body is a secret.
 _HEADER_SECRET_RE = re.compile(
     r"^(authorization|proxy-authorization|cookie|set-cookie|api-key|x-api-key)\s*:\s*(.*)$",
     re.IGNORECASE,
@@ -92,16 +78,7 @@ _CREDENTIALS_IN_URL_RE = re.compile(r"(?P<scheme>://)(?P<user>[^/@:\s]+):(?P<pas
 def redact_command(argv: Sequence[str]) -> str:
     """Join ``argv`` into a displayable command with secrets masked.
 
-    Redaction rules (applied before anything is published or persisted):
-
-    - values of known secret options (``--token X``, ``--api-key=Y``) are
-      masked;
-    - ``Authorization:``/``Cookie:`` style header values are masked;
-    - URLs with embedded credentials have the credentials masked;
-    - JWT-shaped tokens are fully masked.
-
-    The rest of the command line is the actual argv that ran — never a
-    reconstruction.
+    Redaction rules (applied before anything is published or persisted).
     """
     parts = [str(part) for part in argv]
     mask_next = [False] * len(parts)
@@ -138,7 +115,7 @@ def _is_secret_option(part: str) -> bool:
     return name in _SECRET_OPTIONS
 
 
-#: Outcome → human description for ``mission.tool.completed``.
+# : Outcome to human description for ``mission.tool.completed``.
 _TOOL_OUTCOMES: dict[str, str] = {
     "evidence": "evidence captured",
     "negative": "explicit empty result (TESTED, no findings)",
@@ -189,7 +166,7 @@ class LiveMissionRenderer:
         The ``mission.started`` event is published by mission creation, which
         precedes this renderer's subscription; the header is instead read from
         the real mission state (policy, target, strategy) so the operator sees
-        the same facts the event carried — never invented progress.
+        the same facts the event carried, never invented progress.
         """
         mission = self._mission()
         if mission is None:
@@ -291,7 +268,7 @@ class LiveMissionRenderer:
         reason = payload.get("reason", "")
         line = f"[PREFLIGHT] {status}"
         if reason:
-            line += f" — {self._truncate(reason)}"
+            line += f" - {self._truncate(reason)}"
         return line
 
     def _render_phase_started(self, payload: dict[str, Any]) -> str:
@@ -335,14 +312,14 @@ class LiveMissionRenderer:
         duration = payload.get("duration_ms")
         if duration:
             label += f" ({int(duration)} ms)"
-        return f"   ok {tool_id} — {label}"
+        return f"   ok {tool_id} - {label}"
 
     def _render_tool_failed(self, payload: dict[str, Any]) -> str:
         tool_id = payload.get("tool_id", "")
         error = payload.get("error", "")
         label = f"  FAIL {tool_id}"
         if error:
-            label += f" — {self._truncate(str(error))}"
+            label += f" - {self._truncate(str(error))}"
         return label
 
     def _render_observation(self, payload: dict[str, Any]) -> str:
@@ -396,7 +373,7 @@ class LiveMissionRenderer:
         if tool_id and state == "tested":
             label += f" (via {tool_id})"
         if notes:
-            label += f" — {self._truncate(str(notes))}"
+            label += f" - {self._truncate(str(notes))}"
         return label
 
     def _render_vulnerability_hypothesis(self, payload: dict[str, Any]) -> str:
@@ -424,7 +401,7 @@ class LiveMissionRenderer:
         notes = payload.get("notes", "")
         label = f"[ANALYSIS] {class_id}"
         if signal and signal != "none":
-            label += f" — {signal} signal"
+            label += f" - {signal} signal"
         if notes:
             label += f" ({self._truncate(str(notes))})"
         return label
@@ -450,7 +427,7 @@ class LiveMissionRenderer:
         reason = payload.get("reason", "")
         label = "[BLOCKED] mission blocked by tool readiness gate"
         if reason:
-            label += f" — {self._truncate(str(reason))}"
+            label += f" - {self._truncate(str(reason))}"
         return label
 
     def _render_completed(self, _payload: dict[str, Any]) -> str:

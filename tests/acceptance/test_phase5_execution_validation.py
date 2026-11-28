@@ -1,23 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Phase 5 — universal capability-execution validation.
-
-Validates the capability-execution layer end to end: every queued
-``Capability × Surface × Context`` assessment is executed with real differential
-probes against a generic loopback target, recorded with tool-orchestration
-tables and fallback chains, and aggregated into a machine-readable
-``capability_coverage.json`` carrying exactly-one authoritative status per
-capability — never a catalog-only claim.
-
-    1. fixture-driven executions against a generic vulnerable/safe app prove
-       findings are observed and safe surfaces are contradicted,
-    2. a full real discovery pipeline feeds the engine and yields a coverage
-       document whose statuses match the live 21-capability catalog,
-    3. a real black-box regression against ``http://localhost:3010`` verifies
-       the coverage document against the live catalog (Juice Shop is only a
-       regression target — it never defines the engine),
-    4. the core carries no target-specific references.
+"""Universal capability-execution validation.
 """
 
 from __future__ import annotations
@@ -41,7 +25,7 @@ from tests.framework.vulnerable_app import VulnerableApp
 REAL_TARGET = "http://localhost:3010/"
 
 #: Statuses that prove a capability was genuinely executed (not assumed).
-#: BLOCKED intentionally carries no execution metrics — it IS the honest
+# : BLOCKED intentionally carries no execution metrics, it IS the honest
 #: "mapped to a discovered surface but its task never executed" state.
 _EXECUTED_STATUSES = {"FINDING", "VERIFIED", "NO_FINDING", "FAILED"}
 
@@ -131,7 +115,7 @@ class TestExecutionAgainstGenericFixture:
             coverage = engine.coverage()
             _validate_coverage(coverage)
             assert coverage["capabilities"]["sql-injection"]["status"] == "FINDING"
-            # ssrf was never mapped on these surfaces — NOT_APPLICABLE from
+            # ssrf was never mapped on these surfaces, NOT_APPLICABLE from
             # evidence, never from assumption.
             assert coverage["capabilities"]["ssrf"]["status"] == "NOT_APPLICABLE"
             path = engine.write_coverage(tmp_path / "capability_coverage.json", target=target)

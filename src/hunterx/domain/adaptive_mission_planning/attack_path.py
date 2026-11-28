@@ -3,14 +3,8 @@
 
 """Attack path engine.
 
-Identifies security-relevant chains through the attack-surface graph, scores
-them with explainable dimensions and tracks their validation state. A
-theoretical path is HYPOTHETICAL; a path with evidence is SUPPORTED; a path
-with validated steps is VALIDATED; a path with reproducible proof is PROVED.
-The states are never collapsed.
-
-Attack paths are intelligence only — they never directly trigger execution.
-The planner translates a path into authorized actions.
+Identifies security-relevant chains through the attack-surface graph, scores them with explainable dimensions and
+tracks their validation state.
 """
 
 from __future__ import annotations
@@ -66,7 +60,7 @@ _MAX_ENTRY_POINTS = 40
 _MAX_TOTAL_VISITS = 4000
 _MAX_TOTAL_CHAINS = 400
 
-#: Entity kind → attack-path step kind.
+# : Entity kind to attack-path step kind.
 _KIND_TO_STEP: dict[str, AttackPathStepKind] = {
     "url": AttackPathStepKind.APPLICATION,
     "api_endpoint": AttackPathStepKind.APPLICATION,
@@ -99,7 +93,7 @@ _KIND_TO_STEP: dict[str, AttackPathStepKind] = {
     "cve": AttackPathStepKind.VALIDATED_WEAKNESS,
 }
 
-#: Interesting step kinds — paths that only wander structural nodes are dropped.
+# : Interesting step kinds, paths that only wander structural nodes are dropped.
 _INTERESTING_STEP_KINDS = frozenset(
     {
         AttackPathStepKind.EXPOSURE,
@@ -151,18 +145,7 @@ class AttackPathEngine:
         evidence_map: Mapping[str, Iterable[str]] | None = None,
         validated_map: dict[str, bool] | None = None,
     ) -> list[AttackPath]:
-        """Discover candidate attack paths from every exposed entry point.
-
-        Paths are labelled with their evidence-driven state: a chain whose steps
-        carry observation evidence is ``SUPPORTED`` (a genuine attack-path
-        candidate), while a purely structural chain (graph adjacency only) stays
-        ``HYPOTHETICAL``. The caller decides which to treat as discovered
-        attacks — combinatorial adjacency alone is never a discovered attack.
-
-        The discovery is globally budgeted (entry points, BFS visits and chains)
-        so a dense surface graph can never cause an exponential expansion that
-        consumes the host — a real 5.6 GiB runaway was traced to exactly this.
-        """
+        """Discover candidate attack paths from every exposed entry point."""
         evidence_map = evidence_map or {}
         validated_map = validated_map or {}
         entry_points = [
@@ -283,7 +266,7 @@ class AttackPathEngine:
 
         The BFS is budget-capped (shared across the whole discovery pass) so a
         dense attack-surface graph can never cause an exponential expansion that
-        consumes the host — a real 5.6 GiB runaway was traced exactly to this
+        consumes the host, a real 5.6 GiB runaway was traced exactly to this
         expansion. Discovery beyond the budget is bounded to what was found.
         """
         chains: list[list[str]] = []

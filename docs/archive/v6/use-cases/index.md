@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Use Cases — HunterX v6.0.0
+title: Use Cases - HunterX v6.0.0
 keywords: AI Penetration Testing, Bug Bounty, Red Team, CI/CD Security, Attack Surface Management
 description: >-
   Real-world use cases for HunterX v6.0.0: AI-powered penetration testing, bug bounty hunting, red team operations,

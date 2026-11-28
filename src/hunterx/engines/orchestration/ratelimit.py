@@ -3,10 +3,7 @@
 
 """Rate limiting for mission tasks.
 
-A token-bucket rate limiter keyed by scope level (global, mission, target,
-domain, ip, tool). Limits are configured by the mission :class:`RateLimitPolicy`;
-a limit of ``0`` means unlimited. The limiter refuses tasks that exceed a limit
-so the mission never hammers a target or a service.
+A token-bucket rate limiter keyed by scope level (global, mission, target, domain, ip, tool).
 """
 
 from __future__ import annotations

@@ -3,9 +3,7 @@
 
 """Normalizer engine.
 
-Normalizers convert structured parser records into canonical domain objects
-(findings, evidence, assets). Normalization is where cross-tool naming,
-severity and risk conventions are enforced.
+Normalizers convert structured parser records into canonical domain objects (findings, evidence, assets).
 """
 
 from __future__ import annotations

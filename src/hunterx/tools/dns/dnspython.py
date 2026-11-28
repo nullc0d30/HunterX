@@ -1,17 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""dnspython-based active resolver adapter.
-
-Performs direct DNS resolution through the ``dnspython`` library (the runtime
-dependency used for active-mode collection) and emits canonical
-:class:`DnsRecord` instances. Unlike binary adapters this adapter has no CLI;
-it resolves the target through a pool of configured resolvers with per-query
-timeouts.
-
-The resolution callable is injectable so unit tests never touch the network:
-``DnspythonAdapter(resolve=fake_resolve)``.
-"""
+"""Dnspython-based active resolver adapter."""
 
 from __future__ import annotations
 

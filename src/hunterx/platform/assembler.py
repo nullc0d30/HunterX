@@ -3,13 +3,7 @@
 
 """Platform assembler.
 
-Builds a fully wired :class:`~hunterx.platform.platform.Platform` — the
-composition root of HunterX v7. The assembler is the only place in the system
-that knows concrete implementations: it picks infrastructure adapters from
-settings, constructs the four v7 facades (TIP, Tool Integration SDK, Tool
-Integration Factory, Mission Planning), assembles the Core Engine and
-application services, and registers every port and service in a dependency
-container.
+Builds a fully wired :class:`~hunterx.platform.platform.Platform`, the composition root of HunterX v7.
 """
 
 from __future__ import annotations
@@ -222,23 +216,13 @@ _MEMORY_REPOSITORIES: dict[str, type[object]] = {    "missions": InMemoryMission
 
 #: Deterministic tool fallback families per capability (used when the Sprint
 #: 025 selector yields nothing, keeping the planner functional without a tool
-#: catalog). The single source of truth is the Tool Readiness manifest — the
+# : catalog). The single source of truth is the Tool Readiness manifest, the
 #: planner never hardcodes tool facts.
 _TOOL_DEFAULT_CANDIDATES: dict[str, tuple[str, ...]] = CAPABILITY_PROVIDERS
 
 
 def _build_repositories(settings: Settings, *, force_sql: bool = False) -> dict[str, object]:
-    """Build the persistence layer, preferring SQL when configured.
-
-    The default (in-memory) backend keeps the platform runnable with zero
-    external services and keeps ``build_platform()`` side-effect free for tests.
-    When ``settings.database.url`` is set to a non-default value and SQLAlchemy
-    is importable, the six entity repositories are swapped for their SQL-backed
-    implementations; mission planning and factory repositories remain in-memory
-    (no SQL adapters exist for them yet). ``force_sql`` additionally enables the
-    SQL layer for the default SQLite URL (used by the CLI so missions persist
-    across invocations).
-    """
+    """Build the persistence layer, preferring SQL when configured."""
     repositories: dict[str, object] = {role: constructor() for role, constructor in _MEMORY_REPOSITORIES.items()}
     use_sql = settings.database.url and (
         force_sql or settings.database.url != DEFAULT_DATABASE_URL
@@ -260,7 +244,7 @@ def _build_repositories(settings: Settings, *, force_sql: bool = False) -> dict[
         session_factory.create_all()
         # Attach the append-only audit/version-history listener so every TIDB
         # write in a production build records AuditLog / VersionHistory /
-        # ChangeHistory / TimelineEvent rows (Sprint 034.3 §21).
+        # ChangeHistory / TimelineEvent rows (21).
         try:  # pragma: no cover - depends on optional `db` extra
             from hunterx.infrastructure.db.sql.versioning import install_versioning
 
@@ -465,17 +449,7 @@ def _build_ai_suggester(settings: Settings) -> Any:
 
 
 def _build_resource_governor(settings: Settings) -> Any:
-    """Build the centralized Mission Resource Governor singleton.
-
-    The governor manages the resource envelope of the ENTIRE mission process
-    tree (parent + child tools + grandchildren + external binaries) against an
-    absolute RAM ceiling and a budget derived from the effective runtime
-    environment. It is the single authoritative resource-governance layer:
-    every tool execution, probe, model call and assessment scheduling passes
-    through it, and it is installed as the module-level hook of the binary
-    runner so every spawned external process is registered (and terminated on
-    an emergency budget stop).
-    """
+    """Build the centralized Mission Resource Governor singleton."""
     from hunterx.resource import ResourceConfig, ResourceGovernor
     from hunterx.tools.recon.runner import set_resource_hook
 
@@ -494,19 +468,7 @@ def _build_resource_governor(settings: Settings) -> Any:
 
 
 def _build_model_attacker(settings: Settings, *, finding_service: Any, governor: Any | None = None) -> Any:
-    """Build the autonomous model-driven attacker (Phase 7).
-
-    The attacker is wired only when a real AI provider is configured — the
-    connected model then participates in the attack loop as an active attack
-    component (hypothesis generation → real assessment tasks → observation →
-    learning), never as a reporting component. Without a configured provider
-    the mission stays fully deterministic: there is no model to reason with,
-    so nothing is fabricated and nothing is silently marked exhausted.
-
-    The attacker's reasoning context is bounded by the resource configuration
-    (observations/findings/paths/disproven) so an autonomous mission can never
-    feed an ever-growing full mission history to the model.
-    """
+    """Build the autonomous model-driven attacker."""
     from hunterx.application.capability_finding import CapabilityFindingPipeline
     from hunterx.application.model_attacker import ModelAttacker
     from hunterx.domain.model_attacker.reasoner import ModelReasoner
@@ -604,7 +566,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         persistence: when ``True``, force the SQL persistence layer even for the
             default SQLite URL so missions survive across CLI invocations and
             process restarts. When ``False`` (default), the platform stays
-            in-memory unless a non-default database URL is configured — this
+            in-memory unless a non-default database URL is configured, this
             keeps ``build_platform()`` side-effect free for tests.
 
     Returns:
@@ -902,14 +864,14 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         findings=_resolve_repository(repositories, "findings"),  # type: ignore[arg-type]
     )
 
-    # -- professional finding intelligence & reporting (Sprint 029) -----------
+    # -- professional finding intelligence & reporting () -----------
     professional_reporting_service = ProfessionalReportingService(
         stores=tidb_stores,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
         exporter=ReportExporter(),
     )
 
-    # -- adaptive target intelligence (Sprint 026) ---------------------------
+    # -- adaptive target intelligence () ---------------------------
     target_intelligence_engine = TargetIntelligenceEngine()
     target_intelligence_service = TargetIntelligenceService(
         engine=target_intelligence_engine,
@@ -925,7 +887,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
     )
     core.target_intelligence = target_intelligence_engine
 
-    # -- target memory & campaign intelligence (Sprint 030) -----------------
+    # -- target memory & campaign intelligence () -----------------
     target_memory_service = TargetMemoryService(
         stores=tidb_stores,
         event_bus=adapters["event_bus"],  # type: ignore[arg-type]
@@ -937,7 +899,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         cache=adapters["cache"],  # type: ignore[arg-type]
     )
 
-    # -- adaptive mission & attack-path planning (Sprint 027) ----------------
+    # -- adaptive mission & attack-path planning () ----------------
     adaptive_mission_engine = AdaptiveMissionPlanningEngine(
         tool_selection_engine=ToolSelectionEngine(
             selector=mastery,
@@ -956,7 +918,7 @@ def build_platform(settings: Settings | None = None, *, persistence: bool = Fals
         cache=adapters["cache"],  # type: ignore[arg-type]
     )
 
-    # -- autonomous mission orchestration (Sprint 032) ----------------------
+    # -- autonomous mission orchestration () ----------------------
     mission_orchestrator = MissionOrchestrator(planning=adaptive_mission_engine)
     mission_orchestration_engine = MissionOrchestrationEngine(orchestrator=mission_orchestrator)
     mission_orchestration_service = MissionOrchestrationService(

@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Multi-provider AI adapters (generic provider abstraction).
-
-One shared transport for the OpenAI-compatible chat-completions providers
-(OpenAI, DeepSeek, OpenRouter, xAI/Grok) plus protocol-specific adapters for
-Anthropic (``/v1/messages``) and Gemini (``generateContent``). Every adapter
-implements :class:`~hunterx.domain.ports.services.AIPort`, resolves its own
-API base URL, authenticates with its provider-specific credential, normalizes
-the response to plain content, and never leaks the API key into reprs, logs or
-errors.
-
-Callers depend only on ``AIPort``; provider identity is exposed as read-only
-``provider`` / ``model`` attributes for verification and diagnostics.
-"""
+"""Multi-provider AI adapters (generic provider abstraction)."""
 
 from __future__ import annotations
 
@@ -37,47 +25,6 @@ def _bounded_excerpt(exc: Exception, limit: int = 200) -> str:
     return text[:limit] if text else exc.__class__.__name__
 
 
-def classify_ai_error(exc: Exception) -> tuple[str, str]:
-    """Classify an exception into an AI failure category and provider-labelled message.
-
-    Returns ``(category, message)`` where category is from ``AIFailureCategory``.
-    """
-    from hunterx.domain.model_attacker.enums import AIFailureCategory
-
-    status = getattr(exc, "status_code", None) or getattr(exc, "status", None)
-    if status is not None:
-        try:
-            status = int(status)
-        except (TypeError, ValueError):
-            status = None
-
-    if status == 429:
-        return AIFailureCategory.RATE_LIMITED.value, "rate limited (HTTP 429)"
-    if status in (401, 403):
-        return AIFailureCategory.AUTHENTICATION_ERROR.value, "authentication failed"
-    if status == 402:
-        return AIFailureCategory.AUTHENTICATION_REQUIRED.value, "payment required"
-    if status == 404:
-        return AIFailureCategory.MODEL_UNAVAILABLE.value, "model not found"
-    if status == 408:
-        return AIFailureCategory.TIMEOUT.value, "request timeout"
-    if status == 408:
-        return AIFailureCategory.TIMEOUT.value, "request timeout"
-    if status >= 500:
-        return AIFailureCategory.PROVIDER_ERROR.value, f"provider error (HTTP {status})"
-
-    # Check exception type/message for more specific classification
-    msg = str(exc).lower()
-    if "timeout" in msg or "timed out" in msg:
-        return AIFailureCategory.TIMEOUT.value, "request timed out"
-    if "connection refused" in msg or "connectionrefused" in msg:
-        return AIFailureCategory.CONNECTION_REFUSED.value, "connection refused"
-    if "connection" in msg or "network" in msg or "unreachable" in msg:
-        return AIFailureCategory.CONNECTION_ERROR.value, "network failure"
-    if "malformed" in msg or "json" in msg or "decode" in msg:
-        return AIFailureCategory.INVALID_RESPONSE.value, "malformed response"
-
-    return AIFailureCategory.UNKNOWN.value, str(exc)
 
 
 class OpenAICompatibleClient(AIPort):
@@ -392,7 +339,7 @@ class AnthropicClient(AIPort):
             raise OperationError("anthropic returned an unexpected completion payload.") from exc
 
     def embed(self, text: str) -> list[float]:  # noqa: ARG002
-        """Anthropic does not offer an embeddings API — fail truthfully."""
+        """Anthropic does not offer an embeddings API, fail truthfully."""
         raise OperationError("anthropic does not offer an embeddings API")
 
     def _post(self, path: str, payload: dict[str, Any], *, headers: dict[str, str]) -> dict[str, Any]:
@@ -562,11 +509,11 @@ def _error_for_status(provider: str, status: int) -> OperationError:
     """Map an HTTP status to a truthful, provider-labelled error (no secrets)."""
     if status in (401, 403):
         return OperationError(
-            f"{provider}: authentication failed (HTTP {status}) — invalid or missing API key"
+            f"{provider}: authentication failed (HTTP {status}) - invalid or missing API key"
         )
     if status == 402:
         return OperationError(
-            f"{provider}: payment required (HTTP 402) — the account has no credits for the selected model"
+            f"{provider}: payment required (HTTP 402) - the account has no credits for the selected model"
         )
     if status == 404:
         return OperationError(
@@ -574,7 +521,7 @@ def _error_for_status(provider: str, status: int) -> OperationError:
         )
     if status == 429:
         return OperationError(
-            f"{provider}: rate limited (HTTP {status}) — retry later"
+            f"{provider}: rate limited (HTTP {status}) - retry later"
         )
     if status >= 500:
         return OperationError(
@@ -586,7 +533,7 @@ def _error_for_status(provider: str, status: int) -> OperationError:
 def _retry_after_seconds(headers: Any) -> float:
     """Return the ``Retry-After`` duration in seconds (``0`` when absent/invalid).
 
-    ``Retry-After`` may be an HTTP-date or a number of seconds; providers
+    ``Retry-After`` may be an HTTP-date or several seconds; providers
     (notably OpenRouter free-tier models) use seconds. The value is bounded so
     an absurd header can never cause an unbounded scheduler stall.
     """

@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
-# ruff: noqa: D100, D103, E501  # diagnostic demo: single-purpose script
-"""Behavioral demo: a rate-limited OpenRouter model must NOT exhaust the budget.
-
-Reproduces the real regression: a wired model attacker that keeps hitting
-HTTP 429 must terminate as an explicit blocked/AI-unavailable terminal — never
-``resource_budget_exhausted`` while 984 executions remain.
-"""
+# ruff: noqa: D100, D103, E501 # diagnostic demo: single-purpose script
+"""Behavioral demo: a rate-limited OpenRouter model must NOT exhaust the budget."""
 import http.server
 import json
 import os
@@ -25,6 +20,8 @@ sys.path.insert(0, SRC)
 
 import dataclasses  # noqa: E402
 
+from tests.framework.fakes import FakeExecutionEngine  # noqa: E402
+
 from hunterx.application.ai_suggestion import AIActionSuggester  # noqa: E402
 from hunterx.application.mission_execution import MissionExecutionService  # noqa: E402
 from hunterx.application.mission_orchestration import MissionOrchestrationService  # noqa: E402
@@ -36,7 +33,6 @@ from hunterx.domain.model_attacker.reasoner import ModelReasoner  # noqa: E402
 from hunterx.engines.adaptive_mission_planning.engine import AdaptiveMissionPlanningEngine  # noqa: E402
 from hunterx.engines.mission_orchestration import MissionOrchestrationEngine  # noqa: E402
 from hunterx.infrastructure.db.sql.memory import InMemoryTidbRepositoryFactory  # noqa: E402
-from tests.framework.fakes import FakeExecutionEngine  # noqa: E402
 
 
 class _Handler(http.server.BaseHTTPRequestHandler):

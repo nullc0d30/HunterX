@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Cross-finding correlation report builder.
-
-Analyzes relationships between findings and their assets, credentials,
-identities, cloud resources, endpoints, root causes, attack paths and other
-findings so a report package can explain relationships where evidence
-supports them — without implying compromise merely because a path is
-theoretically possible.
-"""
+"""Cross-finding correlation report builder."""
 
 from __future__ import annotations
 
@@ -25,7 +18,7 @@ class RelationInput:
         source_finding_id: source finding.
         target_finding_id: target finding / asset / credential / identity /
             resource / endpoint.
-        relation: relation kind (finding->asset, finding->root_cause, ...).
+        relation: relation kind (finding->asset, finding->root_cause,...).
         rationale: explainable rationale.
         evidence_refs: supporting evidence references.
         validated: whether the relation is evidence-validated (not merely

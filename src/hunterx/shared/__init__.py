@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared cross-cutting foundation.
-
-This package holds the low-level building blocks used by every layer of the
-platform: identity generation (ULIDs), content hashing, time handling, secret
-masking, result types, and the dependency-injection container.
-
-The contents of this package MUST be pure Python (standard library only) so
-that every other layer can depend on it without side effects.
-"""
+"""Shared cross-cutting foundation."""
 
 from __future__ import annotations
 

@@ -3,9 +3,7 @@
 
 """Knowledge graph.
 
-A domain-level wrapper over the graph storage port. The wrapper owns the node
-labeling and relationship conventions used by the platform; the underlying
-port is swappable (in-memory, Neo4j, ...).
+A domain-level wrapper over the graph storage port.
 """
 
 from __future__ import annotations

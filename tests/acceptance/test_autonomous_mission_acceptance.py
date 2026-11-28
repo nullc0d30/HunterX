@@ -3,16 +3,7 @@
 
 """Acceptance test: full synthetic autonomous mission.
 
-Sprint 032 §48. Drives a complete security assessment over a synthetic target
-environment through the autonomous mission orchestrator. The environment
-contains multiple domains/subdomains/services, HTTP applications, API
-endpoints, parameters, JavaScript endpoints, one intentional vulnerability, one
-false positive, one tool failure, one contradictory tool result, one hidden
-endpoint and one second-order discovery.
-
-The mission must discover, reason, select tools, execute, parse, correlate,
-validate, prove, reassess and report — the exact tool sequence is NOT
-hardcoded, it emerges from the orchestrator's decision engine.
+48.
 """
 
 from __future__ import annotations
@@ -209,7 +200,13 @@ class MissionRunner:
             if self.orchestrator.stop_condition(mission_id) is not None:
                 break
 
-        self.orchestrator.finalize(mission_id)
+        if self._step_index >= len(self.CAPABILITY_STEPS):
+            # Every planned step ran, so the mission reached its objective.
+            self.orchestrator.finalize(
+                mission_id, stop_condition=StopCondition.OBJECTIVES_COMPLETE
+            )
+        else:
+            self.orchestrator.finalize(mission_id)
         mission = self.orchestrator.get(mission_id)
         return mission.to_dict()
 

@@ -1,29 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Authorization & access-control intelligence canonical domain models.
-
-Pure data contracts for the Wave 10 authorization intelligence capability
-(Sprint 016): authorization subjects, roles, groups, permissions, scopes,
-claims, policies, resources, actions, ownership relationships, tenant
-boundaries, administrative surfaces, function/object/field-level access-control
-indicators, frontend/backend authorization logic, API authorization
-correlation, GraphQL/WebSocket/service authorization, decision indicators,
-mass-assignment fields, resource-identifier metadata, generic observations,
-evidence, conflicts, historical changes, execution summaries, the collection
-strategy and the batch that carries everything back to the application layer.
-No I/O and no execution here.
-
-Security boundary: intelligence only. The models carry metadata and
-masked/derived values only — never raw passwords, access/refresh tokens,
-session-cookie values, API secrets, authorization-header values, JWT claims or
-PII. No field ever holds a value that would enable authorization exploitation.
-
-The TIDB ``authorization_intelligence`` entities
-(:mod:`hunterx.domain.entities.tidb.authorization_intelligence`) are the
-persistence projection of these models; this module is the runtime surface the
-authorization intelligence pipeline is built on.
-"""
+"""Authorization & access-control intelligence canonical domain models."""
 
 from __future__ import annotations
 
@@ -316,7 +294,7 @@ def record_to_dict(instance: object) -> dict[str, Any]:
     to its value, and the record's ``type`` discriminator is included so
     :func:`observations_from_payload` can rebuild the typed record.
     """
-    payload: dict[str, Any] = _encode(dataclasses.asdict(instance))  # type: ignore[call-overload]  # instance is always a dataclass
+    payload: dict[str, Any] = _encode(dataclasses.asdict(instance))  # type: ignore[call-overload] # instance is always a dataclass
     payload["type"] = _record_type(instance)
     return payload
 
@@ -1317,7 +1295,7 @@ class AuthzMassAssignmentObservation:
     Attributes:
         origin: canonical origin.
         model: model name when observed.
-        fields: authorization-sensitive fields (``role``, ``is_admin``, ...).
+        fields: authorization-sensitive fields (``role``, ``is_admin``,...).
         indicators: evidence strings.
         confidence: intelligence confidence in ``[0, 1]``.
 

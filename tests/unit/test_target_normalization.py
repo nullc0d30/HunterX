@@ -1,11 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Regression tests for Defect 1 — scheme-aware target normalization.
+"""Regression tests for Defect 1, scheme-aware target normalization.
 
-A full URL target (``http://localhost:3010``) must never be passed verbatim to
-host/domain tools: they silently return empty results. Web-facing tools get the
-full URL; host/network tools get the bare host.
+A full URL target (``http://localhost:3010``) must never be passed verbatim to host/domain tools: they silently
+return empty results.
 """
 
 from __future__ import annotations

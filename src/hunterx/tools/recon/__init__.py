@@ -3,10 +3,8 @@
 
 """Reconnaissance tool integrations.
 
-SDK adapters for the six recon tools HunterX integrates (subfinder, amass,
-assetfinder, findomain, bbot, theHarvester). Every adapter runs through the
-Tool Integration SDK pipeline and produces canonical
-:class:`~hunterx.domain.recon.models.DiscoveryRecord` observations.
+SDK adapters for the six recon tools HunterX integrates (subfinder, amass, assetfinder, findomain, bbot,
+theHarvester).
 """
 
 from __future__ import annotations

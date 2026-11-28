@@ -1,19 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Acceptance tests for the Sprint 028 vulnerability validation & proof orchestration.
-
-Each test maps to one or more acceptance criteria: the canonical finding
-lifecycle, evidence requirement engine, evidence gaps and sufficiency,
-validation strategy engine, safe validation policy, tool orchestration,
-validation execution, independent verification, reproducibility, proof replay,
-PoC generation and validation, impact assessment, confidence engine,
-contradiction handling, false-positive reduction, deduplication, root-cause
-correlation, unknown-behavior validation, report readiness, finding packages,
-redaction, typed events, TIDB persistence, application API, CLI integration,
-deterministic fallback, golden datasets and the acceptance/security/
-performance/architecture test artifacts.
-"""
+"""Acceptance tests for the vulnerability validation & proof orchestration."""
 
 from __future__ import annotations
 

@@ -1,327 +1,178 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/nullc0d30/HunterX/main/docs/assets/images/logof.png" alt="HunterX official logo" width="220" height="auto">
+<img src="https://raw.githubusercontent.com/nullc0d30/HunterX/main/docs/assets/images/logof.png" alt="HunterX logo" width="200">
 
 # HunterX
 
-## AI-Directed Autonomous Security Assessment Engine
+**An AI-directed security assessment engine for authorized engagements.**
 
-### Observe. Reason. Test. Validate. Prove. Report.
+[Website](https://nullc0d30.github.io/HunterX/) · [Repository](https://github.com/nullc0d30/HunterX) · [PyPI](https://pypi.org/project/hunterxsec/) · [Docker](https://hub.docker.com/r/nullc0d30/hunterx)
 
-HunterX is an **AI-directed autonomous security assessment engine** for planning and executing authorized security-assessment missions. It combines **reconnaissance**, **tool orchestration**, **AI-directed strategic decision-making**, **active security testing**, **validation**, **proof**, **evidence**, **replay**, **correlation**, **impact assessment**, and **professional reporting** into a single autonomous workflow.
-
-**Ahmed Awad (NullC0d3)** — Creator & Maintainer
-
-[Official Website](https://nullc0d30.github.io/HunterX/) · [GitHub Repository](https://github.com/nullc0d30/HunterX)
-
-[![GitHub Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square&logo=github)](https://github.com/nullc0d30/HunterX/releases)
-[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Docker](https://img.shields.io/badge/docker-multi--stage-2496ED?style=flat-square&logo=docker)](https://hub.docker.com/r/nullc0d30/hunterx)
-[![PyPI](https://img.shields.io/pypi/v/hunterxsec?style=flat-square&logo=pypi&label=pypi)](https://pypi.org/project/hunterxsec/)
-[![OWASP Community](https://img.shields.io/badge/OWASP%20Community-listed-green?style=flat-square&logo=owasp)](https://owasp.org/www-community/Vulnerability_Scanning_Tools)
-[![Awesome](https://img.shields.io/badge/Awesome-listed-informational?style=flat-square&logo=awesome-lists)](https://awesome.re/)
-[![Awesome Red Teaming](https://img.shields.io/badge/Awesome%20Red%20Teaming-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/0xMrNiko/Awesome-Red-Teaming)
-[![Awesome AI in Cybersecurity](https://img.shields.io/badge/Awesome%20AI%20in%20Cybersecurity-listed-informational?style=flat-square&logo=awesome-lists)](https://github.com/ElNiak/awesome-ai-cybersecurity)
-[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)](https://github.com/nullc0d30/HunterX)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/nullc0d30?style=flat-square&logo=github)](https://github.com/sponsors/nullc0d30)
-
-**Autonomous security assessment. Verified evidence. Report-ready findings.**
+[![Release](https://img.shields.io/github/v/release/nullc0d30/HunterX?style=flat-square)](https://github.com/nullc0d30/HunterX/releases)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](LICENSE)
 
 </div>
 
----
+HunterX plans and runs security assessments against targets you are authorized to test. It
+reconnoitres the target, picks the next test to run, executes the matching tool, reads the
+result, and keeps going until the assessment is genuinely finished.
 
-## What HunterX Is
+The strategic decisions come from an LLM (the *Hunt Director*). Everything else is
+deterministic: HunterX enforces scope, authorization, budgets and tool contracts, and it
+will not treat a raw tool output as a finding. A result has to survive validation, proof
+and replay before it reaches a report.
 
-HunterX is an **AI-directed autonomous security assessment engine**. It is not a scanner. It does not stop at detection.
+## Installation
 
-HunterX directs the complete security assessment lifecycle: it **discovers**, **reasons**, **selects the next security question**, **executes the appropriate capability**, **observes the result**, **validates the evidence**, **proves the finding**, **reassesses**, and **continues** until genuine exhaustion. It is an autonomous security assessment engine that orchestrates the entire workflow—reconnaissance, active security testing, validation, proof, evidence, replay, correlation, and reporting—under AI direction.
-
-HunterX provides the execution engine, tool orchestration, policy enforcement, scope enforcement, security-test state management, evidence management, validation, proof generation, replay, correlation, reporting, and resource controls. The AI Hunt Director is the strategic decision-maker.
-
----
-
-## Why HunterX Is Different
-
-| Traditional Scanner | HunterX |
-|---|---|
-| Stops at "possible vulnerability" | Carries candidate through validation, proof, and replay |
-| Fixed tool sequence | AI-directed adaptive test selection |
-| No validation | Active testing → validation → proof → replay |
-| No proof | Proof contracts, minimal safe PoCs, deterministic replay |
-| No replay | Deterministic replay with verdict |
-| No correlation | Cross-tool evidence chains, attack paths, knowledge graph |
-| No strategic direction | AI Hunt Director selects next security question |
-
-**AI-directed adaptive testing** — The AI Hunt Director receives the complete mission state and available tool capabilities, then decides the next security question and capability to execute.
-
-**Multi-tool orchestration** — 92+ external security tools orchestrated through capability contracts, not hardcoded pipelines.
-
-**Active security testing** — Not just discovery. SQL injection, SSRF, IDOR, XSS, path traversal, command injection, SSTI, XXE, authentication, authorization, API, GraphQL, JWT, cloud misconfiguration, business logic, client-side, and more—all actively tested.
-
-**Validation → Proof → Replay** — Every finding passes through validation, proof contracts, minimal safe PoC generation, deterministic replay with verdict, and reproducibility requirements.
-
-**Evidence & Replay** — Every finding is backed by evidence chains, proof artifacts, and deterministic replay records with verdict.
-
-**Correlation & Reporting** — Cross-tool evidence chains, attack paths, knowledge graph, and professional multi-format reports (Markdown, HTML, JSON, SARIF 2.1, PDF, evidence packages).
-
----
-
-## How It Works
-
-```
-TARGET
-  ↓
-AI HUNT DIRECTOR
-  ↓
-SECURITY TEST SELECTION
-  ↓
-CAPABILITY / TOOL EXECUTION
-  ↓
-OBSERVE
-  ↓
-VALIDATE / PROVE
-  ↓
-REASSESS
-  ↓
-NEXT TEST
-  ↓
-GENUINE EXHAUSTION
+```bash
+pip install hunterxsec
 ```
 
-The **AI Hunt Director** is the strategic decision-maker. It receives the complete mission state—target, scope, authorization, current phase, discovered technologies, services, endpoints, parameters, observations, negative evidence, hypotheses, findings, evidence, proofs, attack paths, previous actions, available tools with capability schemas, resource budget, and Security Test Matrix—and decides the next security question, the capability to execute, and the arguments.
+Or use the install script:
 
-HunterX provides the execution engine, tool orchestration, policy enforcement, scope enforcement, security-test state, evidence management, validation, proof generation, replay, correlation, reporting, and resource controls. The AI directs; HunterX executes and enforces.
+```bash
+curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+```
 
----
+Docker images are published to `nullc0d30/hunterx`. See
+[docs/installation/index.md](docs/installation/index.md) for the full walkthrough.
 
-## What Full Security Assessment Means
+Check the environment and the external tools HunterX drives:
 
-`full_security_assessment` is **not**:
-- Reconnaissance only
-- Endpoint enumeration only  
-- Hypothesis generation only
-- A fixed tool sequence
+```bash
+hunterx install
+hunterx tools check
+```
 
-`full_security_assessment` **means**:
+## Usage
 
-1. **Discover** — Assets, services, technologies, endpoints, parameters, API schemas, JavaScript, authentication mechanisms
-2. **Assess** — Map attack surface, fingerprint technologies, enumerate parameters, map APIs
-3. **Actively Test** — SQL/NoSQL injection, SSRF, IDOR/BOLA, XSS, path traversal/LFI, command injection, SSTI, XXE, authentication, session, authorization, API/GraphQL, business logic, client-side, JWT/token, cloud misconfiguration, sensitive data exposure, information disclosure, open redirect, CORS, CSRF, HTTP methods, rate limiting, input validation
-4. **Validate** — Differential probes, evidence evaluation, negative evidence, hypothesis state transitions
-4. **Prove** — Proof contracts, minimal safe PoCs, safety/scope validation, deterministic execution
-5. **Replay** — Deterministic replay with verdict (SUCCESS/FAILED/INCONCLUSIVE/BLOCKED), reproducibility requirements
-6. **Correlate** — Cross-tool evidence chains, attack paths, knowledge graph, impact assessment
-7. **Reassess** — AI reassesses after every result; new evidence changes the next decision
-8. **Report** — Multi-format professional reports with evidence traceability
+```bash
+# Optional: configure an AI provider interactively
+hunterx ai configure
+hunterx ai check
 
-Security-testing domains are evaluated based on applicability. The Security Test Matrix tracks each domain: `NOT_ASSESSED` → `IN_PROGRESS` → `TESTED_NEGATIVE` / `TESTED_POSITIVE_VALIDATED` / `NOT_APPLICABLE_WITH_EVIDENCE` / `BLOCKED_WITH_REASON`. The mission completes only when all applicable domains reach terminal states.
+# Start an assessment
+hunterx hunt full_security_assessment https://example.com
 
----
+# Follow progress
+hunterx hunt status <mission_id>
+hunterx hunt surface <mission_id>
 
-## AI Providers (Summary)
+# Inspect findings
+hunterx finding list <mission_id>
+hunterx finding poc <finding_id>
+hunterx finding proof <finding_id>
+hunterx finding replay <finding_id>
 
-HunterX supports cloud and local AI providers. Provider and model are selected independently.
+# Produce a report
+hunterx report generate <finding_id>
+hunterx report export <report_id> markdown
+```
 
-**Cloud:** OpenRouter, OpenAI, Anthropic, DeepSeek, Google Gemini, xAI/Grok, Requesty (OpenAI-compatible)
+`hunterx hunt --deterministic` runs the same mission without an LLM. It is a separate
+mode, not a fallback: tool selection is rule-based, and the mission stops where the rules
+stop.
 
-**Local:** LM Studio (`lmstudio`), Ollama (`ollama`), generic OpenAI-compatible endpoints
+The CLI reference lives in [docs/cli/index.md](docs/cli/index.md).
 
-**Minimal configuration:**
+## What a mission does
+
+A normal run covers these stages:
+
+1. **Discover** assets, services, technologies, endpoints, parameters, API schemas,
+   JavaScript and authentication mechanisms.
+2. **Test** the attack surface actively (injection, SSRF, IDOR/BOLA, XSS, traversal,
+   command injection, SSTI, XXE, authn/authz, session handling, API/GraphQL, business
+   logic, JWT, cloud misconfiguration and the rest of the built-in domain list).
+3. **Validate** each candidate with differential probes and negative evidence.
+4. **Prove** the finding against a proof contract with a minimal, safe PoC.
+5. **Replay** it deterministically and record a verdict (`SUCCESS`, `FAILED`,
+   `INCONCLUSIVE` or `BLOCKED`).
+6. **Correlate** evidence across tools, build attack paths and score impact.
+7. **Report** in Markdown, HTML, JSON, SARIF 2.1, PDF or an evidence bundle.
+
+The Security Test Matrix tracks every applicable domain from `NOT_ASSESSED` through
+`TESTED_POSITIVE_VALIDATED` / `TESTED_NEGATIVE` / `NOT_APPLICABLE_WITH_EVIDENCE` /
+`BLOCKED_WITH_REASON`. A mission is complete only when all applicable domains are
+terminal.
+
+## AI providers
+
+Provider and model are chosen independently. Cloud providers: OpenRouter, OpenAI,
+Anthropic, DeepSeek, Google Gemini, xAI and any OpenAI-compatible endpoint (Requesty).
+Local: Ollama, LM Studio and other OpenAI-compatible servers.
+
 ```env
 HUNTERX_AI_PROVIDER=openrouter
 HUNTERX_AI_MODEL=deepseek/deepseek-chat
 HUNTERX_AI_OPENROUTER_KEY=sk-or-...
 ```
 
-Local (Ollama):
+For a local model:
+
 ```env
 HUNTERX_AI_PROVIDER=ollama
 HUNTERX_AI_MODEL=qwen2.5:3b-instruct
 HUNTERX_AI_BASE_URL=http://127.0.0.1:11434/v1
 ```
 
-**Guided configuration:** `hunterx ai configure` — interactive provider/model/key setup with validation.
+Details: [docs/configuration/ai.md](docs/configuration/ai.md).
 
-Full reference: [docs/configuration/ai.md](docs/configuration/ai.md) | [GitHub Pages](https://nullc0d30.github.io/HunterX/configuration/ai/)
+## Safety and scope
 
----
+- Every target is checked against the authorized scope before a tool runs.
+- Authorization is explicit. Scope never grows on its own because a tool found something.
+- Each AI decision passes a policy gate: scope, authorization, budget, tool availability
+  and safety are all checked before execution.
+- Proofs are minimal and bounded; secrets are redacted and destructive payloads are
+  refused.
+- Findings always link back to the observation, evidence, validation, proof or tool result
+  that produced them.
 
-## Quick Start
+HunterX is for authorized testing only. Read [docs/responsible-use.md](docs/responsible-use.md)
+before pointing it at anything.
 
-```bash
-# 1. INSTALL
-pip install hunterxsec
-# or: curl -sSL https://raw.githubusercontent.com/nullc0d30/HunterX/main/install.sh | sudo bash
+## Tools
 
-# 2. TOOLS READY
-hunterx install                          # base environment + detect/verify tools
-hunterx tools check                      # readiness + capability coverage
+HunterX drives 90+ external tools through capability contracts, including nmap,
+subfinder, nuclei, ffuf, sqlmap, dalfox, katana, httpx, dnsx, naabu, masscan, trivy,
+prowler and scoutsuite. Tools are detected and verified before a mission starts; run
+`hunterx tools check` to see per-tool status and capability coverage.
 
-# 3. AI CHECK (optional)
-hunterx ai check                         # verify provider connectivity + model
-
-# 4. HUNT - AI-directed autonomous assessment
-hunterx hunt full_security_assessment https://example.com
-
-# Deterministic mode (explicit, no AI)
-hunterx hunt --deterministic full_security_assessment https://example.com
-
-# 4. INSPECT
-hunterx hunt status <mission_id>
-hunterx hunt surface <mission_id>
-
-# 5. VALIDATE
-hunterx finding list <mission_id>
-hunterx finding poc <finding_id>
-hunterx finding proof <finding_id>
-hunterx finding replay <finding_id>
-
-# 6. REPORT
-hunterx report generate <finding_id>
-hunterx report export <report_id> markdown
-```
-
-**Note:** `hunterx hunt --deterministic` is an **explicit** deterministic mode. It is **not equivalent** to AI-directed autonomous mode. It bypasses the AI Hunt Director entirely. For `full_security_assessment`, if AI is required by the autonomous mode and unavailable, HunterX clearly instructs the user how to configure it rather than silently pretending deterministic execution is equivalent.
-
----
-
-## Security Model
-
-- **Scope enforcement** — Every target validated against authorized scope before execution; third-party domains never become targets
-- **Authorization** — Explicit authorization context required; scope never expands implicitly
-- **Policy gate** — Every AI decision validated against scope, authorization, budget, tool availability, and safety before execution
-- **Safe proof** — Minimal-impact PoCs, bounded inputs, forbidden markers refused, secrets redacted, immutable lineage
-- **No destructive weaponization** — No data destruction, persistence, credential dumping, reverse shells, lateral movement, DoS, mass extraction
-- **Evidence-backed findings** — Every finding traces to observation, evidence, validation, proof, replay, impact, tool result, or explicit analyst reasoning
-
----
-
-## Findings and Proof
-
-```
-DETECTION
-  ↓
-HYPOTHESIS
-  ↓
-ACTIVE TEST
-  ↓
-EVIDENCE
-  ↓
-VALIDATION
-  ↓
-PROOF CONTRACT
-  ↓
-MINIMAL SAFE PROOF
-  ↓
-DETERMINISTIC REPLAY (SUCCESS/FAILED/INCONCLUSIVE/BLOCKED)
-  ↓
-REPRODUCIBILITY (repeated successful replays)
-  ↓
-REPORT-READY FINDING
-```
-
-Every finding passes through validation, proof contract, minimal safe proof generation, deterministic replay with verdict, and reproducibility requirements before reaching `REPORT_READY`.
-
----
-
-## Tool Ecosystem
-
-HunterX orchestrates 92+ external security tools through capability contracts: nmap, subfinder, nuclei, ffuf, arjun, sqlmap, dalfox, xssstrike, ghau, commix, tplmap, xxeinjector, interactsh, katana, gospider, hakrawler, gau, waybackurls, ffuf, feroxbuster, dirsearch, arjun, paramspider, kiterunner, whatweb, httpx, dnsx, massdns, shuffledns, masscan, naabu, rustscan, nmap, osv-scanner, trivy, prowler, scoutsuite, and more.
-
-Tools are discovered, verified, and provisioned **before** a mission runs. `hunterx tools check` shows per-tool status and per-capability coverage.
-
-Full reference: [docs/tool-ecosystem.md](docs/tool-ecosystem.md) | [Tool Readiness](docs/tool-readiness.md)
-
----
-
-## 🚀 New Features & Upgrades
-
-HunterX has been significantly upgraded with advanced autonomous capabilities:
-
-*   **Multi-Agent Consensus Reviewer:** Introduced a configurable `BaseReviewer` interface and `SimpleMockReviewer` to validate evidence chains, ensuring high-confidence findings and reducing false positives.
-*   **Self-Healing Debugger:** Integrated `DebuggerAgent` into the `MissionExecutor`, allowing the engine to analyze tool execution errors and automatically attempt retries with corrected parameters.
-*   **Threat Modeling Integration:** Added `ThreatModelParser` and `ThreatModelIntegrator` to align mission planning with structured threat models (e.g., STRIDE), allowing for gap analysis between theoretical threats and tested findings.
-*   **Attack Path Visualization:** Added `AttackPathVisualizer` in the `correlation` module, enabling the export of knowledge graphs into visualizable JSON formats for better security analysis and reporting.
-*   **Offensive Security Doctrine Plugin:** New internal `skill_offensive_doctrine` plugin adds bug-bounty-grade offensive security methodology to HunterX:
-    - Activation via `HUNT MODE` / `DOCTRINE ON` with confirmation `HUNTERX DOCTRINE LOADED`
-    - Live State Block: `TARGET | SCOPE | AUTH STATE | TECH STACK | INTERESTING ENDPOINTS | FINDINGS | NEXT CHAIN PLAN` via `hunterx state`
-    - Mode shortcuts: `RECON MODE`, `WEB MODE`, `API MODE`, `LLM MODE`, `MOBILE MODE`, `SRC MODE`, `PAYLOAD <class>`, `EXPLOIT MODE`, `REPORT MODE`, `TRIAGE`, `CHAIN`, `BYPASS <thing>`, `WRITEUP`, `RESET`
-    - Doctrine enforcement: Engagement-type gate, ONLY QUESTION gate, Kill List, 17 Critical Rules, Evidence Discipline with marker discipline, body-diff, statistical sampling
-    - Knowledge records for recon pipelines, canonical chains, Web3 Immunefi scorecard, LLM agent injection taxonomy, 2024-2026 field patterns including SAML wave
-    - Offensive writeup template with impact-first reporting
-    - Zero-break plugin architecture, opt-in, fully rollbackable
-
-*   **Capability Verification Matrix:** Added formal verification suite to prove capabilities work together:
-    - Consensus Reviewer: reviewer disagreement and false-positive tests
-    - Self-Healing Debugger: failure recovery and bounded retry tests
-    - Threat Modeling: STRIDE coverage and gap-analysis tests
-    - Attack Path Visualizer: graph integrity and provenance tests
-    - Offensive Doctrine: activation, isolation, rollback, and policy enforcement tests
-    - See `tests/capability_verification/capability_verification_matrix.md` for full matrix
-
-These features move HunterX closer to a truly autonomous, context-aware security research platform with professional bug-bounty methodology built-in and verifiable capability evidence.
-
-| Format | Purpose |
-|---|---|
-| Markdown | Human-readable |
-| HTML | Visual dashboard |
-| JSON | Machine-parsable |
-| SARIF 2.1 | VS Code / GitHub CodeQL integration |
-| PDF | Document export |
-| Evidence Package (ZIP) | Bundled evidence |
-
-Every statement traces to observation, evidence, validation, proof, replay, impact, tool result, target intelligence, or explicit analyst reasoning.
-
----
+Reference: [docs/tool-ecosystem.md](docs/tool-ecosystem.md) and
+[docs/tool-readiness.md](docs/tool-readiness.md).
 
 ## Documentation
 
 | Topic | Link |
-|---|---|
-| **Installation** | [docs/installation/index.md](docs/installation/index.md) |
-| **AI Configuration** | [docs/configuration/ai.md](docs/configuration/ai.md) |
-| **CLI Reference** | [docs/cli/index.md](docs/cli/index.md) |
-| **Tool Ecosystem** | [docs/tool-ecosystem.md](docs/tool-ecosystem.md) |
-| **Tool Readiness** | [docs/tool-readiness.md](docs/tool-readiness.md) |
-| **Proof / Validation** | [docs/poc-validation.md](docs/poc-validation.md) |
-| **Responsible Use** | [docs/responsible-use.md](docs/responsible-use.md) |
-| **Security** | [SECURITY.md](SECURITY.md) |
-| **Release Notes** | [CHANGELOG.md](CHANGELOG.md) |
+| --- | --- |
+| Installation | [docs/installation/index.md](docs/installation/index.md) |
+| AI configuration | [docs/configuration/ai.md](docs/configuration/ai.md) |
+| CLI reference | [docs/cli/index.md](docs/cli/index.md) |
+| Tool ecosystem | [docs/tool-ecosystem.md](docs/tool-ecosystem.md) |
+| Validation and PoC | [docs/poc-validation.md](docs/poc-validation.md) |
+| Responsible use | [docs/responsible-use.md](docs/responsible-use.md) |
+| Release notes | [CHANGELOG.md](CHANGELOG.md) |
 
----
+The documentation site is built from `docs/` and published at
+https://nullc0d30.github.io/HunterX/.
 
 ## Contributing
 
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All PRs must pass tests and linting.
-
----
+Bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Pull requests must pass the test suite and the linters.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE).
+
+## Responsible use
+
+HunterX is a testing platform for authorized security work. You are responsible for
+getting permission before you test any system. The author is not liable for misuse,
+unauthorized access or damage caused by this software.
 
 ---
 
-## Responsible Use
-
-HunterX is an authorized cybersecurity testing and research platform. **You are responsible for obtaining appropriate authorization before testing any system.** The author is not responsible for misuse, unauthorized access, illegal activity, or damage caused by the software.
-
-See [Responsible Use](docs/responsible-use.md) and [SECURITY.md](SECURITY.md).
-
----
-
-## Copyright & Attribution
-
-**Copyright © 2026 Ahmed Awad (NullC0d3)**
-
----
-
-## Project Links
-
-- **Official Website** — https://nullc0d30.github.io/HunterX/
-- **GitHub Repository** — https://github.com/nullc0d30/HunterX
-- **License** — Apache License 2.0 — see [LICENSE](LICENSE)
-- **Security** — [SECURITY.md](SECURITY.md)
-- **Responsible Use** — [docs/responsible-use.md](docs/responsible-use.md)
+Copyright © 2026 Ahmed Awad (NullC0d3).

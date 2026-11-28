@@ -1,14 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Web crawling Target Intelligence Database entities.
-
-System-of-record entities for the web crawling & web attack-surface discovery
-capability: origins, URL observations, redirects, API/WebSocket/GraphQL
-endpoints, authentication boundaries, crawl run records and crawl evidence.
-They extend the existing web-layer entity set (:mod:`hunterx.domain.entities.tidb.web`)
-with the crawl-specific projections the capability persists.
-"""
+"""Web crawling Target Intelligence Database entities."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Operator Profiles — HunterX
+title: Operator Profiles - HunterX
 description: >-
   HunterX operator profiles define behavioral constraints for penetration
   testing and bug bounty scanning. Internal, Bounty, Gov, and Custom profiles
@@ -80,5 +80,5 @@ Select a profile via:
 ## Enforcement
 
 - Profiles are enforced at scan initialization (not per-request)
-- Max request count is a hard stop — the scan will not exceed it
+- Max request count is a hard stop - the scan will not exceed it
 - Destructive payload blocklist is always active regardless of profile

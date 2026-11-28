@@ -3,12 +3,7 @@
 
 """Remediation engine.
 
-Generates evidence-based remediation guidance that is technically relevant to
-the actual root cause. Generic advice such as "sanitize input" is avoided when
-the evidence indicates a specific architectural problem: the catalog keys
-remediation on the vulnerability class and, when provided, the root cause, and
-always produces immediate, short-term, long-term, configuration, code,
-monitoring and validation recommendations.
+Generates evidence-based remediation guidance that is technically relevant to the actual root cause.
 """
 
 from __future__ import annotations

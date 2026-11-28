@@ -3,9 +3,8 @@
 
 """Evidence entity.
 
-Evidence is raw material backing up a finding: a command transcript, a packet
-capture, a screenshot, a configuration file excerpt, or external data. It is
-stored immutably in the object store and referenced by ID.
+Evidence is raw material backing up a finding: a command transcript, a packet capture, a screenshot, a configuration
+file excerpt, or external data.
 """
 
 from __future__ import annotations

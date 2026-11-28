@@ -1,5 +1,6 @@
-from __future__ import annotations
 """Doctrine knowledge records."""
+
+from __future__ import annotations
 
 DOCTRINE_RECORDS = [
     {

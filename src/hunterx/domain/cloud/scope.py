@@ -3,10 +3,7 @@
 
 """Cloud intelligence scope enforcement.
 
-The scope policy mirrors the recon/web/auth policies: authorized roots, CIDRs,
-IPs, exclusions and URL patterns. Scope is enforced at target admission and per
-observation so discovered cloud intelligence never expands a mission beyond its
-authorized boundary.
+The scope policy mirrors the recon/web/auth policies: authorized roots, CIDRs, IPs, exclusions and URL patterns.
 """
 
 from __future__ import annotations

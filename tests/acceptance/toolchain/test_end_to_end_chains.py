@@ -1,16 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""End-to-end toolchain chains (Sprint 034.5).
+"""End-to-end toolchain chains.
 
-Runs representative chains through the ChainExecutor with a fixture-driven
-engine wired into the composed platform, proving the required flows:
-
-- recon:   subfinder/amass → dnsx → httpx → katana → ffuf → nuclei
-- api:     graphql discovery → inql → nuclei
-- secrets: gitleaks → trufflehog → semgrep
-- web:     nuclei → dalfox → sqlmap → verification
-- cloud:   cloud-analysis (in-process)
+Runs representative chains through the ChainExecutor with a fixture-driven engine wired into the composed platform,
+proving the required flows.
 """
 
 from __future__ import annotations
@@ -27,7 +21,7 @@ from hunterx.tools.sdk.engine import ExecutionEngine
 from hunterx.tools.sdk.pipeline import PipelineResult
 from hunterx.tools.sdk.session import ExecutionSession
 
-#: tool_id → fixture JSON payload (canonical records per family).
+# : tool_id to fixture JSON payload (canonical records per family).
 _FIXTURE_OUTPUTS: dict[str, dict] = {
     "subfinder": {"discoveries": [{"kind": "subdomain", "name": "api.example.com"}, {"kind": "subdomain", "name": "www.example.com"}]},
     "amass": {"discoveries": [{"kind": "subdomain", "name": "api.example.com"}]},
@@ -151,14 +145,21 @@ def _fixture_engine(planned_tools: list[str], failures: dict[str, str] | None = 
 def test_end_to_end_chain(name, capabilities, target, target_type, expected):
     platform = build_platform()
     service = platform.toolchain_service
-    plan = service.chain(name, list(capabilities), scope="scoped")
+    plan = service.chain(name, list(capabilities), scope="scoped", authorization_granted=True)
     planned_tools = {step["tool_id"] for step in plan["steps"]}
     # Every planned tool must be a registered tool with a defined contract.
     for tool in planned_tools:
         contract = service.contract(tool)
         assert contract["support_level"] in ("fully-supported", "execution-only", "partial-support")
     service._engine = _fixture_engine(sorted(planned_tools))
-    report = service.execute_chain(name, list(capabilities), target, target_type=target_type, scope="scoped")
+    report = service.execute_chain(
+        name,
+        list(capabilities),
+        target,
+        target_type=target_type,
+        scope="scoped",
+        authorization_granted=True,
+    )
     assert report["status"] == expected
     assert report["observation_count"] >= 1
     for step in report["steps"]:

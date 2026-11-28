@@ -10,10 +10,6 @@ permalink: /v7-cicd-architecture/
 
 # HunterX CI/CD Architecture
 
-**Status:** Ratified (Sprint 006.9)
-**Version:** 1.0.0
-**Owner:** HunterX Engineering Council
-
 ---
 
 ## 1. Purpose / Scope
@@ -23,7 +19,7 @@ HunterX DevSecOps platform ([v7-devsecops.md](v7-devsecops.md)). It is the
 map: which workflow runs when, what it gates, and how the pieces connect.
 
 The workflows live in `.github/workflows/`. The reusable engine they invoke is
-the `eng` package (`python -m eng ...`), documented in
+the `eng` package (`python -m eng...`), documented in
 [v7-quality-gates.md](v7-quality-gates.md) and
 [v7-security-pipeline.md](v7-security-pipeline.md).
 
@@ -58,23 +54,23 @@ it runs a single job, `quality-gates`:
 
 1. Checkout the repository.
 2. Set up Python 3.11 with pip cache keyed on `pyproject.toml` and
-   `requirements.lock`.
+ `requirements.lock`.
 3. Install the project with the `dev` and `report` extras plus the scanner
-   toolchain (mypy, vulture, bandit, pip-audit, safety, semgrep, twine,
-   cyclonedx-py, pip-licenses).
+ toolchain (mypy, vulture, bandit, pip-audit, safety, semgrep, twine,
+ cyclonedx-py, pip-licenses).
 4. Run `python -m eng gates --json` with `continue-on-error: true` so the full
-   report is produced even on failure.
+ report is produced even on failure.
 5. Upload gate artifacts (`coverage.xml`, docs report, security report,
-   readiness, benchmarks) unconditionally.
+ readiness, benchmarks) unconditionally.
 6. **Enforce:** if the gates step failed, the workflow exits non-zero, blocking
-   the merge.
+ the merge.
 7. **Report:** on pull requests, post a Quality Gates Summary comment built from
-   `artifacts/gates-report.json`.
+ `artifacts/gates-report.json`.
 
 ### Why `continue-on-error` + explicit enforcement?
 
 Two-step enforcement means a single gate failure still produces every other
-gate's result and all artifacts — so the PR comment shows the complete state
+gate's result and all artifacts, so the PR comment shows the complete state
 and the developer fixes everything in one round instead of many.
 
 ---
@@ -85,16 +81,16 @@ All pipeline outputs land under `artifacts/`:
 
 ```text
 artifacts/
-  gates-report.json     <- per-gate status (PR comment source)
-  coverage.xml          <- Cobertura coverage report
-  docs-report.json      <- documentation health
-  security-report.json  <- aggregated scanner report
-  security/             <- raw scanner output (bandit, semgrep, trivy, ...)
-  benchmarks/           <- raw + normalized benchmark JSON, baseline
-  readiness.json        <- readiness assessment
-  hunterx.spdx.json     <- SPDX SBOM (release)
-  hunterx.bom.json      <- CycloneDX SBOM (release)
-  provenance.json       <- provenance manifest (release)
+ gates-report.json <- per-gate status (PR comment source)
+ coverage.xml <- Cobertura coverage report
+ docs-report.json <- documentation health
+ security-report.json <- aggregated scanner report
+ security/ <- raw scanner output (bandit, semgrep, trivy,...)
+ benchmarks/ <- raw + normalized benchmark JSON, baseline
+ readiness.json <- readiness assessment
+ hunterx.spdx.json <- SPDX SBOM (release)
+ hunterx.bom.json <- CycloneDX SBOM (release)
+ provenance.json <- provenance manifest (release)
 ```
 
 `actions/upload-artifact` persists these across jobs and runs for audit.
@@ -106,19 +102,19 @@ artifacts/
 A tag push (e.g. `v7.1.0`) triggers the full release pipeline (previously the
 standalone `release.yml`):
 
-1. **Validate the tag** — `python -m eng check-release <version>` enforces
-   [semantic versioning](v7-release-guide.md#semantic-versioning).
-2. **Build** — `python -m build` produces the wheel and sdist.
-3. **SBOM** — CycloneDX and SPDX SBOMs are generated from the lock file.
-4. **Checksums** — SHA256 and SHA512 checksum files for every artifact.
-5. **Provenance** — `eng.supplychain.write_provenance` records version, commit,
-   build date and artifact list.
-6. **Sign** — `cosign sign-blob` signs each artifact (`.sig` + `.pem`).
-7. **Release notes** — changelog entries are parsed with
-   `eng.release.parse_changelog` and rendered by `render_release_notes`.
-8. **Publish** — `softprops/action-gh-release` creates the GitHub Release with
-   the release-notes body; `fail_on_unmatched_files: true` guarantees every
-   declared artifact was uploaded.
+1. **Validate the tag**, `python -m eng check-release <version>` enforces
+ [semantic versioning](v7-release-guide.md#semantic-versioning).
+2. **Build**, `python -m build` produces the wheel and sdist.
+3. **SBOM**, CycloneDX and SPDX SBOMs are generated from the lock file.
+4. **Checksums**, SHA256 and SHA512 checksum files for every artifact.
+5. **Provenance**, `eng.supplychain.write_provenance` records version, commit,
+ build date and artifact list.
+6. **Sign**, `cosign sign-blob` signs each artifact (`.sig` + `.pem`).
+7. **Release notes**, changelog entries are parsed with
+ `eng.release.parse_changelog` and rendered by `render_release_notes`.
+8. **Publish**, `softprops/action-gh-release` creates the GitHub Release with
+ the release-notes body; `fail_on_unmatched_files: true` guarantees every
+ declared artifact was uploaded.
 
 The full procedure is in [v7-release-guide.md](v7-release-guide.md).
 
@@ -127,7 +123,7 @@ The full procedure is in [v7-release-guide.md](v7-release-guide.md).
 ## 6. Security Considerations
 
 - `permissions:` blocks are set to least privilege per job (`contents: read`,
-  `security-events: write`, `pull-requests: write`).
+ `security-events: write`, `pull-requests: write`).
 - `actions/checkout@v4` and `actions/setup-python@v5` are pinned by tag.
 - Secrets are never written to artifacts; scanner outputs are redacted.
 - Third-party actions are held to the minimum required permission set.

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Report Command — HunterX v6.0.0
+title: Report Command - HunterX v6.0.0
 keywords: HunterX Report Command, hunterx report, report generation, security reports
 description: >-
   Generate professional security reports in various formats from scan results and assessment data.
@@ -285,7 +285,7 @@ Typical report sections include:
 - Include a clear methodology section for reproducibility
 - Prioritize findings by risk and business impact
 - Provide actionable remediation recommendations
-- Keep reports concise but comprehensive
+- Keep reports concise but complete
 - Use visualizations (charts, graphs) to enhance understanding
 - Ensure consistent branding with logos and color schemes
 - Protect sensitive reports with passwords or encryption

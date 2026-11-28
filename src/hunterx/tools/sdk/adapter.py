@@ -3,11 +3,7 @@
 
 """Tool adapter framework.
 
-The contract every SDK-integrated tool implements. An adapter declares a
-:class:`ToolDescriptor` and implements the execution lifecycle hooks the
-pipeline drives: prepare → run → validate output → normalize → cleanup.
-Legacy :class:`BaseTool` adapters are bridged so existing tools keep working
-unchanged.
+The contract every SDK-integrated tool implements.
 """
 
 from __future__ import annotations

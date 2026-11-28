@@ -1,6 +1,6 @@
 ---
 layout: default
-title: HunterX vs OWASP ZAP — Comparison
+title: HunterX vs OWASP ZAP - Comparison
 keywords: HunterX vs OWASP ZAP, OWASP ZAP comparison, web application security scanner, ZAP integration
 description: >-
   HunterX vs OWASP ZAP: how the AI-assisted vulnerability discovery, validation
@@ -20,18 +20,18 @@ its orchestration layer.
 
 - Interactive proxy work, request interception and replay.
 - Broad, community-supported scanning features with a GUI and extensive
-  extensions.
+ extensions.
 - Manual testing workflows inside a rich user interface.
 
 ## What HunterX adds
 
-- **Orchestration** — HunterX executes ZAP with structured contracts and
-  parses its output into canonical observations.
-- **Validation and proof** — ZAP candidates become hypotheses that HunterX
-  validates with evidence, then engineers and replays proofs/PoCs.
-- **Reasoning and correlation** — observations from ZAP are correlated with the
-  rest of the toolchain.
-- **Report-ready output** — validated findings feed professional reports.
+- **Orchestration**, HunterX executes ZAP with structured contracts and
+ parses its output into canonical observations.
+- **Validation and proof**, ZAP candidates become hypotheses that HunterX
+ validates with evidence, then engineers and replays proofs/PoCs.
+- **Reasoning and correlation**, observations from ZAP are correlated with the
+ rest of the toolchain.
+- **Report-ready output**, validated findings feed professional reports.
 
 ## Key differences
 
@@ -41,22 +41,22 @@ its orchestration layer.
 | Interface | GUI-first | CLI / API / Docker-first |
 | Output | Scan results | Validated findings + evidence + PoC + impact |
 | Validation | Scanner reports | Evidence-driven hypothesis validation |
-| Proof / PoC | — | Proof contracts, replay, reproducibility |
+| Proof / PoC | - | Proof contracts, replay, reproducibility |
 | Tool integration | Extensions | Orchestrates 92 security tools |
 
 ## Integration
 
 In HunterX, OWASP ZAP is **Integrated &middot; partial support**: HTTP
 interception, request replay, response analysis and active testing are
-mapped to canonical observations. ZAP output is never a raw verdict — it
+mapped to canonical observations. ZAP output is never a raw verdict, it
 passes the canonical pipeline before influencing a finding.
 
 ## Which to choose
 
 - Use **OWASP ZAP** when you want an interactive proxy with a GUI for manual
-  web testing.
+ web testing.
 - Use **HunterX** when you want automated, evidence-driven workflow
-  orchestration, proof engineering and report-ready output at scale.
+ orchestration, proof engineering and report-ready output at scale.
 
 HunterX integrates ZAP rather than replacing it.
 

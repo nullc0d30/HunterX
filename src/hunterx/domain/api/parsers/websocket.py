@@ -3,9 +3,8 @@
 
 """WebSocket endpoint parser.
 
-In-process parser that models discovered WebSocket endpoints from web-crawl
-and client-side observations into canonical API intelligence operations. No
-network activity: the parser consumes already-observed endpoint hints.
+In-process parser that models discovered WebSocket endpoints from web-crawl and client-side observations into
+canonical API intelligence operations.
 """
 
 from __future__ import annotations
@@ -48,7 +47,7 @@ class WebSocketParser:
     Usage::
 
         parser = WebSocketParser()
-        result = parser.parse([("https://api.example.com", "/socket"), ...])
+        result = parser.parse([("https://api.example.com", "/socket"),...])
     """
 
     def __init__(self, *, max_operations: int = 500) -> None:

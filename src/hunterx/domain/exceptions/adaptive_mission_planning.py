@@ -1,13 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Adaptive mission planning exceptions.
-
-Every error raised by the adaptive mission planning engine derives from
-:class:`AdaptiveMissionPlanningError` and carries the
-:data:`HunterXErrorCode.MISSION` code so API/CLI layers can map them
-uniformly.
-"""
+"""Adaptive mission planning exceptions."""
 
 from __future__ import annotations
 

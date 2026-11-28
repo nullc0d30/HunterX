@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Target Memory & Campaign Intelligence — canonical enums.
-
-Sprint 030. Pure, storage-agnostic value categories for the historical
-intelligence layer: observation freshness, memory state classification, change
-significance, diff change kinds, coverage gap taxonomy, hypothesis outcomes,
-campaign lifecycle, recurrence kinds and revalidation priority.
-
-The vocabulary keeps *current state*, *historical state* and *derived
-intelligence* strictly separated. Historical evidence is never silently
-overwritten: contradictions and stale observations are preserved and
-classified, never discarded.
-"""
+"""Target Memory & Campaign Intelligence, canonical enums."""
 
 from __future__ import annotations
 
@@ -38,7 +27,7 @@ class FreshnessState(StrEnum):
 class MemoryObservationState(StrEnum):
     """Current-state classification of a memory observation.
 
-    Mirrors the Sprint 030 smart-recon vocabulary: a known value stays
+    Mirrors the smart-recon vocabulary: a known value stays
     ``KNOWN_CURRENT`` while fresh; it becomes ``KNOWN_STALE`` when the
     freshness window elapses; ``KNOWN_CHANGED`` when a newer observation
     contradicts it; ``CONTRADICTED`` when sources disagree and no resolution
@@ -113,7 +102,7 @@ class CampaignStatus(StrEnum):
 class CoverageGapKind(StrEnum):
     """Canonical taxonomy of coverage gaps.
 
-    Each gap maps to a concrete, actionable deficiency — never a vague "more
+    Each gap maps to a concrete, actionable deficiency, never a vague "more
     testing needed".
     """
 

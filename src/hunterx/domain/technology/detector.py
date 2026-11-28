@@ -3,15 +3,7 @@
 
 """In-process signature detector.
 
-The fallback (and in-process) technology detection path. Given an HTTP
-evidence bundle — status, headers, HTML, meta tags, cookies, TLS certificate
-fields and script references — it matches the curated signature database and
-produces canonical :class:`TechnologyObservation` records with evidence
-fragments and best-effort versions.
-
-The detector is pure and deterministic: the same evidence always yields the
-same observations. It never trusts a single weak indicator over stronger
-evidence — confidence is a function of the evidence actually matched.
+The fallback (and in-process) technology detection path.
 """
 
 from __future__ import annotations

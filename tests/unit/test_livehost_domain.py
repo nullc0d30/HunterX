@@ -1,8 +1,9 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for the Live Host & Service Discovery domain: models, normalization,
-validation, confidence, scope, correlation, conflicts, history and strategy."""
+"""Tests for the Live Host & Service Discovery domain: models, normalization, validation, confidence, scope,
+correlation, conflicts, history and strategy.
+"""
 
 from __future__ import annotations
 

@@ -1,15 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Core engine.
-
-The Core Engine is the runtime aggregate of the platform: it holds every
-engine, manager, registry and v7 facade (TIP, Tool Integration SDK,
-Tool Integration Factory, Mission Planning) and exposes a single entry point
-for applications (API/CLI/daemons). Components are injected via the
-constructor so the engine can be assembled from the platform composition root
-or from test doubles.
-"""
+"""Core engine."""
 
 from __future__ import annotations
 

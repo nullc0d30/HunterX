@@ -49,7 +49,7 @@ For categories that showed anomalies in Stage 1, HunterX deepens its investigati
 - Time-based blind injection detection
 - OOB (out-of-band) callback monitoring
 
-Evidence is correlated across probes. A single anomaly is not enough — HunterX looks for consistent patterns.
+Evidence is correlated across probes. A single anomaly is not enough, HunterX looks for consistent patterns.
 
 ## Stage 3: Verify
 

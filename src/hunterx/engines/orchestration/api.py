@@ -3,8 +3,8 @@
 
 """Offensive Tool Orchestration API facade.
 
-A thin facade over :class:`OffensiveOrchestrationEngine` providing a stable
-internal API for application services and higher layers.
+A thin facade over :class:`OffensiveOrchestrationEngine` providing a stable internal API for application services
+and higher layers.
 """
 
 from __future__ import annotations

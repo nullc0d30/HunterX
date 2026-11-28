@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Validated-finding workflow regression tests.
-
-Proves the complete pipeline: endpoint → parameter → hypothesis → targeted
-probe → verification → vulnerability evidence → reproducible PoC → real replay
-→ VALIDATED finding → REPORT_READY, against the loopback vulnerable fixture.
-Also proves the honest negative: a contradicted probe never produces a
-validated finding or vulnerability evidence.
-
-Evidence semantics: a probe *observation* (MissionObservation type "probe")
-proves a probe ran; only a FindingRecord evidence artifact
-(BEHAVIORAL_DIFFERENTIAL / REPLAY) proves the vulnerability was verified.
-"""
+"""Validated-finding workflow regression tests."""
 
 from __future__ import annotations
 
@@ -145,7 +134,8 @@ class TestVerifiedFindingWorkflow:
 class TestMissionBridge:
     def test_validated_hypothesis_bridges_to_report_ready_finding(self, app: VulnerableApp) -> None:
         """The mission pipeline's probe-verified hypothesis produces the full
-        finding record (evidence → PoC → replay → report-ready)."""
+        finding record (evidence to PoC to replay to report-ready).
+        """
         stores = InMemoryTidbRepositoryFactory()
         finding_service = VulnerabilityFindingService(
             engine=ExecutionEngine(),

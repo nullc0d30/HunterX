@@ -3,14 +3,7 @@
 
 """Generic attack-workflow representation.
 
-Phase 2. Multi-step target behavior is represented generically as
-
-    State A → Action → State B → Action → State C
-
-with security properties evaluated at each transition. Workflows are built from
-discovered workflow/state-transition surfaces — never hardcoded application
-workflows. Each transition carries the capability ids whose security property
-applies at that step.
+Multi-step target behavior is represented generically as.
 """
 
 from __future__ import annotations
@@ -44,7 +37,7 @@ class AttackWorkflowState:
 
 @dataclass(frozen=True, slots=True)
 class AttackWorkflowTransition:
-    """A single State A → Action → State B transition.
+    """A single State A to Action to State B transition.
 
     Attributes:
         transition_id: stable transition identifier.
@@ -112,7 +105,7 @@ class AttackWorkflow:
         action: str = "",
         security_properties: tuple[str, ...] = (),
     ) -> AttackWorkflowTransition:
-        """Add a State A → Action → State B transition."""
+        """Add a State A to Action to State B transition."""
         transition = AttackWorkflowTransition(
             from_state=from_state,
             to_state=to_state,
@@ -157,7 +150,7 @@ def build_workflow_from_attributes(
     """Build an :class:`AttackWorkflow` from discovered workflow attributes.
 
     ``attributes`` may carry ``steps`` (a flat state list) or ``transitions``
-    (a list of ``{"from": ..., "to": ..., "action": ...}`` dicts). Unknown
+    (a list of ``{"from":..., "to":..., "action":...}`` dicts). Unknown
     shapes degrade to a single-state workflow rather than failing.
     """
     workflow = AttackWorkflow(

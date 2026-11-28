@@ -3,13 +3,8 @@
 
 """Target History & Change Detection.
 
-Sprint 026. HunterX maintains historical target state: first_seen, last_seen,
-changed_at, previous_value, new_value, source and confidence for every tracked
-fact. The :class:`TargetHistory` records entries and the
-:class:`TargetChangeDetector` compares a previous asset/intelligence snapshot
-with the current one and classifies changes as NEW, REMOVED, CHANGED,
-REAPPEARED, EXPIRED, RECLASSIFIED, CORROBORATED or CONFLICTED. Detected changes
-influence future mission planning.
+HunterX maintains historical target state: first_seen, last_seen, changed_at, previous_value, new_value, source and
+confidence for every tracked fact.
 """
 
 from __future__ import annotations

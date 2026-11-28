@@ -3,14 +3,8 @@
 
 """Quality-gate framework.
 
-A *gate* is a named check with a deterministic pass/fail outcome and an
-optional artifact (report file, coverage xml, etc.). :class:`GateRunner` runs
-the configured gates, collects a :class:`GateReport` and can **block** the
-pipeline (raise :class:`GateBlockedError`) when any mandatory gate fails.
-
-Gates are defined declaratively in ``eng/config/gates.yaml`` so thresholds can
-be tuned without code changes. Each gate maps to a Python callable in
-:mod:`eng.gates.checks`.
+A *gate* is a named check with a deterministic pass/fail outcome and an optional artifact (report file, coverage
+xml, etc.).
 """
 
 from __future__ import annotations
@@ -134,7 +128,7 @@ class GateSpec:
     Attributes:
         name: identifier matching a checker in :mod:`eng.gates.checks`.
         mandatory: whether failure raises :class:`GateBlockedError`.
-        threshold: numeric pass threshold (coverage %, seconds, ...).
+        threshold: numeric pass threshold (coverage %, seconds,...).
 
     """
 

@@ -1,16 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Autonomous mission orchestration aggregate.
-
-``OrchestratedMission`` is the orchestration aggregate: it wraps the Sprint 027
-planning aggregate (:class:`AdaptiveMission`) and adds the reasoning/evidence
-state that drives the adaptive loop — context, observations, hypotheses,
-decisions, branches, negative evidence, baselines, differential results, impact
-analyses, novel-behavior records, reasoning trace, telemetry, runs, checkpoints
-and the final outcome. It reuses the planning aggregate rather than
-duplicating it.
-"""
+"""Autonomous mission orchestration aggregate."""
 
 from __future__ import annotations
 
@@ -40,7 +31,7 @@ from hunterx.domain.mission_orchestration.models import (
 from hunterx.domain.target_intelligence.enums import CoverageCapability, CoverageState
 from hunterx.shared.time import utcnow_iso
 
-#: Capability → assessment-phase grouping used by :meth:`OrchestratedMission.coverage_dimensions`.
+# : Capability to assessment-phase grouping used by :meth:`OrchestratedMission.coverage_dimensions`.
 _RECON_CAPABILITIES = frozenset(
     {
         "asset_discovery",
@@ -94,7 +85,7 @@ class OrchestratedMission:
     """The orchestration aggregate of an autonomous mission.
 
     Attributes:
-        mission: the underlying Sprint 027 planning aggregate.
+        mission: the underlying planning aggregate.
         context: persistent target-centric :class:`MissionContext`.
         policy: mission intent configuration (:class:`MissionPolicy`).
         budget: tracked resource consumption (:class:`MissionBudget`).
@@ -251,18 +242,7 @@ class OrchestratedMission:
         return round(assessed / len(cells), 4)
 
     def mandatory_coverage_satisfied(self) -> tuple[bool, list[str]]:
-        """Check if all mandatory coverage dimensions for the objective are satisfied.
-
-        For ``full_security_assessment``, mandatory dimensions are:
-        - recon: must be > 0 (at least some recon performed)
-        - attack_surface: must be > 0
-        - hypothesis: must have actionable hypotheses settled
-        - active_test: must have at least some active testing if probeable surface exists
-        - validation: must have findings validated if hypotheses supported
-        - browser: must be explicitly TESTED or classified with notes
-
-        Returns ``(satisfied, unmet_dimensions)``.
-        """
+        """Check if all mandatory coverage dimensions for the objective are satisfied."""
         dims = self.coverage_dimensions()
         unmet = []
 
@@ -287,9 +267,17 @@ class OrchestratedMission:
         if dims["validation"]["cells"] > 0 and dims["validation"]["coverage"] == 0.0:
             unmet.append("validation")
 
-        # Browser: must be explicitly TESTED or classified
+        # Browser: must be explicitly TESTED or classified. An unavailable
+        # browser is recorded as NOT_ASSESSED with a reason; that is a
+        # deliberate classification (the capability does not exist in the
+        # environment), not an unassessed dimension.
+        browser_cell = next(
+            (cells["browser_testing"] for cells in self.coverage.values() if "browser_testing" in cells),
+            None,
+        )
         browser_state = dims["browser"]["state"]
-        if browser_state == "not_assessed":
+        browser_notes = str(getattr(browser_cell, "notes", "") or "")
+        if browser_state == "not_assessed" and not browser_notes:
             unmet.append("browser")
 
         return len(unmet) == 0, unmet

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 #
-# HunterX — AI-Assisted Vulnerability Hunter
+# HunterX - AI-Assisted Vulnerability Hunter
 # PyPI publish workflow
 # Triggers: tags matching v*.*.*
 

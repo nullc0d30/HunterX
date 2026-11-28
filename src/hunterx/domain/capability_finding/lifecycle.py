@@ -1,20 +1,14 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Candidate lifecycle mapping and reproduction classification.
-
-The Phase 6 lifecycle (Candidate -> Evidence -> Replay -> Reproduction ->
-Impact Analysis -> PoC -> Validated Finding -> Report) is orchestrated on the
-existing HunterX finding state machine — there is exactly one state machine,
-and this module maps the Phase 6 stages onto it.
-"""
+"""Candidate lifecycle mapping and reproduction classification."""
 
 from __future__ import annotations
 
 from hunterx.domain.capability_finding.enums import ReproductionVerdict
 from hunterx.domain.capability_finding.models import ReplayAttempt
 
-#: Mapping of the Phase 6 spec stages onto the existing finding states.
+# : Mapping of the spec stages onto the existing finding states.
 PHASE_SIX_STAGES: dict[str, str] = {
     "candidate": "Candidate",
     "evidence_collected": "Evidence",
@@ -29,7 +23,7 @@ PHASE_SIX_STAGES: dict[str, str] = {
 
 
 def stage_for_state(state: str) -> str:
-    """Return the Phase 6 spec stage for a finding state."""
+    """Return the spec stage for a finding state."""
     return PHASE_SIX_STAGES.get(state, state)
 
 

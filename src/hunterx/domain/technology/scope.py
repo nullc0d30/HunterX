@@ -1,18 +1,7 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Scope enforcement for technology fingerprinting.
-
-Decides whether a hostname, domain, IP or URL may be fingerprinted or persisted
-based on the mission's authorized targets, excluded names, excluded addresses
-and excluded URL patterns. The enforcer is pure and deterministic: the same
-inputs always yield the same decision, with a human-readable reason for every
-denial.
-
-Discovered technology intelligence is never used to silently expand scope: the
-enforcer authorizes the *asset* being fingerprinted, not the technologies found
-on it.
-"""
+"""Scope enforcement for technology fingerprinting."""
 
 from __future__ import annotations
 

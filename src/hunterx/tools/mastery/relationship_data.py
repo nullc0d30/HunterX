@@ -1,12 +1,10 @@
 # Copyright (c) 2026 Ahmed Awad (NullC0d3)
 # SPDX-License-Identifier: Apache-2.0
 
-"""Canonical tool relationship data for the Sprint 025 arsenal.
+"""Canonical tool relationship data for the arsenal.
 
-Encodes how arsenal tools relate: which enables another, which validates
-another, which must precede/follow, which specializes another. The graph
-powers chaining, alternatives, conflict detection and "what should I run
-next" reasoning.
+Encodes how arsenal tools relate: which enables another, which validates another, which must precede/follow, which
+specializes another.
 """
 
 from __future__ import annotations
@@ -96,7 +94,7 @@ RELATIONSHIPS: tuple[ToolRelationship, ...] = (
     ToolRelationship("searchsploit", "exploitdb", ToolRelationshipKind.REPLACES, "exploit-research", "ExploitDB is the online reference."),
     # -- SAST --------------------------------------------------------------------------
     ToolRelationship("semgrep", "codeql", ToolRelationshipKind.REPLACES, "sast", "Semgrep is a lighter SAST alternative."),
-    # -- knowledge / payload / wordlist sources (Sprint 031) ----------------------------
+    # -- knowledge / payload / wordlist sources () ----------------------------
     ToolRelationship("payloadsallthethings", "dalfox", ToolRelationshipKind.ENABLES, "xss-validation", "Payload library feeds XSS hypothesis generation."),
     ToolRelationship("payloadsallthethings", "sqlmap", ToolRelationshipKind.ENABLES, "sql-injection-validation", "Payload library feeds SQLi hypotheses."),
     ToolRelationship("payloadsallthethings", "commix", ToolRelationshipKind.ENABLES, "command-injection-validation", "Payload library feeds command injection hypotheses."),

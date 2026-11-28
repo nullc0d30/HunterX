@@ -35,27 +35,27 @@ docker run --rm nullc0d30/hunterx:latest hunt full_security_assessment https://e
 
 ```bash
 docker run --rm \
-  -v $(pwd)/reports:/data \
-  nullc0d30/hunterx:latest \
-  hunt full_security_assessment https://example.com
+ -v $(pwd)/reports:/data \
+ nullc0d30/hunterx:latest \
+ hunt full_security_assessment https://example.com
 ```
 
 ### Resource Limits
 
 ```bash
 docker run --rm \
-  --memory="512m" \
-  --cpus="2" \
-  nullc0d30/hunterx:latest hunt full_security_assessment https://example.com
+ --memory="512m" \
+ --cpus="2" \
+ nullc0d30/hunterx:latest hunt full_security_assessment https://example.com
 ```
 
 ### API Server
 
 ```bash
 docker run --rm \
-  -p 8080:8080 \
-  --entrypoint uvicorn nullc0d30/hunterx:latest \
-  --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
+ -p 8080:8080 \
+ --entrypoint uvicorn nullc0d30/hunterx:latest \
+ --factory hunterx.api.app:create_app --host 0.0.0.0 --port 8080
 ```
 
 ## CI/CD Integration
@@ -64,23 +64,23 @@ docker run --rm \
 
 ```yaml
 jobs:
-  scan:
-    runs-on: ubuntu-latest
-    container:
-      image: nullc0d30/hunterx:latest
-    steps:
-      - run: hunterx hunt full_security_assessment {% raw %}${{ secrets.TARGET_URL }}{% endraw %}
+ scan:
+ runs-on: ubuntu-latest
+ container:
+ image: nullc0d30/hunterx:latest
+ steps:
+ - run: hunterx hunt full_security_assessment {% raw %}${{ secrets.TARGET_URL }}{% endraw %}
 ```
 
 ### GitLab CI
 
 ```yaml
 scan:
-  image: nullc0d30/hunterx:latest
-  script:
-    - hunterx hunt full_security_assessment $TARGET_URL
-  artifacts:
-    paths: [artifacts/reports/]
+ image: nullc0d30/hunterx:latest
+ script:
+ - hunterx hunt full_security_assessment $TARGET_URL
+ artifacts:
+ paths: [artifacts/reports/]
 ```
 
 ## Security
