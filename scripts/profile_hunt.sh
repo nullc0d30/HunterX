@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set +e
-export PYTHONPATH=/home/nc/hunterx/HunterX/src
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$ROOT/src"
 export HUNTERX_TOOL_BIN="$HOME/.hunterx/tools/bin"
 export GOBIN="$HUNTERX_TOOL_BIN"
 export VIRTUAL_ENV="$HOME/.hunterx/venv"
@@ -9,7 +10,7 @@ export HUNTERX_DATA_DIR="$HOME/.hunterx/data"
 cd /tmp
 HX="$HOME/.hunterx/venv/bin/hunterx"
 TARGET="http://localhost:3010"
-BASE=/home/nc/hunterx/HunterX/artifacts/hunterx-results/juice-shop
+BASE=$ROOT/artifacts/hunterx-results/juice-shop
 mkdir -p "$BASE"
 OBJECTIVE="$1"
 OUT="$BASE/$OBJECTIVE"

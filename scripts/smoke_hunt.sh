@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set +e
-export PYTHONPATH=/home/nc/hunterx/HunterX/src
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$ROOT/src"
 export HUNTERX_TOOL_BIN="$HOME/.hunterx/tools/bin"
 export GOBIN="$HUNTERX_TOOL_BIN"
 export VIRTUAL_ENV="$HOME/.hunterx/venv"

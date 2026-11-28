@@ -2,8 +2,9 @@
 # Real installation attempts for the required 43-tool CLI toolchain.
 # Usage: install_attempts.sh <tool_id> [tool_id ...]
 set +e
-export PYTHONPATH=/home/nc/hunterx/HunterX/src
-export HUNTERX_TOOL_BIN="${HUNTERX_TOOL_BIN:-/home/nc/.hunterx/tools/bin}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$ROOT/src"
+export HUNTERX_TOOL_BIN="${HUNTERX_TOOL_BIN:-$HOME/.hunterx/tools/bin}"
 mkdir -p "$HUNTERX_TOOL_BIN"
 # Launcher precedence: managed tools dir first, then go bin, cargo bin, user bin.
 export GOBIN="$HUNTERX_TOOL_BIN"
@@ -15,7 +16,7 @@ HX="${HX:-/opt/hunterx/venv/bin/hunterx}"
 if [ -x "$HOME/.hunterx/venv/bin/hunterx" ]; then
   HX="$HOME/.hunterx/venv/bin/hunterx"
 fi
-OUT=/home/nc/hunterx/HunterX/artifacts/toolchain-audit/install-attempts.jsonl
+OUT=$ROOT/artifacts/toolchain-audit/install-attempts.jsonl
 mkdir -p "$(dirname "$OUT")"
 : > "$OUT"
 for tool in "$@"; do

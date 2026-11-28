@@ -13,7 +13,7 @@ else
 fi
 echo "=== installing current repo source (editable) ==="
 "$UVENV/bin/pip" install --quiet --upgrade pip 2>&1 | tail -n1
-"$UVENV/bin/pip" install --quiet -e /home/nc/hunterx/HunterX 2>&1 | tail -n 5
+"$UVENV/bin/pip" install --quiet -e $ROOT 2>&1 | tail -n 5
 echo "=== verify hunterx from user venv ==="
 "$UVENV/bin/hunterx" help 2>&1 | grep -iE "tools check|tools matrix" | head -n 2
 "$UVENV/bin/python" -c "import hunterx; print('source:', hunterx.__file__)"
